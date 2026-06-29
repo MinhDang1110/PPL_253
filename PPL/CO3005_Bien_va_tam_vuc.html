@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CO3005 – Tên, Ràng buộc, Tầm vực và Thời gian sống</title>
+<meta name="description" content="Bài học về Tên, Ràng buộc, Tầm vực và Thời gian sống – CO3005 Nguyên lý Ngôn ngữ Lập trình, bao gồm binding time, scope tĩnh/động, cấp phát bộ nhớ và lỗi bộ nhớ.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd9d0;
+    --text: #1a1916;
+    --muted: #6b6760;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --kw: #569cd6;
+    --str: #ce9178;
+    --cmt: #6a9955;
+    --num: #b5cea8;
+    --fn: #dcdcaa;
+    --type: #4ec9b0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .toc-item {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .toc-item.sub { padding-left: 32px; font-size: 12px; }
+
+  .main {
+    padding: 48px 56px 80px;
+    max-width: 820px;
+  }
+
+  .lesson-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .lesson-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article-section {
+    margin-bottom: 52px;
+    scroll-margin-top: 24px;
+  }
+
+  .section-heading {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+  .section-heading::before {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 40px; height: 2px;
+    background: var(--accent);
+  }
+
+  p { margin-bottom: 14px; }
+
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+    font-size: 13.5px;
+  }
+  .code-label {
+    background: #2d2d2d;
+    padding: 6px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #333;
+  }
+  pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1.6;
+    color: var(--code-text);
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #e8e5de;
+    color: #b5451b;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+
+  .kw   { color: var(--kw); }
+  .str  { color: var(--str); }
+  .cmt  { color: var(--cmt); font-style: italic; }
+  .num  { color: var(--num); }
+  .fn   { color: var(--fn); }
+  .type { color: var(--type); }
+
+  .callout {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .callout strong { color: var(--accent); }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  .fig { text-align: center; margin: 28px 0; }
+  .fig img { max-width: 540px; width: 100%; border-radius: 6px; border: 1px solid var(--border); background: #fff; }
+  .fig figcaption { margin-top: 10px; font-size: 13px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+  .fig-wide img { max-width: 700px; }
+  .fig-narrow img { max-width: 340px; }
+
+  .nav-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 0 0; border-top: 1px solid var(--border);
+    margin-top: 48px; font-size: 14px; color: var(--muted);
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--accent); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 500;
+    text-decoration: none; cursor: default;
+  }
+  .nav-btn.secondary { background: var(--surface); color: var(--accent); border: 1px solid var(--accent); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-title">Mục lục bài học</div>
+    <a class="toc-item active" href="#mo-dau">Bài 1 · Mở đầu</a>
+    <a class="toc-item" href="#ten-rang-buoc">Bài 2 · Tên và ràng buộc</a>
+    <a class="toc-item sub" href="#vi-sao-can-ten">Vì sao cần tên</a>
+    <a class="toc-item sub" href="#ten-truu-tuong">Tên như cơ chế trừu tượng</a>
+    <a class="toc-item sub" href="#rang-buoc-la-gi">Ràng buộc là gì</a>
+    <a class="toc-item sub" href="#rang-buoc-voi-gi">Một tên được ràng buộc với gì</a>
+    <a class="toc-item sub" href="#da-hinh">Đa hình</a>
+    <a class="toc-item sub" href="#bi-danh">Bí danh</a>
+    <a class="toc-item" href="#thoi-diem-rang-buoc">Bài 3 · Thời điểm ràng buộc</a>
+    <a class="toc-item sub" href="#khai-niem-binding-time">Khái niệm thời điểm ràng buộc</a>
+    <a class="toc-item sub" href="#cac-thoi-diem">Các thời điểm tiêu biểu</a>
+    <a class="toc-item sub" href="#rang-buoc-som-muon">Ràng buộc sớm và muộn</a>
+    <a class="toc-item sub" href="#rang-buoc-tinh-dong">Ràng buộc tĩnh và động</a>
+    <a class="toc-item sub" href="#vi-sao-quan-trong">Vì sao quan trọng</a>
+    <a class="toc-item" href="#tam-vuc">Bài 4 · Tầm vực và môi trường tham chiếu</a>
+    <a class="toc-item sub" href="#tu-rang-buoc-den-tam-vuc">Từ ràng buộc đến tầm vực</a>
+    <a class="toc-item sub" href="#khoi">Khối</a>
+    <a class="toc-item sub" href="#cuc-bo-toan-cuc">Tầm vực cục bộ và toàn cục</a>
+    <a class="toc-item sub" href="#tam-vuc-tinh">Tầm vực tĩnh</a>
+    <a class="toc-item sub" href="#quy-tac-long">Quy tắc khối lồng nhau</a>
+    <a class="toc-item sub" href="#che-ten">Che tên</a>
+    <a class="toc-item sub" href="#tam-vuc-dong">Tầm vực động</a>
+    <a class="toc-item sub" href="#so-sanh-tinh-dong">So sánh tĩnh và động</a>
+    <a class="toc-item sub" href="#moi-truong-tham-chieu">Môi trường tham chiếu</a>
+    <a class="toc-item" href="#thoi-gian-song">Bài 5 · Thời gian sống, cấp phát và lỗi bộ nhớ</a>
+    <a class="toc-item sub" href="#tam-vuc-vs-tgs">Tầm vực và thời gian sống</a>
+    <a class="toc-item sub" href="#tgs-doi-tuong">Thời gian sống của đối tượng</a>
+    <a class="toc-item sub" href="#tgs-rang-buoc">Thời gian sống của ràng buộc</a>
+    <a class="toc-item sub" href="#cap-phat">Cấp phát đối tượng</a>
+    <a class="toc-item sub" href="#cap-phat-tinh">Cấp phát tĩnh</a>
+    <a class="toc-item sub" href="#ngan-xep">Cấp phát trên ngăn xếp</a>
+    <a class="toc-item sub" href="#heap-tuong-minh">Cấp phát heap tường minh</a>
+    <a class="toc-item sub" href="#heap-ngam">Cấp phát heap ngầm</a>
+    <a class="toc-item sub" href="#tham-chieu-treo">Tham chiếu treo</a>
+    <a class="toc-item sub" href="#ro-ri">Rò rỉ bộ nhớ</a>
+    <a class="toc-item" href="#tong-ket">Bài 6 · Tổng kết chương</a>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+
+    <!-- ==================== BÀI 1: MỞ ĐẦU ==================== -->
+    <div class="lesson-badge">Bài 1 / 6</div>
+    <h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+    <div class="lesson-meta">CO3005 · Tên, ràng buộc, tầm vực và thời gian sống · Trần Ngọc Bảo Duy</div>
+
+    <div class="article-section">
+      <p>Khi viết chương trình, ta liên tục sử dụng các tên gọi: <code>x</code>, <code>sum</code>, <code>print</code>, <code>int</code>, thậm chí cả các toán tử như <code>+</code>. Những tên này quen thuộc đến mức ta hiếm khi dừng lại để hỏi: khi chương trình nhắc đến một tên, làm sao ngôn ngữ biết được tên đó nghĩa là gì?</p>
+      <p>Ở các chương trước, ta đã thấy chương trình nguồn được phân tích từ vựng thành chuỗi token, phân tích cú pháp thành cây, rồi rút gọn thành cây cú pháp trừu tượng để kiểm tra ngữ nghĩa. Trong số những câu hỏi ngữ nghĩa đầu tiên mà mọi trình biên dịch và trình thông dịch phải trả lời, có một câu hỏi rất cơ bản: mỗi tên trong chương trình tương ứng với thực thể nào, ở đâu tên đó còn hiệu lực, và thực thể đó tồn tại trong bao lâu khi chương trình chạy.</p>
+      <p>Trong chương này, ta tiếp cận tên dưới góc độ nguyên lý, không gắn với một ngôn ngữ cụ thể nào. Ta sẽ thấy cùng một khái niệm về tên được hiện thực rất khác nhau trong C, Java, Python hay C++, và mỗi cách thiết kế lại phản ánh một đánh đổi giữa tính an toàn, hiệu năng và sự linh hoạt.</p>
+      <p>Mục tiêu của chương này là làm rõ tên là gì và tên đóng vai trò gì, ràng buộc gắn một tên với một thực thể như thế nào, ràng buộc được thiết lập vào thời điểm nào, một tên có hiệu lực ở những vùng nào của chương trình, và thực thể mà tên trỏ tới tồn tại trong bao lâu cùng với các lỗi bộ nhớ có thể phát sinh.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 2 ==================== -->
+    <div class="lesson-badge">Bài 2 / 6</div>
+    <h1 class="lesson-title" id="ten-rang-buoc">Tên và ràng buộc</h1>
+    <div class="lesson-meta">CO3005 · Tên, ràng buộc, tầm vực và thời gian sống</div>
+
+    <div class="article-section" id="vi-sao-can-ten">
+      <h2 class="section-heading">Vì sao ngôn ngữ lập trình cần tên</h2>
+      <p>Ở mức phần cứng, dữ liệu chỉ là các giá trị nằm tại những địa chỉ bộ nhớ cụ thể. Nếu phải làm việc trực tiếp với phần cứng, người lập trình sẽ phải nói những câu như "lưu giá trị 10 vào ô nhớ tại địa chỉ <code>0x7ffeefbff58c</code>". Cách diễn đạt này vừa khó đọc, vừa khó kiểm tra, vừa phụ thuộc vào từng lần chạy.</p>
+      <p>Ngôn ngữ lập trình giải phóng người lập trình khỏi mức chi tiết đó bằng tên (<em>name</em>). Một tên là một chuỗi ký tự dùng để đại diện cho một thứ khác trong chương trình. Thay vì nói về địa chỉ bộ nhớ, ta chỉ cần viết:</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> x = <span class="num">10</span>;
+x = x + <span class="num">1</span>;</code></pre>
+      </div>
+      <p>và làm việc với cái tên <code>x</code>. Trình biên dịch hoặc trình thông dịch sẽ lo việc ánh xạ <code>x</code> xuống một vị trí lưu trữ thật.</p>
+      <p>Một điểm dễ bị bỏ qua là tên không chỉ dành cho biến. Trong một chương trình bất kỳ, tên xuất hiện ở rất nhiều vai trò: tên biến như <code>count</code>, tên hàm như <code>main</code> hay <code>factorial</code>, tên kiểu như <code>int</code> hay <code>String</code>, tên lớp như <code>Student</code>, tên module như <code>math</code>, và cả tên toán tử như <code>+</code>, <code>*</code>, <code>&&</code>. Tất cả đều là tên theo nghĩa rộng: một ký hiệu tượng trưng cho một thực thể nào đó trong chương trình.</p>
+    </div>
+
+    <div class="article-section" id="ten-truu-tuong">
+      <h2 class="section-heading">Tên như một cơ chế trừu tượng hóa</h2>
+      <p>Tên không chỉ là nhãn dán cho tiện. Tên là một phần của cơ chế trừu tượng hóa của ngôn ngữ: nó che giấu chi tiết hiện thực và cho phép người lập trình tập trung vào ý nghĩa.</p>
+      <p>Ví dụ, xét đoạn mã tính diện tích hình tròn:</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> radius = <span class="num">5</span>;
+<span class="type">double</span> area = <span class="num">3.14</span> * radius * radius;</code></pre>
+      </div>
+      <p>Cái tên <code>radius</code> che giấu một loạt chi tiết mức thấp mà người lập trình không cần quan tâm khi đang suy nghĩ về bài toán: giá trị được lưu ở đâu trong bộ nhớ, dùng bao nhiêu byte, được biểu diễn theo cách nào, và lệnh máy nào sẽ truy cập nó. Đối với người lập trình, <code>radius</code> chỉ đơn giản là "giá trị bán kính dùng để tính diện tích".</p>
+      <p>Sự tách bạch giữa hai góc nhìn này là điều cốt lõi. Người lập trình nhìn thấy một cái tên; còn trình biên dịch và môi trường thực thi nhìn thấy địa chỉ, kiểu, vùng lưu trữ và giá trị. Chính vì tên là một cơ chế trừu tượng, một ngôn ngữ phải định nghĩa rõ các quy tắc về việc giới thiệu tên, phân giải tên, và xác định khi nào một tên còn hợp lệ.</p>
+    </div>
+
+    <div class="article-section" id="rang-buoc-la-gi">
+      <h2 class="section-heading">Ràng buộc là gì</h2>
+      <p>Một ràng buộc (<em>binding</em>) là sự liên kết giữa hai thực thể. Trong ngôn ngữ lập trình, dạng ràng buộc phổ biến nhất là liên kết một tên với một thực thể mà nó đại diện.</p>
+      <p>Ví dụ, một khai báo đơn giản:</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> x;</code></pre>
+      </div>
+      <p>tạo ra một ràng buộc giữa tên <code>x</code> và một biến kiểu <code>int</code>. Điều đáng chú ý là một khai báo tưởng chừng đơn giản lại thường thiết lập nhiều ràng buộc cùng lúc. Xét:</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> x = <span class="num">10</span>;</code></pre>
+      </div>
+      <p>Ở đây có ít nhất bốn ràng buộc đan xen: tên <code>x</code> được ràng buộc với một biến; biến đó được ràng buộc với kiểu <code>int</code>; biến đó được ràng buộc với một vị trí lưu trữ trong bộ nhớ; và vị trí lưu trữ đó được ràng buộc với giá trị <code>10</code>.</p>
+      <p>Có thể hình dung các ràng buộc này xếp thành nhiều tầng quanh một cái tên: từ tên đến kiểu, đến vị trí lưu trữ, đến giá trị hiện tại. Mỗi tầng trả lời một câu hỏi khác nhau, và các tầng này không nhất thiết được thiết lập vào cùng một thời điểm.</p>
+
+      <figure class="fig">
+        <img src="bv_pic2_1.png" alt="Sơ đồ ràng buộc đa tầng: Tên x → Kiểu int / Vị trí lưu trữ / Giá trị hiện tại 10">
+        <figcaption>Ràng buộc đa tầng của khai báo <code>int x = 10</code>: tên, kiểu, vị trí lưu trữ và giá trị.</figcaption>
+      </figure>
+
+      <div class="callout">
+        <strong>Ý tưởng then chốt:</strong> chính ràng buộc đem lại ý nghĩa cho một tên. Một tên chưa được ràng buộc với thực thể nào thì chưa có ý nghĩa; nó chỉ là một chuỗi ký tự.
+      </div>
+    </div>
+
+    <div class="article-section" id="rang-buoc-voi-gi">
+      <h2 class="section-heading">Một tên có thể được ràng buộc với những gì</h2>
+      <p>Sinh viên mới học thường nghĩ ràng buộc chỉ là "tên biến gắn với biến". Thực ra phạm vi của ràng buộc rộng hơn nhiều. Một tên có thể được ràng buộc với bất kỳ loại thực thể có tên nào trong ngôn ngữ.</p>
+      <table class="data-table">
+        <thead><tr><th>Tên</th><th>Thực thể được ràng buộc</th></tr></thead>
+        <tbody>
+          <tr><td><code>x</code></td><td>biến</td></tr>
+          <tr><td><code>PI</code></td><td>hằng số</td></tr>
+          <tr><td><code>int</code></td><td>kiểu</td></tr>
+          <tr><td><code>print</code></td><td>hàm</td></tr>
+          <tr><td><code>Student</code></td><td>lớp</td></tr>
+          <tr><td><code>+</code></td><td>toán tử</td></tr>
+          <tr><td><code>math</code></td><td>module</td></tr>
+          <tr><td><code>length</code></td><td>trường hoặc phương thức</td></tr>
+        </tbody>
+      </table>
+      <p>Ví dụ, trong Python:</p>
+      <div class="code-block">
+        <div class="code-label">Python</div>
+        <pre><code><span class="kw">import</span> math
+
+x = math.<span class="fn">sqrt</span>(<span class="num">25</span>)</code></pre>
+      </div>
+      <p>chỉ trong vài dòng đã có nhiều ràng buộc thuộc nhiều loại khác nhau: <code>math</code> được ràng buộc với một module, <code>sqrt</code> được ràng buộc với một hàm bên trong module đó, <code>x</code> được ràng buộc với một biến, và sau lời gọi, <code>x</code> được ràng buộc với giá trị <code>5.0</code>.</p>
+      <p>Việc nhìn nhận ràng buộc một cách tổng quát như vậy rất quan trọng cho các chương sau. Khi ta nói về kiểm tra kiểu, điều phối phương thức hay phân giải tên trong trình biên dịch, tất cả đều là những trường hợp riêng của cùng một câu hỏi: tên này hiện đang được ràng buộc với thực thể nào?</p>
+    </div>
+
+    <div class="article-section" id="da-hinh">
+      <h2 class="section-heading">Đa hình: một tên, nhiều ràng buộc khả dĩ</h2>
+      <p>Trong những trường hợp đơn giản, mỗi tên ứng với đúng một thực thể. Nhưng nhiều ngôn ngữ cho phép một tên có thể tương ứng với nhiều thực thể khác nhau tùy ngữ cảnh. Hiện tượng này gọi là đa hình (<em>polymorphism</em>).</p>
+      <p>Một dạng đa hình quen thuộc là nạp chồng (<em>overloading</em>), khi cùng một tên hàm được định nghĩa nhiều lần với các kiểu tham số khác nhau. Ví dụ trong Java:</p>
+      <div class="code-block">
+        <div class="code-label">Java</div>
+        <pre><code><span class="type">void</span> <span class="fn">print</span>(<span class="type">int</span> x) {
+    <span class="cmt">// ...</span>
+}
+
+<span class="type">void</span> <span class="fn">print</span>(<span class="type">String</span> s) {
+    <span class="cmt">// ...</span>
+}</code></pre>
+      </div>
+      <p>Tên <code>print</code> lúc này gắn với nhiều hàm. Việc lời gọi nào được chọn phụ thuộc vào kiểu của đối số:</p>
+      <div class="code-block">
+        <div class="code-label">Java</div>
+        <pre><code><span class="fn">print</span>(<span class="num">10</span>);       <span class="cmt">// gọi print(int)</span>
+<span class="fn">print</span>(<span class="str">"Hello"</span>);  <span class="cmt">// gọi print(String)</span></code></pre>
+      </div>
+      <p>Đa hình làm tăng khả năng biểu đạt của ngôn ngữ: người lập trình dùng một tên trực giác duy nhất thay vì nghĩ ra <code>printInt</code>, <code>printString</code> riêng rẽ. Đổi lại, trình biên dịch hoặc môi trường thực thi phải gánh thêm trách nhiệm quyết định ràng buộc nào sẽ được dùng trong từng ngữ cảnh.</p>
+    </div>
+
+    <div class="article-section" id="bi-danh">
+      <h2 class="section-heading">Bí danh: nhiều tên, một thực thể</h2>
+      <p>Đa hình là một tên ứng với nhiều thực thể. Tình huống ngược lại cũng xảy ra: nhiều tên cùng trỏ tới một thực thể. Hiện tượng tạo bí danh (<em>aliasing</em>) xảy ra khi hai hay nhiều tên cùng tham chiếu tới một vị trí bộ nhớ hoặc một đối tượng.</p>
+      <p>Ví dụ trong C, sử dụng con trỏ:</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> x = <span class="num">10</span>;
+<span class="type">int</span> *p = &amp;x;
+<span class="type">int</span> *q = p;
+
+*q = <span class="num">20</span>;</code></pre>
+      </div>
+      <p>Sau câu lệnh cuối: <code>x == 20</code>, vì <code>p</code> và <code>q</code> đều trỏ tới <code>x</code>. Việc ghi qua <code>q</code> thực chất là ghi vào chính ô nhớ mà <code>x</code> đại diện.</p>
+
+      <figure class="fig fig-narrow">
+        <img src="bv_pic2_2.png" alt="Sơ đồ bí danh: p và q cùng trỏ tới ô nhớ của x (giá trị 20)">
+        <figcaption>Bí danh: <code>p</code> và <code>q</code> cùng trỏ tới ô nhớ chứa giá trị của <code>x</code>.</figcaption>
+      </figure>
+
+      <p>Bí danh làm chương trình linh hoạt hơn, chẳng hạn cho phép một hàm sửa trực tiếp dữ liệu của lời gọi mà không cần sao chép. Nhưng đánh đổi là chương trình trở nên khó suy luận hơn: khi nhìn vào một tên, ta không còn chắc rằng chỉ riêng câu lệnh dùng tên đó mới có thể thay đổi giá trị của nó.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 3 ==================== -->
+    <div class="lesson-badge">Bài 3 / 6</div>
+    <h1 class="lesson-title" id="thoi-diem-rang-buoc">Thời điểm ràng buộc</h1>
+    <div class="lesson-meta">CO3005 · Tên, ràng buộc, tầm vực và thời gian sống</div>
+
+    <div class="article-section" id="khai-niem-binding-time">
+      <h2 class="section-heading">Khái niệm thời điểm ràng buộc</h2>
+      <p>Ở Mục 1, ta đã thấy một khai báo như <code>int x = 10</code> thiết lập nhiều ràng buộc. Một câu hỏi tự nhiên là: các ràng buộc đó được thiết lập khi nào? Câu trả lời không giống nhau cho mọi ràng buộc, và đây chính là một trong những ý tưởng quan trọng nhất của thiết kế ngôn ngữ.</p>
+      <p>Thời điểm ràng buộc (<em>binding time</em>) là thời điểm mà một ràng buộc được thiết lập. Để thấy rằng các ràng buộc khác nhau xảy ra vào những lúc khác nhau, hãy xét một câu lệnh rất quen thuộc:</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code>x = x + <span class="num">1</span>;</code></pre>
+      </div>
+      <p>Đằng sau câu lệnh ngắn này có nhiều ràng buộc, mỗi cái được cố định vào một thời điểm khác nhau: toán tử <code>+</code> có ý nghĩa gì với số nguyên, <code>x</code> có kiểu gì, khai báo nào của <code>x</code> đang được dùng, <code>x</code> được lưu ở đâu, và giá trị hiện tại của <code>x</code> là bao nhiêu.</p>
+    </div>
+
+    <div class="article-section" id="cac-thoi-diem">
+      <h2 class="section-heading">Các thời điểm ràng buộc tiêu biểu</h2>
+      <p>Quá trình từ lúc một ngôn ngữ được thiết kế cho đến lúc một chương trình cụ thể chạy trải qua nhiều giai đoạn. Một ràng buộc có thể được thiết lập ở bất kỳ giai đoạn nào trong số đó:</p>
+
+      <figure class="fig fig-wide">
+        <img src="bv_pic3_1.png" alt="Pipeline các giai đoạn: Thiết kế ngôn ngữ → Hiện thực ngôn ngữ → Lập trình → Biên dịch → Liên kết → Nạp → Thực thi">
+        <figcaption>Các giai đoạn từ thiết kế ngôn ngữ đến thực thi — ràng buộc có thể xảy ra ở bất kỳ giai đoạn nào.</figcaption>
+      </figure>
+
+      <p>Bảng dưới đây minh họa, với mỗi loại ràng buộc, thời điểm mà nó thường được cố định:</p>
+      <table class="data-table">
+        <thead><tr><th>Ràng buộc</th><th>Ví dụ</th><th>Thời điểm ràng buộc</th></tr></thead>
+        <tbody>
+          <tr><td>Ý nghĩa của <code>+</code> cho số nguyên</td><td><code>1 + 2</code></td><td>Thiết kế ngôn ngữ</td></tr>
+          <tr><td>Kích thước của <code>int</code></td><td><code>sizeof(int)</code></td><td>Hiện thực ngôn ngữ</td></tr>
+          <tr><td>Tên biến với khai báo</td><td><code>int x;</code></td><td>Biên dịch</td></tr>
+          <tr><td>Lời gọi hàm với thân hàm</td><td><code>f()</code></td><td>Biên dịch hoặc thực thi</td></tr>
+          <tr><td>Hàm ngoài với mã thư viện</td><td><code>printf()</code></td><td>Liên kết</td></tr>
+          <tr><td>Đối tượng chương trình với bộ nhớ</td><td>nạp file thực thi</td><td>Nạp</td></tr>
+          <tr><td>Đối tượng với vùng nhớ heap</td><td><code>new</code>, <code>malloc</code></td><td>Thực thi</td></tr>
+          <tr><td>Lời gọi phương thức với phương thức thật</td><td>điều phối động</td><td>Thực thi</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        Điều cần rút ra là: một số ràng buộc được cố định trước cả khi người lập trình viết một dòng mã nào, trong khi một số khác bị trì hoãn cho đến tận lúc chương trình đang chạy.
+      </div>
+    </div>
+
+    <div class="article-section" id="rang-buoc-som-muon">
+      <h2 class="section-heading">Ràng buộc sớm và ràng buộc muộn</h2>
+      <p>Dựa trên thời điểm ràng buộc so với lúc chương trình chạy, ta phân biệt hai khuynh hướng. <strong>Ràng buộc sớm</strong> (<em>early binding</em>) là khi ràng buộc được thiết lập trước thời điểm thực thi, còn <strong>ràng buộc muộn</strong> (<em>late binding</em>) là khi ràng buộc được thiết lập trong lúc thực thi.</p>
+      <p>Một ví dụ điển hình của ràng buộc sớm:</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> x = <span class="num">10</span>;
+x = x + <span class="num">1</span>;</code></pre>
+      </div>
+      <p>Trình biên dịch thường có thể xác định ngay khi biên dịch rằng <code>x</code> nào đang được tham chiếu, <code>x</code> có kiểu gì, và phép toán số học nào được dùng. Mọi thứ đã rõ trước khi chương trình chạy.</p>
+      <p>Ngược lại, ràng buộc muộn trì hoãn quyết định đến lúc chạy. Ví dụ trong Java:</p>
+      <div class="code-block">
+        <div class="code-label">Java</div>
+        <pre><code><span class="type">Animal</span> a = <span class="kw">new</span> <span class="type">Dog</span>();
+a.<span class="fn">speak</span>();</code></pre>
+      </div>
+      <p>Phương thức nào thật sự được gọi bởi <code>a.speak()</code> có thể phụ thuộc vào đối tượng thực tế tại thời điểm chạy, chứ không chỉ vào kiểu khai báo <code>Animal</code>.</p>
+      <table class="data-table">
+        <thead><tr><th>Ràng buộc sớm</th><th>Ràng buộc muộn</th></tr></thead>
+        <tbody>
+          <tr><td>Kiểm tra nhiều hơn lúc biên dịch</td><td>Linh hoạt hơn lúc chạy</td></tr>
+          <tr><td>Dễ tối ưu hóa</td><td>Hỗ trợ hành vi động</td></tr>
+          <tr><td>Thường nhanh hơn</td><td>Thường cần tra cứu lúc chạy</td></tr>
+          <tr><td>Ít linh hoạt hơn</td><td>Linh hoạt hơn</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        Cần tránh một hiểu lầm phổ biến: không nên nói rằng cả một ngôn ngữ là "hoàn toàn ràng buộc sớm" hay "hoàn toàn ràng buộc muộn". Hầu hết ngôn ngữ thực tế đều kết hợp cả hai, tùy theo từng loại ràng buộc.
+      </div>
+    </div>
+
+    <div class="article-section" id="rang-buoc-tinh-dong">
+      <h2 class="section-heading">Ràng buộc tĩnh và ràng buộc động</h2>
+      <p>Hai thuật ngữ liên quan chặt chẽ là ràng buộc tĩnh (<em>static binding</em>) và ràng buộc động (<em>dynamic binding</em>). Ràng buộc tĩnh là ràng buộc được xác định trước khi chương trình thực thi; ràng buộc động là ràng buộc được xác định trong lúc thực thi.</p>
+      <p>Ví dụ ràng buộc tĩnh:</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> x = <span class="num">10</span>;
+<span class="fn">printf</span>(<span class="str">"%d"</span>, x);</code></pre>
+      </div>
+      <p>Trình biên dịch xác định được khai báo nào của <code>x</code> đang được dùng, dựa trên cấu trúc của mã nguồn.</p>
+      <p>Ví dụ ràng buộc động:</p>
+      <div class="code-block">
+        <div class="code-label">Java</div>
+        <pre><code><span class="kw">class</span> <span class="type">Animal</span> {
+    <span class="type">void</span> <span class="fn">speak</span>() { <span class="cmt">/* ... */</span> }
+}
+
+<span class="kw">class</span> <span class="type">Dog</span> <span class="kw">extends</span> <span class="type">Animal</span> {
+    <span class="type">void</span> <span class="fn">speak</span>() { <span class="cmt">/* ... */</span> }
+}
+
+<span class="type">Animal</span> a = <span class="kw">new</span> <span class="type">Dog</span>();
+a.<span class="fn">speak</span>();</code></pre>
+      </div>
+      <p>Phương thức <code>speak()</code> thật sự được chọn vào lúc chạy, dựa trên kiểu thực của đối tượng mà <code>a</code> đang trỏ tới. Đây chính là điều phối động (<em>dynamic dispatch</em>), một trong những dạng ràng buộc động quen thuộc nhất và là nền tảng của đa hình trong lập trình hướng đối tượng.</p>
+    </div>
+
+    <div class="article-section" id="vi-sao-quan-trong">
+      <h2 class="section-heading">Vì sao thời điểm ràng buộc quan trọng</h2>
+      <p>Thời điểm ràng buộc không phải là một chi tiết hàn lâm; nó ảnh hưởng trực tiếp đến nhiều khía cạnh quan trọng của ngôn ngữ và chương trình.</p>
+      <table class="data-table">
+        <thead><tr><th>Khía cạnh</th><th>Ảnh hưởng</th></tr></thead>
+        <tbody>
+          <tr><td>Kiểm tra kiểu</td><td>Ràng buộc càng sớm → càng nhiều lỗi phát hiện trước khi chạy</td></tr>
+          <tr><td>Tối ưu hóa</td><td>Biết ràng buộc sớm → sinh mã hiệu quả hơn</td></tr>
+          <tr><td>Tính linh hoạt</td><td>Ràng buộc muộn → cho phép đa hình, reflection</td></tr>
+          <tr><td>Phân tích chương trình</td><td>Phân tích tĩnh dễ hơn khi ràng buộc biết trước</td></tr>
+          <tr><td>Chi phí lúc chạy</td><td>Ràng buộc muộn thường cần tra cứu hoặc điều phối lúc chạy</td></tr>
+        </tbody>
+      </table>
+      <p>Tựu trung, thời điểm ràng buộc là một sự đánh đổi giữa an toàn, hiệu năng và linh hoạt. Đây cũng là một sợi chỉ xuyên suốt nối chủ đề này với các phần sau của môn học: hệ thống kiểu, trình biên dịch, môi trường thực thi và phân tích chương trình đều phải đưa ra lựa chọn về việc ràng buộc cái gì sớm và cái gì muộn.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 4 ==================== -->
+    <div class="lesson-badge">Bài 4 / 6</div>
+    <h1 class="lesson-title" id="tam-vuc">Tầm vực và môi trường tham chiếu</h1>
+    <div class="lesson-meta">CO3005 · Tên, ràng buộc, tầm vực và thời gian sống</div>
+
+    <div class="article-section" id="tu-rang-buoc-den-tam-vuc">
+      <h2 class="section-heading">Từ ràng buộc đến tầm vực</h2>
+      <p>Khi một tên đã được ràng buộc với một thực thể, ta vẫn còn một câu hỏi chưa được trả lời: ràng buộc đó có hiệu lực ở đâu trong chương trình? Một ràng buộc không nhất thiết áp dụng cho toàn bộ chương trình.</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">void</span> <span class="fn">f</span>() {
+    <span class="type">int</span> x = <span class="num">10</span>;
+}
+
+<span class="type">void</span> <span class="fn">g</span>() {
+    x = <span class="num">20</span>;   <span class="cmt">// Câu lệnh này có hợp lệ không?</span>
+}</code></pre>
+      </div>
+      <p>Câu trả lời phụ thuộc vào tầm vực (<em>scope</em>) của <code>x</code>. Tầm vực của một ràng buộc là vùng của chương trình nơi ràng buộc đó còn hiệu lực. Trong ví dụ trên, nếu <code>x</code> chỉ có tầm vực trong thân hàm <code>f</code>, thì việc dùng <code>x</code> bên trong <code>g</code> là không hợp lệ.</p>
+      <div class="callout">
+        <strong>Cách phân biệt:</strong> ràng buộc cho ta biết một tên <em>nghĩa là gì</em>, còn tầm vực cho ta biết tên đó được <em>phép dùng ở đâu</em>.
+      </div>
+    </div>
+
+    <div class="article-section" id="khoi">
+      <h2 class="section-heading">Khối</h2>
+      <p>Cơ chế phổ biến nhất để tạo ra các vùng tầm vực cục bộ là khối (<em>block</em>). Một khối là một vùng văn bản của chương trình có thể chứa các khai báo.</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code>{
+    <span class="type">int</span> x = <span class="num">10</span>;
+    x = x + <span class="num">1</span>;
+}
+
+<span class="cmt">// Khai báo của x là cục bộ đối với khối này</span>
+x = <span class="num">20</span>;  <span class="cmt">// lỗi: x không nhìn thấy được ở đây</span></code></pre>
+      </div>
+      <p>Một điểm quan trọng cần nhấn mạnh là khối là một vùng văn bản, được xác định bởi cấu trúc viết của chương trình trong mã nguồn. Đặc điểm này là nền tảng cho tầm vực tĩnh, vốn dựa hoàn toàn vào cấu trúc văn bản chứ không dựa vào diễn tiến lúc chạy.</p>
+    </div>
+
+    <div class="article-section" id="cuc-bo-toan-cuc">
+      <h2 class="section-heading">Tầm vực cục bộ và toàn cục</h2>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> g = <span class="num">1</span>;      <span class="cmt">// biến toàn cục</span>
+
+<span class="type">void</span> <span class="fn">f</span>() {
+    <span class="type">int</span> x = <span class="num">2</span>;  <span class="cmt">// biến cục bộ</span>
+    x = x + g;
+}</code></pre>
+      </div>
+      <p>Bên trong <code>f</code>, cả <code>x</code> lẫn <code>g</code> đều nhìn thấy được: <code>x</code> vì nó được khai báo cục bộ ngay trong <code>f</code>, còn <code>g</code> vì nó là biến toàn cục. Ngược lại, ở ngoài <code>f</code>, chỉ có <code>g</code> nhìn thấy được, còn <code>x</code> thì không.</p>
+      <p>Một khai báo cục bộ (<em>local declaration</em>) chỉ nhìn thấy được trong vùng cục bộ của nó, trong khi một khai báo toàn cục (<em>global declaration</em>) có thể nhìn thấy được ở nhiều vùng.</p>
+    </div>
+
+    <div class="article-section" id="tam-vuc-tinh">
+      <h2 class="section-heading">Tầm vực tĩnh</h2>
+      <p>Tầm vực tĩnh (<em>static scope</em>), còn gọi là tầm vực từ vựng (<em>lexical scope</em>), nghĩa là một tham chiếu đến một tên được ràng buộc với một khai báo dựa trên cấu trúc văn bản của chương trình. Quy tắc cốt lõi là: <strong>một tên thường được ràng buộc với khai báo gần nhất bao quanh nó</strong>.</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> x = <span class="num">1</span>;
+
+<span class="type">void</span> <span class="fn">f</span>() {
+    <span class="type">int</span> x = <span class="num">2</span>;
+    <span class="fn">printf</span>(<span class="str">"%d"</span>, x);   <span class="cmt">// in ra: 2</span>
+}</code></pre>
+      </div>
+      <p>Trong <code>printf</code>, tên <code>x</code> được phân giải về khai báo cục bộ <code>int x = 2;</code>, vì đó là khai báo gần nhất bao quanh điểm sử dụng.</p>
+      <div class="callout">
+        Điểm mạnh của tầm vực tĩnh là ta có thể phân giải tên chỉ bằng cách đọc mã nguồn, không cần chạy thử chương trình. Chính vì vậy, tầm vực tĩnh được dùng trong hầu hết ngôn ngữ hiện đại.
+      </div>
+    </div>
+
+    <div class="article-section" id="quy-tac-long">
+      <h2 class="section-heading">Quy tắc tầm vực tĩnh cho khối lồng nhau</h2>
+      <p>Khi các khối lồng vào nhau, tầm vực tĩnh tuân theo một số quy tắc nhất quán:</p>
+      <table class="data-table">
+        <thead><tr><th>Quy tắc</th></tr></thead>
+        <tbody>
+          <tr><td>Một tham chiếu đến một tên được ràng buộc với khai báo nhìn thấy được cục bộ nhất</td></tr>
+          <tr><td>Một khai báo không nhìn thấy được ở ngoài khối chứa nó</td></tr>
+          <tr><td>Các khai báo trong khối bao ngoài thì nhìn thấy được trong các khối nằm trong</td></tr>
+          <tr><td>Một khai báo ở khối bên trong có thể che một khai báo cùng tên ở khối bên ngoài</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> x = <span class="num">1</span>;
+
+<span class="type">void</span> <span class="fn">f</span>() {
+    <span class="type">int</span> x = <span class="num">2</span>;
+    {
+        <span class="type">int</span> y = x + <span class="num">1</span>;  <span class="cmt">// x ở đây là x = 2</span>
+    }
+}</code></pre>
+      </div>
+      <p>Trong biểu thức <code>x + 1</code>, tên <code>x</code> được phân giải về khai báo <code>int x = 2;</code> cục bộ trong <code>f</code>, vì đó là khai báo gần nhất bao quanh khối trong cùng. Khai báo toàn cục <code>int x = 1;</code> bị che ở vị trí này.</p>
+
+      <figure class="fig">
+        <img src="bv_pic4_1.png" alt="Sơ đồ khối lồng nhau: khối toàn cục int x=1 > hàm f int x=2 > khối trong int y=x+1">
+        <figcaption>Các khai báo lồng theo cấu trúc lồng nhau của khối — khai báo gần nhất "thắng".</figcaption>
+      </figure>
+    </div>
+
+    <div class="article-section" id="che-ten">
+      <h2 class="section-heading">Che tên</h2>
+      <p>Trường hợp một khai báo ở khối trong che một khai báo cùng tên ở khối ngoài được gọi riêng là che tên (<em>name hiding</em>).</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> x = <span class="num">1</span>;  <span class="cmt">// global x = 1</span>
+
+<span class="type">void</span> <span class="fn">f</span>() {
+    <span class="type">int</span> x = <span class="num">2</span>;  <span class="cmt">// local  x = 2</span>
+    <span class="fn">printf</span>(<span class="str">"%d"</span>, x);  <span class="cmt">// in ra: 2</span>
+}</code></pre>
+      </div>
+      <p>Bên trong <code>f</code>, khai báo cục bộ <code>x</code> che khai báo toàn cục <code>x</code>. Vì vậy lời gọi <code>printf</code> dùng <code>x</code> cục bộ và in ra <code>2</code>. Trong nhiều ngôn ngữ, che tên không phải là lỗi, nhưng nó có thể khiến chương trình khó đọc hơn.</p>
+      <div class="callout">
+        Việc tra cứu trong bảng ký hiệu luôn bắt đầu từ phạm vi trong cùng rồi mới mở rộng ra ngoài, nên khai báo gần nhất "thắng".
+      </div>
+    </div>
+
+    <div class="article-section" id="tam-vuc-dong">
+      <h2 class="section-heading">Tầm vực động</h2>
+      <p>Tầm vực tĩnh phân giải tên dựa trên cấu trúc văn bản. Một mô hình khác là tầm vực động (<em>dynamic scope</em>), trong đó một tham chiếu đến một tên được ràng buộc với khai báo đang hoạt động gần nhất trong chuỗi lời gọi tại thời điểm chạy.</p>
+      <div class="code-block">
+        <div class="code-label">Mã giả (dynamic scope)</div>
+        <pre><code><span class="kw">var</span> x = <span class="num">1</span>
+
+<span class="kw">function</span> <span class="fn">f</span>() {
+    <span class="fn">print</span>(x)
+}
+
+<span class="kw">function</span> <span class="fn">g</span>() {
+    <span class="kw">var</span> x = <span class="num">2</span>
+    <span class="fn">f</span>()
+}
+
+<span class="fn">g</span>()   <span class="cmt">// x trong f tham chiếu tới x trong g → in ra: 2</span></code></pre>
+      </div>
+      <p>Dưới tầm vực động, <code>x</code> trong <code>f</code> tham chiếu tới <code>x</code> trong <code>g</code>, bởi vì <code>g</code> là lời gọi đang hoạt động gần nhất có một khai báo của <code>x</code>. Nói cách khác, ý nghĩa của một tên có thể phụ thuộc vào việc hàm được gọi từ đâu.</p>
+      <p>Tầm vực động ngày nay không phổ biến trong các ngôn ngữ đa dụng, nhưng nó quan trọng cả về mặt lịch sử lẫn khái niệm.</p>
+    </div>
+
+    <div class="article-section" id="so-sanh-tinh-dong">
+      <h2 class="section-heading">So sánh tầm vực tĩnh và tầm vực động</h2>
+      <p>Điều thú vị là cùng một chương trình có thể cho ra những ràng buộc tên khác nhau dưới hai mô hình tầm vực.</p>
+      <p>Với đoạn mã giả ở trên: dưới tầm vực tĩnh, <code>x</code> trong <code>f</code> được phân giải tại nơi <code>f</code> được định nghĩa → in ra <strong>1</strong>. Dưới tầm vực động, <code>x</code> trong <code>f</code> được phân giải bằng chuỗi lời gọi; vì <code>g</code> đang gọi <code>f</code> và <code>g</code> có khai báo <code>x = 2</code> → in ra <strong>2</strong>.</p>
+
+      <figure class="fig">
+        <img src="bv_pic4_2.png" alt="So sánh tầm vực tĩnh và tầm vực động: f định nghĩa ở phạm vi toàn cục dùng x=1 (tĩnh) vs g() đang gọi f() dùng x=2 (động)">
+        <figcaption>Tầm vực tĩnh hỏi "hàm được định nghĩa ở đâu?"; tầm vực động hỏi "ai đã gọi hàm này?".</figcaption>
+      </figure>
+
+      <table class="data-table">
+        <thead><tr><th>Tầm vực tĩnh</th><th>Tầm vực động</th></tr></thead>
+        <tbody>
+          <tr><td>Dựa trên văn bản chương trình</td><td>Dựa trên chuỗi lời gọi lúc chạy</td></tr>
+          <tr><td>Dễ đọc và dễ phân tích</td><td>Phụ thuộc ngữ cảnh nhiều hơn</td></tr>
+          <tr><td>Phổ biến trong ngôn ngữ hiện đại</td><td>Ít phổ biến</td></tr>
+          <tr><td>Trình biên dịch phân giải được nhiều tên</td><td>Môi trường thực thi phải dò các lời gọi đang hoạt động</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="article-section" id="moi-truong-tham-chieu">
+      <h2 class="section-heading">Môi trường tham chiếu</h2>
+      <p>Từ khái niệm tầm vực, ta đi đến một khái niệm gói gọn toàn bộ những gì nhìn thấy được tại một điểm. <strong>Môi trường tham chiếu</strong> (<em>referencing environment</em>) của một câu lệnh là tập hợp tất cả các tên nhìn thấy được đối với câu lệnh đó.</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> a = <span class="num">1</span>;
+
+<span class="type">void</span> <span class="fn">f</span>() {
+    <span class="type">int</span> b = <span class="num">2</span>;
+
+    {
+        <span class="type">int</span> c = <span class="num">3</span>;
+        <span class="cmt">// điểm P — môi trường tham chiếu: a, f, b, c</span>
+    }
+}</code></pre>
+      </div>
+      <p>Tại điểm P, môi trường tham chiếu chứa: <code>a, f, b, c</code> — vì tất cả những tên này đều nhìn thấy được ở điểm đó.</p>
+      <table class="data-table">
+        <thead><tr><th>Mô hình tầm vực</th><th>Xây dựng môi trường tham chiếu như thế nào</th></tr></thead>
+        <tbody>
+          <tr><td>Tầm vực tĩnh</td><td>Tên cục bộ + tên nhìn thấy được trong các phạm vi từ vựng bao ngoài</td></tr>
+          <tr><td>Tầm vực động</td><td>Tên cục bộ + tên nhìn thấy được trong các chương trình con đang hoạt động trên chuỗi lời gọi</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        Tầm vực tĩnh dựng môi trường tham chiếu từ <strong>văn bản chương trình</strong>, còn tầm vực động dựng nó từ <strong>lịch sử thực thi lúc chạy</strong>.
+      </div>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 5 ==================== -->
+    <div class="lesson-badge">Bài 5 / 6</div>
+    <h1 class="lesson-title" id="thoi-gian-song">Thời gian sống, cấp phát và lỗi bộ nhớ</h1>
+    <div class="lesson-meta">CO3005 · Tên, ràng buộc, tầm vực và thời gian sống</div>
+
+    <div class="article-section" id="tam-vuc-vs-tgs">
+      <h2 class="section-heading">Tầm vực và thời gian sống</h2>
+      <p>Tầm vực và thời gian sống có liên quan với nhau, nhưng đây là hai khái niệm khác nhau và rất dễ bị nhầm lẫn. Tầm vực trả lời câu hỏi <em>ở đâu</em> trong văn bản chương trình một tên có thể được dùng, còn thời gian sống (<em>lifetime</em>) trả lời câu hỏi <em>trong khoảng nào</em> của quá trình thực thi một đối tượng tồn tại.</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">void</span> <span class="fn">f</span>() {
+    <span class="type">int</span> x = <span class="num">10</span>;
+}</code></pre>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Khái niệm</th><th>Ý nghĩa với x</th></tr></thead>
+        <tbody>
+          <tr><td>Tầm vực</td><td>thân của hàm f (khái niệm về văn bản)</td></tr>
+          <tr><td>Thời gian sống</td><td>từ khi f được gọi đến khi f kết thúc (khái niệm về lúc chạy)</td></tr>
+        </tbody>
+      </table>
+      <p>Cách diễn đạt cô đọng: <strong>tầm vực là một khái niệm về văn bản</strong>, còn <strong>thời gian sống là một khái niệm về lúc chạy</strong>. Như ta sẽ thấy, có những trường hợp tầm vực và thời gian sống lệch nhau hẳn.</p>
+
+
+    </div>
+
+    <div class="article-section" id="tgs-doi-tuong">
+      <h2 class="section-heading">Thời gian sống của đối tượng</h2>
+      <p>Trong ngữ cảnh này, từ đối tượng (<em>object</em>) được hiểu rộng hơn nghĩa trong lập trình hướng đối tượng. Ở đây, đối tượng là bất kỳ thực thể nào của chương trình có thể tồn tại trong lúc thực thi: một biến, một mảng, một bản ghi, một lần kích hoạt hàm, một giá trị cấp phát trên heap, hay một thể hiện của một lớp.</p>
+      <p><strong>Thời gian sống của đối tượng</strong> (<em>object lifetime</em>) là khoảng thời gian giữa lúc đối tượng được tạo ra và lúc nó bị hủy.</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">void</span> <span class="fn">f</span>() {
+    <span class="type">int</span> x = <span class="num">10</span>;
+    <span class="cmt">// x được tạo khi f được gọi, bị hủy khi f kết thúc</span>
+}</code></pre>
+      </div>
+      <p>Đối tượng ứng với <code>x</code> được tạo ra khi <code>f</code> được gọi và bị hủy khi <code>f</code> kết thúc. Trong trường hợp đơn giản này, thời gian sống của đối tượng trùng khít với khoảng thời gian hàm chạy. Nhưng như mục sau cho thấy, sự trùng khít này không phải lúc nào cũng đúng.</p>
+
+
+    </div>
+
+    <div class="article-section" id="tgs-rang-buoc">
+      <h2 class="section-heading">Thời gian sống của ràng buộc</h2>
+      <p>Không chỉ đối tượng mới có thời gian sống; bản thân ràng buộc cũng có. <strong>Thời gian sống của ràng buộc</strong> (<em>binding lifetime</em>) là khoảng thời gian trong đó một ràng buộc tồn tại.</p>
+      <p>Với biến cục bộ thông thường, thời gian sống của ràng buộc và thời gian sống của đối tượng thường trùng nhau. Tuy nhiên, khi có cấp phát trên heap, một đối tượng có thể sống lâu hơn chính ràng buộc đã tạo ra nó:</p>
+      <div class="code-block">
+        <div class="code-label">C++</div>
+        <pre><code><span class="type">int</span>* <span class="fn">make</span>() {
+    <span class="type">int</span>* p = <span class="kw">new</span> <span class="type">int</span>(<span class="num">42</span>);
+    <span class="kw">return</span> p;   <span class="cmt">// ràng buộc p kết thúc</span>
+}
+
+<span class="type">int</span>* q = <span class="fn">make</span>();
+<span class="cmt">// đối tượng (giá trị 42) vẫn còn sống, giờ truy cập qua q</span>
+<span class="kw">delete</span> q;       <span class="cmt">// đối tượng kết thúc tại đây</span></code></pre>
+      </div>
+      <p>Đối tượng <code>new int(42)</code> được tạo trong <code>make</code> và chỉ thật sự bị hủy tại <code>delete q</code>. Ràng buộc <code>p</code> kết thúc ngay khi <code>make</code> trả về, trong khi ràng buộc <code>q</code> mới bắt đầu sau đó. Thời gian sống của đối tượng trải dài qua cả hai ràng buộc.</p>
+
+      <figure class="fig fig-wide">
+        <img src="bv_pic5_3.png" alt="Timeline: đối tượng (42) sống từ new int(42) đến delete q, ràng buộc p kết thúc khi make trả về, ràng buộc q bắt đầu sau đó">
+        <figcaption>Thời gian sống của đối tượng trải dài qua cả hai ràng buộc — <code>p</code> và <code>q</code> nối tiếp nhau.</figcaption>
+      </figure>
+    </div>
+
+    <div class="article-section" id="cap-phat">
+      <h2 class="section-heading">Cấp phát đối tượng</h2>
+      <p>Cách một đối tượng được cấp phát (<em>allocation</em>) quyết định phần lớn thời gian sống của nó. Có bốn nhóm cấp phát thường gặp:</p>
+      <table class="data-table">
+        <thead><tr><th>Loại cấp phát</th><th>Ví dụ</th><th>Thời gian sống tiêu biểu</th></tr></thead>
+        <tbody>
+          <tr><td>Cấp phát tĩnh</td><td>biến toàn cục</td><td>toàn bộ quá trình thực thi</td></tr>
+          <tr><td>Cấp phát động trên ngăn xếp</td><td>biến cục bộ</td><td>trong suốt lời gọi hàm</td></tr>
+          <tr><td>Cấp phát động trên heap tường minh</td><td><code>malloc</code>, <code>new</code></td><td>đến khi được giải phóng tường minh</td></tr>
+          <tr><td>Cấp phát động trên heap ngầm</td><td>đối tượng Python/JavaScript</td><td>do môi trường thực thi quản lý</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> g;  <span class="cmt">// cấp phát tĩnh</span>
+
+<span class="type">void</span> <span class="fn">f</span>() {
+    <span class="type">int</span> x;  <span class="cmt">// cấp phát động trên ngăn xếp</span>
+
+    <span class="type">int</span> *p = <span class="fn">malloc</span>(<span class="kw">sizeof</span>(<span class="type">int</span>));
+    <span class="cmt">// cấp phát động trên heap tường minh</span>
+}</code></pre>
+      </div>
+      <p>Bộ nhớ của một chương trình thường được tổ chức thành nhiều vùng tương ứng với các loại cấp phát này: vùng tĩnh, ngăn xếp và heap. Mỗi vùng có cơ chế quản lý và đặc tính thời gian sống riêng.</p>
+
+      <figure class="fig fig-narrow">
+        <img src="bv_pic5_2.png" alt="Sơ đồ vùng nhớ: Vùng tĩnh (biến toàn cục), Heap (cấp phát động), Ngăn xếp (khung lời gọi)">
+        <figcaption>Tổ chức vùng nhớ: vùng tĩnh, heap và ngăn xếp — mỗi vùng có cơ chế quản lý và thời gian sống riêng.</figcaption>
+      </figure>
+    </div>
+
+    <div class="article-section" id="cap-phat-tinh">
+      <h2 class="section-heading">Cấp phát tĩnh</h2>
+      <p>Đối tượng được cấp phát tĩnh (<em>static allocation</em>) tồn tại trong suốt toàn bộ quá trình thực thi của chương trình.</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> counter = <span class="num">0</span>;
+
+<span class="type">void</span> <span class="fn">increment</span>() {
+    counter++;
+}</code></pre>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Đặc tính</th><th>Giá trị</th></tr></thead>
+        <tbody>
+          <tr><td>Thời gian sống</td><td>toàn bộ quá trình thực thi</td></tr>
+          <tr><td>Thời điểm cấp phát</td><td>trước lúc chạy hoặc lúc nạp</td></tr>
+          <tr><td>Giải phóng</td><td>khi chương trình kết thúc</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        Một biến cục bộ tĩnh (chẳng hạn <code>static</code> trong C) có thể có <strong>tầm vực cục bộ</strong> nhưng <strong>thời gian sống kéo dài bằng cả chương trình</strong>. Đây là một ví dụ minh họa rõ nhất sự độc lập giữa tầm vực và thời gian sống.
+      </div>
+    </div>
+
+    <div class="article-section" id="ngan-xep">
+      <h2 class="section-heading">Cấp phát động trên ngăn xếp</h2>
+      <p>Đối tượng được cấp phát động trên ngăn xếp (<em>stack-dynamic allocation</em>) được tạo ra khi một khối hoặc một hàm được vào, và bị hủy khi khối hoặc hàm đó kết thúc.</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">void</span> <span class="fn">f</span>() {
+    <span class="type">int</span> x = <span class="num">10</span>;
+    <span class="type">int</span> y = <span class="num">20</span>;
+}</code></pre>
+      </div>
+      <p>Khi <code>f</code> được gọi, <code>x</code> và <code>y</code> được cấp phát trên ngăn xếp. Khi <code>f</code> kết thúc, <code>x</code> và <code>y</code> bị hủy.</p>
+      <table class="data-table">
+        <thead><tr><th>Đặc tính</th><th>Giải thích</th></tr></thead>
+        <tbody>
+          <tr><td>Rất nhanh</td><td>Chỉ là dịch chuyển đỉnh ngăn xếp</td></tr>
+          <tr><td>Hỗ trợ đệ quy</td><td>Mỗi lần gọi có một khung lời gọi riêng</td></tr>
+          <tr><td>Thời gian sống gắn với lời gọi hàm</td><td>Đối tượng biến mất khi hàm trả về</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        Đây là lý do vì sao trả về địa chỉ của một biến cục bộ là không an toàn: khi hàm kết thúc, khung lời gọi chứa biến đó đã bị thu hồi.
+      </div>
+
+      <figure class="fig fig-narrow">
+        <img src="bv_pic5_1.png" alt="Khung ngăn xếp: Khung main chứa Khung f với x=10 và y=20">
+        <figcaption>Mỗi lần gọi hàm tạo một khung riêng trên ngăn xếp — khi hàm trả về, khung bị thu hồi.</figcaption>
+      </figure>
+    </div>
+
+    <div class="article-section" id="heap-tuong-minh">
+      <h2 class="section-heading">Cấp phát động trên heap tường minh</h2>
+      <p>Trong cấp phát động trên heap tường minh (<em>explicit heap-dynamic allocation</em>), đối tượng trên heap được tạo ra và hủy đi dưới sự điều khiển trực tiếp của người lập trình.</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> *p = <span class="fn">malloc</span>(<span class="kw">sizeof</span>(<span class="type">int</span>));
+
+*p = <span class="num">10</span>;
+
+<span class="fn">free</span>(p);</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">C++</div>
+        <pre><code><span class="type">int</span> *p = <span class="kw">new</span> <span class="type">int</span>;
+<span class="kw">delete</span> p;</code></pre>
+      </div>
+      <p>Cách cấp phát này có thời gian sống linh hoạt: đối tượng có thể sống lâu hơn hàm đã tạo ra nó. Nhưng đổi lại, người lập trình phải tự quản lý bộ nhớ một cách cẩn thận — đây là một đánh đổi rõ rệt giữa sức mạnh và trách nhiệm.</p>
+    </div>
+
+    <div class="article-section" id="heap-ngam">
+      <h2 class="section-heading">Cấp phát động trên heap ngầm</h2>
+      <p>Một số ngôn ngữ cấp phát đối tượng trên heap một cách tự động và để cho môi trường thực thi quản lý chúng. Đây là cấp phát động trên heap ngầm (<em>implicit heap-dynamic allocation</em>).</p>
+      <div class="code-block">
+        <div class="code-label">Python</div>
+        <pre><code>x = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+y = x  <span class="cmt"># x và y cùng trỏ tới một đối tượng (bí danh)</span></code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">JavaScript</div>
+        <pre><code><span class="kw">let</span> obj = { name: <span class="str">"An"</span> };</code></pre>
+      </div>
+      <p>Đối tượng được cấp phát động và do môi trường thực thi quản lý. Cách cấp phát này linh hoạt và tiện lợi, giảm gánh nặng quản lý bộ nhớ thủ công, thường dựa trên bộ thu gom rác (<em>garbage collection</em>) để tự động thu hồi các đối tượng không còn được tham chiếu.</p>
+      <div class="callout">
+        Python và JavaScript vẫn cấp phát đối tượng như mọi ngôn ngữ khác; khác biệt chỉ nằm ở chỗ môi trường thực thi đảm nhận nhiều chi tiết một cách tự động.
+      </div>
+
+
+    </div>
+
+    <div class="article-section" id="tham-chieu-treo">
+      <h2 class="section-heading">Tham chiếu treo</h2>
+      <p>Khi đối tượng và ràng buộc lệch pha, một trong hai loại lỗi bộ nhớ kinh điển có thể xảy ra. Loại thứ nhất là tham chiếu treo (<em>dangling reference</em>): một tên hoặc con trỏ tham chiếu tới một đối tượng đã không còn tồn tại.</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> *p = <span class="fn">malloc</span>(<span class="kw">sizeof</span>(<span class="type">int</span>));
+<span class="type">int</span> *q = p;
+
+<span class="fn">free</span>(p);
+
+*q = <span class="num">10</span>;   <span class="cmt">// tham chiếu treo!</span></code></pre>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Bước</th><th>Diễn biến</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><code>p</code> và <code>q</code> cùng trỏ tới một đối tượng trên heap</td></tr>
+          <tr><td>2</td><td><code>free(p)</code> hủy đối tượng đó</td></tr>
+          <tr><td>3</td><td><code>q</code> vẫn giữ địa chỉ cũ</td></tr>
+          <tr><td>4</td><td>Việc dùng <code>q</code> là không an toàn → hành vi không xác định</td></tr>
+        </tbody>
+      </table>
+      <figure class="fig fig-wide">
+        <img src="bv_pic5_4.png" alt="Trước và sau free(p): p và q trỏ tới đối tượng, sau khi free(p) vùng nhớ bị hủy nhưng q vẫn giữ địa chỉ cũ">
+        <figcaption>Sau <code>free(p)</code>, đối tượng bị hủy nhưng <code>q</code> vẫn giữ địa chỉ cũ — tham chiếu treo.</figcaption>
+      </figure>
+
+      <div class="callout">
+        <strong>free(p)</strong> giải phóng đối tượng, chứ không xóa mọi bí danh đang trỏ tới đối tượng đó. Tham chiếu treo là một tham chiếu tới một đối tượng đã chết.
+      </div>
+    </div>
+
+    <div class="article-section" id="ro-ri">
+      <h2 class="section-heading">Rò rỉ bộ nhớ</h2>
+      <p>Loại lỗi đối nghịch với tham chiếu treo là rò rỉ bộ nhớ (<em>memory leak</em>): một đối tượng vẫn còn tồn tại nhưng không còn cách nào truy cập tới nó.</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> *p = <span class="fn">malloc</span>(<span class="kw">sizeof</span>(<span class="type">int</span>));
+
+p = <span class="kw">NULL</span>;   <span class="cmt">// rò rỉ bộ nhớ: đối tượng trên heap không thể truy cập</span></code></pre>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Bước</th><th>Diễn biến</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Một đối tượng trên heap đã được cấp phát</td></tr>
+          <tr><td>2</td><td><code>p</code> là tham chiếu duy nhất tới nó</td></tr>
+          <tr><td>3</td><td><code>p</code> bị đổi thành <code>NULL</code></td></tr>
+          <tr><td>4</td><td>Chương trình không còn cách nào truy cập đối tượng trên heap</td></tr>
+        </tbody>
+      </table>
+      <p>Hậu quả của rò rỉ bộ nhớ là mức sử dụng bộ nhớ tăng dần, hiệu năng suy giảm, và chương trình có thể hỏng sau một thời gian chạy dài.</p>
+      <table class="data-table">
+        <thead><tr><th>Vấn đề</th><th>Trạng thái đối tượng</th><th>Trạng thái tham chiếu</th><th>Ví dụ</th></tr></thead>
+        <tbody>
+          <tr><td>Tham chiếu treo</td><td>đã bị hủy</td><td>vẫn còn</td><td>dùng <code>q</code> sau <code>free(p)</code></td></tr>
+          <tr><td>Rò rỉ bộ nhớ</td><td>vẫn còn</td><td>đã mất</td><td>gán <code>p = NULL</code> sau <code>malloc</code></td></tr>
+        </tbody>
+      </table>
+      <figure class="fig fig-wide">
+        <img src="bv_pic5_5.png" alt="Trước: p trỏ tới đối tượng trên heap. Sau p=NULL: p trỏ NULL, đối tượng trên heap vẫn còn nhưng không thể với tới">
+        <figcaption>Sau khi gán <code>p = NULL</code>, đối tượng trên heap vẫn còn nhưng không có tham chiếu nào để truy cập — rò rỉ bộ nhớ.</figcaption>
+      </figure>
+
+      <div class="callout">
+        <strong>Tham chiếu treo</strong>: tham chiếu còn, đối tượng mất.<br>
+        <strong>Rò rỉ bộ nhớ</strong>: đối tượng còn, tham chiếu mất.
+      </div>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 6: TỔNG KẾT ==================== -->
+    <div class="lesson-badge">Bài 6 / 6</div>
+    <h1 class="lesson-title" id="tong-ket">Tổng kết chương</h1>
+    <div class="lesson-meta">CO3005 · Tên, ràng buộc, tầm vực và thời gian sống</div>
+
+    <div class="article-section">
+      <p>Chương này đã lần theo một chuỗi khái niệm gắn bó chặt chẽ, tất cả đều bắt nguồn từ một câu hỏi đơn giản: khi chương trình nhắc đến một tên, tên đó nghĩa là gì?</p>
+      <p>Một tên là biểu diễn tượng trưng cho một thực thể của chương trình, và không chỉ giới hạn ở biến mà còn bao gồm hằng số, kiểu, hàm, lớp, module và toán tử. Một ràng buộc nối một tên với một thực thể, và chính ràng buộc đem lại ý nghĩa cho tên. Thời điểm ràng buộc cho biết ràng buộc được thiết lập khi nào, từ lúc thiết kế ngôn ngữ cho đến lúc chương trình chạy; ràng buộc sớm thiên về an toàn và hiệu năng, còn ràng buộc muộn thiên về linh hoạt.</p>
+      <p>Tầm vực cho biết một ràng buộc nhìn thấy được ở đâu. Trong tầm vực tĩnh, tên được phân giải theo cấu trúc văn bản của chương trình và quy tắc khai báo gần nhất bao quanh; trong tầm vực động, tên được phân giải theo chuỗi lời gọi đang hoạt động lúc chạy. Môi trường tham chiếu gói gọn tập hợp các tên nhìn thấy được tại một điểm, và cách dựng nên môi trường này khác nhau giữa hai mô hình tầm vực.</p>
+      <p>Cuối cùng, thời gian sống cho biết một thực thể tồn tại trong bao lâu khi chương trình chạy, còn cách cấp phát quyết định phần lớn thời gian sống đó. Ta đã phân biệt cấp phát tĩnh, cấp phát động trên ngăn xếp, cấp phát động trên heap tường minh và ngầm, đồng thời thấy rằng khi đối tượng và ràng buộc lệch pha, hai lỗi đối nghịch có thể nảy sinh là tham chiếu treo và rò rỉ bộ nhớ.</p>
+      <p>Những khái niệm này là nền tảng cho nhiều chủ đề về sau. Bảng ký hiệu, kiểm tra kiểu, phân tích tĩnh, bản ghi kích hoạt, bao đóng, bộ thu gom rác và điều phối động đều dựa trên cách một ngôn ngữ trả lời cho các câu hỏi về tên, ràng buộc, tầm vực và thời gian sống.</p>
+    </div>
+
+    <!-- NAV FOOTER -->
+    <div class="nav-footer">
+      <span>Bài 1–6 / 6 · CO3005</span>
+      <div style="display:flex; gap:10px;">
+        <a class="nav-btn secondary" href="CO3005.html">← Về trang chủ</a>
+        <span class="nav-btn">Bài tiếp theo →</span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('[id]');
+  const tocItems = document.querySelectorAll('.toc-item');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocItems.forEach(item => {
+          item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
