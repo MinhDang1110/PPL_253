@@ -1,0 +1,809 @@
+Bảng điều khiển
+Học tập
+ĐĐ
+
+Đặng Đình Minh Hoàng
+
+hoang.dangdinhminh@hcmut.edu.vn
+
+Đăng xuất
+
+© DuyLMS
+
+Học tập · Lớp học của tôi
+Nguyên lý Ngôn ngữ Lập trình (CO3005)_Trần Ngọc Bảo Duy (DT_HK253) [DT01,DT02]
+Phụ lục
+OOP trong Python
+Mở đầu
+Mở đầu
+Quay lại lớp học
+Đã hoàn thành
+Bạn đã hoàn thành tài liệu này.
+
+Python là một ngôn ngữ hỗ trợ lập trình hướng đối tượng rất linh hoạt. Mọi giá trị trong Python đều là đối tượng (object): số nguyên, chuỗi, danh sách, hàm, lớp và cả module đều là đối tượng. Vì vậy, khi học OOP trong Python, ta không chỉ học cách viết class, mà còn cần hiểu cách Python biểu diễn đối tượng, cách phương thức nhận đối tượng hiện hành qua self, cách Python xử lý đóng gói bằng quy ước, cách kế thừa hoạt động, cách thứ tự phân giải phương thức (Method Resolution Order, MRO) được tính, và vì sao Python thường gắn với kiểu vịt (duck typing).
+
+Tài liệu trước
+1. Mở đầu
+Tài liệu sau
+Tài liệu 1 / 7
+Đã hoàn thành
+
+Mẹo: ← → chuyển tài liệu · Nhấn hình để phóng to
+Bảng điều khiển
+Học tập
+ĐĐ
+
+Đặng Đình Minh Hoàng
+
+hoang.dangdinhminh@hcmut.edu.vn
+
+Đăng xuất
+
+© DuyLMS
+
+Học tập · Lớp học của tôi
+Nguyên lý Ngôn ngữ Lập trình (CO3005)_Trần Ngọc Bảo Duy (DT_HK253) [DT01,DT02]
+Phụ lục
+OOP trong Python
+Lớp và đối tượng trong Python
+Lớp và đối tượng trong Python
+Quay lại lớp học
+Hoàn thành
+
+Trong Python, lớp (class) là khuôn mẫu mô tả cấu trúc và hành vi chung của các đối tượng. Đối tượng (object) là một thực thể cụ thể được tạo ra từ lớp tại thời điểm chạy. Ví dụ:
+
+class Employee:
+    emp_count = 0
+    def __init__(self, name, salary):
+        self.name = name
+        self.salary = salary
+        Employee.emp_count += 1
+Tạo hai đối tượng:
+e1 = Employee("Nam", 30)
+e2 = Employee("Lan", 35)
+Trong đoạn mã trên, Employee là lớp, còn e1 và e2 là hai đối tượng khác nhau. Mỗi đối tượng có định danh (identity) riêng và trạng thái (state) riêng.
+print(e1.name, e1.salary)
+print(e2.name, e2.salary)
+print(e1 is e2)
+Kết quả:
+Nam 30
+Lan 35
+False
+Điểm quan trọng là hai đối tượng có thể có cùng dữ liệu nhưng vẫn là hai thực thể khác nhau.
+a = Employee("An", 40)
+b = Employee("An", 40)
+print(a.name == b.name)
+print(a.salary == b.salary)
+print(a is b)
+Kết quả:
+True
+True
+False
+Hai đối tượng a và b có cùng trạng thái nhưng không có cùng định danh. Điều này phản ánh một nguyên lý quan trọng của OOP: định danh của đối tượng độc lập với trạng thái của đối tượng. Trong Python, thuộc tính có thể nằm ở hai mức: thuộc tính đối tượng (instance attribute) và thuộc tính lớp (class attribute).
+class Employee:
+    emp_count = 0
+    def __init__(self, name):
+        self.name = name
+        Employee.emp_count += 1
+Ở đây, name là thuộc tính đối tượng, vì mỗi nhân viên có tên riêng. emp_count là thuộc tính lớp, vì nó được chia sẻ ở mức lớp Employee.
+e1 = Employee("Nam")
+e2 = Employee("Lan")
+print(e1.name)
+print(e2.name)
+print(Employee.emp_count)
+Kết quả:
+Nam
+Lan
+2
+Cần cẩn thận khi dùng thuộc tính lớp với dữ liệu có thể thay đổi, chẳng hạn danh sách.
+class Team:
+    members = []
+    def add(self, name): self.members.append(name)
+Tạo hai nhóm:
+t1 = Team()
+t2 = Team()
+t1.add("An")
+t2.add("Binh")
+print(t1.members)
+print(t2.members)
+Kết quả:
+['An', 'Binh']
+['An', 'Binh']
+Lý do là members là thuộc tính lớp, được chia sẻ bởi mọi đối tượng Team. Nếu muốn mỗi đối tượng có danh sách riêng, phải tạo danh sách trong __init__.
+class Team:
+    def __init__(self): self.members = []
+    def add(self, name): self.members.append(name)
+Khi đó:
+t1 = Team()
+t2 = Team()
+t1.add("An")
+t2.add("Binh")
+print(t1.members)
+print(t2.members)
+Kết quả:
+['An']
+['Binh']
+Ví dụ này cho thấy sự khác nhau quan trọng giữa trạng thái dùng chung ở mức lớp và trạng thái riêng của từng đối tượng.
+
+Tài liệu trước
+2. Lớp và đối tượng trong Python
+Tài liệu sau
+Tài liệu 2 / 7
+Hoàn thành
+
+Mẹo: ← → chuyển tài liệu · Nhấn hình để phóng to
+Bảng điều khiển
+Học tập
+ĐĐ
+
+Đặng Đình Minh Hoàng
+
+hoang.dangdinhminh@hcmut.edu.vn
+
+Đăng xuất
+
+© DuyLMS
+
+Học tập · Lớp học của tôi
+Nguyên lý Ngôn ngữ Lập trình (CO3005)_Trần Ngọc Bảo Duy (DT_HK253) [DT01,DT02]
+Phụ lục
+OOP trong Python
+Phương thức và self trong Python
+Phương thức và self trong Python
+Quay lại lớp học
+Hoàn thành
+
+Trong Python, phương thức (method) là hàm được định nghĩa bên trong lớp và thường thao tác trên đối tượng hiện hành. Tham số đầu tiên của phương thức thường được đặt tên là self.
+
+class Employee:
+    def __init__(self, name, salary):
+        self.name = name
+        self.salary = salary
+    def display(self):
+        print(self.name, self.salary)
+Tạo và gọi phương thức:
+e = Employee("Nam", 30)
+e.display()
+Kết quả:
+Nam 30
+Lời gọi:
+e.display()
+về bản chất tương đương với:
+Employee.display(e)
+Nói cách khác, đối tượng e được truyền vào tham số đầu tiên self. Python làm rõ đối tượng nhận lời gọi bằng self, trong khi nhiều ngôn ngữ khác dùng từ khóa ẩn như this. Ví dụ sau giúp thấy rõ hơn:
+class Counter:
+    def __init__(self): self.value = 0
+    def inc(self): self.value += 1
+c1 = Counter()
+c2 = Counter()
+c1.inc()
+c1.inc()
+c2.inc()
+print(c1.value)
+print(c2.value)
+Kết quả:
+2
+1
+Mỗi lần gọi c1.inc(), self là c1. Khi gọi c2.inc(), self là c2. Vì vậy, hai đối tượng có trạng thái riêng. Nếu quên khai báo self, phương thức sẽ lỗi khi được gọi qua đối tượng.
+class Bad:
+    def show():
+        print("hello")
+b = Bad()
+b.show()
+Lỗi xảy ra vì Python tự truyền đối tượng b vào phương thức, nhưng show không khai báo tham số để nhận đối tượng đó. Trong Python, ngoài phương thức đối tượng thông thường, còn có phương thức lớp (class method) và phương thức tĩnh (static method). Phương thức lớp nhận tham số đầu tiên là cls, đại diện cho lớp.
+class Employee:
+    emp_count = 0
+    def __init__(self, name):
+        self.name = name
+        Employee.emp_count += 1
+    @classmethod
+    def count(cls):
+        return cls.emp_count
+print(Employee.count())
+Phương thức tĩnh không tự động nhận self hoặc cls.
+class Math:
+    @staticmethod
+    def square(x):
+        return x * x
+print(Math.square(5))
+Bảng sau tóm tắt ba loại phương thức:
+Loại phương thức	Tham số đầu tiên	Dùng khi nào
+
+Phương thức đối tượng	self	Cần truy cập trạng thái của đối tượng
+Phương thức lớp	cls	Cần truy cập hoặc tạo đối tượng dựa trên lớp
+Phương thức tĩnh	Không có tham số tự động	Hàm tiện ích đặt trong lớp cho có tổ chức
+
+Trong bối cảnh học OOP cơ bản, phương thức đối tượng với self là quan trọng nhất, vì nó thể hiện rõ ý tưởng: đối tượng nhận lời gọi và tự xử lý dữ liệu của chính nó.
+
+Tài liệu trước
+3. Phương thức và self trong Python
+Tài liệu sau
+Tài liệu 3 / 7
+Hoàn thành
+
+Mẹo: ← → chuyển tài liệu · Nhấn hình để phóng to
+Bảng điều khiển
+Học tập
+ĐĐ
+
+Đặng Đình Minh Hoàng
+
+hoang.dangdinhminh@hcmut.edu.vn
+
+Đăng xuất
+
+© DuyLMS
+
+Học tập · Lớp học của tôi
+Nguyên lý Ngôn ngữ Lập trình (CO3005)_Trần Ngọc Bảo Duy (DT_HK253) [DT01,DT02]
+Phụ lục
+OOP trong Python
+Quy ước đóng gói trong Python
+Quy ước đóng gói trong Python
+Quay lại lớp học
+Hoàn thành
+
+Trong nhiều ngôn ngữ như Java hoặc C++, đóng gói (encapsulation) thường đi kèm các mức truy cập như public, private, protected. Python không thực thi kiểm soát truy cập chặt chẽ theo cách đó. Thay vào đó, Python dựa nhiều vào quy ước đặt tên và một cơ chế gọi là đổi tên nội bộ (name mangling). Bảng quy ước phổ biến:
+
+Dạng tên	Ý nghĩa
+
+name	Công khai theo quy ước
+_name	Dành cho nội bộ, không nên truy cập trực tiếp từ bên ngoài
+__name	Được đổi tên nội bộ, tạo hiệu ứng gần giống riêng tư
+__name__	Tên đặc biệt của Python, không nên tự đặt tùy tiện
+
+Ví dụ thông thường:
+class Account:
+    def __init__(self, balance):
+        self.balance = balance
+    def deposit(self, amount):
+        self.balance += amount
+Ở đây, balance là thuộc tính công khai theo quy ước. Mã bên ngoài có thể truy cập trực tiếp:
+acc = Account(100)
+acc.balance = -1000
+print(acc.balance)
+Điều này có thể gây nguy hiểm vì đối tượng bị đưa vào trạng thái không hợp lệ. Một thiết kế tốt hơn là dùng thuộc tính nội bộ và cung cấp phương thức kiểm soát.
+class Account:
+    def __init__(self, balance):
+        if balance < 0:
+            raise ValueError("balance must be non-negative")
+        self._balance = balance
+    def deposit(self, amount):
+        if amount <= 0:
+            raise ValueError("amount must be positive")
+        self._balance += amount
+    def get_balance(self):
+        return self._balance
+Thuộc tính _balance vẫn có thể bị truy cập từ bên ngoài, nhưng dấu gạch dưới báo hiệu rằng đây là chi tiết nội bộ.
+acc = Account(100)
+acc.deposit(50)
+print(acc.get_balance())
+Nếu dùng hai dấu gạch dưới, Python sẽ đổi tên thuộc tính.
+class Account:
+    def __init__(self, balance):
+        self.__balance = balance
+    def get_balance(self):
+        return self.__balance
+Thử truy cập trực tiếp:
+acc = Account(100)
+print(acc.__balance)
+Lệnh này sẽ lỗi vì Python không lưu tên đúng là __balance. Thay vào đó, nó đổi thành tên có dạng:
+_Account__balance
+Có thể kiểm tra:
+print(acc.__dict__)
+Kết quả có thể là:
+{'_Account__balance': 100}
+Cơ chế này không phải bảo mật tuyệt đối. Người dùng vẫn có thể truy cập nếu cố tình:
+print(acc._Account__balance)
+Nhưng mục tiêu chính của __name là tránh xung đột tên trong kế thừa và báo hiệu rằng thuộc tính không nên được truy cập trực tiếp. Một cách Pythonic hơn để kiểm soát truy cập là dùng property.
+class Account:
+    def __init__(self, balance):
+        self._balance = balance
+    @property
+    def balance(self):
+        return self._balance
+    def deposit(self, amount):
+        if amount <= 0:
+            raise ValueError("amount must be positive")
+        self._balance += amount
+Sử dụng:
+acc = Account(100)
+print(acc.balance)
+acc.deposit(50)
+print(acc.balance)
+Nếu muốn ngăn gán trực tiếp cho balance, ta không định nghĩa setter. Khi đó, balance đọc được nhưng không gán trực tiếp được.
+acc.balance = -100
+Lệnh này sẽ lỗi nếu balance không có setter. Như vậy, Python không ép đóng gói bằng rào cản cứng như Java, nhưng cung cấp quy ước và công cụ để người lập trình thiết kế giao diện ổn định, hạn chế phụ thuộc vào cài đặt bên trong.
+
+Tài liệu trước
+4. Quy ước đóng gói trong Python
+Tài liệu sau
+Tài liệu 4 / 7
+Hoàn thành
+
+Mẹo: ← → chuyển tài liệu · Nhấn hình để phóng to
+Bảng điều khiển
+Học tập
+ĐĐ
+
+Đặng Đình Minh Hoàng
+
+hoang.dangdinhminh@hcmut.edu.vn
+
+Đăng xuất
+
+© DuyLMS
+
+Học tập · Lớp học của tôi
+Nguyên lý Ngôn ngữ Lập trình (CO3005)_Trần Ngọc Bảo Duy (DT_HK253) [DT01,DT02]
+Phụ lục
+OOP trong Python
+Kế thừa và MRO trong Python
+Kế thừa và MRO trong Python
+Quay lại lớp học
+Hoàn thành
+Mục lục
+Ý nghĩa của MRO
+
+Python hỗ trợ kế thừa (inheritance) và cả đa kế thừa (multiple inheritance). Khi một lớp kế thừa từ lớp khác, nó có thể dùng lại thuộc tính và phương thức của lớp cha, đồng thời có thể định nghĩa thêm hoặc ghi đè phương thức. Ví dụ kế thừa đơn:
+
+Kế thừa đơn: Lecturer kế thừa từ Employee.
+
+class Employee:
+    def get_info(self):
+        return "Employee"
+class Lecturer(Employee):
+    def teach(self):
+        return "Teaching"
+Sử dụng:
+lec = Lecturer()
+print(lec.get_info())
+print(lec.teach())
+Lecturer không định nghĩa get_info, nhưng vẫn gọi được vì kế thừa từ Employee. Nếu lớp con định nghĩa phương thức trùng tên với lớp cha, đó là ghi đè phương thức (method overriding).
+class Employee:
+    def get_info(self):
+        return "Employee"
+class Lecturer(Employee):
+    def get_info(self):
+        return "Lecturer"
+print(Lecturer().get_info())
+Kết quả:
+Lecturer
+Câu hỏi quan trọng là: khi một phương thức được gọi, Python tìm phương thức đó ở đâu và theo thứ tự nào? Câu trả lời nằm ở thứ tự phân giải phương thức (Method Resolution Order, MRO). MRO là thứ tự các lớp mà Python sẽ lần lượt tìm kiếm khi cần phân giải một thuộc tính hoặc phương thức.
+
+Mô phỏng tìm phương thức: Python duyệt lần lượt các lớp trong MRO cho đến khi tìm thấy tên cần phân giải.
+
+Ví dụ:
+class A:
+    def f(self): return "A"
+class B(A): pass
+class C(B): pass
+print(C.__mro__)
+Kết quả:
+(<class '__main__.C'>, <class '__main__.B'>, <class '__main__.A'>, <class 'object'>)
+Khi gọi:
+print(C().f())
+Python tìm f theo thứ tự:
+
+Thứ tự tìm kiếm MRO của C(B(A)): C 
+→
+→ B 
+→
+→ A 
+→
+→ object.
+
+C không có f, B không có f, A có f, nên Python chạy A.f. MRO không chỉ dùng cho phương thức. Nó cũng dùng để tìm thuộc tính lớp và các tên khác trong phân cấp lớp.
+
+Vì sao MRO trở nên phức tạp trong đa kế thừa?
+
+Trong kế thừa đơn, thứ tự tìm kiếm thường dễ hiểu: lớp hiện tại, lớp cha, lớp ông, rồi object. Nhưng trong đa kế thừa, một lớp có thể có nhiều lớp cha.
+
+Đa kế thừa đơn giản: C(A, B).
+
+class A: pass
+class B: pass
+class C(A, B): pass
+MRO của C là:
+print(" -> ".join(cls.__name__ for cls in C.__mro__))
+Kết quả:
+C -> A -> B -> object
+Ở đây, Python tìm trong C, rồi A, rồi B, rồi object. Vấn đề trở nên khó hơn khi các lớp cha lại có tổ tiên chung. Đây là bài toán kim cương.
+
+Bài toán kim cương: D(B, C) với B và C cùng kế thừa từ A.
+
+class A:
+    def f(self): return "A"
+class B(A):
+    def f(self): return "B"
+class C(A):
+    def f(self): return "C"
+class D(B, C): pass
+print(" -> ".join(cls.__name__ for cls in D.__mro__))
+print(D().f())
+Kết quả:
+D -> B -> C -> A -> object
+B
+Python chọn B.f vì B xuất hiện trước C trong MRO của D. Nếu đổi thứ tự kế thừa:
+class A:
+    def f(self): return "A"
+class B(A):
+    def f(self): return "B"
+class C(A):
+    def f(self): return "C"
+class D(C, B): pass
+print(" -> ".join(cls.__name__ for cls in D.__mro__))
+print(D().f())
+Kết quả:
+D -> C -> B -> A -> object
+C
+Thứ tự lớp cha trong khai báo ảnh hưởng đến MRO.
+
+Giải thuật C3
+
+Python hiện đại dùng tuyến tính hóa C3 (C3 linearization) để tính MRO. Mục tiêu của C3 là tạo ra một danh sách tuyến tính các lớp cần tìm kiếm, đồng thời bảo đảm ba tính chất quan trọng.
+
+Tính chất	Ý nghĩa
+
+Lớp con đứng trước lớp cha	Nếu B kế thừa từ A, thì B phải xuất hiện trước A
+Giữ thứ tự khai báo lớp cha	Nếu D(B, C), thì B phải được ưu tiên trước C
+Nhất quán đơn điệu	Thứ tự đã có trong lớp cha không bị đảo lộn tùy tiện ở lớp con
+
+Công thức MRO của một lớp C có các lớp cha B1, B2, ..., Bn là:
+MRO(C) = [C] + merge(MRO(B1), MRO(B2), ..., MRO(Bn), [B1, B2, ..., Bn])
+Hàm merge hoạt động theo ý tưởng sau: pplalgo Lặp cho đến khi tất cả danh sách rỗng:
+
+[nosep, leftmargin=1.4em, topsep=2pt]
+
+Chọn phần tử đầu tiên của một danh sách nếu phần tử đó không xuất hiện trong phần đuôi của bất kỳ danh sách nào khác.
+
+Đưa phần tử được chọn vào kết quả.
+
+Xóa phần tử đó khỏi đầu các danh sách có chứa nó.
+
+Nếu không chọn được phần tử nào:
+
+[nosep, leftmargin=1.4em, topsep=2pt]
+
+MRO không hợp lệ.
+
+pplalgo Trong đó, “phần đuôi” nghĩa là các phần tử đứng sau phần tử đầu tiên của một danh sách. Ví dụ với hình kim cương (hình~5):
+class A: pass
+class B(A): pass
+class C(A): pass
+class D(B, C): pass
+Ta có:
+MRO(A) = [A, object]
+MRO(B) = [B, A, object]
+MRO(C) = [C, A, object]
+MRO(D) = [D] + merge([B, A, object], [C, A, object], [B, C])
+Tính merge từng bước:
+Bước	Các danh sách đang xét	Chọn	Lý do
+
+1	[B, A, object], [C, A, object], [B, C]	B	B không nằm trong đuôi danh sách nào
+2	[A, object], [C, A, object], [C]	C	A nằm trong đuôi của [C, A, object], nên chưa chọn A; chọn C
+3	[A, object], [A, object]	A	A không còn nằm trong đuôi danh sách nào
+4	[object], [object]	object	Còn lại object
+
+Vậy:
+MRO(D) = [D, B, C, A, object]
+Kiểm tra bằng Python:
+print([cls.__name__ for cls in D.__mro__])
+Kết quả:
+['D', 'B', 'C', 'A', 'object']
+
+Ví dụ MRO phức tạp hơn
+
+Xét phân cấp sau:
+
+Phân cấp kế thừa phức tạp dùng minh họa giải thuật C3.
+
+class O: pass
+class A(O): pass
+class B(O): pass
+class C(O): pass
+class D(A, B): pass
+class E(B, C): pass
+class F(D, E): pass
+MRO của các lớp cơ bản:
+MRO(O) = [O, object]
+MRO(A) = [A, O, object]
+MRO(B) = [B, O, object]
+MRO(C) = [C, O, object]
+MRO của D(A, B):
+MRO(D) = [D] + merge([A, O, object], [B, O, object], [A, B])
+       = [D, A, B, O, object]
+MRO của E(B, C):
+MRO(E) = [E] + merge([B, O, object], [C, O, object], [B, C])
+       = [E, B, C, O, object]
+Bây giờ tính F(D, E):
+MRO(F) = [F] + merge(MRO(D), MRO(E), [D, E])
+       = [F] + merge([D, A, B, O, object], [E, B, C, O, object], [D, E])
+Tính từng bước:
+Bước	Các đầu danh sách	Chọn	Giải thích
+
+1	D, E, D	D	D không nằm trong đuôi danh sách nào
+2	A, E, E	A	A không nằm trong đuôi danh sách nào
+3	B, E, E	E	B nằm trong đuôi của MRO(E), nên chưa chọn B; chọn E
+4	B, B	B	B hợp lệ
+5	O, C	C	O nằm trong đuôi của [C, O, object], nên chọn C
+6	O, O	O	O hợp lệ
+7	object, object	object	Còn lại object
+
+Vậy:
+MRO(F) = [F, D, A, E, B, C, O, object]
+Kiểm tra bằng Python:
+class O: pass
+class A(O): pass
+class B(O): pass
+class C(O): pass
+class D(A, B): pass
+class E(B, C): pass
+class F(D, E): pass
+print([cls.__name__ for cls in F.__mro__])
+Kết quả:
+['F', 'D', 'A', 'E', 'B', 'C', 'O', 'object']
+Ví dụ này cho thấy MRO không đơn giản là duyệt theo chiều sâu từ trái sang phải. Python dùng C3 để bảo toàn thứ tự ưu tiên cục bộ và quan hệ kế thừa đã có trong các lớp cha.
+
+Khi MRO không hợp lệ
+
+Không phải mọi phân cấp đa kế thừa đều hợp lệ. Nếu các lớp cha yêu cầu thứ tự mâu thuẫn nhau, Python không thể tạo MRO. Ví dụ:
+
+Phân cấp mâu thuẫn: X(A, B) và Y(B, A) không thể cùng được thỏa mãn trong Z(X, Y).
+
+class A: pass
+class B: pass
+class X(A, B): pass
+class Y(B, A): pass
+class Z(X, Y): pass
+Khi định nghĩa Z, Python sẽ báo lỗi:
+TypeError: Cannot create a consistent method resolution order
+Lý do: pplalgo
+
+[nosep, leftmargin=1.2em]
+
+X yêu cầu A đứng trước B.
+
+Y yêu cầu B đứng trước A.
+
+Z kế thừa cả X và Y.
+
+pplalgo Hai yêu cầu này mâu thuẫn nhau, nên không thể có một thứ tự tuyến tính vừa đặt A trước B, vừa đặt B trước A. Bảng phân tích:
+Lớp	Thứ tự yêu cầu
+
+X(A, B)	A trước B
+Y(B, A)	B trước A
+Z(X, Y)	Phải tôn trọng cả hai
+Kết quả	Mâu thuẫn, MRO không tồn tại
+
+Đây là lý do Python không chỉ chọn đại một thứ tự, mà kiểm tra tính nhất quán của phân cấp kế thừa.
+
+MRO và super
+
+Trong Python, super() không đơn giản có nghĩa là “gọi lớp cha trực tiếp”. Chính xác hơn, super() gọi phương thức tiếp theo trong MRO. Ví dụ:
+
+class A:
+    def f(self):
+        print("A")
+class B(A):
+    def f(self):
+        print("B")
+        super().f()
+class C(A):
+    def f(self):
+        print("C")
+        super().f()
+class D(B, C):
+    def f(self):
+        print("D")
+        super().f()
+D().f()
+MRO của D là: \texttt{D} \textrightarrow\ \texttt{B} \textrightarrow\ \texttt{C} \textrightarrow\ \texttt{A} \textrightarrow\ \texttt{object} Kết quả chạy:
+D
+B
+C
+A
+Điều đáng chú ý là trong B.f, lời gọi super().f() không gọi A.f ngay, dù B kế thừa từ A. Nó gọi lớp tiếp theo sau B trong MRO của đối tượng hiện hành, tức là C. Đây là điểm rất quan trọng khi dùng super() trong đa kế thừa. super() đi theo MRO của đối tượng, không chỉ theo lớp cha ghi trong định nghĩa lớp hiện tại.
+
+Kế thừa hợp tác
+
+Để đa kế thừa hoạt động tốt, các lớp nên được viết theo kiểu kế thừa hợp tác (cooperative inheritance). Nghĩa là mỗi lớp làm phần việc của mình rồi gọi super() để chuyển tiếp cho lớp tiếp theo trong MRO. Ví dụ:
+
+Kế thừa hợp tác: C(A, B) với A và B cùng kế thừa từ Base.
+
+class Base:
+    def process(self):
+        print("Base")
+class A(Base):
+    def process(self):
+        print("A")
+        super().process()
+class B(Base):
+    def process(self):
+        print("B")
+        super().process()
+class C(A, B):
+    def process(self):
+        print("C")
+        super().process()
+C().process()
+MRO của C: \texttt{C} \textrightarrow\ \texttt{A} \textrightarrow\ \texttt{B} \textrightarrow\ \texttt{Base} \textrightarrow\ \texttt{object} Kết quả:
+C
+A
+B
+Base
+Nếu một lớp không gọi super(), chuỗi xử lý sẽ bị ngắt.
+class B(Base):
+    def process(self):
+        print("B")
+Khi đó, nếu C().process() đi đến B.process, nó dừng tại B và không gọi tiếp Base. Vì vậy, khi thiết kế mixin hoặc đa kế thừa trong Python, nên thống nhất cách dùng super() để các lớp có thể phối hợp với nhau.
+
+Mixin và MRO
+
+Mixin là lớp nhỏ cung cấp một năng lực bổ sung, thường không được dùng độc lập. Mixin rất phổ biến trong Python vì Python hỗ trợ đa kế thừa và MRO rõ ràng. Ví dụ:
+
+class JsonMixin:
+    def to_json(self):
+        return self.__dict__
+class LogMixin:
+    def log(self):
+        print("LOG:", self.__dict__)
+class Student(JsonMixin, LogMixin):
+    def __init__(self, name, gpa):
+        self.name = name
+        self.gpa = gpa
+Sử dụng:
+s = Student("An", 3.8)
+print(s.to_json())
+s.log()
+print([cls.__name__ for cls in Student.__mro__])
+Kết quả:
+{'name': 'An', 'gpa': 3.8}
+LOG: {'name': 'An', 'gpa': 3.8}
+['Student', 'JsonMixin', 'LogMixin', 'object']
+Nếu hai mixin có cùng tên phương thức, MRO quyết định phương thức nào được chọn.
+class A:
+    def show(self): print("A")
+class B:
+    def show(self): print("B")
+class C(A, B): pass
+class D(B, A): pass
+C().show()
+D().show()
+Kết quả:
+A
+B
+C(A, B) ưu tiên A, còn D(B, A) ưu tiên B. Do đó, khi dùng nhiều mixin, thứ tự lớp cha trong khai báo là một phần của thiết kế, không phải chi tiết ngẫu nhiên.
+
+Tổng kết về MRO
+
+MRO trong Python là cơ chế trung tâm để hiểu kế thừa, đặc biệt là đa kế thừa. Khi gọi obj.method(), Python tìm phương thức theo MRO của lớp động của obj. Các điểm cần nhớ:
+
+Nội dung	Ý nghĩa
+
+MRO là thứ tự tìm kiếm phương thức	Xem bằng Class.__mro__ hoặc Class.mro()
+Python dùng giải thuật C3	Bảo toàn thứ tự lớp con trước lớp cha và thứ tự khai báo lớp cha
+Đa kế thừa có thể mâu thuẫn	Python báo lỗi nếu không tạo được MRO nhất quán
+super() đi theo MRO	Không đơn giản là gọi lớp cha trực tiếp
+Mixin phụ thuộc mạnh vào MRO	Thứ tự khai báo lớp cha ảnh hưởng đến hành vi
+
+Hiểu MRO giúp người lập trình Python tránh nhiều lỗi khó phát hiện trong các hệ thống dùng kế thừa phức tạp, mixin hoặc framework lớn.
+
+Tài liệu trước
+5. Kế thừa và MRO trong Python
+Tài liệu sau
+Tài liệu 5 / 7
+Hoàn thành
+
+Mẹo: ← → chuyển tài liệu · Nhấn hình để phóng to
+Bảng điều khiển
+Học tập
+ĐĐ
+
+Đặng Đình Minh Hoàng
+
+hoang.dangdinhminh@hcmut.edu.vn
+
+Đăng xuất
+
+© DuyLMS
+
+Học tập · Lớp học của tôi
+Nguyên lý Ngôn ngữ Lập trình (CO3005)_Trần Ngọc Bảo Duy (DT_HK253) [DT01,DT02]
+Phụ lục
+OOP trong Python
+Kiểu vịt và đa hình trong Python
+Kiểu vịt và đa hình trong Python
+Quay lại lớp học
+Hoàn thành
+
+Python thường được mô tả là ngôn ngữ sử dụng kiểu vịt (duck typing). Ý tưởng là: nếu một đối tượng có hành vi cần thiết tại thời điểm chạy, ta có thể dùng nó, không nhất thiết phải kiểm tra nó thuộc lớp nào. Câu nói quen thuộc là: nếu một thứ đi như vịt và kêu như vịt, ta có thể xem nó như vịt. Trong lập trình Python, nếu một đối tượng có phương thức cần gọi, ta có thể gọi phương thức đó. Ví dụ:
+
+class Circle:
+    def draw(self): print("Draw circle")
+class Button:
+    def draw(self): print("Draw button")
+def render(x): x.draw()
+render(Circle())
+render(Button())
+Circle và Button không cùng kế thừa từ lớp cha chung. Tuy nhiên, cả hai đều có phương thức draw, nên hàm render có thể làm việc với cả hai. Điều này khác với phong cách định kiểu theo tên trong Java, nơi ta thường định nghĩa interface:
+interface Drawable { void draw(); }
+Trong Python, hàm render không yêu cầu khai báo kiểu:
+def render(x):
+    x.draw()
+Nếu truyền vào một đối tượng không có draw, lỗi sẽ xuất hiện khi chạy:
+class Student: pass
+render(Student())
+Lỗi:
+AttributeError: 'Student' object has no attribute 'draw'
+Kiểu vịt làm chương trình linh hoạt, nhưng cũng đòi hỏi người lập trình cẩn thận hơn. Nếu muốn kiểm tra năng lực của đối tượng trước khi gọi, có thể dùng hasattr.
+def render(x):
+    if hasattr(x, "draw"):
+        x.draw()
+    else:
+        raise TypeError("object must provide draw()")
+Tuy nhiên, trong Python, phong cách thường được khuyến khích là “thử làm và xử lý lỗi nếu thất bại”, thay vì kiểm tra quá nhiều trước. Phong cách này thường được gọi là EAFP (Easier to Ask Forgiveness than Permission).
+def render(x):
+    try:
+        x.draw()
+    except AttributeError:
+        raise TypeError("object must provide draw()")
+Python cũng có thể kết hợp duck typing với lớp cơ sở trừu tượng (abstract base class) hoặc giao thức (protocol) khi cần mô tả rõ năng lực mong đợi. Ví dụ dùng lớp cơ sở trừu tượng:
+from abc import ABC, abstractmethod
+class Drawable(ABC):
+    @abstractmethod
+    def draw(self): pass
+class Circle(Drawable):
+    def draw(self): print("Draw circle")
+Ví dụ dùng Protocol để mô tả cấu trúc cần có:
+from typing import Protocol
+class Drawable(Protocol):
+    def draw(self) -> None: ...
+def render(x: Drawable) -> None:
+    x.draw()
+Protocol giúp công cụ kiểm tra kiểu tĩnh hiểu rằng render cần một đối tượng có phương thức draw, nhưng vẫn giữ phong cách linh hoạt của Python. Một lớp không cần khai báo kế thừa từ Drawable; chỉ cần có phương thức draw phù hợp là đủ.
+class Button:
+    def draw(self) -> None:
+        print("Draw button")
+render(Button())
+Như vậy, Python hỗ trợ đa hình theo cách rất linh hoạt. Trong các chương trình nhỏ, duck typing giúp mã ngắn gọn và tự nhiên. Trong các hệ thống lớn, có thể kết hợp duck typing với type hints, abstract base classes hoặc protocols để tăng khả năng kiểm tra và tài liệu hóa giao diện mong đợi.
+
+Tài liệu trước
+6. Kiểu vịt và đa hình trong Python
+Tài liệu sau
+Tài liệu 6 / 7
+Hoàn thành
+
+Mẹo: ← → chuyển tài liệu · Nhấn hình để phóng to
+
+Bảng điều khiển
+Học tập
+ĐĐ
+
+Đặng Đình Minh Hoàng
+
+hoang.dangdinhminh@hcmut.edu.vn
+
+Đăng xuất
+
+© DuyLMS
+
+Học tập · Lớp học của tôi
+Nguyên lý Ngôn ngữ Lập trình (CO3005)_Trần Ngọc Bảo Duy (DT_HK253) [DT01,DT02]
+Phụ lục
+OOP trong Python
+Tóm tắt phụ lục
+Tóm tắt phụ lục
+Quay lại lớp học
+Hoàn thành
+
+Python hỗ trợ OOP bằng một mô hình linh hoạt và thực dụng. Lớp mô tả cấu trúc và hành vi chung, đối tượng là thực thể cụ thể tại thời điểm chạy, phương thức nhận đối tượng hiện hành qua self, và thuộc tính có thể nằm ở mức đối tượng hoặc mức lớp. Python không áp đặt đóng gói bằng cơ chế truy cập cứng như Java hoặc C++, mà dựa vào quy ước đặt tên, name mangling và property. Điều này làm Python linh hoạt nhưng cũng đòi hỏi người lập trình tôn trọng giao diện của lớp. Trong kế thừa, đặc biệt là đa kế thừa, MRO là cơ chế cốt lõi. Python dùng giải thuật C3 để xác định thứ tự tìm phương thức, bảo đảm lớp con đứng trước lớp cha, giữ thứ tự khai báo lớp cha và tránh các thứ tự kế thừa mâu thuẫn. super() trong Python đi theo MRO chứ không đơn giản là gọi lớp cha trực tiếp. Cuối cùng, Python thường dùng duck typing: đối tượng được sử dụng dựa trên hành vi mà nó cung cấp tại thời điểm chạy. Cách tiếp cận này giúp Python rất linh hoạt trong thực hành OOP, đồng thời cho thấy rằng lập trình hướng đối tượng không chỉ là quan hệ lớp cha – lớp con, mà còn là cách các đối tượng cung cấp hành vi và tương tác với nhau.
+
+Tài liệu trước
+7. Tóm tắt phụ lục
+Tài liệu sau
+Tài liệu 7 / 7
+Tài liệu cuối nhóm
+Hoàn thành
+
+Mẹo: ← → chuyển tài liệu · Nhấn hình để phóng to

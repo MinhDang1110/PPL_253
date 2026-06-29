@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CO3005 – Phân tích Từ vựng</title>
+<meta name="description" content="Bài học về Phân tích từ vựng (Lexical Analysis) – CO3005 Nguyên lý Ngôn ngữ Lập trình, bao gồm token, biểu thức chính quy, ô-tô-mát hữu hạn và ANTLR.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd9d0;
+    --text: #1a1916;
+    --muted: #6b6760;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --kw: #569cd6;
+    --str: #ce9178;
+    --cmt: #6a9955;
+    --num: #b5cea8;
+    --fn: #dcdcaa;
+    --tag-bg: #e8f0fb;
+    --tag-text: #1a56a0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  /* LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .toc-item {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .toc-item.sub { padding-left: 32px; font-size: 12px; }
+
+  /* MAIN CONTENT */
+  .main {
+    padding: 48px 56px 80px;
+    max-width: 820px;
+  }
+
+  .lesson-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--tag-text);
+    background: var(--tag-bg);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .lesson-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ARTICLE SECTIONS */
+  .article-section {
+    margin-bottom: 52px;
+    scroll-margin-top: 24px;
+  }
+
+  .section-heading {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+  .section-heading::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  p {
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+    font-size: 13.5px;
+  }
+  .code-label {
+    background: #2d2d2d;
+    padding: 6px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #333;
+  }
+  pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1.6;
+    color: var(--code-text);
+  }
+  pre code { font-family: inherit; }
+
+  /* Inline code */
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #e8e5de;
+    color: #b5451b;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+  }
+
+  /* Syntax highlighting helpers */
+  .kw { color: var(--kw); }
+  .str { color: var(--str); }
+  .cmt { color: var(--cmt); font-style: italic; }
+  .num { color: var(--num); }
+  .fn  { color: var(--fn); }
+  .type { color: #4ec9b0; }
+
+  /* CALLOUT / INFO BOX */
+  .callout {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .callout strong { color: var(--accent); }
+
+  /* DEFINITION LIST */
+  .def-list { margin: 16px 0 20px; }
+  .def-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .def-item:first-child { border-top: 1px solid var(--border); }
+  .def-term {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    padding-top: 2px;
+  }
+
+  /* TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  /* PIPELINE STEPS */
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 24px 0;
+    position: relative;
+  }
+  .pipeline::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 28px;
+    bottom: 28px;
+    width: 2px;
+    background: var(--border);
+  }
+  .pipe-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .pipe-num {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pipe-content h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 3px;
+    color: var(--text);
+  }
+  .pipe-content p { font-size: 13px; color: var(--muted); margin: 0; }
+
+  /* NAV FOOTER */
+  .nav-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0 0;
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: default;
+  }
+  .nav-btn.secondary {
+    background: var(--surface);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+    .def-item { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-title">Mục lục bài học</div>
+    <a class="toc-item active" href="#mo-dau">Bài 1 · Mở đầu</a>
+    <a class="toc-item" href="#tu-to-bieu-thuc">Bài 2 · Từ tố và biểu thức chính quy</a>
+    <a class="toc-item sub" href="#vi-tri">Vị trí phân tích từ vựng</a>
+    <a class="toc-item sub" href="#tu-to">Từ tố (Token)</a>
+    <a class="toc-item sub" href="#bieu-thuc-chinh-quy">Biểu thức chính quy</a>
+    <a class="toc-item sub" href="#vi-du-bieu-thuc">Ví dụ biểu thức chính quy</a>
+    <a class="toc-item sub" href="#ky-hieu-viet-tat">Ký hiệu viết tắt</a>
+    <a class="toc-item sub" href="#vai-tro-scanner">Vai trò của bộ scanner</a>
+    <a class="toc-item" href="#cach-nhan-dang">Bài 3 · Cách nhận dạng</a>
+    <a class="toc-item sub" href="#vi-du-don-gian">Ví dụ đơn giản</a>
+    <a class="toc-item sub" href="#scanner-thu-cong">Scanner viết thủ công</a>
+    <a class="toc-item sub" href="#o-to-mat">Ô-tô-mát hữu hạn</a>
+    <a class="toc-item sub" href="#sinh-o-to-mat">Sinh ô-tô-mát hữu hạn</a>
+    <a class="toc-item sub" href="#loi-tu-vung">Lỗi từ vựng</a>
+    <a class="toc-item" href="#antlr">Bài 4 · ANTLR</a>
+    <a class="toc-item sub" href="#gioi-thieu-antlr">Giới thiệu ANTLR</a>
+    <a class="toc-item sub" href="#luat-tu-vung">Luật từ vựng ANTLRv4</a>
+    <a class="toc-item sub" href="#ky-hieu-antlr">Ký hiệu trong ANTLRv4</a>
+    <a class="toc-item sub" href="#vi-du-antlr">Ví dụ nhỏ trong ANTLRv4</a>
+    <a class="toc-item sub" href="#hanh-dong">Hành động và lệnh</a>
+    <a class="toc-item sub" href="#manh-luat">Mảnh luật (Fragment)</a>
+    <a class="toc-item" href="#tom-tat">Bài 5 · Tóm tắt chương</a>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+
+    <!-- ==================== BÀI 1: MỞ ĐẦU ==================== -->
+    <div class="lesson-badge">Bài 1 / 5</div>
+    <h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+    <div class="lesson-meta">CO3005 · Phân tích Từ vựng · Trần Ngọc Bảo Duy</div>
+
+    <div class="article-section">
+      <p>Trong quá trình biên dịch, chương trình nguồn ban đầu chỉ là một dãy ký tự. Ví dụ, câu lệnh:</p>
+      <div class="code-block">
+        <div class="code-label">C-like</div>
+        <pre><code>a = b + c * 60;</code></pre>
+      </div>
+      <p>đối với máy tính ở mức đầu vào chỉ là chuỗi các ký tự:</p>
+      <div class="code-block">
+        <div class="code-label">Chuỗi ký tự thô</div>
+        <pre><code>'a', ' ', '=', ' ', 'b', ' ', '+', ' ', 'c', ' ', '*', ' ', '6', '0', ';'</code></pre>
+      </div>
+      <p>Các pha sau của trình biên dịch không làm việc trực tiếp với từng ký tự rời rạc như vậy. Thay vào đó, chương trình cần được chia thành những đơn vị có ý nghĩa hơn, chẳng hạn định danh, toán tử, số nguyên, dấu chấm phẩy. Công việc này được thực hiện bởi pha <strong>phân tích từ vựng</strong> (<em>lexical analysis</em>), còn bộ phận thực hiện công việc đó thường được gọi là <strong>bộ quét</strong> (<em>scanner</em>) hoặc <strong>bộ phân tích từ vựng</strong> (<em>lexer</em>).</p>
+      <div class="callout">
+        <strong>Mục tiêu chương này:</strong> Giới thiệu bản chất của phân tích từ vựng — từ tố (token) là gì, biểu thức chính quy (regular expression) được dùng để mô tả token như thế nào, scanner có thể nhận dạng token bằng cách nào, và công cụ ANTLR hỗ trợ sinh lexer từ các luật ngữ pháp ra sao.
+      </div>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 2: TỪ TỐ VÀ BIỂU THỨC CHÍNH QUY ==================== -->
+    <div class="lesson-badge">Bài 2 / 5</div>
+    <h1 class="lesson-title" id="tu-to-bieu-thuc">Từ tố và Biểu thức chính quy</h1>
+    <div class="lesson-meta">CO3005 · Phân tích Từ vựng</div>
+
+    <!-- Vị trí phân tích từ vựng -->
+    <div class="article-section" id="vi-tri">
+      <h2 class="section-heading">Vị trí của phân tích từ vựng</h2>
+      <p>Phân tích từ vựng là pha đầu tiên trong phần <strong>tiền tuyến</strong> (<em>front-end</em>) của trình biên dịch. Pha này nhận đầu vào là chuỗi ký tự (<em>character stream</em>) của chương trình nguồn và tạo ra chuỗi token (<em>token stream</em>) cho pha phân tích cú pháp.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Pha xử lý</th>
+            <th>Đầu vào</th>
+            <th>Đầu ra</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Phân tích từ vựng</strong></td><td>Chuỗi ký tự</td><td>Chuỗi token</td></tr>
+          <tr><td>Phân tích cú pháp</td><td>Chuỗi token</td><td>Cây phân tích cú pháp</td></tr>
+          <tr><td>Sinh cây cú pháp trừu tượng</td><td>Cây phân tích cú pháp</td><td>Cây cú pháp trừu tượng</td></tr>
+          <tr><td>Phân tích ngữ nghĩa</td><td>Cây cú pháp trừu tượng</td><td>Cây đã bổ sung thông tin</td></tr>
+          <tr><td>Sinh mã trung gian</td><td>Cây đã kiểm tra</td><td>Mã trung gian</td></tr>
+          <tr><td>Tối ưu hóa</td><td>Mã trung gian</td><td>Mã trung gian đã tối ưu</td></tr>
+          <tr><td>Sinh mã đích</td><td>Mã trung gian</td><td>Mã đích</td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ, với câu lệnh <code>a = b + c * 60;</code>, bộ phân tích từ vựng không cố hiểu toàn bộ câu lệnh là một phép gán. Nó chỉ chia câu lệnh thành các token:</p>
+      <div class="code-block">
+        <div class="code-label">Token stream</div>
+        <pre><code>(ID,   "a")
+(EQUAL, "=")
+(ID,   "b")
+(PLUS,  "+")
+(ID,   "c")
+(MUL,   "*")
+(INT,  "60")
+(SEMI,  ";")</code></pre>
+      </div>
+      <p>Việc hiểu đây là câu lệnh gán, vế phải là biểu thức cộng, và phép nhân có độ ưu tiên cao hơn phép cộng thuộc về các pha sau — đặc biệt là phân tích cú pháp và phân tích ngữ nghĩa.</p>
+    </div>
+
+    <!-- Từ tố -->
+    <div class="article-section" id="tu-to">
+      <h2 class="section-heading">Từ tố (Token)</h2>
+      <p><strong>Từ tố</strong> (<em>token</em>) là đơn vị cơ bản mà bộ phân tích từ vựng trả về cho bộ phân tích cú pháp. Có thể hiểu token là những mảnh nhỏ nhất của chương trình có ý nghĩa riêng đối với ngôn ngữ lập trình. Trong cách nói thông thường, token đôi khi được dùng để chỉ hai khía cạnh khác nhau:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Khía cạnh</th><th>Ý nghĩa</th><th>Ví dụ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Loại token</td><td>Nhóm hoặc kiểu của token</td><td><code>ID</code>, <code>INT</code>, <code>PLUS</code></td></tr>
+          <tr><td>Chuỗi cụ thể</td><td>Dãy ký tự thật sự xuất hiện trong mã nguồn</td><td><code>"count"</code>, <code>"42"</code>, <code>"+"</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Chuỗi ký tự cụ thể tạo thành token được gọi là <strong>trị từ vựng</strong> (<em>lexeme</em>). Ví dụ, trong token <code>(ID, "count")</code>, <code>ID</code> là loại token, còn <code>"count"</code> là lexeme. Xét đoạn mã C sau:</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code>int count = 42;</code></pre>
+      </div>
+      <p>Bộ phân tích từ vựng có thể tạo ra chuỗi token:</p>
+      <div class="code-block">
+        <div class="code-label">Token stream</div>
+        <pre><code>(INT_KEYWORD,  "int")
+(ID,           "count")
+(ASSIGN,       "=")
+(INT_LITERAL,  "42")
+(SEMI,         ";")</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Lexeme</th><th>Loại token</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>int</code></td><td>INT_KEYWORD</td><td>Từ khóa khai báo kiểu số nguyên</td></tr>
+          <tr><td><code>count</code></td><td>ID</td><td>Tên do người lập trình đặt</td></tr>
+          <tr><td><code>=</code></td><td>ASSIGN</td><td>Toán tử gán</td></tr>
+          <tr><td><code>42</code></td><td>INT_LITERAL</td><td>Hằng số nguyên</td></tr>
+          <tr><td><code>;</code></td><td>SEMI</td><td>Dấu kết thúc câu lệnh</td></tr>
+        </tbody>
+      </table>
+
+      <p>Một ngôn ngữ lập trình thực tế thường có rất nhiều loại token. Ví dụ về một số nhóm token phổ biến:</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Nhóm token</th><th>Ví dụ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Từ khóa</td><td><code>if</code>, <code>return</code>, <code>struct</code>, <code>double</code></td></tr>
+          <tr><td>Định danh</td><td><code>my_variable</code>, <code>printf</code>, <code>size</code></td></tr>
+          <tr><td>Số nguyên</td><td><code>0</code>, <code>42</code>, <code>1000</code></td></tr>
+          <tr><td>Số thực</td><td><code>3.14</code>, <code>6.02e23</code></td></tr>
+          <tr><td>Ký tự</td><td><code>'a'</code>, <code>'\n'</code>, <code>'0'</code></td></tr>
+          <tr><td>Toán tử</td><td><code>+</code>, <code>*</code>, <code>=</code>, <code>==</code>, <code>&lt;=</code></td></tr>
+          <tr><td>Dấu phân cách</td><td><code>(</code>, <code>)</code>, <code>{</code>, <code>}</code>, <code>;</code>, <code>,</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Lưu ý quan trọng:</strong> Scanner không chỉ tách chuỗi theo khoảng trắng. Trong đoạn mã <code>x=10+20;</code> không có khoảng trắng giữa các thành phần, nhưng scanner vẫn phải tách được thành các token đúng. Điều này cho thấy phân tích từ vựng dựa trên <strong>luật nhận dạng token</strong>, không chỉ dựa trên dấu cách.
+      </div>
+    </div>
+
+    <!-- Biểu thức chính quy -->
+    <div class="article-section" id="bieu-thuc-chinh-quy">
+      <h2 class="section-heading">Biểu thức chính quy</h2>
+      <p>Để mô tả các loại token, ta thường dùng <strong>biểu thức chính quy</strong> (<em>regular expression</em>). Biểu thức chính quy là một cách hình thức để mô tả tập các chuỗi ký tự. Một biểu thức chính quy cơ bản có thể được xây dựng từ các thành phần sau:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Dạng</th><th>Ý nghĩa</th><th>Ví dụ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Một ký tự</td><td>Khớp đúng một ký tự</td><td><code>c</code></td></tr>
+          <tr><td>Chuỗi rỗng (ε)</td><td>Khớp chuỗi không có ký tự nào</td><td><code>ε</code></td></tr>
+          <tr><td>Nối tiếp</td><td>Chuỗi của biểu thức thứ nhất theo sau bởi chuỗi của biểu thức thứ hai</td><td><code>RS</code></td></tr>
+          <tr><td>Lựa chọn</td><td>Khớp biểu thức bên trái hoặc bên phải</td><td><code>R | S</code></td></tr>
+          <tr><td>Lặp Kleene</td><td>Lặp không hoặc nhiều lần</td><td><code>R*</code></td></tr>
+          <tr><td>Ngoặc</td><td>Gom nhóm để tránh mơ hồ</td><td><code>(R | S)T</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ, biểu thức <code>a(b|c)</code> mô tả hai chuỗi: <code>ab</code> và <code>ac</code>. Biểu thức <code>ab*</code> mô tả các chuỗi bắt đầu bằng <code>a</code>, sau đó là không hoặc nhiều ký tự <code>b</code>:</p>
+      <div class="code-block">
+        <div class="code-label">Tập chuỗi khớp với ab*</div>
+        <pre><code>a
+ab
+abb
+abbb
+...</code></pre>
+      </div>
+      <p>Cần phân biệt giữa <code>ab*</code> và <code>(ab)*</code>. Biểu thức <code>ab*</code> nghĩa là <code>a</code> theo sau bởi không hoặc nhiều <code>b</code>. Trong khi đó, <code>(ab)*</code> nghĩa là lặp lại cả cụm <code>ab</code> không hoặc nhiều lần:</p>
+      <div class="code-block">
+        <div class="code-label">Tập chuỗi khớp với (ab)*</div>
+        <pre><code>ε (chuỗi rỗng)
+ab
+abab
+ababab
+...</code></pre>
+      </div>
+
+      <p>Trong thiết kế scanner, biểu thức chính quy thường được dùng để mô tả các nhóm token như định danh, số nguyên, số thực hoặc khoảng trắng. Ví dụ, định danh trong một ngôn ngữ đơn giản:</p>
+      <div class="code-block">
+        <div class="code-label">Luật định danh</div>
+        <pre><code>letter -> [a-zA-Z]
+digit  -> [0-9]
+id     -> letter (letter | digit)*</code></pre>
+      </div>
+      <p>Biểu thức này nói rằng một định danh bắt đầu bằng chữ cái, sau đó có thể có không hoặc nhiều chữ cái hoặc chữ số. Các chuỗi như <code>x</code>, <code>count</code>, <code>a1</code>, <code>student2025</code> là hợp lệ. Các chuỗi <code>1abc</code>, <code>_count</code>, <code>a-b</code> thì không hợp lệ. Nếu muốn cho phép dấu gạch dưới <code>_</code>, luật có thể được viết lại:</p>
+      <div class="code-block">
+        <div class="code-label">Luật định danh mở rộng</div>
+        <pre><code>id -> [a-zA-Z_] [a-zA-Z0-9_]*</code></pre>
+      </div>
+      <p>Khi đó, các tên như <code>_temp</code> hoặc <code>student_name</code> trở nên hợp lệ.</p>
+    </div>
+
+    <!-- Ví dụ biểu thức chính quy -->
+    <div class="article-section" id="vi-du-bieu-thuc">
+      <h2 class="section-heading">Ví dụ về biểu thức chính quy</h2>
+      <p>Xét bài toán mô tả các hằng số số học cho một máy tính cầm tay đơn giản. Ta có thể định nghĩa từng phần như sau:</p>
+      <div class="code-block">
+        <div class="code-label">Định nghĩa luật</div>
+        <pre><code>digit        -> [0-9]
+unsigned_int -> digit digit*</code></pre>
+      </div>
+      <p>Ở đây, <code>digit</code> là một chữ số từ 0 đến 9. <code>unsigned_int</code> là một số nguyên không dấu, gồm một chữ số đầu tiên, theo sau bởi không hoặc nhiều chữ số khác. Để mô tả số có phần thập phân và phần mũ:</p>
+      <div class="code-block">
+        <div class="code-label">Luật số thực</div>
+        <pre><code>unsigned_num -> unsigned_int ( . unsigned_int )? ( e ( + | - )? unsigned_int )?</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Thành phần</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>unsigned_int</code></td><td>Phần nguyên bắt buộc</td></tr>
+          <tr><td><code>( . unsigned_int )?</code></td><td>Phần thập phân có thể có hoặc không</td></tr>
+          <tr><td><code>( e ( + | - )? unsigned_int )?</code></td><td>Phần mũ có thể có hoặc không</td></tr>
+          <tr><td><code>( + | - )?</code></td><td>Dấu + hoặc - trong phần mũ là tùy chọn</td></tr>
+        </tbody>
+      </table>
+
+      <p>Các chuỗi hợp lệ: <code>1</code>, <code>42</code>, <code>3.14</code>, <code>1e9</code>, <code>6.02e23</code>, <code>10e-3</code>. Nếu muốn kiểm thử nhanh bằng Python:</p>
+      <div class="code-block">
+        <div class="code-label">Python — kiểm thử biểu thức chính quy</div>
+        <pre><code><span class="kw">import</span> re
+pattern = <span class="str">r"[0-9]+(\.[0-9]+)?(e(\+|-)?[0-9]+)?"</span>
+tests = [<span class="str">"1"</span>, <span class="str">"42"</span>, <span class="str">"3.14"</span>, <span class="str">"1e9"</span>, <span class="str">"10e-3"</span>, <span class="str">"."</span>, <span class="str">"1e"</span>]
+<span class="kw">for</span> s <span class="kw">in</span> tests:
+    <span class="kw">if</span> re.<span class="fn">fullmatch</span>(pattern, s):
+        <span class="fn">print</span>(s, <span class="str">"accepted"</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(s, <span class="str">"rejected"</span>)</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Kết quả mong đợi</div>
+        <pre><code>1 accepted
+42 accepted
+3.14 accepted
+1e9 accepted
+10e-3 accepted
+. rejected
+1e rejected</code></pre>
+      </div>
+    </div>
+
+    <!-- Ký hiệu viết tắt -->
+    <div class="article-section" id="ky-hieu-viet-tat">
+      <h2 class="section-heading">Ký hiệu viết tắt</h2>
+      <p>Khi viết biểu thức chính quy, một số ký hiệu viết tắt giúp biểu thức ngắn gọn và dễ đọc hơn.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Ký hiệu</th><th>Ý nghĩa</th><th>Tương đương</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>α+</code></td><td>Một hoặc nhiều lần lặp</td><td><code>αα*</code></td></tr>
+          <tr><td><code>α?</code></td><td>Có hoặc không có α</td><td><code>ε | α</code></td></tr>
+          <tr><td><code>[xyz]</code></td><td>Một trong các ký tự được liệt kê</td><td><code>x | y | z</code></td></tr>
+          <tr><td><code>[x-y]</code></td><td>Một ký tự trong khoảng từ x đến y</td><td>Phụ thuộc bảng mã</td></tr>
+          <tr><td><code>[^x-y]</code></td><td>Một ký tự không nằm trong khoảng từ x đến y</td><td>Phủ định tập ký tự</td></tr>
+          <tr><td><code>.</code></td><td>Một ký tự bất kỳ</td><td>Tùy quy ước của công cụ</td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Số nguyên không âm</div>
+        <pre><code>[0-9]+</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Định danh kiểu quen thuộc</div>
+        <pre><code>[a-zA-Z_][a-zA-Z0-9_]*</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Số nguyên có thể có dấu</div>
+        <pre><code>(\+|-)?[0-9]+</code></pre>
+      </div>
+      <p>Trong biểu thức trên, dấu <code>+</code> cần được viết là <code>\+</code> nếu công cụ biểu thức chính quy xem <code>+</code> là ký hiệu đặc biệt.</p>
+    </div>
+
+    <!-- Vai trò scanner -->
+    <div class="article-section" id="vai-tro-scanner">
+      <h2 class="section-heading">Vai trò của bộ phân tích từ vựng</h2>
+      <p>Bộ phân tích từ vựng đảm nhiệm bốn công việc chính:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Vai trò</th><th>Nội dung</th><th>Ví dụ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Nhận diện lexeme</td><td>Gom các ký tự thành chuỗi có ý nghĩa</td><td><code>count</code>, <code>42</code>, <code>+</code></td></tr>
+          <tr><td>Trả về token</td><td>Gắn loại token cho lexeme</td><td><code>(ID, "count")</code></td></tr>
+          <tr><td>Bỏ qua ký tự không cần thiết</td><td>Bỏ khoảng trắng, tab, xuống dòng hoặc chú thích</td><td><code> </code>, <code>\n</code>, <code>// comment</code></td></tr>
+          <tr><td>Ghi nhận vị trí</td><td>Theo dõi dòng, cột để báo lỗi</td><td>line 3, column 5</td></tr>
+        </tbody>
+      </table>
+
+      <p>Xét đoạn mã sau:</p>
+      <div class="code-block">
+        <div class="code-label">C</div>
+        <pre><code><span class="type">int</span> x = <span class="num">10</span>;   <span class="cmt">// initial value</span>
+x = x + <span class="num">1</span>;</code></pre>
+      </div>
+      <p>Scanner có thể bỏ qua khoảng trắng và chú thích, nhưng vẫn trả về các token cần thiết. Chú thích <code>// initial value</code> không được gửi sang parser vì nó không ảnh hưởng đến cấu trúc cú pháp. Tuy nhiên, scanner vẫn cần theo dõi dòng và cột. Nếu có lỗi như <code>int x = @;</code>, scanner cần báo rằng ký tự <code>@</code> không khớp với bất kỳ luật token nào, và thông báo vị trí để người lập trình sửa lỗi.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 3: CÁCH NHẬN DẠNG ==================== -->
+    <div class="lesson-badge">Bài 3 / 5</div>
+    <h1 class="lesson-title" id="cach-nhan-dang">Cách nhận dạng</h1>
+    <div class="lesson-meta">CO3005 · Phân tích Từ vựng</div>
+
+    <!-- Ví dụ đơn giản -->
+    <div class="article-section" id="vi-du-don-gian">
+      <h2 class="section-heading">Một ví dụ đơn giản</h2>
+      <p>Sau khi đã biết token có thể được mô tả bằng biểu thức chính quy, câu hỏi tiếp theo là: làm thế nào để scanner nhận dạng token trong một chương trình nguồn? Có hai hướng chính: viết scanner thủ công hoặc xây dựng scanner có cấu trúc dựa trên <strong>ô-tô-mát hữu hạn</strong> (<em>finite automaton</em>). Xét một ngôn ngữ nhỏ có tập token:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Token</th><th>Mẫu ký tự</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>assign</code></td><td><code>:=</code></td></tr>
+          <tr><td><code>plus</code></td><td><code>+</code></td></tr>
+          <tr><td><code>times</code></td><td><code>*</code></td></tr>
+          <tr><td><code>lparen</code></td><td><code>(</code></td></tr>
+          <tr><td><code>rparen</code></td><td><code>)</code></td></tr>
+          <tr><td><code>id</code></td><td><code>[a-zA-Z][a-zA-Z0-9]*</code></td></tr>
+          <tr><td><code>number</code></td><td><code>[0-9]+</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Ngôn ngữ này cũng hỗ trợ hai kiểu chú thích giống C:</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Kiểu chú thích</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>// ...</code></td><td>Chú thích một dòng, kéo dài đến hết dòng</td></tr>
+          <tr><td><code>/* ... */</code></td><td>Chú thích khối, có thể kéo dài qua nhiều dòng</td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ chương trình và chuỗi token scanner cần tạo ra:</p>
+      <div class="code-block">
+        <div class="code-label">Chương trình nguồn</div>
+        <pre><code>x := 10 + y * 2   <span class="cmt">// compute x</span>
+z := x + 1</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Token stream (phần chú thích bị bỏ qua)</div>
+        <pre><code>(ID,     "x")
+(ASSIGN, ":=")
+(NUMBER, "10")
+(PLUS,   "+")
+(ID,     "y")
+(TIMES,  "*")
+(NUMBER, "2")
+(ID,     "z")
+(ASSIGN, ":=")
+(ID,     "x")
+(PLUS,   "+")
+(NUMBER, "1")</code></pre>
+      </div>
+    </div>
+
+    <!-- Scanner thủ công -->
+    <div class="article-section" id="scanner-thu-cong">
+      <h2 class="section-heading">Bộ quét viết thủ công</h2>
+      <p>Một cách đơn giản để xây dựng scanner là viết mã kiểm tra từng trường hợp. Cách này gọi là <strong>scanner viết thủ công</strong> hoặc scanner kiểu tùy biến (<em>ad hoc scanner</em>). Ý tưởng cơ bản:</p>
+      <div class="code-block">
+        <div class="code-label">Thuật toán cơ bản (giả mã)</div>
+        <pre><code>Read next character
+If whitespace:
+    skip
+If letter:
+    read ahead to form identifier or keyword
+If digit:
+    read ahead to form number
+Otherwise:
+    check operator or delimiter</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Python — scanner thủ công</div>
+        <pre><code><span class="kw">def</span> <span class="fn">scan</span>(source):
+    i = <span class="num">0</span>
+    tokens = []
+    <span class="kw">while</span> i < <span class="fn">len</span>(source):
+        ch = source[i]
+        <span class="kw">if</span> ch.<span class="fn">isspace</span>():
+            i += <span class="num">1</span>
+        <span class="kw">elif</span> ch.<span class="fn">isalpha</span>():
+            start = i
+            i += <span class="num">1</span>
+            <span class="kw">while</span> i < <span class="fn">len</span>(source) <span class="kw">and</span> source[i].<span class="fn">isalnum</span>():
+                i += <span class="num">1</span>
+            tokens.<span class="fn">append</span>((<span class="str">"ID"</span>, source[start:i]))
+        <span class="kw">elif</span> ch.<span class="fn">isdigit</span>():
+            start = i
+            i += <span class="num">1</span>
+            <span class="kw">while</span> i < <span class="fn">len</span>(source) <span class="kw">and</span> source[i].<span class="fn">isdigit</span>():
+                i += <span class="num">1</span>
+            tokens.<span class="fn">append</span>((<span class="str">"NUMBER"</span>, source[start:i]))
+        <span class="kw">elif</span> ch == <span class="str">':'</span> <span class="kw">and</span> i + <span class="num">1</span> < <span class="fn">len</span>(source) <span class="kw">and</span> source[i + <span class="num">1</span>] == <span class="str">'='</span>:
+            tokens.<span class="fn">append</span>((<span class="str">"ASSIGN"</span>, <span class="str">":="</span>))
+            i += <span class="num">2</span>
+        <span class="kw">elif</span> ch == <span class="str">'+'</span>:
+            tokens.<span class="fn">append</span>((<span class="str">"PLUS"</span>, <span class="str">"+"</span>))
+            i += <span class="num">1</span>
+        <span class="kw">elif</span> ch == <span class="str">'*'</span>:
+            tokens.<span class="fn">append</span>((<span class="str">"TIMES"</span>, <span class="str">"*"</span>))
+            i += <span class="num">1</span>
+        <span class="kw">else</span>:
+            <span class="kw">raise</span> Exception(<span class="str">f"Invalid character: {ch}"</span>)
+    <span class="kw">return</span> tokens
+
+<span class="fn">print</span>(<span class="fn">scan</span>(<span class="str">"x := 10 + y * 2"</span>))</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Kết quả</div>
+        <pre><code>[('ID', 'x'), ('ASSIGN', ':='), ('NUMBER', '10'), ('PLUS', '+'), ('ID', 'y'), ('TIMES', '*'), ('NUMBER', '2')]</code></pre>
+      </div>
+      <p>Cách viết thủ công có ưu điểm là dễ hiểu và nhanh triển khai đối với ngôn ngữ nhỏ. Tuy nhiên, khi tập token tăng lên, scanner dễ trở nên dài, rối và khó bảo trì. Việc thêm token mới có thể ảnh hưởng đến token cũ. Các trường hợp như chú thích, chuỗi ký tự, ký tự thoát, toán tử nhiều ký tự hoặc lỗi từ vựng có thể làm mã xử lý phức tạp hơn rất nhiều.</p>
+      <div class="callout">
+        Ví dụ, nếu cần thêm toán tử <code>=</code>, <code>==</code>, <code>=&gt;</code>, scanner phải kiểm tra cẩn thận để không tách sai: <code>==</code> phải là một token, không phải hai token <code>=</code> liên tiếp. Điều này dẫn đến nhu cầu có một cách xây dựng scanner có cấu trúc hơn.
+      </div>
+    </div>
+
+    <!-- Ô-tô-mát hữu hạn -->
+    <div class="article-section" id="o-to-mat">
+      <h2 class="section-heading">Ô-tô-mát hữu hạn</h2>
+      <p>Một cách có hệ thống để nhận dạng token là dùng <strong>ô-tô-mát hữu hạn</strong> (<em>finite automaton</em>). Ô-tô-mát hữu hạn là một mô hình gồm các trạng thái và các chuyển trạng thái dựa trên ký tự đầu vào. Scanner bắt đầu từ trạng thái khởi đầu, đọc từng ký tự và di chuyển qua các trạng thái. Khi đạt đến trạng thái chấp nhận, nó có thể nhận ra một token.</p>
+      <p>Ví dụ, để nhận dạng định danh theo luật <code>id → [a-zA-Z][a-zA-Z0-9]*</code>, ta có thể mô tả ô-tô-mát như sau:</p>
+
+      <figure style="text-align: center; margin: 28px 0;">
+        <img src="automaton_id.png" alt="Ô-tô-mát hữu hạn nhận dạng định danh" style="max-width: 480px; width: 100%; border-radius: 6px;">
+        <figcaption style="margin-top: 10px; font-size: 13px; color: var(--muted); font-family: 'IBM Plex Mono', monospace;">
+          Ô-tô-mát hữu hạn nhận dạng định danh (<code>id → [a-zA-Z][a-zA-Z0-9]*</code>).
+        </figcaption>
+      </figure>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Trạng thái</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>S0</code></td><td>Trạng thái bắt đầu</td></tr>
+          <tr><td><code>S1*</code></td><td>Trạng thái chấp nhận định danh</td></tr>
+          <tr><td><code>letter</code></td><td>Chữ cái (a-z, A-Z) — chuyển S0 → S1</td></tr>
+          <tr><td><code>letter | digit</code></td><td>Chữ cái hoặc chữ số — giữ nguyên S1</td></tr>
+        </tbody>
+      </table>
+
+      <p>Với đầu vào <code>abc123+</code>, ô-tô-mát đọc lần lượt:</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Ký tự</th><th>Trạng thái sau</th><th>Ghi chú</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>a</code></td><td>S1</td><td>Bắt đầu định danh</td></tr>
+          <tr><td><code>b</code></td><td>S1</td><td>Tiếp tục định danh</td></tr>
+          <tr><td><code>c</code></td><td>S1</td><td>Tiếp tục định danh</td></tr>
+          <tr><td><code>1</code></td><td>S1</td><td>Chữ số được phép sau ký tự đầu</td></tr>
+          <tr><td><code>2</code></td><td>S1</td><td>Tiếp tục</td></tr>
+          <tr><td><code>3</code></td><td>S1</td><td>Tiếp tục</td></tr>
+          <tr><td><code>+</code></td><td>Không thể tiếp tục</td><td>Kết thúc token <code>abc123</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Luật khớp dài nhất (Longest-Match Rule):</strong> Scanner phải đọc càng xa càng tốt để tạo token dài nhất có thể. Ví dụ, với đầu vào <code>count123</code>, scanner phải nhận ra toàn bộ <code>count123</code> là một định danh, không được tách thành <code>count</code> và <code>123</code>. Với <code>==</code> trong C, scanner phải nhận ra đây là một token so sánh bằng, không phải hai token <code>=</code> liên tiếp.
+      </div>
+    </div>
+
+    <!-- Sinh ô-tô-mát -->
+    <div class="article-section" id="sinh-o-to-mat">
+      <h2 class="section-heading">Sinh ô-tô-mát hữu hạn</h2>
+      <p>Khi token được đặc tả bằng biểu thức chính quy, ta có thể xây dựng scanner tự động qua ba bước chính:</p>
+
+      <div class="pipeline">
+        <div class="pipe-step">
+          <div class="pipe-num">1</div>
+          <div class="pipe-content">
+            <h4>Biểu thức chính quy → NFA</h4>
+            <p>Chuyển mỗi biểu thức chính quy thành một NFA (Nondeterministic Finite Automaton). NFA dễ xây dựng trực tiếp từ biểu thức chính quy vì nó cho phép nhiều lựa chọn và chuyển trạng thái linh hoạt.</p>
+          </div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">2</div>
+          <div class="pipe-content">
+            <h4>NFA → DFA</h4>
+            <p>Dùng xây dựng tập con (subset construction) để chuyển NFA thành DFA (Deterministic Finite Automaton). DFA phù hợp hơn để cài đặt scanner hiệu quả vì mỗi ký tự đầu vào dẫn đến một trạng thái tiếp theo duy nhất.</p>
+          </div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">3</div>
+          <div class="pipe-content">
+            <h4>DFA → DFA tối thiểu</h4>
+            <p>Rút gọn DFA bằng cách gộp các trạng thái tương đương. Kết quả là DFA nhỏ hơn nhưng nhận dạng cùng một tập chuỗi.</p>
+          </div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Bước</th><th>Đầu vào</th><th>Đầu ra</th><th>Mục đích</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Biểu thức chính quy</td><td>NFA</td><td>Biểu diễn hình thức tập chuỗi</td></tr>
+          <tr><td>2</td><td>NFA</td><td>DFA</td><td>Tạo máy nhận dạng quyết định, dễ chạy</td></tr>
+          <tr><td>3</td><td>DFA</td><td>DFA tối thiểu</td><td>Giảm số trạng thái, tối ưu scanner</td></tr>
+        </tbody>
+      </table>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Thuật ngữ</th><th>Tiếng Anh</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Ô-tô-mát hữu hạn không đơn định</td><td>Nondeterministic Finite Automaton (NFA)</td><td>Tại một trạng thái, có thể có nhiều lựa chọn chuyển trạng thái</td></tr>
+          <tr><td>Ô-tô-mát hữu hạn đơn định</td><td>Deterministic Finite Automaton (DFA)</td><td>Với mỗi trạng thái và ký tự đầu vào, có nhiều nhất một chuyển trạng thái</td></tr>
+          <tr><td>DFA tối thiểu</td><td>Minimal DFA</td><td>DFA tương đương nhưng có số trạng thái nhỏ nhất</td></tr>
+        </tbody>
+      </table>
+
+      <p>Trong thực tế, người lập trình thường không tự tay làm tất cả các bước này khi xây dựng ngôn ngữ lớn. Các công cụ sinh lexer có thể tự động chuyển đặc tả token thành mã nhận dạng tương ứng.</p>
+    </div>
+
+    <!-- Lỗi từ vựng -->
+    <div class="article-section" id="loi-tu-vung">
+      <h2 class="section-heading">Lỗi từ vựng</h2>
+      <p>Trong quá trình quét mã nguồn, có thể xảy ra <strong>lỗi từ vựng</strong> (<em>lexical error</em>). Lỗi từ vựng xuất hiện khi scanner gặp một chuỗi ký tự không thể thuộc về bất kỳ token hợp lệ nào, hoặc gặp một token chưa kết thúc đúng cách.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Loại lỗi</th><th>Ví dụ</th><th>Giải thích</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Chuỗi chưa đóng</td><td><code>"hello BK</code></td><td>Thiếu dấu nháy đóng</td></tr>
+          <tr><td>Ký tự thoát không hợp lệ</td><td><code>"path\qfile"</code></td><td><code>\q</code> không phải chuỗi thoát hợp lệ</td></tr>
+          <tr><td>Ký tự không thuộc token nào</td><td><code>x = @ + 1;</code></td><td><code>@</code> không được ngôn ngữ cho phép</td></tr>
+          <tr><td>Chú thích khối chưa đóng</td><td><code>/* comment</code></td><td>Thiếu <code>*/</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Thông báo lỗi tốt nên chỉ rõ vị trí. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Ví dụ thông báo lỗi</div>
+        <pre><code>Error at line 1, column 11: unclosed string literal
+Error at line 1, column 5:  invalid character '@'</code></pre>
+      </div>
+      <p>Một scanner tốt không chỉ phát hiện lỗi, mà còn cung cấp thông báo đủ rõ để người lập trình sửa lỗi. Vì vậy, việc ghi nhận dòng và cột của token không phải là chi tiết phụ, mà là nhiệm vụ quan trọng của phân tích từ vựng.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 4: ANTLR ==================== -->
+    <div class="lesson-badge">Bài 4 / 5</div>
+    <h1 class="lesson-title" id="antlr">ANTLR</h1>
+    <div class="lesson-meta">CO3005 · Phân tích Từ vựng</div>
+
+    <!-- Giới thiệu ANTLR -->
+    <div class="article-section" id="gioi-thieu-antlr">
+      <h2 class="section-heading">Giới thiệu ANTLR</h2>
+      <p>Viết scanner thủ công giúp hiểu nguyên lý, nhưng khi ngôn ngữ lớn dần, cách viết này trở nên khó duy trì. Vì vậy, trong thực tế, người ta thường dùng các công cụ sinh bộ phân tích từ vựng và cú pháp từ đặc tả ngữ pháp.</p>
+      <p><strong>ANTLR</strong> là viết tắt của <em>ANother Tool for Language Recognition</em>. Đây là một công cụ mạnh để sinh bộ phân tích từ vựng (<em>lexer</em>) và bộ phân tích cú pháp (<em>parser</em>) từ các luật ngữ pháp do người dùng định nghĩa. Tác giả của ANTLR là <strong>Terence Parr</strong>, giáo sư khoa học máy tính tại University of San Francisco. Phiên bản hiện đại thường dùng là <strong>ANTLRv4</strong>.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Nhu cầu</th><th>Vai trò của ANTLR</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Xây dựng ngôn ngữ nhỏ phục vụ học tập</td><td>Sinh lexer và parser nhanh</td></tr>
+          <tr><td>Thiết kế ngôn ngữ miền chuyên biệt</td><td>Đặc tả cú pháp rõ ràng bằng grammar</td></tr>
+          <tr><td>Phân tích mã nguồn</td><td>Tạo cây phân tích để xử lý tiếp</td></tr>
+          <tr><td>Làm bài tập về trình biên dịch</td><td>Tập trung vào AST, kiểm tra ngữ nghĩa, sinh mã</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Luật từ vựng ANTLRv4 -->
+    <div class="article-section" id="luat-tu-vung">
+      <h2 class="section-heading">Luật từ vựng trong ANTLRv4</h2>
+      <p>Trong ANTLRv4, các luật token thường được gọi là <strong>luật từ vựng</strong> (<em>lexer rules</em>). Tên token phải bắt đầu bằng chữ cái in hoa. Quy ước này giúp ANTLR phân biệt lexer rule với parser rule. Ví dụ một tệp <code>Hello.g4</code>:</p>
+      <div class="code-block">
+        <div class="code-label">Hello.g4 — ANTLRv4</div>
+        <pre><code>grammar Hello;
+
+<span class="cmt">// integer literals</span>
+INTEGER : [0-9]+ ;
+
+<span class="cmt">// identifiers</span>
+ID : [a-zA-Z_] [a-zA-Z_0-9]* ;
+
+<span class="cmt">// punctuation</span>
+LPAREN : '(' ;
+RPAREN : ')' ;</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Token</th><th>Luật</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>INTEGER</code></td><td><code>[0-9]+</code></td><td>Một hoặc nhiều chữ số</td></tr>
+          <tr><td><code>ID</code></td><td><code>[a-zA-Z_] [a-zA-Z_0-9]*</code></td><td>Định danh bắt đầu bằng chữ cái hoặc <code>_</code></td></tr>
+          <tr><td><code>LPAREN</code></td><td><code>'('</code></td><td>Dấu ngoặc trái</td></tr>
+          <tr><td><code>RPAREN</code></td><td><code>')'</code></td><td>Dấu ngoặc phải</td></tr>
+        </tbody>
+      </table>
+
+      <p>Khi nhiều luật có thể khớp với cùng một đoạn đầu vào, ANTLRv4 sử dụng các nguyên tắc ưu tiên:</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Thứ tự</th><th>Nguyên tắc</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Khớp dài nhất</td><td>Chọn luật khớp được đoạn đầu vào dài nhất</td></tr>
+          <tr><td>2</td><td>Token ngầm định trước token tường minh</td><td>Nếu văn bản khớp token ngầm định, luật ngầm định có ưu tiên</td></tr>
+          <tr><td>3</td><td>Thứ tự định nghĩa</td><td>Nếu độ dài bằng nhau, luật được viết trước thắng</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Thứ tự định nghĩa quan trọng:</strong> Khi viết lexer rule, nên đặt các từ khóa trước luật định danh tổng quát. Ví dụ, nếu <code>IF : 'if';</code> được định nghĩa trước <code>ID</code>, chuỗi <code>if</code> sẽ được nhận là token IF. Nếu viết ngược lại, <code>if</code> có thể bị nhận thành ID, làm sai ý định thiết kế.
+      </div>
+    </div>
+
+    <!-- Ký hiệu ANTLRv4 -->
+    <div class="article-section" id="ky-hieu-antlr">
+      <h2 class="section-heading">Ký hiệu trong ANTLRv4</h2>
+      <p>ANTLRv4 dùng nhiều ý tưởng tương tự biểu thức chính quy, nhưng cú pháp có một số điểm riêng. Bảng sau tóm tắt các ký hiệu thường gặp:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Ký hiệu</th><th>Ý nghĩa</th><th>Ví dụ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>~x</code></td><td>Ký tự bất kỳ trừ x</td><td><code>~'"'</code></td></tr>
+          <tr><td><code>~[a-z]</code></td><td>Ký tự bất kỳ không nằm trong tập [a-z]</td><td><code>~[0-9]</code></td></tr>
+          <tr><td><code>a..b</code></td><td>Khoảng ký tự từ a đến b</td><td><code>'0'..'9'</code></td></tr>
+          <tr><td><code>[ ... ]</code></td><td>Tập ký tự</td><td><code>[a-zA-Z_]</code></td></tr>
+          <tr><td><code>x+</code></td><td>Một hoặc nhiều lần</td><td><code>[0-9]+</code></td></tr>
+          <tr><td><code>x*</code></td><td>Không hoặc nhiều lần</td><td><code>[a-z]*</code></td></tr>
+          <tr><td><code>x?</code></td><td>Có hoặc không</td><td><code>'+'?</code></td></tr>
+          <tr><td><code>x | y</code></td><td>Lựa chọn</td><td><code>'+' | '-'</code></td></tr>
+          <tr><td><code>'lit'</code></td><td>Chuỗi hoặc ký tự cụ thể</td><td><code>'while'</code></td></tr>
+          <tr><td><code>.</code></td><td>Một ký tự bất kỳ</td><td><code>.</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ nhận dạng chuỗi đơn giản (không xử lý ký tự thoát):</p>
+      <div class="code-block">
+        <div class="code-label">ANTLRv4 — luật STRING đơn giản</div>
+        <pre><code>STRING : '"' ~'"'* '"' ;</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Thành phần</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>'"'</code></td><td>Dấu nháy kép mở</td></tr>
+          <tr><td><code>~'"'*</code></td><td>Không hoặc nhiều ký tự không phải dấu nháy kép</td></tr>
+          <tr><td><code>'"'</code></td><td>Dấu nháy kép đóng</td></tr>
+        </tbody>
+      </table>
+
+      <p>Nếu muốn hỗ trợ ký tự thoát như <code>\"</code> hoặc <code>\n</code>, luật cần phức tạp hơn:</p>
+      <div class="code-block">
+        <div class="code-label">ANTLRv4 — luật STRING có ký tự thoát</div>
+        <pre><code>STRING: '"' (ESC | ~[\"\\])* '"';
+fragment ESC: '\\' ["\\nrt];</code></pre>
+      </div>
+    </div>
+
+    <!-- Ví dụ nhỏ ANTLRv4 -->
+    <div class="article-section" id="vi-du-antlr">
+      <h2 class="section-heading">Một ví dụ nhỏ trong ANTLRv4</h2>
+      <p>Một grammar hoàn chỉnh để nhận dạng số nguyên, định danh và dấu ngoặc có thể viết như sau:</p>
+      <div class="code-block">
+        <div class="code-label">Hello.g4 — ANTLRv4</div>
+        <pre><code>grammar Hello;
+
+<span class="cmt">// integer literals</span>
+INTEGER : [0-9]+ ;
+
+<span class="cmt">// identifiers</span>
+IDENTIFIER : [a-zA-Z_] [a-zA-Z_0-9]* ;
+
+<span class="cmt">// parentheses</span>
+OPEN_PAREN : '(' ;
+CLOSE_PAREN : ')' ;
+
+<span class="cmt">// whitespace</span>
+WHITESPACE : [ \t\r\n]+ -> skip ;</code></pre>
+      </div>
+      <p>Với đầu vào <code>sum(123)</code>, lexer có thể sinh ra:</p>
+      <div class="code-block">
+        <div class="code-label">Token stream</div>
+        <pre><code>(IDENTIFIER, "sum")
+(OPEN_PAREN,  "(")
+(INTEGER,    "123")
+(CLOSE_PAREN, ")")</code></pre>
+      </div>
+      <p>Luật <code>WHITESPACE : [ \t\r\n]+ -&gt; skip ;</code> cho biết khoảng trắng, tab, xuống dòng sẽ bị bỏ qua, không tạo token trả về cho parser. Nếu đầu vào là <code>sum ( 123 )</code>, các khoảng trắng vẫn bị bỏ qua và chuỗi token vẫn giống như trên.</p>
+    </div>
+
+    <!-- Hành động và lệnh -->
+    <div class="article-section" id="hanh-dong">
+      <h2 class="section-heading">Hành động và lệnh</h2>
+      <p>Trong ANTLRv4, một lexer rule có thể chứa <strong>khối hành động</strong> (<em>action block</em>). Đây là đoạn mã của ngôn ngữ đích được đặt trong <code>{ ... }</code> và được thực thi trong quá trình nhận dạng token. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">ANTLRv4 — action block</div>
+        <pre><code>INTEGER : [0-9]+ { print(self.text) } ;</code></pre>
+      </div>
+      <p>ANTLR cũng hỗ trợ <strong>lệnh</strong> (<em>command</em>) viết sau ký hiệu <code>-&gt;</code> ở cuối rule. Ví dụ thường gặp nhất là <code>skip</code>:</p>
+      <div class="code-block">
+        <div class="code-label">ANTLRv4 — skip command</div>
+        <pre><code>WHITESPACE : [ \t\r\n]+ -> skip ;</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Cơ chế</th><th>Cú pháp</th><th>Tác dụng</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Khối hành động</td><td><code>{ ... }</code></td><td>Chạy mã của ngôn ngữ đích khi khớp rule</td></tr>
+          <tr><td>Lệnh bỏ qua</td><td><code>-&gt; skip</code></td><td>Không phát ra token</td></tr>
+          <tr><td>Lệnh đổi loại</td><td><code>-&gt; type(T)</code></td><td>Phát ra token với loại T</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        Trong thực hành, không nên lạm dụng action trong grammar nếu không cần thiết. Việc đặt quá nhiều mã xử lý vào lexer rule có thể làm grammar khó đọc và phụ thuộc mạnh vào ngôn ngữ đích.
+      </div>
+    </div>
+
+    <!-- Mảnh luật -->
+    <div class="article-section" id="manh-luat">
+      <h2 class="section-heading">Mảnh luật (Fragment)</h2>
+      <p>Trong ANTLRv4, <strong>mảnh luật</strong> (<em>fragment</em>) là phần luật có thể được dùng lại trong các lexer rule khác, nhưng bản thân nó không trực tiếp tạo token. Mảnh luật được định nghĩa bằng từ khóa <code>fragment</code>. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">ANTLRv4 — fragment</div>
+        <pre><code>grammar Hello;
+
+INTEGER: DIGIT+ | '0' [Xx] HEX_DIGIT+;
+
+fragment DIGIT: [0-9];
+fragment HEX_DIGIT: [0-9A-Fa-f];</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Rule</th><th>Vai trò</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>INTEGER</code></td><td>Rule tạo token số nguyên</td></tr>
+          <tr><td><code>DIGIT</code></td><td>Mảnh luật mô tả chữ số thập phân</td></tr>
+          <tr><td><code>HEX_DIGIT</code></td><td>Mảnh luật mô tả chữ số thập lục phân</td></tr>
+        </tbody>
+      </table>
+
+      <p>Các chuỗi hợp lệ: <code>123</code>, <code>0x1A</code>, <code>0XFF</code>. <code>DIGIT</code> và <code>HEX_DIGIT</code> không tự tạo token riêng — chúng chỉ được dùng như thành phần tái sử dụng bên trong rule <code>INTEGER</code>.</p>
+      <p>Mảnh luật giúp grammar gọn hơn, dễ đọc hơn và dễ bảo trì hơn. Ví dụ mở rộng:</p>
+      <div class="code-block">
+        <div class="code-label">ANTLRv4 — dùng lại fragment</div>
+        <pre><code>FLOAT: DIGIT+ '.' DIGIT+;
+INTEGER: DIGIT+;
+fragment DIGIT: [0-9];</code></pre>
+      </div>
+      <p>Ở đây, cả <code>FLOAT</code> và <code>INTEGER</code> đều dùng lại <code>DIGIT</code>.</p>
+
+      <div class="callout">
+        <strong>Tài liệu tham khảo:</strong> Để học sâu hơn về ANTLR và cách xây dựng lexer, parser, có thể tham khảo <em>ANTLR4 Documentation Index</em> (tài liệu chính thức), <em>The Definitive ANTLR 4 Reference</em> (sách của Terence Parr), và các hướng dẫn nhập môn ANTLR phù hợp để làm quen với grammar, lexer rule và parser rule.
+      </div>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 5: TÓM TẮT ==================== -->
+    <div class="lesson-badge">Bài 5 / 5</div>
+    <h1 class="lesson-title" id="tom-tat">Tóm tắt chương</h1>
+    <div class="lesson-meta">CO3005 · Phân tích Từ vựng</div>
+
+    <div class="article-section">
+      <p>Phân tích từ vựng là pha đầu tiên của trình biên dịch, có nhiệm vụ chuyển chuỗi ký tự của chương trình nguồn thành chuỗi token. Token là đơn vị cơ bản để parser xử lý cú pháp, còn lexeme là chuỗi ký tự cụ thể tạo nên token trong mã nguồn.</p>
+
+      <div class="def-list">
+        <div class="def-item">
+          <div class="def-term">Token & Lexeme</div>
+          <div>Token là đơn vị cơ bản (loại + giá trị). Lexeme là chuỗi ký tự cụ thể tạo nên token trong mã nguồn.</div>
+        </div>
+        <div class="def-item">
+          <div class="def-term">Biểu thức chính quy</div>
+          <div>Cung cấp một cách hình thức để mô tả các loại token. Từ các biểu thức chính quy, ta có thể xây dựng scanner thủ công hoặc sinh scanner có cấu trúc dựa trên ô-tô-mát hữu hạn.</div>
+        </div>
+        <div class="def-item">
+          <div class="def-term">Luật khớp dài nhất</div>
+          <div>Scanner phải áp dụng luật khớp dài nhất, bỏ qua các phần không cần thiết như khoảng trắng hoặc chú thích, và phát hiện lỗi từ vựng như chuỗi chưa đóng, ký tự thoát không hợp lệ hoặc ký tự không thuộc token nào.</div>
+        </div>
+        <div class="def-item">
+          <div class="def-term">NFA → DFA</div>
+          <div>Biểu thức chính quy có thể chuyển thành NFA, NFA chuyển thành DFA bằng subset construction, DFA được tối thiểu hóa để xây dựng scanner hiệu quả.</div>
+        </div>
+        <div class="def-item">
+          <div class="def-term">ANTLR</div>
+          <div>ANTLR là công cụ giúp sinh lexer và parser từ các luật ngữ pháp. Trong ANTLRv4, lexer rule được viết với tên bắt đầu bằng chữ in hoa, dùng các ký hiệu gần với biểu thức chính quy, có thể dùng lệnh như <code>skip</code>, <code>type</code>, và có thể định nghĩa fragment để tái sử dụng các thành phần luật.</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Nền tảng tiếp theo:</strong> Việc nắm vững phân tích từ vựng là nền tảng để học tiếp phân tích cú pháp, sinh AST và các pha sau của trình biên dịch.
+      </div>
+    </div>
+
+    <!-- NAV FOOTER -->
+    <div class="nav-footer">
+      <span>Bài 1–5 / 5 · CO3005</span>
+      <div style="display:flex; gap:10px;">
+        <span class="nav-btn secondary">← Bài trước</span>
+        <span class="nav-btn">Bài tiếp theo →</span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Active TOC
+  const sections = document.querySelectorAll('[id]');
+  const tocItems = document.querySelectorAll('.toc-item');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocItems.forEach(item => {
+          item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

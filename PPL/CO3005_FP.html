@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CO3005 – Lập trình hàm</title>
+<meta name="description" content="Bài học về Lập trình hàm (Functional Programming) – CO3005 Nguyên lý Ngôn ngữ Lập trình, bao gồm biểu thức, lambda, hàm thuần, bất biến, hàm bậc cao, bao đóng và decorator.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd9d0;
+    --text: #1a1916;
+    --muted: #6b6760;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --kw: #569cd6;
+    --str: #ce9178;
+    --cmt: #6a9955;
+    --num: #b5cea8;
+    --fn: #dcdcaa;
+    --tag-bg: #e8f0fb;
+    --tag-text: #1a56a0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .toc-item {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .toc-item.sub { padding-left: 32px; font-size: 12px; }
+
+  /* MAIN */
+  .main {
+    padding: 48px 56px 80px;
+    max-width: 820px;
+  }
+
+  .lesson-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--tag-text);
+    background: var(--tag-bg);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .lesson-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article-section {
+    margin-bottom: 52px;
+    scroll-margin-top: 24px;
+  }
+
+  .section-heading {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+  .section-heading::before {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 40px; height: 2px;
+    background: var(--accent);
+  }
+
+  p { margin-bottom: 14px; color: var(--text); }
+
+  /* MATH / FORMULA */
+  .formula {
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 18px;
+    margin: 16px 0;
+    font-size: 15px;
+    color: var(--text);
+    text-align: center;
+  }
+
+  /* CODE */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+    font-size: 13.5px;
+  }
+  .code-label {
+    background: #2d2d2d;
+    padding: 6px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #333;
+  }
+  pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1.6;
+    color: var(--code-text);
+  }
+  pre code { font-family: inherit; }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #e8e5de;
+    color: #b5451b;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+
+  .kw  { color: var(--kw); }
+  .str { color: var(--str); }
+  .cmt { color: var(--cmt); font-style: italic; }
+  .num { color: var(--num); }
+  .fn  { color: var(--fn); }
+  .type{ color: #4ec9b0; }
+  .op  { color: #d4d4d4; }
+
+  /* CALLOUT */
+  .callout {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .callout strong { color: var(--accent); }
+
+  /* TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  /* DEF LIST */
+  .def-list { margin: 16px 0 20px; }
+  .def-item {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .def-item:first-child { border-top: 1px solid var(--border); }
+  .def-term {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    padding-top: 2px;
+  }
+
+  /* NAV FOOTER */
+  .nav-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 0 0; border-top: 1px solid var(--border);
+    margin-top: 48px; font-size: 14px; color: var(--muted);
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--accent); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 500;
+    text-decoration: none; cursor: default;
+  }
+  .nav-btn.secondary { background: var(--surface); color: var(--accent); border: 1px solid var(--accent); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+    .def-item { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-title">Mục lục bài học</div>
+    <a class="toc-item active" href="#mo-hinh-fp">Bài 1 · Lập trình hàm như một mô hình</a>
+    <a class="toc-item sub" href="#fp-la-gi">Lập trình hàm là gì?</a>
+    <a class="toc-item sub" href="#tu-duy-menh-lenh-ham">Tư duy mệnh lệnh và tư duy hàm</a>
+    <a class="toc-item sub" href="#danh-gia-bieu-thuc">Tính toán như đánh giá biểu thức</a>
+    <a class="toc-item sub" href="#ham-phep-bien-doi">Hàm như phép biến đổi</a>
+    <a class="toc-item" href="#lambda-calculus">Bài 2 · Phép tính lambda như nền tảng khái niệm</a>
+    <a class="toc-item sub" href="#vi-sao-lambda">Vì sao nhắc đến phép tính lambda?</a>
+    <a class="toc-item sub" href="#ba-khai-niem">Ba khái niệm cốt lõi</a>
+    <a class="toc-item sub" href="#tu-truu-tuong-den-lambda">Từ trừu tượng lambda đến hàm lambda</a>
+    <a class="toc-item sub" href="#ap-dung-ham">Áp dụng hàm và trực giác thay thế</a>
+    <a class="toc-item" href="#bat-bien-ham-thuan">Bài 3 · Bất biến, hàm thuần và hiệu ứng phụ</a>
+    <a class="toc-item sub" href="#du-lieu-bat-bien">Dữ liệu thay đổi được và bất biến</a>
+    <a class="toc-item sub" href="#hieu-ung-phu">Hiệu ứng phụ</a>
+    <a class="toc-item sub" href="#ham-thuan">Hàm thuần</a>
+    <a class="toc-item sub" href="#tinh-thay-the">Tính thay thế bằng giá trị</a>
+    <a class="toc-item sub" href="#bat-bien-suy-luan">Bất biến và suy luận chương trình</a>
+    <a class="toc-item" href="#ham-bac-cao">Bài 4 · Hàm hạng nhất, hàm bậc cao và kết hợp hàm</a>
+    <a class="toc-item sub" href="#ham-hang-nhat">Hàm hạng nhất</a>
+    <a class="toc-item sub" href="#ham-lam-doi-so">Hàm làm đối số</a>
+    <a class="toc-item sub" href="#ham-lam-ket-qua">Hàm làm giá trị trả về</a>
+    <a class="toc-item sub" href="#ham-bac-cao-khai-niem">Hàm bậc cao</a>
+    <a class="toc-item sub" href="#map-filter-reduce">Map, filter và reduce</a>
+    <a class="toc-item sub" href="#ket-hop-ham">Kết hợp hàm</a>
+    <a class="toc-item" href="#bao-dong">Bài 5 · Bao đóng và môi trường phi cục bộ</a>
+    <a class="toc-item sub" href="#bien-tu-do">Biến tự do và môi trường phi cục bộ</a>
+    <a class="toc-item sub" href="#bao-dong-la-gi">Bao đóng là gì?</a>
+    <a class="toc-item sub" href="#vi-sao-code-chua-du">Vì sao chỉ có code là chưa đủ?</a>
+    <a class="toc-item sub" href="#decorator">Decorator là gì?</a>
+    <a class="toc-item sub" href="#decorator-mo-rong">Decorator và mở rộng hành vi</a>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+
+    <!-- ==================== BÀI 1 ==================== -->
+    <div class="lesson-badge">Bài 1 / 5</div>
+    <h1 class="lesson-title" id="mo-hinh-fp">Lập trình hàm như một mô hình lập trình</h1>
+    <div class="lesson-meta">CO3005 · Lập trình hàm · Trần Ngọc Bảo Duy</div>
+
+    <div class="article-section" id="fp-la-gi">
+      <h2 class="section-heading">Lập trình hàm là gì?</h2>
+      <p><strong>Lập trình hàm</strong> là một mô hình lập trình nhìn chương trình như quá trình đánh giá biểu thức và áp dụng hàm. Nếu lập trình mệnh lệnh nhấn mạnh vào chuỗi câu lệnh làm thay đổi trạng thái, lập trình hàm nhấn mạnh vào việc biến đổi giá trị thông qua các hàm. Thay vì hỏi "cần thay đổi biến nào, theo thứ tự nào?", lập trình hàm thường hỏi "giá trị đầu vào được biến đổi thành giá trị đầu ra như thế nào?".</p>
+      <p>Trong chương này, ta tiếp cận lập trình hàm như một mô hình ngôn ngữ lập trình, không chỉ như một phong cách viết code. Các khái niệm quan trọng gồm biểu thức (<em>expression</em>), áp dụng hàm (<em>function application</em>), hàm thuần (<em>pure function</em>), bất biến (<em>immutability</em>), hiệu ứng phụ (<em>side effect</em>), hàm hạng nhất (<em>first-class function</em>), hàm bậc cao (<em>higher-order function</em>), bao đóng (<em>closure</em>) và kết hợp hàm (<em>function composition</em>).</p>
+      <p><strong>Lập trình hàm</strong> (<em>functional programming</em>) là mô hình lập trình trong đó tính toán chủ yếu được mô hình hóa như việc đánh giá biểu thức và áp dụng hàm. Chương trình được xây dựng bằng cách biến đổi giá trị đầu vào thành giá trị đầu ra, thay vì liên tục thay đổi trạng thái của chương trình.</p>
+      <p>Trong lập trình hàm, ta thường ưu tiên:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Ý tưởng</th><th>Diễn giải</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Biểu thức thay cho mệnh lệnh</td><td>Chương trình được cấu trúc bằng các biểu thức tạo ra giá trị</td></tr>
+          <tr><td>Áp dụng hàm thay cho thay đổi trạng thái</td><td>Tính toán được thực hiện bằng lời gọi hàm</td></tr>
+          <tr><td>Dữ liệu bất biến thay cho biến thay đổi</td><td>Tạo giá trị mới thay vì sửa giá trị cũ</td></tr>
+          <tr><td>Hàm thuần thay cho mã nhiều hiệu ứng phụ</td><td>Cùng đầu vào cho cùng đầu ra và không làm thay đổi bên ngoài</td></tr>
+          <tr><td>Kết hợp hàm nhỏ</td><td>Xây dựng tính toán lớn từ các hàm nhỏ</td></tr>
+        </tbody>
+      </table>
+
+      <p>Hình ảnh cốt lõi của lập trình hàm là:</p>
+      <div class="formula">giá trị → hàm → giá trị</div>
+
+      <div class="code-block">
+        <div class="code-label">Python — hàm đơn giản</div>
+        <pre><code><span class="kw">def</span> <span class="fn">square</span>(x):
+    <span class="kw">return</span> x * x
+<span class="fn">print</span>(<span class="fn">square</span>(<span class="num">4</span>))
+<span class="cmt"># Kết quả: 16</span></code></pre>
+      </div>
+      <p>Hàm <code>square</code> nhận một giá trị, biến đổi nó và trả về giá trị mới. Nó không cần thay đổi biến toàn cục, không ghi ra tệp, không sửa danh sách bên ngoài. Đây là dạng hàm dễ kiểm tra, dễ hiểu và dễ kết hợp.</p>
+      <p>Một tính toán lớn có thể được tạo bằng cách lồng hoặc kết hợp các hàm nhỏ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — kết hợp hàm nhỏ</div>
+        <pre><code><span class="kw">def</span> <span class="fn">increment</span>(x): <span class="kw">return</span> x + <span class="num">1</span>
+<span class="kw">def</span> <span class="fn">double</span>(x): <span class="kw">return</span> x * <span class="num">2</span>
+<span class="fn">print</span>(<span class="fn">double</span>(<span class="fn">increment</span>(<span class="num">3</span>)))
+<span class="cmt"># increment(3) → 4, double(4) → 8</span></code></pre>
+      </div>
+    </div>
+
+    <div class="article-section" id="tu-duy-menh-lenh-ham">
+      <h2 class="section-heading">Tư duy mệnh lệnh và tư duy hàm</h2>
+      <p>Trong lập trình mệnh lệnh, ta thường mô tả từng bước thực hiện. Ví dụ, để bình phương từng phần tử trong danh sách, ta có thể viết:</p>
+      <div class="code-block">
+        <div class="code-label">Python — phong cách mệnh lệnh</div>
+        <pre><code>numbers = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>]
+result = []
+<span class="kw">for</span> x <span class="kw">in</span> numbers:
+    result.<span class="fn">append</span>(x * x)
+<span class="fn">print</span>(result)</code></pre>
+      </div>
+      <p>Cách viết này nhấn mạnh các bước: tạo danh sách rỗng, duyệt từng phần tử, thêm kết quả vào danh sách. Trong phong cách hàm, ta mô tả phép biến đổi trên dữ liệu:</p>
+      <div class="code-block">
+        <div class="code-label">Python — phong cách hàm với map</div>
+        <pre><code>numbers = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>]
+result = <span class="fn">list</span>(<span class="fn">map</span>(<span class="kw">lambda</span> x: x * x, numbers))
+<span class="fn">print</span>(result)</code></pre>
+      </div>
+      <p>Ở đây, <code>map</code> thể hiện mẫu tính toán "áp dụng một hàm cho từng phần tử". Ta không trực tiếp mô tả cách tạo danh sách kết quả từng bước; ta mô tả phép biến đổi.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Khía cạnh</th><th>Phong cách mệnh lệnh</th><th>Phong cách hàm</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Đơn vị chính</td><td>Câu lệnh</td><td>Biểu thức</td></tr>
+          <tr><td>Trạng thái</td><td>Thường xuyên cập nhật</td><td>Giảm thiểu hoặc bất biến</td></tr>
+          <tr><td>Lặp</td><td>Vòng lặp</td><td>Đệ quy hoặc hàm bậc cao</td></tr>
+          <tr><td>Trọng tâm</td><td>Cách thực hiện từng bước</td><td>Phép biến đổi cần biểu diễn</td></tr>
+        </tbody>
+      </table>
+
+      <p>Điều này không có nghĩa vòng lặp luôn xấu hoặc <code>map</code> luôn tốt hơn. Trong nhiều ngôn ngữ như Python, list comprehension có thể vừa rõ ràng vừa gần với tư duy hàm:</p>
+      <div class="code-block">
+        <div class="code-label">Python — list comprehension</div>
+        <pre><code>numbers = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>]
+result = [x * x <span class="kw">for</span> x <span class="kw">in</span> numbers]
+<span class="fn">print</span>(result)</code></pre>
+      </div>
+      <div class="callout">
+        Điểm quan trọng là lập trình hàm khuyến khích người lập trình suy nghĩ về <strong>biến đổi giá trị</strong> hơn là <strong>cập nhật trạng thái</strong>.
+      </div>
+    </div>
+
+    <div class="article-section" id="danh-gia-bieu-thuc">
+      <h2 class="section-heading">Tính toán như đánh giá biểu thức</h2>
+      <p>Trong lập trình hàm, chương trình thường được cấu trúc như các <strong>biểu thức</strong> (<em>expressions</em>) tạo ra giá trị. Một biểu thức có thể là hằng số, tên biến, lời gọi hàm, biểu thức điều kiện hoặc tổ hợp của nhiều biểu thức khác. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — đánh giá biểu thức</div>
+        <pre><code>square = <span class="kw">lambda</span> x: x * x
+result = <span class="fn">square</span>(<span class="num">4</span>)
+<span class="cmt"># square(4) → 4 * 4 → 16</span></code></pre>
+      </div>
+      <p>Trong Python, biểu thức điều kiện cũng tạo ra giá trị:</p>
+      <div class="code-block">
+        <div class="code-label">Python — biểu thức điều kiện</div>
+        <pre><code>x = -<span class="num">5</span>
+abs_v = x <span class="kw">if</span> x &gt;= <span class="num">0</span> <span class="kw">else</span> -x
+<span class="fn">print</span>(abs_v)
+<span class="cmt"># Kết quả: 5</span></code></pre>
+      </div>
+      <p>Khác với câu lệnh <code>if</code> thông thường, biểu thức điều kiện trên có thể nằm bên phải phép gán vì nó trả về một giá trị. Trong tư duy hàm, một chương trình tốt thường được xây dựng bằng cách kết hợp các biểu thức nhỏ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — chuỗi biến đổi</div>
+        <pre><code><span class="kw">def</span> <span class="fn">normalize</span>(x): <span class="kw">return</span> x.<span class="fn">strip</span>().<span class="fn">lower</span>()
+<span class="fn">print</span>(<span class="fn">normalize</span>(<span class="str">"  Hello  "</span>))
+<span class="cmt"># Kết quả: hello</span></code></pre>
+      </div>
+      <p>Biểu thức <code>x.strip().lower()</code> là sự kết hợp nhiều phép biến đổi: bỏ khoảng trắng hai đầu, rồi chuyển về chữ thường.</p>
+    </div>
+
+    <div class="article-section" id="ham-phep-bien-doi">
+      <h2 class="section-heading">Hàm như phép biến đổi</h2>
+      <p>Về mặt toán học, một hàm có thể được xem là ánh xạ từ tập giá trị đầu vào sang tập giá trị đầu ra:</p>
+      <div class="formula">f : A → B</div>
+      <p>Trong lập trình, hàm cũng có thể được hiểu như một phép biến đổi giá trị. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — hàm như ánh xạ</div>
+        <pre><code><span class="kw">def</span> <span class="fn">square</span>(x):
+    <span class="kw">return</span> x * x
+<span class="cmt"># square : Number → Number</span></code></pre>
+      </div>
+      <p>Một hàm lý tưởng trong lập trình hàm thường có các đặc điểm:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Đặc điểm</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Xác định</td><td>Cùng đầu vào luôn cho cùng đầu ra</td></tr>
+          <tr><td>Không thay đổi trạng thái ẩn</td><td>Không âm thầm sửa biến toàn cục hoặc đối tượng bên ngoài</td></tr>
+          <tr><td>Dễ kết hợp</td><td>Có thể dùng làm thành phần trong hàm lớn hơn</td></tr>
+          <tr><td>Dễ kiểm tra</td><td>Chỉ cần kiểm tra quan hệ đầu vào – đầu ra</td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block">
+        <div class="code-label">Python — hàm thuần điển hình</div>
+        <pre><code><span class="kw">def</span> <span class="fn">fahrenheit</span>(c):
+    <span class="kw">return</span> (<span class="num">9</span> / <span class="num">5</span>) * c + <span class="num">32</span>
+<span class="fn">print</span>(<span class="fn">fahrenheit</span>(<span class="num">37</span>))
+<span class="cmt"># Kết quả: 98.6</span></code></pre>
+      </div>
+      <p>Hàm này không phụ thuộc vào trạng thái bên ngoài. Muốn kiểm thử, chỉ cần cung cấp đầu vào và so sánh đầu ra mong đợi.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 2 ==================== -->
+    <div class="lesson-badge">Bài 2 / 5</div>
+    <h1 class="lesson-title" id="lambda-calculus">Phép tính lambda như nền tảng khái niệm</h1>
+    <div class="lesson-meta">CO3005 · Lập trình hàm</div>
+
+    <div class="article-section" id="vi-sao-lambda">
+      <h2 class="section-heading">Vì sao nhắc đến phép tính lambda?</h2>
+      <p>Lập trình hàm có gốc rễ sâu trong ý tưởng xem tính toán là định nghĩa và áp dụng hàm. <strong>Phép tính lambda</strong> (<em>lambda calculus</em>) là một mô hình hình thức tối giản nắm bắt đúng tinh thần này. Nó không cần biến gán, vòng lặp, đối tượng hay bộ nhớ thay đổi; nó chỉ cần hàm và áp dụng hàm.</p>
+      <p>Trong chương này, phép tính lambda chỉ được dùng như cầu nối khái niệm, không đi sâu vào lý thuyết hình thức đầy đủ. Mục tiêu là giúp người học hiểu vì sao lập trình hàm xem hàm là trung tâm của tính toán.</p>
+      <p>Có thể hình dung mối liên hệ:</p>
+      <div class="code-block">
+        <div class="code-label">Mối liên hệ khái niệm</div>
+        <pre><code>Phép tính lambda
+  → hàm, biến, áp dụng hàm
+  → lập trình hàm
+  → hàm hạng nhất, hàm vô danh, hàm bậc cao, bao đóng</code></pre>
+      </div>
+      <p>Nhiều khái niệm quen thuộc trong ngôn ngữ lập trình hiện đại như <code>lambda</code>, hàm vô danh, truyền hàm làm đối số và trả về hàm đều có liên hệ trực tiếp với phép tính lambda.</p>
+    </div>
+
+    <div class="article-section" id="ba-khai-niem">
+      <h2 class="section-heading">Ba khái niệm cốt lõi</h2>
+      <p>Phép tính lambda được xây dựng từ ba dạng cơ bản:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Khái niệm</th><th>Ý nghĩa</th><th>Ví dụ trong lambda</th><th>Tương tự trong Python</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Biến</td><td>Một tên</td><td><code>x</code></td><td><code>x</code></td></tr>
+          <tr><td>Trừu tượng hàm</td><td>Định nghĩa hàm</td><td><code>λx. x + 1</code></td><td><code>lambda x: x + 1</code></td></tr>
+          <tr><td>Áp dụng hàm</td><td>Gọi hàm</td><td><code>(λx. x + 1) 3</code></td><td><code>(lambda x: x + 1)(3)</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Biểu thức <code>λx. x + 1</code> có thể đọc là: hàm nhận tham số <code>x</code> và trả về <code>x + 1</code>. Trong Python:</p>
+      <div class="code-block">
+        <div class="code-label">Python — hàm lambda</div>
+        <pre><code>inc = <span class="kw">lambda</span> x: x + <span class="num">1</span>
+<span class="fn">print</span>(inc(<span class="num">3</span>))
+<span class="cmt"># Kết quả: 4</span></code></pre>
+      </div>
+      <p>Ở đây, <code>lambda x: x + 1</code> là một hàm không tên. Ta gán nó cho tên <code>inc</code>, rồi gọi <code>inc(3)</code>.</p>
+    </div>
+
+    <div class="article-section" id="tu-truu-tuong-den-lambda">
+      <h2 class="section-heading">Từ trừu tượng lambda đến hàm lambda</h2>
+      <p>Một trừu tượng lambda (<em>lambda abstraction</em>) trong phép tính lambda tương ứng với hàm lambda (<em>lambda function</em>) trong nhiều ngôn ngữ lập trình. So sánh:</p>
+      <div class="formula">λx. x + 1 &nbsp;&nbsp;↔&nbsp;&nbsp; lambda x: x + 1</div>
+      <p>Cả hai đều mô tả cùng một ý tưởng: một hàm nhận <code>x</code> và trả về <code>x + 1</code>. Trong Python, hàm lambda có một số đặc điểm:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Đặc điểm</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Không cần tên khi định nghĩa</td><td>Có thể dùng trực tiếp tại chỗ</td></tr>
+          <tr><td>Có thể có nhiều tham số</td><td><code>lambda a, b: a + b</code></td></tr>
+          <tr><td>Thân hàm là một biểu thức</td><td>Không chứa nhiều câu lệnh</td></tr>
+          <tr><td>Có thể truyền cho hàm khác</td><td>Thường dùng với <code>map</code>, <code>filter</code>, <code>sorted</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block">
+        <div class="code-label">Python — lambda nhiều tham số</div>
+        <pre><code><span class="fn">print</span>((<span class="kw">lambda</span> a, b: a + b)(<span class="num">3</span>, <span class="num">4</span>))
+<span class="cmt"># Kết quả: 7</span></code></pre>
+      </div>
+      <p>Lambda hữu ích khi cần một hàm ngắn, dùng một lần.</p>
+      <div class="code-block">
+        <div class="code-label">Python — lambda với sorted</div>
+        <pre><code>nums = [<span class="num">3</span>, <span class="num">1</span>, <span class="num">2</span>]
+<span class="fn">print</span>(<span class="fn">sorted</span>(nums, key=<span class="kw">lambda</span> x: -x))
+<span class="cmt"># Kết quả: [3, 2, 1] — sắp xếp giảm dần</span></code></pre>
+      </div>
+    </div>
+
+    <div class="article-section" id="ap-dung-ham">
+      <h2 class="section-heading">Áp dụng hàm và trực giác thay thế</h2>
+      <p><strong>Áp dụng hàm</strong> (<em>function application</em>) nghĩa là đưa đối số vào hàm và đánh giá thân hàm. Trong trực giác đơn giản, có thể xem điều này như việc thay tham số bằng đối số trong thân hàm. Ví dụ:</p>
+      <div class="formula">(λx. x * x) 4 &nbsp;→&nbsp; 4 * 4 &nbsp;→&nbsp; 16</div>
+      <div class="code-block">
+        <div class="code-label">Python — áp dụng hàm</div>
+        <pre><code><span class="fn">print</span>((<span class="kw">lambda</span> x: x * x)(<span class="num">4</span>))
+<span class="cmt"># Kết quả: 16</span></code></pre>
+      </div>
+      <p>Ví dụ với hai tham số:</p>
+      <div class="code-block">
+        <div class="code-label">Python — áp dụng hàm hai tham số</div>
+        <pre><code><span class="fn">print</span>((<span class="kw">lambda</span> a, b: a * b + <span class="num">1</span>)(<span class="num">3</span>, <span class="num">5</span>))
+<span class="cmt"># a = 3, b = 5 → 3 * 5 + 1 → 16</span></code></pre>
+      </div>
+      <p>Trực giác thay thế giúp người học hiểu vì sao hàm là "động cơ tính toán" của lập trình hàm. Chương trình được thực thi bằng cách liên tục áp dụng hàm cho giá trị, tạo ra giá trị mới.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 3 ==================== -->
+    <div class="lesson-badge">Bài 3 / 5</div>
+    <h1 class="lesson-title" id="bat-bien-ham-thuan">Bất biến, hàm thuần và hiệu ứng phụ</h1>
+    <div class="lesson-meta">CO3005 · Lập trình hàm</div>
+
+    <div class="article-section" id="du-lieu-bat-bien">
+      <h2 class="section-heading">Dữ liệu thay đổi được và dữ liệu bất biến</h2>
+      <p><strong>Dữ liệu thay đổi được</strong> (<em>mutable data</em>) là dữ liệu có thể bị thay đổi sau khi được tạo ra. Ví dụ, danh sách trong Python là đối tượng thay đổi được.</p>
+      <div class="code-block">
+        <div class="code-label">Python — dữ liệu thay đổi được</div>
+        <pre><code>xs = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+xs.<span class="fn">append</span>(<span class="num">4</span>)
+<span class="fn">print</span>(xs)
+<span class="cmt"># Kết quả: [1, 2, 3, 4] — danh sách bị sửa tại chỗ</span></code></pre>
+      </div>
+      <p>Ngược lại, <strong>dữ liệu bất biến</strong> (<em>immutable data</em>) là dữ liệu không thể bị thay đổi sau khi được tạo ra. Ví dụ, số nguyên và chuỗi trong Python là bất biến.</p>
+      <div class="code-block">
+        <div class="code-label">Python — dữ liệu bất biến</div>
+        <pre><code>x = <span class="num">10</span>
+y = x + <span class="num">1</span>
+<span class="fn">print</span>(x)   <span class="cmt"># 10 — không bị sửa</span>
+<span class="fn">print</span>(y)   <span class="cmt"># 11 — giá trị mới</span></code></pre>
+      </div>
+      <p>Chuỗi cũng bất biến:</p>
+      <div class="code-block">
+        <div class="code-label">Python — chuỗi bất biến</div>
+        <pre><code>s = <span class="str">"hello"</span>
+t = s.<span class="fn">upper</span>()
+<span class="fn">print</span>(s)   <span class="cmt"># hello</span>
+<span class="fn">print</span>(t)   <span class="cmt"># HELLO</span></code></pre>
+      </div>
+      <div class="callout">
+        Lập trình hàm ưu tiên bất biến vì nó làm chương trình dễ suy luận hơn. Nếu một giá trị không thể bị sửa, ta không cần hỏi "ai đã thay đổi nó?" hoặc "nó đã bị thay đổi lúc nào?".
+      </div>
+    </div>
+
+    <div class="article-section" id="hieu-ung-phu">
+      <h2 class="section-heading">Hiệu ứng phụ</h2>
+      <p><strong>Hiệu ứng phụ</strong> (<em>side effect</em>) xảy ra khi việc đánh giá biểu thức hoặc gọi hàm làm thay đổi trạng thái chương trình, hoặc tương tác với thế giới bên ngoài.</p>
+      <div class="code-block">
+        <div class="code-label">Ví dụ về hiệu ứng phụ</div>
+        <pre><code>x = x + <span class="num">1</span>         <span class="cmt"># sửa biến</span>
+items.<span class="fn">append</span>(<span class="num">10</span>)  <span class="cmt"># sửa đối tượng</span>
+<span class="fn">print</span>(x)          <span class="cmt"># ghi ra màn hình</span>
+name = <span class="fn">input</span>()   <span class="cmt"># đọc từ ngoài</span></code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Hiệu ứng phụ</th><th>Ví dụ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Sửa biến toàn cục</td><td><code>global_count += 1</code></td></tr>
+          <tr><td>Sửa đối tượng truyền vào</td><td><code>items.append(x)</code></td></tr>
+          <tr><td>Ghi ra ngoài</td><td><code>print(x)</code></td></tr>
+          <tr><td>Đọc từ ngoài</td><td><code>input()</code></td></tr>
+          <tr><td>Gây ngoại lệ</td><td><code>raise ValueError()</code></td></tr>
+          <tr><td>Phụ thuộc trạng thái ngoài</td><td>Đọc thời gian, đọc file, đọc random</td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block">
+        <div class="code-label">Python — hàm có hiệu ứng phụ</div>
+        <pre><code>items = []
+<span class="kw">def</span> <span class="fn">add_item</span>(x):
+    items.<span class="fn">append</span>(x)   <span class="cmt"># sửa danh sách bên ngoài</span>
+<span class="fn">add_item</span>(<span class="num">10</span>)
+<span class="fn">print</span>(items)
+<span class="cmt"># Kết quả: [10]</span></code></pre>
+      </div>
+      <p>Hàm <code>add_item</code> không chỉ nhận đầu vào và trả kết quả. Nó làm thay đổi danh sách <code>items</code> bên ngoài.</p>
+      <div class="callout">
+        Hiệu ứng phụ không phải lúc nào cũng xấu. Chương trình thực tế cần đọc dữ liệu, ghi kết quả, cập nhật cơ sở dữ liệu và giao tiếp với người dùng. Tuy nhiên, lập trình hàm khuyến khích <strong>cô lập hiệu ứng phụ</strong> và giữ phần lõi tính toán càng thuần càng tốt.
+      </div>
+    </div>
+
+    <div class="article-section" id="ham-thuan">
+      <h2 class="section-heading">Hàm thuần</h2>
+      <p><strong>Hàm thuần</strong> (<em>pure function</em>) là hàm luôn tạo ra cùng một kết quả với cùng một đầu vào và không có hiệu ứng phụ.</p>
+      <div class="code-block">
+        <div class="code-label">Python — hàm thuần</div>
+        <pre><code><span class="kw">def</span> <span class="fn">square</span>(x):
+    <span class="kw">return</span> x * x
+<span class="cmt"># square(4) → luôn trả về 16, không sửa gì bên ngoài</span></code></pre>
+      </div>
+      <p>Ví dụ hàm không thuần:</p>
+      <div class="code-block">
+        <div class="code-label">Python — hàm không thuần</div>
+        <pre><code>total = <span class="num">0</span>
+<span class="kw">def</span> <span class="fn">add_to_total</span>(x):
+    <span class="kw">global</span> total
+    total += x
+    <span class="kw">return</span> total
+
+<span class="fn">print</span>(<span class="fn">add_to_total</span>(<span class="num">5</span>))   <span class="cmt"># 5</span>
+<span class="fn">print</span>(<span class="fn">add_to_total</span>(<span class="num">5</span>))   <span class="cmt"># 10 — cùng đầu vào, khác kết quả!</span></code></pre>
+      </div>
+      <p>Hàm thuần có nhiều lợi ích:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Lợi ích</th><th>Giải thích</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Dễ kiểm thử</td><td>Chỉ cần so sánh đầu vào và đầu ra</td></tr>
+          <tr><td>Dễ suy luận</td><td>Không cần theo dõi trạng thái ẩn</td></tr>
+          <tr><td>Dễ tái sử dụng</td><td>Không phụ thuộc ngữ cảnh bên ngoài</td></tr>
+          <tr><td>Dễ kết hợp</td><td>Có thể dùng trong pipeline hàm</td></tr>
+          <tr><td>Dễ song song hóa</td><td>Ít rủi ro tranh chấp trạng thái</td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ, thay vì sửa danh sách đầu vào:</p>
+      <div class="code-block">
+        <div class="code-label">Python — sửa tại chỗ (không thuần)</div>
+        <pre><code><span class="kw">def</span> <span class="fn">add_one_in_place</span>(xs):
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(xs)):
+        xs[i] += <span class="num">1</span></code></pre>
+      </div>
+      <p>ta viết hàm tạo danh sách mới:</p>
+      <div class="code-block">
+        <div class="code-label">Python — tạo danh sách mới (thuần)</div>
+        <pre><code><span class="kw">def</span> <span class="fn">add_one</span>(xs):
+    <span class="kw">return</span> [x + <span class="num">1</span> <span class="kw">for</span> x <span class="kw">in</span> xs]
+<span class="cmt"># Không thay đổi danh sách ban đầu</span></code></pre>
+      </div>
+    </div>
+
+    <div class="article-section" id="tinh-thay-the">
+      <h2 class="section-heading">Tính thay thế bằng giá trị</h2>
+      <p><strong>Tính thay thế bằng giá trị</strong> (<em>referential transparency</em>) nghĩa là một biểu thức có thể được thay bằng giá trị của nó mà không làm thay đổi hành vi chương trình.</p>
+      <p>Nếu <code>square</code> là hàm thuần, thì biểu thức <code>square(4)</code> có thể được thay bằng <code>16</code> mà không làm thay đổi hành vi chương trình. Ngược lại, xét hàm không thuần:</p>
+      <div class="code-block">
+        <div class="code-label">Python — không có tính thay thế</div>
+        <pre><code>counter = <span class="num">0</span>
+<span class="kw">def</span> <span class="fn">next_id</span>():
+    <span class="kw">global</span> counter
+    counter += <span class="num">1</span>
+    <span class="kw">return</span> counter
+
+<span class="fn">print</span>(<span class="fn">next_id</span>())   <span class="cmt"># 1</span>
+<span class="fn">print</span>(<span class="fn">next_id</span>())   <span class="cmt"># 2 — không thể thay bằng hằng số!</span></code></pre>
+      </div>
+      <p>Ta không thể thay <code>next_id()</code> bằng một giá trị cố định, vì mỗi lần gọi có thể cho kết quả khác.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Lợi ích</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Suy luận đại số</td><td>Có thể thay biểu thức bằng giá trị tương đương</td></tr>
+          <tr><td>Gỡ lỗi dễ hơn</td><td>Ít trạng thái ẩn</td></tr>
+          <tr><td>Tái cấu trúc an toàn hơn</td><td>Thay đổi cách viết mà ít đổi hành vi</td></tr>
+          <tr><td>Tối ưu hóa</td><td>Compiler có thể thay lời gọi bằng kết quả nếu an toàn</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="article-section" id="bat-bien-suy-luan">
+      <h2 class="section-heading">Bất biến và suy luận chương trình</h2>
+      <p>Trạng thái thay đổi được làm nảy sinh nhiều câu hỏi: Ai đã thay đổi giá trị này? Nó bị thay đổi khi nào? Có đối tượng nào khác đang chia sẻ dữ liệu này không? Hàm nào có thể sửa nó? Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — sửa đối tượng dùng chung</div>
+        <pre><code><span class="kw">def</span> <span class="fn">append_zero</span>(xs):
+    xs.<span class="fn">append</span>(<span class="num">0</span>)
+    <span class="kw">return</span> xs
+a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+b = <span class="fn">append_zero</span>(a)
+<span class="fn">print</span>(a)   <span class="cmt"># [1, 2, 3, 0] — a bị thay đổi!</span>
+<span class="fn">print</span>(b)   <span class="cmt"># [1, 2, 3, 0]</span></code></pre>
+      </div>
+      <p>Danh sách <code>a</code> bị thay đổi, dù nhìn vào lời gọi <code>b = append_zero(a)</code> người đọc có thể nghĩ hàm chỉ tạo kết quả mới. Cách viết theo phong cách bất biến:</p>
+      <div class="code-block">
+        <div class="code-label">Python — tạo giá trị mới (bất biến)</div>
+        <pre><code><span class="kw">def</span> <span class="fn">append_zero</span>(xs):
+    <span class="kw">return</span> xs + [<span class="num">0</span>]
+a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+b = <span class="fn">append_zero</span>(a)
+<span class="fn">print</span>(a)   <span class="cmt"># [1, 2, 3] — a không thay đổi</span>
+<span class="fn">print</span>(b)   <span class="cmt"># [1, 2, 3, 0]</span></code></pre>
+      </div>
+      <p>Ở đây, <code>a</code> không bị thay đổi. Hàm tạo ra danh sách mới. Điều này giúp chương trình dễ dự đoán hơn, đặc biệt khi dữ liệu được chia sẻ giữa nhiều phần của hệ thống.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 4 ==================== -->
+    <div class="lesson-badge">Bài 4 / 5</div>
+    <h1 class="lesson-title" id="ham-bac-cao">Hàm hạng nhất, hàm bậc cao và kết hợp hàm</h1>
+    <div class="lesson-meta">CO3005 · Lập trình hàm</div>
+
+    <div class="article-section" id="ham-hang-nhat">
+      <h2 class="section-heading">Hàm hạng nhất</h2>
+      <p>Một ngôn ngữ hỗ trợ <strong>hàm hạng nhất</strong> (<em>first-class functions</em>) khi hàm được đối xử như các giá trị thông thường. Nghĩa là hàm có thể được gán cho biến, truyền làm đối số, trả về như kết quả, lưu trong cấu trúc dữ liệu và gọi thông qua biến.</p>
+      <div class="code-block">
+        <div class="code-label">Python — hàm là giá trị</div>
+        <pre><code><span class="kw">def</span> <span class="fn">add</span>(a, b):
+    <span class="kw">return</span> a + b
+f = add
+<span class="fn">print</span>(f(<span class="num">3</span>, <span class="num">4</span>))
+<span class="cmt"># Kết quả: 7</span></code></pre>
+      </div>
+      <p>Hàm cũng có thể được lưu trong danh sách:</p>
+      <div class="code-block">
+        <div class="code-label">Python — hàm trong danh sách</div>
+        <pre><code><span class="kw">def</span> <span class="fn">inc</span>(x): <span class="kw">return</span> x + <span class="num">1</span>
+<span class="kw">def</span> <span class="fn">double</span>(x): <span class="kw">return</span> x * <span class="num">2</span>
+funcs = [inc, double]
+<span class="kw">for</span> f <span class="kw">in</span> funcs:
+    <span class="fn">print</span>(f(<span class="num">3</span>))
+<span class="cmt"># Kết quả: 4, 6</span></code></pre>
+      </div>
+      <div class="callout">
+        Cách nhìn "hàm là giá trị" là nền tảng để hiểu hàm bậc cao, closure, decorator và nhiều kỹ thuật lập trình hàm.
+      </div>
+    </div>
+
+    <div class="article-section" id="ham-lam-doi-so">
+      <h2 class="section-heading">Hàm làm đối số</h2>
+      <p>Vì hàm là giá trị, một hàm có thể nhận hàm khác làm đối số. Đây là cách chương trình tham số hóa hành vi.</p>
+      <div class="code-block">
+        <div class="code-label">Python — truyền hàm làm đối số</div>
+        <pre><code><span class="kw">def</span> <span class="fn">apply</span>(f, x):
+    <span class="kw">return</span> f(x)
+<span class="fn">print</span>(<span class="fn">apply</span>(<span class="kw">lambda</span> a: a ** <span class="num">2</span>, <span class="num">4</span>))
+<span class="cmt"># Kết quả: 16</span></code></pre>
+      </div>
+      <p>Trong lời gọi <code>apply(lambda a: a ** 2, 4)</code>, tham số <code>f</code> nhận hành vi "bình phương", còn <code>x</code> nhận giá trị 4. Một ví dụ thực tế hơn:</p>
+      <div class="code-block">
+        <div class="code-label">Python — tham số hóa điều kiện chọn</div>
+        <pre><code><span class="kw">def</span> <span class="fn">select</span>(xs, predicate):
+    <span class="kw">return</span> [x <span class="kw">for</span> x <span class="kw">in</span> xs <span class="kw">if</span> predicate(x)]
+nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>]
+<span class="fn">print</span>(<span class="fn">select</span>(nums, <span class="kw">lambda</span> x: x % <span class="num">2</span> == <span class="num">0</span>))
+<span class="cmt"># Kết quả: [2, 4]</span></code></pre>
+      </div>
+      <p>Hàm <code>select</code> không cố định điều kiện chọn. Điều kiện được truyền vào qua <code>predicate</code>. Đây là cách tăng tính tái sử dụng của mã.</p>
+    </div>
+
+    <div class="article-section" id="ham-lam-ket-qua">
+      <h2 class="section-heading">Hàm làm giá trị trả về</h2>
+      <p>Một hàm cũng có thể trả về một hàm khác. Điều này cho phép tạo hành vi mới một cách động.</p>
+      <div class="code-block">
+        <div class="code-label">Python — trả về hàm</div>
+        <pre><code><span class="kw">def</span> <span class="fn">multiplier</span>(x):
+    <span class="kw">def</span> <span class="fn">multiply</span>(y):
+        <span class="kw">return</span> x * y
+    <span class="kw">return</span> multiply
+
+times3 = <span class="fn">multiplier</span>(<span class="num">3</span>)
+<span class="fn">print</span>(times3(<span class="num">4</span>))
+<span class="cmt"># Kết quả: 12</span></code></pre>
+      </div>
+      <p>Hàm <code>multiplier(3)</code> trả về một hàm mới. Hàm mới này ghi nhớ rằng <code>x = 3</code>, nên khi gọi <code>times3(4)</code>, kết quả là <code>3 * 4 = 12</code>. Có thể tạo nhiều hàm từ cùng một khuôn:</p>
+      <div class="code-block">
+        <div class="code-label">Python — nhiều hàm từ một khuôn</div>
+        <pre><code>times2 = <span class="fn">multiplier</span>(<span class="num">2</span>)
+times5 = <span class="fn">multiplier</span>(<span class="num">5</span>)
+<span class="fn">print</span>(times2(<span class="num">10</span>))   <span class="cmt"># 20</span>
+<span class="fn">print</span>(times5(<span class="num">10</span>))   <span class="cmt"># 50</span></code></pre>
+      </div>
+      <p>Đây là ví dụ quan trọng vì nó dẫn đến khái niệm closure ở phần sau.</p>
+    </div>
+
+    <div class="article-section" id="ham-bac-cao-khai-niem">
+      <h2 class="section-heading">Hàm bậc cao</h2>
+      <p><strong>Hàm bậc cao</strong> (<em>higher-order function</em>) là hàm nhận một hàm làm đối số, trả về một hàm, hoặc cả hai.</p>
+      <div class="code-block">
+        <div class="code-label">Python — hai dạng hàm bậc cao</div>
+        <pre><code><span class="cmt"># Nhận hàm làm đối số</span>
+<span class="kw">def</span> <span class="fn">apply</span>(f, x):
+    <span class="kw">return</span> f(x)
+
+<span class="cmt"># Trả về hàm</span>
+<span class="kw">def</span> <span class="fn">multiplier</span>(x):
+    <span class="kw">return</span> <span class="kw">lambda</span> y: x * y</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Hàm</th><th>Mẫu tính toán</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>map</code></td><td>Biến đổi từng phần tử</td></tr>
+          <tr><td><code>filter</code></td><td>Chọn phần tử thỏa điều kiện</td></tr>
+          <tr><td><code>reduce</code> hoặc <code>fold</code></td><td>Gộp nhiều phần tử thành một giá trị</td></tr>
+          <tr><td><code>compose</code></td><td>Kết hợp nhiều hàm</td></tr>
+          <tr><td>Decorator</td><td>Bọc hàm để mở rộng hành vi</td></tr>
+          <tr><td>Callback</td><td>Truyền hành vi để gọi lại sau</td></tr>
+        </tbody>
+      </table>
+
+      <p>Hàm bậc cao giúp trừu tượng hóa các mẫu lặp thường gặp. Thay vì viết lại vòng lặp cho từng tình huống, ta đặt phần hành vi thay đổi vào một hàm.</p>
+    </div>
+
+    <div class="article-section" id="map-filter-reduce">
+      <h2 class="section-heading">Map, filter và reduce như các mẫu tính toán</h2>
+      <p>Ba hàm bậc cao quen thuộc là <code>map</code>, <code>filter</code> và <code>reduce</code>.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Hàm</th><th>Mẫu</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>map</code></td><td>Biến đổi</td><td>Áp dụng hàm cho từng phần tử</td></tr>
+          <tr><td><code>filter</code></td><td>Chọn lọc</td><td>Giữ các phần tử thỏa điều kiện</td></tr>
+          <tr><td><code>reduce</code></td><td>Gộp</td><td>Kết hợp nhiều phần tử thành một giá trị</td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block">
+        <div class="code-label">Python — map</div>
+        <pre><code>nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+<span class="fn">print</span>(<span class="fn">list</span>(<span class="fn">map</span>(<span class="kw">lambda</span> x: x * x, nums)))
+<span class="cmt"># Kết quả: [1, 4, 9]</span></code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Python — filter</div>
+        <pre><code>nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>]
+<span class="fn">print</span>(<span class="fn">list</span>(<span class="fn">filter</span>(<span class="kw">lambda</span> x: x % <span class="num">2</span> == <span class="num">0</span>, nums)))
+<span class="cmt"># Kết quả: [2, 4]</span></code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Python — reduce</div>
+        <pre><code><span class="kw">from</span> functools <span class="kw">import</span> reduce
+nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>]
+<span class="fn">print</span>(<span class="fn">reduce</span>(<span class="kw">lambda</span> x, y: x + y, nums, <span class="num">0</span>))
+<span class="cmt"># Kết quả: 10</span></code></pre>
+      </div>
+      <p>Nên truyền giá trị khởi tạo cho <code>reduce</code>, chẳng hạn <code>0</code> trong phép cộng, để xử lý an toàn cả trường hợp danh sách rỗng.</p>
+      <div class="code-block">
+        <div class="code-label">Python — reduce với danh sách rỗng</div>
+        <pre><code><span class="fn">print</span>(<span class="fn">reduce</span>(<span class="kw">lambda</span> x, y: x + y, [], <span class="num">0</span>))
+<span class="cmt"># Kết quả: 0</span></code></pre>
+      </div>
+    </div>
+
+    <div class="article-section" id="ket-hop-ham">
+      <h2 class="section-heading">Kết hợp hàm</h2>
+      <p><strong>Kết hợp hàm</strong> (<em>function composition</em>) là kỹ thuật xây dựng hàm lớn từ các hàm nhỏ. Trong toán học, nếu có hai hàm <code>f</code> và <code>g</code>, hàm hợp được viết:</p>
+      <div class="formula">(f ∘ g)(x) = f(g(x))</div>
+      <div class="code-block">
+        <div class="code-label">Python — hàm compose</div>
+        <pre><code><span class="kw">def</span> <span class="fn">compose</span>(f, g):
+    <span class="kw">return</span> <span class="kw">lambda</span> x: f(g(x))
+
+<span class="kw">def</span> <span class="fn">double</span>(x): <span class="kw">return</span> x * <span class="num">2</span>
+<span class="kw">def</span> <span class="fn">increment</span>(x): <span class="kw">return</span> x + <span class="num">1</span>
+h = <span class="fn">compose</span>(double, increment)
+<span class="fn">print</span>(h(<span class="num">3</span>))
+<span class="cmt"># h(3) = double(increment(3)) = double(4) = 8</span></code></pre>
+      </div>
+      <p>Kết hợp hàm giúp tạo pipeline xử lý dữ liệu rõ ràng. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — pipeline xử lý chuỗi</div>
+        <pre><code><span class="kw">def</span> <span class="fn">strip_text</span>(s): <span class="kw">return</span> s.<span class="fn">strip</span>()
+<span class="kw">def</span> <span class="fn">lower_text</span>(s): <span class="kw">return</span> s.<span class="fn">lower</span>()
+normalize = <span class="fn">compose</span>(lower_text, strip_text)
+<span class="fn">print</span>(<span class="fn">normalize</span>(<span class="str">"  Hello  "</span>))
+<span class="cmt"># Kết quả: hello</span></code></pre>
+      </div>
+      <p>Thay vì viết một hàm lớn chứa nhiều bước, ta tách thành các hàm nhỏ, mỗi hàm có một trách nhiệm, rồi kết hợp chúng.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 5 ==================== -->
+    <div class="lesson-badge">Bài 5 / 5</div>
+    <h1 class="lesson-title" id="bao-dong">Bao đóng và môi trường phi cục bộ</h1>
+    <div class="lesson-meta">CO3005 · Lập trình hàm</div>
+
+    <div class="article-section" id="bien-tu-do">
+      <h2 class="section-heading">Biến tự do và môi trường phi cục bộ</h2>
+      <p>Một hàm có thể sử dụng biến không được định nghĩa trong thân hàm của chính nó. Biến như vậy được gọi là <strong>biến tự do</strong> (<em>free variable</em>) đối với hàm đó.</p>
+      <div class="code-block">
+        <div class="code-label">Python — biến tự do</div>
+        <pre><code><span class="kw">def</span> <span class="fn">multiplier</span>(x):
+    <span class="kw">def</span> <span class="fn">multiply</span>(y):
+        <span class="kw">return</span> x * y   <span class="cmt"># x là biến tự do của multiply</span>
+    <span class="kw">return</span> multiply</code></pre>
+      </div>
+      <p>Trong hàm <code>multiply</code>, tham số <code>y</code> là biến cục bộ của <code>multiply</code>. Nhưng <code>x</code> không được định nghĩa bên trong <code>multiply</code>. Vì vậy, <code>x</code> là biến tự do của <code>multiply</code>.</p>
+      <p>Câu hỏi là: khi <code>multiply</code> được gọi sau khi <code>multiplier</code> đã kết thúc, giá trị <code>x</code> lấy từ đâu?</p>
+      <div class="code-block">
+        <div class="code-label">Python — biến tự do vẫn hoạt động</div>
+        <pre><code>times3 = <span class="fn">multiplier</span>(<span class="num">3</span>)
+<span class="fn">print</span>(times3(<span class="num">4</span>))
+<span class="cmt"># Kết quả: 12</span>
+<span class="cmt"># multiplier(3) đã kết thúc, nhưng x = 3 vẫn được giữ lại!</span></code></pre>
+      </div>
+      <p>Hàm <code>multiplier(3)</code> đã chạy xong, nhưng hàm trả về vẫn cần giá trị <code>x = 3</code>. Python giữ lại môi trường cần thiết để <code>multiply</code> hoạt động. Đây chính là closure.</p>
+    </div>
+
+    <div class="article-section" id="bao-dong-la-gi">
+      <h2 class="section-heading">Bao đóng là gì?</h2>
+      <p><strong>Bao đóng</strong> (<em>closure</em>) là một giá trị hàm đi kèm với môi trường cần thiết để phân giải các biến tự do của nó.</p>
+      <div class="formula">closure = code + environment</div>
+
+      <div class="code-block">
+        <div class="code-label">Python — tạo closure</div>
+        <pre><code><span class="kw">def</span> <span class="fn">multiplier</span>(x):
+    <span class="kw">def</span> <span class="fn">multiply</span>(y):
+        <span class="kw">return</span> x * y
+    <span class="kw">return</span> multiply
+times3 = <span class="fn">multiplier</span>(<span class="num">3</span>)</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Thành phần của closure <code>times3</code></th><th>Nội dung</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Code</td><td><code>multiply(y): return x * y</code></td></tr>
+          <tr><td>Environment</td><td><code>x = 3</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block">
+        <div class="code-label">Python — gọi closure</div>
+        <pre><code><span class="fn">print</span>(times3(<span class="num">4</span>))
+<span class="cmt"># Python dùng x = 3 đã giữ lại, y = 4 truyền vào → 12</span></code></pre>
+      </div>
+      <p>Có thể tạo nhiều closure khác nhau từ cùng một hàm ngoài:</p>
+      <div class="code-block">
+        <div class="code-label">Python — nhiều closure, nhiều môi trường</div>
+        <pre><code>times2 = <span class="fn">multiplier</span>(<span class="num">2</span>)
+times5 = <span class="fn">multiplier</span>(<span class="num">5</span>)
+<span class="fn">print</span>(times2(<span class="num">10</span>))   <span class="cmt"># 20 — times2 nhớ x = 2</span>
+<span class="fn">print</span>(times5(<span class="num">10</span>))   <span class="cmt"># 50 — times5 nhớ x = 5</span></code></pre>
+      </div>
+      <p>Mỗi closure có môi trường riêng: <code>times2</code> ghi nhớ <code>x = 2</code>, còn <code>times5</code> ghi nhớ <code>x = 5</code>.</p>
+    </div>
+
+    <div class="article-section" id="vi-sao-code-chua-du">
+      <h2 class="section-heading">Vì sao chỉ có code là chưa đủ?</h2>
+      <p>Giả sử ta chỉ giữ lại code của hàm bên trong:</p>
+      <div class="code-block">
+        <div class="code-label">Python — code không có môi trường</div>
+        <pre><code><span class="kw">def</span> <span class="fn">multiply</span>(y):
+    <span class="kw">return</span> x * y   <span class="cmt"># x là gì?</span></code></pre>
+      </div>
+      <p>Nếu không có môi trường, ta không biết <code>x</code> là gì. Sau khi lời gọi <code>multiplier(3)</code> kết thúc, biến cục bộ <code>x</code> lẽ ra không còn tồn tại trên ngăn xếp lời gọi. Nhưng hàm <code>multiply</code> được trả về vẫn cần <code>x</code>. Closure giải quyết vấn đề này bằng cách giữ lại giá trị cần thiết từ môi trường nơi hàm được tạo ra.</p>
+      <div class="code-block">
+        <div class="code-label">Python — ví dụ make_power</div>
+        <pre><code><span class="kw">def</span> <span class="fn">make_power</span>(n):
+    <span class="kw">def</span> <span class="fn">power</span>(x):
+        <span class="kw">return</span> x ** n
+    <span class="kw">return</span> power
+
+square = <span class="fn">make_power</span>(<span class="num">2</span>)
+cube   = <span class="fn">make_power</span>(<span class="num">3</span>)
+<span class="fn">print</span>(<span class="fn">square</span>(<span class="num">5</span>))   <span class="cmt"># 25 — nhớ n = 2</span>
+<span class="fn">print</span>(<span class="fn">cube</span>(<span class="num">5</span>))     <span class="cmt"># 125 — nhớ n = 3</span></code></pre>
+      </div>
+      <div class="callout">
+        Closure rất quan trọng vì nó cho phép hàm được trả về từ hàm khác mà vẫn giữ được ngữ cảnh cần thiết để hoạt động.
+      </div>
+    </div>
+
+    <div class="article-section" id="decorator">
+      <h2 class="section-heading">Decorator là gì?</h2>
+      <p><strong>Decorator</strong> là một hàm bậc cao dùng để bọc một hàm khác nhằm mở rộng hành vi của hàm đó. Decorator nhận một hàm làm đầu vào và trả về một hàm mới. Về mặt kiểu, có thể hình dung:</p>
+      <div class="formula">decorator : (A → B) → (A → B)</div>
+      <p>Nghĩa là decorator nhận một hàm từ A sang B, rồi trả về một hàm mới cũng từ A sang B, nhưng có thêm hành vi.</p>
+      <div class="code-block">
+        <div class="code-label">Python — định nghĩa decorator</div>
+        <pre><code><span class="kw">def</span> <span class="fn">log_call</span>(func):
+    <span class="kw">def</span> <span class="fn">wrapper</span>(x):
+        <span class="fn">print</span>(<span class="str">"Calling..."</span>)
+        <span class="kw">return</span> func(x)
+    <span class="kw">return</span> wrapper</code></pre>
+      </div>
+      <p>Dùng decorator:</p>
+      <div class="code-block">
+        <div class="code-label">Python — áp dụng decorator</div>
+        <pre><code>@<span class="fn">log_call</span>
+<span class="kw">def</span> <span class="fn">square</span>(x):
+    <span class="kw">return</span> x * x
+<span class="fn">print</span>(<span class="fn">square</span>(<span class="num">4</span>))
+<span class="cmt"># Calling...
+# 16</span></code></pre>
+      </div>
+      <p>Cú pháp <code>@log_call</code> tương đương với:</p>
+      <div class="code-block">
+        <div class="code-label">Python — tương đương không dùng @</div>
+        <pre><code><span class="kw">def</span> <span class="fn">square</span>(x):
+    <span class="kw">return</span> x * x
+square = <span class="fn">log_call</span>(square)</code></pre>
+      </div>
+      <p>Decorator kết hợp hai ý tưởng: <strong>hàm bậc cao</strong> và <strong>closure</strong>. <code>log_call</code> là hàm bậc cao vì nó nhận hàm <code>func</code> và trả về hàm <code>wrapper</code>. <code>wrapper</code> là closure vì nó ghi nhớ <code>func</code> từ môi trường nơi nó được tạo ra.</p>
+    </div>
+
+    <div class="article-section" id="decorator-mo-rong">
+      <h2 class="section-heading">Decorator và mở rộng hành vi</h2>
+      <p>Decorator thường được dùng để thêm hành vi phụ như ghi log, đo thời gian, kiểm tra quyền hoặc ghi nhớ kết quả mà không sửa trực tiếp thân hàm gốc.</p>
+      <div class="code-block">
+        <div class="code-label">Python — decorator đo thời gian</div>
+        <pre><code><span class="kw">import</span> time
+
+<span class="kw">def</span> <span class="fn">timing</span>(func):
+    <span class="kw">def</span> <span class="fn">wrapper</span>(x):
+        start = time.<span class="fn">time</span>()
+        result = func(x)
+        end = time.<span class="fn">time</span>()
+        <span class="fn">print</span>(<span class="str">"elapsed:"</span>, end - start)
+        <span class="kw">return</span> result
+    <span class="kw">return</span> wrapper
+
+@<span class="fn">timing</span>
+<span class="kw">def</span> <span class="fn">slow_square</span>(x):
+    time.<span class="fn">sleep</span>(<span class="num">1</span>)
+    <span class="kw">return</span> x * x
+<span class="fn">print</span>(<span class="fn">slow_square</span>(<span class="num">4</span>))</code></pre>
+      </div>
+      <p>Decorator giúp tách hành vi phụ khỏi logic chính của hàm. Hàm <code>slow_square</code> chỉ tập trung tính bình phương; việc đo thời gian được đặt trong decorator.</p>
+      <div class="callout">
+        Tuy nhiên, cần dùng decorator cẩn thận. Nếu <code>wrapper</code> thay đổi kiểu trả về, nuốt lỗi, hoặc làm thay đổi hành vi quá nhiều, chương trình có thể khó hiểu hơn. <strong>Decorator tốt</strong> thường giữ giao diện của hàm gốc càng ổn định càng tốt.
+      </div>
+    </div>
+
+    <!-- NAV FOOTER -->
+    <div class="nav-footer">
+      <span>Bài 1–5 / 5 · CO3005</span>
+      <div style="display:flex; gap:10px;">
+        <span class="nav-btn secondary">← Bài trước</span>
+        <span class="nav-btn">Bài tiếp theo →</span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('[id]');
+  const tocItems = document.querySelectorAll('.toc-item');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocItems.forEach(item => {
+          item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

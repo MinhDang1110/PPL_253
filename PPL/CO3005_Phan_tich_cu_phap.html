@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CO3005 – Phân tích Cú pháp</title>
+<meta name="description" content="Bài học về Phân tích cú pháp (Syntax Analysis) – CO3005 Nguyên lý Ngôn ngữ Lập trình, bao gồm văn phạm phi ngữ cảnh, BNF, EBNF, parser hoạt động và ANTLR4.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd9d0;
+    --text: #1a1916;
+    --muted: #6b6760;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --kw: #569cd6;
+    --str: #ce9178;
+    --cmt: #6a9955;
+    --num: #b5cea8;
+    --fn: #dcdcaa;
+    --tag-bg: #e8f0fb;
+    --tag-text: #1a56a0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .toc-item {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .toc-item.sub { padding-left: 32px; font-size: 12px; }
+
+  /* MAIN */
+  .main {
+    padding: 48px 56px 80px;
+    max-width: 820px;
+  }
+
+  .lesson-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--tag-text);
+    background: var(--tag-bg);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .lesson-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article-section {
+    margin-bottom: 52px;
+    scroll-margin-top: 24px;
+  }
+
+  .section-heading {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+  .section-heading::before {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 40px; height: 2px;
+    background: var(--accent);
+  }
+
+  p { margin-bottom: 14px; color: var(--text); }
+
+  /* CODE */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+    font-size: 13.5px;
+  }
+  .code-label {
+    background: #2d2d2d;
+    padding: 6px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #333;
+  }
+  pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1.6;
+    color: var(--code-text);
+  }
+  pre code { font-family: inherit; }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #e8e5de;
+    color: #b5451b;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+
+  .kw { color: var(--kw); }
+  .str { color: var(--str); }
+  .cmt { color: var(--cmt); font-style: italic; }
+  .num { color: var(--num); }
+  .fn  { color: var(--fn); }
+  .type { color: #4ec9b0; }
+
+  /* CALLOUT */
+  .callout {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .callout strong { color: var(--accent); }
+
+  /* DEF LIST */
+  .def-list { margin: 16px 0 20px; }
+  .def-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .def-item:first-child { border-top: 1px solid var(--border); }
+  .def-term {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    padding-top: 2px;
+  }
+
+  /* TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  /* PIPELINE */
+  .pipeline { display: flex; flex-direction: column; gap: 0; margin: 24px 0; position: relative; }
+  .pipeline::before { content:''; position:absolute; left:20px; top:28px; bottom:28px; width:2px; background:var(--border); }
+  .pipe-step { display:flex; gap:16px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 18px; margin-bottom:8px; position:relative; z-index:1; }
+  .pipe-num { width:32px; height:32px; min-width:32px; border-radius:50%; background:var(--accent); color:#fff; font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; }
+  .pipe-content h4 { font-size:14px; font-weight:600; margin-bottom:3px; color:var(--text); }
+  .pipe-content p { font-size:13px; color:var(--muted); margin:0; }
+
+  /* FIGURE */
+  .fig { text-align: center; margin: 28px 0; }
+  .fig img { max-width: 560px; width: 100%; border-radius: 6px; }
+  .fig figcaption { margin-top: 10px; font-size: 13px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+
+  /* NAV FOOTER */
+  .nav-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 0 0; border-top: 1px solid var(--border);
+    margin-top: 48px; font-size: 14px; color: var(--muted);
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--accent); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 500;
+    text-decoration: none; cursor: default;
+  }
+  .nav-btn.secondary { background: var(--surface); color: var(--accent); border: 1px solid var(--accent); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+    .def-item { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-title">Mục lục bài học</div>
+    <a class="toc-item active" href="#gioi-thieu">Bài 1 · Giới thiệu</a>
+    <a class="toc-item sub" href="#vi-tri">Vị trí phân tích cú pháp</a>
+    <a class="toc-item sub" href="#vai-tro">Vai trò của phân tích cú pháp</a>
+    <a class="toc-item sub" href="#vi-du-phan-tich">Ví dụ phân tích cú pháp</a>
+    <a class="toc-item" href="#van-pham">Bài 2 · Văn phạm phi ngữ cảnh</a>
+    <a class="toc-item sub" href="#gioi-han-regex">Giới hạn của biểu thức chính quy</a>
+    <a class="toc-item sub" href="#thanh-phan-cfg">Thành phần của CFG</a>
+    <a class="toc-item sub" href="#bnf">Ký pháp BNF</a>
+    <a class="toc-item sub" href="#ebnf">Ký pháp EBNF</a>
+    <a class="toc-item" href="#hoat-dong">Bài 3 · Hoạt động của bộ phân tích cú pháp</a>
+    <a class="toc-item sub" href="#cach-su-dung">Cách parser sử dụng văn phạm</a>
+    <a class="toc-item sub" href="#dan-xuat-trai">Dẫn xuất trái nhất</a>
+    <a class="toc-item sub" href="#cay-phan-tich">Cây phân tích cú pháp</a>
+    <a class="toc-item sub" href="#loi-cu-phap">Đầu ra và lỗi cú pháp</a>
+    <a class="toc-item" href="#antlr4">Bài 4 · Sinh bộ phân tích cú pháp từ ANTLR4</a>
+    <a class="toc-item sub" href="#tom-tat-antlr">Tóm tắt về ANTLR4</a>
+    <a class="toc-item sub" href="#quy-uoc-parser">Quy ước viết luật parser</a>
+    <a class="toc-item sub" href="#vi-du-grammar">Ví dụ văn phạm số học</a>
+    <a class="toc-item sub" href="#tu-grammar-den-parser">Từ grammar đến parser</a>
+    <a class="toc-item" href="#thach-thuc">Bài 5 · Thách thức khi viết văn phạm</a>
+    <a class="toc-item sub" href="#mo-ho">Văn phạm mơ hồ</a>
+    <a class="toc-item sub" href="#mau-danh-sach">Các mẫu danh sách thường gặp</a>
+    <a class="toc-item sub" href="#bieu-thuc-trung-to">Biểu thức trung tố</a>
+    <a class="toc-item sub" href="#tinh-ket-hop">Tính kết hợp của toán tử</a>
+    <a class="toc-item sub" href="#viet-ro-rang">Cách viết văn phạm rõ ràng hơn</a>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+
+    <!-- ==================== BÀI 1: GIỚI THIỆU ==================== -->
+    <div class="lesson-badge">Bài 1 / 5</div>
+    <h1 class="lesson-title" id="gioi-thieu">Giới thiệu</h1>
+    <div class="lesson-meta">CO3005 · Phân tích Cú pháp · Trần Ngọc Bảo Duy</div>
+
+    <!-- Vị trí -->
+    <div class="article-section" id="vi-tri">
+      <h2 class="section-heading">Vị trí của phân tích cú pháp</h2>
+      <p>Trong pipeline biên dịch, phân tích cú pháp là pha thứ hai, đứng sau phân tích từ vựng và trước các bước như sinh cây cú pháp trừu tượng, phân tích ngữ nghĩa, sinh mã trung gian và sinh mã đích. Có thể tóm tắt vị trí của phân tích cú pháp như sau:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Pha xử lý</th><th>Đầu vào</th><th>Đầu ra</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Phân tích từ vựng</strong></td><td>Chuỗi ký tự</td><td>Chuỗi token</td></tr>
+          <tr><td><strong>Phân tích cú pháp</strong></td><td>Chuỗi token</td><td>Cây phân tích cú pháp</td></tr>
+          <tr><td>Sinh cây cú pháp trừu tượng</td><td>Cây phân tích cú pháp</td><td>Cây cú pháp trừu tượng</td></tr>
+          <tr><td>Phân tích ngữ nghĩa</td><td>Cây cú pháp trừu tượng</td><td>Cây đã kiểm tra và bổ sung thông tin</td></tr>
+          <tr><td>Sinh mã trung gian</td><td>Cây đã xử lý</td><td>Mã trung gian</td></tr>
+          <tr><td>Sinh mã đích</td><td>Mã trung gian</td><td>Mã đích</td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ, với mã nguồn <code>a + b * c</code>, pha phân tích từ vựng tạo ra chuỗi token:</p>
+      <div class="code-block">
+        <div class="code-label">Token stream</div>
+        <pre><code>ID PLUS ID TIMES ID</code></pre>
+      </div>
+      <p>Pha phân tích cú pháp không còn quan tâm từng ký tự như <code>a</code>, <code>+</code>, <code>b</code>, <code>*</code>, <code>c</code>. Thay vào đó, nó kiểm tra xem chuỗi token này có phải là một biểu thức hợp lệ theo văn phạm của ngôn ngữ hay không. Nếu hợp lệ, parser tạo ra một cây biểu diễn cấu trúc cú pháp của biểu thức.</p>
+    </div>
+
+    <!-- Vai trò -->
+    <div class="article-section" id="vai-tro">
+      <h2 class="section-heading">Vai trò của phân tích cú pháp</h2>
+      <p>Phân tích cú pháp có hai vai trò chính. <strong>Thứ nhất</strong>, parser thực hiện <strong>kiểm tra cú pháp</strong> (<em>syntax validation</em>). Nó kiểm tra xem chương trình có tuân theo các quy tắc cấu trúc của ngôn ngữ hay không. Ví dụ, trong nhiều ngôn ngữ, biểu thức sau là sai cú pháp:</p>
+      <div class="code-block">
+        <div class="code-label">Lỗi cú pháp</div>
+        <pre><code>a + * b</code></pre>
+      </div>
+      <p>Sau toán tử <code>+</code>, parser thường mong đợi một toán hạng hoặc một biểu thức con hợp lệ. Tuy nhiên, nó lại gặp toán tử <code>*</code>, nên có thể báo lỗi cú pháp.</p>
+      <p><strong>Thứ hai</strong>, parser tạo <strong>cây phân tích cú pháp</strong> (<em>parse tree</em>) hoặc một cấu trúc tương đương để biểu diễn cấu trúc phân cấp của chương trình. Ví dụ, biểu thức <code>a + b * c</code> không nên được hiểu đơn giản là ba toán hạng và hai toán tử nằm cạnh nhau. Theo độ ưu tiên toán tử thông thường, phép nhân được nhóm trước:</p>
+      <div class="code-block">
+        <div class="code-label">Nhóm đúng theo độ ưu tiên</div>
+        <pre><code>a + (b * c)</code></pre>
+      </div>
+      <p>Cây phân tích cú pháp giúp biểu diễn rõ cấu trúc này.</p>
+    </div>
+
+    <!-- Ví dụ -->
+    <div class="article-section" id="vi-du-phan-tich">
+      <h2 class="section-heading">Ví dụ phân tích cú pháp</h2>
+      <p>Xét văn phạm đơn giản cho biểu thức số học:</p>
+      <div class="code-block">
+        <div class="code-label">Văn phạm</div>
+        <pre><code>E -> E + T | T
+T -> T * F | F
+F -> ( E ) | id</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Ký hiệu</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>E</code></td><td>Biểu thức</td></tr>
+          <tr><td><code>T</code></td><td>Hạng tử</td></tr>
+          <tr><td><code>F</code></td><td>Nhân tử</td></tr>
+          <tr><td><code>id</code></td><td>Định danh</td></tr>
+          <tr><td><code>+</code></td><td>Toán tử cộng</td></tr>
+          <tr><td><code>*</code></td><td>Toán tử nhân</td></tr>
+        </tbody>
+      </table>
+
+      <p>Với đầu vào <code>a + b * c</code>, chuỗi token có thể là <code>id + id * id</code>. Parser dùng văn phạm để tạo cây phân tích cú pháp trong đó <code>b * c</code> được nhóm thành một <code>T</code>, rồi mới kết hợp với <code>a</code> bằng phép cộng. Điều này thể hiện rằng phép nhân có độ ưu tiên cao hơn phép cộng.</p>
+
+      <figure class="fig">
+        <img src="pic1.png" alt="Cây phân tích cú pháp cho biểu thức a + b * c">
+        <figcaption>Cây phân tích cú pháp cho biểu thức <code>a + b * c</code>.</figcaption>
+      </figure>
+
+      <p>Cây trên không chỉ cho thấy các token xuất hiện theo thứ tự nào, mà còn cho thấy cấu trúc phân cấp của biểu thức. Đây là thông tin quan trọng để các pha sau như sinh cây cú pháp trừu tượng, kiểm tra kiểu và sinh mã có thể xử lý chính xác.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 2: VĂN PHẠM PHI NGỮ CẢNH ==================== -->
+    <div class="lesson-badge">Bài 2 / 5</div>
+    <h1 class="lesson-title" id="van-pham">Văn phạm phi ngữ cảnh</h1>
+    <div class="lesson-meta">CO3005 · Phân tích Cú pháp</div>
+
+    <!-- Giới hạn regex -->
+    <div class="article-section" id="gioi-han-regex">
+      <h2 class="section-heading">Giới hạn của biểu thức chính quy</h2>
+      <p>Biểu thức chính quy (<em>regular expression</em>) rất hữu ích trong phân tích từ vựng. Nó có thể mô tả định danh, số nguyên, số thực, toán tử, khoảng trắng hoặc chú thích đơn giản. Tuy nhiên, biểu thức chính quy không đủ mạnh để mô tả nhiều cấu trúc lồng nhau trong ngôn ngữ lập trình.</p>
+      <p>Một ví dụ kinh điển là ngôn ngữ <code>L = aⁿbⁿ | n &gt; 0</code>. Ngôn ngữ này gồm các chuỗi có một số lượng ký tự <code>a</code>, theo sau bởi đúng từng ấy ký tự <code>b</code>:</p>
+      <div class="code-block">
+        <div class="code-label">Các chuỗi thuộc L</div>
+        <pre><code>ab
+aabb
+aaabbb
+aaaabbbb</code></pre>
+      </div>
+      <p>Để nhận dạng ngôn ngữ này, bộ nhận dạng phải "nhớ" đã thấy bao nhiêu ký tự <code>a</code> để so khớp với đúng số lượng ký tự <code>b</code>. Ô-tô-mát hữu hạn không có bộ nhớ đếm không giới hạn, nên biểu thức chính quy không thể mô tả chính xác ngôn ngữ này.</p>
+      <p>Trong ngôn ngữ lập trình, nhiều cấu trúc cũng có tính chất lồng nhau hoặc cân bằng tương tự:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Cấu trúc</th><th>Ví dụ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Ngoặc cân bằng</td><td><code>((a + b) * c)</code></td></tr>
+          <tr><td>Câu lệnh điều kiện</td><td><code>if ... then ... else ...</code></td></tr>
+          <tr><td>Khối lệnh</td><td><code>{ statement statement }</code></td></tr>
+          <tr><td>Thẻ HTML/XML</td><td><code>&lt;div&gt; ... &lt;/div&gt;</code></td></tr>
+          <tr><td>Lời gọi hàm lồng nhau</td><td><code>f(g(h(x)))</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        Do đó, để mô tả cấu trúc cú pháp của ngôn ngữ lập trình, ta cần dùng <strong>văn phạm phi ngữ cảnh</strong> (<em>context-free grammar</em>).
+      </div>
+    </div>
+
+    <!-- Thành phần CFG -->
+    <div class="article-section" id="thanh-phan-cfg">
+      <h2 class="section-heading">Thành phần của văn phạm phi ngữ cảnh</h2>
+      <p>Một <strong>văn phạm phi ngữ cảnh</strong> (<em>context-free grammar, CFG</em>) là một hệ hình thức dùng để sinh ra các chuỗi bằng cách áp dụng các luật thay thế. Mỗi luật thay thế một ký hiệu không kết thúc bằng một chuỗi gồm các ký hiệu kết thúc và/hoặc ký hiệu không kết thúc khác. Một CFG thường gồm bốn thành phần:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Thành phần</th><th>Ký hiệu</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Tập ký hiệu kết thúc</td><td><code>T</code></td><td>Các token thật sự xuất hiện trong chuỗi đầu vào</td></tr>
+          <tr><td>Tập ký hiệu không kết thúc</td><td><code>N</code></td><td>Các khái niệm cú pháp trung gian</td></tr>
+          <tr><td>Ký hiệu bắt đầu</td><td><code>S</code></td><td>Nơi quá trình sinh chuỗi bắt đầu</td></tr>
+          <tr><td>Tập luật sinh</td><td><code>P</code></td><td>Các luật thay thế có dạng <code>X -&gt; α</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ, xét văn phạm cho một câu lệnh <code>while</code> đơn giản:</p>
+      <div class="code-block">
+        <div class="code-label">Văn phạm</div>
+        <pre><code>while_stmt -> while ( expr ) block
+block      -> { statements }
+block      -> { }</code></pre>
+      </div>
+      <p>Trong đó, <code>while</code>, <code>(</code>, <code>)</code>, <code>{</code>, <code>}</code> là các <strong>ký hiệu kết thúc</strong>, vì chúng xuất hiện trực tiếp trong chương trình. Các ký hiệu như <code>while_stmt</code>, <code>expr</code>, <code>block</code>, <code>statements</code> là <strong>ký hiệu không kết thúc</strong>. Một đoạn mã phù hợp với văn phạm này:</p>
+      <div class="code-block">
+        <div class="code-label">Ví dụ câu lệnh while</div>
+        <pre><code><span class="kw">while</span> (x &lt; <span class="num">10</span>) { x = x + <span class="num">1</span>; }</code></pre>
+      </div>
+      <p>Parser không chỉ kiểm tra có từ khóa <code>while</code>, mà còn kiểm tra cấu trúc tổng thể: sau <code>while</code> phải có dấu <code>(</code>, sau đó là biểu thức, rồi <code>)</code>, rồi một khối lệnh.</p>
+    </div>
+
+    <!-- BNF -->
+    <div class="article-section" id="bnf">
+      <h2 class="section-heading">Ký pháp BNF</h2>
+      <p><strong>Dạng Backus–Naur</strong> (<em>Backus–Naur Form, BNF</em>) là ký pháp tiêu chuẩn để viết văn phạm phi ngữ cảnh. Ký pháp này được đặt theo tên John Backus và Peter Naur, gắn với việc mô tả ngôn ngữ ALGOL 60. Trong BNF, một luật có dạng:</p>
+      <div class="code-block">
+        <div class="code-label">Cú pháp BNF</div>
+        <pre><code>non_terminal -> sequence_of_symbols</code></pre>
+      </div>
+      <p>Nếu có nhiều lựa chọn, ta dùng ký hiệu <code>|</code>:</p>
+      <div class="code-block">
+        <div class="code-label">Lựa chọn bằng |</div>
+        <pre><code>stmt -> assign_stmt | if_stmt | while_stmt</code></pre>
+      </div>
+      <p>Ví dụ văn phạm cho danh sách câu lệnh:</p>
+      <div class="code-block">
+        <div class="code-label">Văn phạm BNF</div>
+        <pre><code>statements -> statement statements
+statements -> statement
+statement  -> id = expr ;</code></pre>
+      </div>
+      <p>Văn phạm trên nói rằng <code>statements</code> có thể gồm một <code>statement</code> theo sau bởi nhiều <code>statements</code> khác, hoặc chỉ gồm một <code>statement</code>. Một đoạn chương trình phù hợp:</p>
+      <div class="code-block">
+        <div class="code-label">Chương trình hợp lệ</div>
+        <pre><code>x = 1; y = 2; z = x;</code></pre>
+      </div>
+      <p>BNF có ưu điểm là hình thức, rõ ràng và gần với định nghĩa lý thuyết của CFG. Tuy nhiên, khi mô tả các mẫu lặp hoặc tùy chọn, BNF thuần túy có thể dài vì phải dùng đệ quy và luật rỗng.</p>
+    </div>
+
+    <!-- EBNF -->
+    <div class="article-section" id="ebnf">
+      <h2 class="section-heading">Ký pháp EBNF</h2>
+      <p><strong>Dạng Backus–Naur mở rộng</strong> (<em>Extended Backus–Naur Form, EBNF</em>) mở rộng BNF bằng một số ký hiệu quen thuộc từ biểu thức chính quy, chẳng hạn <code>*</code>, <code>+</code>, <code>?</code>, nhóm ngoặc và phần tùy chọn. EBNF không làm tăng lớp ngôn ngữ được mô tả so với CFG, nhưng giúp luật văn phạm ngắn gọn và dễ đọc hơn.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Mục đích</th><th>BNF</th><th>EBNF</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Lặp không hoặc nhiều lần</td><td>Dùng đệ quy và luật rỗng</td><td><code>x*</code></td></tr>
+          <tr><td>Lặp một hoặc nhiều lần</td><td>Dùng đệ quy</td><td><code>x+</code></td></tr>
+          <tr><td>Tùy chọn</td><td>Dùng lựa chọn với rỗng</td><td><code>x?</code> hoặc <code>[x]</code></td></tr>
+          <tr><td>Gom nhóm</td><td>Tạo ký hiệu không kết thúc phụ</td><td><code>( ... )</code></td></tr>
+          <tr><td>Lựa chọn</td><td><code>|</code></td><td><code>|</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ, danh sách tham số có thể viết bằng BNF như sau:</p>
+      <div class="code-block">
+        <div class="code-label">BNF — danh sách tham số</div>
+        <pre><code>params -> param , params
+params -> param
+params -> ε</code></pre>
+      </div>
+      <p>Trong EBNF, có thể viết gọn hơn:</p>
+      <div class="code-block">
+        <div class="code-label">EBNF — danh sách tham số</div>
+        <pre><code>params -> (param (, param)*)?</code></pre>
+      </div>
+      <p>Ví dụ, lời gọi hàm <code>f(a, b, c)</code> có thể được mô tả bằng luật:</p>
+      <div class="code-block">
+        <div class="code-label">EBNF — lời gọi hàm</div>
+        <pre><code>call -> id ( args )
+args -> (expr (, expr)*)?</code></pre>
+      </div>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 3: HOẠT ĐỘNG PARSER ==================== -->
+    <div class="lesson-badge">Bài 3 / 5</div>
+    <h1 class="lesson-title" id="hoat-dong">Hoạt động của bộ phân tích cú pháp</h1>
+    <div class="lesson-meta">CO3005 · Phân tích Cú pháp</div>
+
+    <!-- Cách sử dụng văn phạm -->
+    <div class="article-section" id="cach-su-dung">
+      <h2 class="section-heading">Cách parser sử dụng văn phạm</h2>
+      <p>Parser nhận đầu vào là chuỗi token từ lexer và cố gắng suy ra chuỗi đó từ ký hiệu bắt đầu của văn phạm. Nếu suy ra được toàn bộ chuỗi token, đầu vào được xem là hợp lệ về mặt cú pháp. Nếu không, parser báo lỗi cú pháp. Về mặt khái niệm, quá trình này có thể mô tả như sau:</p>
+
+      <figure class="fig">
+        <img src="pic2.png" alt="Quy trình khái niệm của parser khi dùng văn phạm">
+        <figcaption>Quy trình khái niệm của parser khi dùng văn phạm.</figcaption>
+      </figure>
+
+      <p>Với parser theo hướng từ trên xuống (<em>top-down parser</em>), quá trình phân tích bắt đầu từ ký hiệu bắt đầu và mở rộng dần cho đến khi khớp với chuỗi token đầu vào. Ví dụ, nếu văn phạm có ký hiệu bắt đầu là <code>expr</code>, và đầu vào là <code>NUMBER PLUS NUMBER</code>:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Bước</th><th>Việc parser làm</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Bắt đầu từ ký hiệu <code>expr</code></td></tr>
+          <tr><td>2</td><td>Chọn luật phù hợp để mở rộng <code>expr</code></td></tr>
+          <tr><td>3</td><td>Khớp token <code>NUMBER</code></td></tr>
+          <tr><td>4</td><td>Khớp token <code>PLUS</code></td></tr>
+          <tr><td>5</td><td>Khớp token <code>NUMBER</code></td></tr>
+          <tr><td>6</td><td>Nếu hết token và không còn ký hiệu cần mở rộng, chấp nhận đầu vào</td></tr>
+        </tbody>
+      </table>
+
+      <p>Nếu parser gặp token không phù hợp với cấu trúc mong đợi, nó báo lỗi. Ví dụ, với <code>3 + * 5</code>, sau <code>+</code>, parser mong đợi một toán hạng như <code>NUMBER</code> hoặc một biểu thức trong ngoặc, nhưng lại gặp <code>*</code>, nên chuỗi token không hợp lệ.</p>
+    </div>
+
+    <!-- Dẫn xuất trái nhất -->
+    <div class="article-section" id="dan-xuat-trai">
+      <h2 class="section-heading">Dẫn xuất trái nhất</h2>
+      <p><strong>Dẫn xuất</strong> (<em>derivation</em>) là quá trình áp dụng các luật sinh để biến ký hiệu bắt đầu thành một chuỗi ký hiệu kết thúc. Trong <strong>dẫn xuất trái nhất</strong> (<em>leftmost derivation</em>), ở mỗi bước, ta luôn mở rộng ký hiệu không kết thúc nằm bên trái nhất.</p>
+      <p>Dẫn xuất trái nhất hữu ích vì nó tạo ra một quy trình có trật tự rõ ràng. Đây cũng là cơ sở tự nhiên cho nhiều parser từ trên xuống, đặc biệt là parser đệ quy xuống (<em>recursive-descent parser</em>). Xét văn phạm biểu thức:</p>
+      <div class="code-block">
+        <div class="code-label">Văn phạm biểu thức</div>
+        <pre><code>expr   -> expr + term | term
+term   -> term * factor | factor
+factor -> ( expr ) | NUMBER</code></pre>
+      </div>
+      <p>Với đầu vào <code>3 + 5 * 2</code>, một dẫn xuất trái nhất có thể được trình bày như sau:</p>
+      <div class="code-block">
+        <div class="code-label">Dẫn xuất trái nhất</div>
+        <pre><code>expr
+⇒  expr + term
+⇒  term + term
+⇒  factor + term
+⇒  NUMBER + term
+⇒  3 + term
+⇒  3 + term * factor
+⇒  3 + factor * factor
+⇒  3 + NUMBER * factor
+⇒  3 + 5 * factor
+⇒  3 + 5 * NUMBER
+⇒  3 + 5 * 2</code></pre>
+      </div>
+      <p>Trong mỗi bước, ký hiệu không kết thúc bên trái nhất được mở rộng trước. Ví dụ, khi có <code>expr + term</code>, ta mở rộng <code>expr</code> bên trái trước, không mở rộng <code>term</code> bên phải.</p>
+    </div>
+
+    <!-- Cây phân tích -->
+    <div class="article-section" id="cay-phan-tich">
+      <h2 class="section-heading">Cây phân tích cú pháp</h2>
+      <p><strong>Cây phân tích cú pháp</strong> (<em>parse tree</em>) là kết quả trực quan của quá trình phân tích cú pháp:</p>
+      <div class="def-list">
+        <div class="def-item">
+          <div class="def-term">Gốc cây</div>
+          <div>Là ký hiệu bắt đầu của văn phạm</div>
+        </div>
+        <div class="def-item">
+          <div class="def-term">Nút trong</div>
+          <div>Là ký hiệu không kết thúc. Mỗi nhánh thể hiện việc áp dụng một luật sinh</div>
+        </div>
+        <div class="def-item">
+          <div class="def-term">Lá cây</div>
+          <div>Là các ký hiệu kết thúc, tương ứng với token đầu vào</div>
+        </div>
+      </div>
+      <p>Với biểu thức <code>3 + 5 * 2</code> và văn phạm ở trên, cây phân tích cú pháp thể hiện rằng <code>5 * 2</code> được nhóm trước, rồi kết quả mới cộng với <code>3</code>.</p>
+      <p>Cây này cho thấy cấu trúc phân cấp của biểu thức. Nếu chỉ nhìn chuỗi token <code>3 + 5 * 2</code>, ta cần biết quy tắc ưu tiên toán tử để hiểu đúng. Cây phân tích cú pháp làm cho cách hiểu đó trở nên tường minh.</p>
+    </div>
+
+    <!-- Lỗi cú pháp -->
+    <div class="article-section" id="loi-cu-phap">
+      <h2 class="section-heading">Đầu ra và lỗi cú pháp</h2>
+      <p>Đầu ra thành công của parser thường là cây phân tích cú pháp hoặc một cấu trúc gần với cây cú pháp trừu tượng. Nếu chuỗi token không phù hợp với văn phạm, parser phải báo lỗi cú pháp. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Ngoặc không đóng</div>
+        <pre><code>x = (3 + 5;</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Thông báo lỗi</div>
+        <pre><code>Error: expected ')' before ';'</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Thiếu ngoặc sau if</div>
+        <pre><code>if x > 0 { print(x); }</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Thông báo lỗi</div>
+        <pre><code>Error: expected '(' after 'if'</code></pre>
+      </div>
+      <div class="callout">
+        <strong>Thông báo lỗi tốt</strong> nên cho biết parser đang mong đợi gì và gặp gì. Điều này giúp người lập trình sửa lỗi nhanh hơn.
+      </div>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 4: ANTLR4 ==================== -->
+    <div class="lesson-badge">Bài 4 / 5</div>
+    <h1 class="lesson-title" id="antlr4">Sinh bộ phân tích cú pháp từ ANTLR4</h1>
+    <div class="lesson-meta">CO3005 · Phân tích Cú pháp</div>
+
+    <!-- Tóm tắt ANTLR4 -->
+    <div class="article-section" id="tom-tat-antlr">
+      <h2 class="section-heading">Tóm tắt về ANTLR4</h2>
+      <p><strong>ANTLR4</strong> (<em>ANother Tool for Language Recognition</em>) là công cụ sinh lexer, parser và các lớp hỗ trợ như listener và visitor từ một tệp định nghĩa văn phạm. Quy trình sử dụng ANTLR4:</p>
+
+      <div class="pipeline">
+        <div class="pipe-step">
+          <div class="pipe-num">1</div>
+          <div class="pipe-content">
+            <h4>Viết tệp .g4</h4>
+            <p>Chứa luật lexer và parser mô tả ngôn ngữ cần phân tích.</p>
+          </div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">2</div>
+          <div class="pipe-content">
+            <h4>Chạy ANTLR4 để sinh mã nguồn</h4>
+            <p>ANTLR4 tự động sinh lexer và parser từ grammar đã định nghĩa.</p>
+          </div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">3</div>
+          <div class="pipe-content">
+            <h4>Dùng lexer và parser sinh ra</h4>
+            <p>Tích hợp mã sinh ra vào chương trình ứng dụng.</p>
+          </div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">4</div>
+          <div class="pipe-content">
+            <h4>Duyệt cây phân tích</h4>
+            <p>Dùng listener hoặc visitor nếu cần xử lý tiếp (sinh mã, kiểm tra ngữ nghĩa...).</p>
+          </div>
+        </div>
+      </div>
+
+      <p>Ví dụ, thay vì tự viết parser cho biểu thức số học, ta có thể viết grammar:</p>
+      <div class="code-block">
+        <div class="code-label">Arithmetic.g4 — ANTLRv4</div>
+        <pre><code>grammar Arithmetic;
+expr : expr '+' term | expr '-' term | term;
+term : term '*' factor | term '/' factor | factor;
+factor : '(' expr ')' | NUMBER;
+NUMBER : [0-9]+;
+WS : [ \t\r\n]+ -> skip;</code></pre>
+      </div>
+      <p>ANTLR4 sẽ sinh mã giúp nhận dạng các biểu thức như <code>3 + 5 * 2</code> và tạo cây phân tích tương ứng.</p>
+    </div>
+
+    <!-- Quy ước luật parser -->
+    <div class="article-section" id="quy-uoc-parser">
+      <h2 class="section-heading">Quy ước viết luật parser</h2>
+      <p>Trong ANTLR4, luật parser (<em>parser rule</em>) mô tả cách các token kết hợp thành cấu trúc cú pháp hợp lệ. Theo quy ước, <strong>tên luật parser bắt đầu bằng chữ thường</strong>. Trong khi đó, tên token hoặc luật lexer bắt đầu bằng chữ in hoa. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">ANTLRv4 — phân biệt parser rule và lexer rule</div>
+        <pre><code>expr   : expr '+' term | term;
+term   : term '*' factor | factor;
+factor : '(' expr ')' | NUMBER;
+NUMBER : [0-9]+;
+WS     : [ \t\r\n]+ -> skip;</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Tên</th><th>Loại</th><th>Vai trò</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>expr</code></td><td>Luật parser</td><td>Mô tả biểu thức</td></tr>
+          <tr><td><code>term</code></td><td>Luật parser</td><td>Mô tả hạng tử</td></tr>
+          <tr><td><code>factor</code></td><td>Luật parser</td><td>Mô tả nhân tử</td></tr>
+          <tr><td><code>NUMBER</code></td><td>Luật lexer</td><td>Nhận dạng số nguyên</td></tr>
+          <tr><td><code>WS</code></td><td>Luật lexer</td><td>Bỏ qua khoảng trắng</td></tr>
+        </tbody>
+      </table>
+
+      <p>Trong luật bắt đầu, thường nên dùng <code>EOF</code> để đảm bảo parser tiêu thụ toàn bộ đầu vào. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Dùng EOF</div>
+        <pre><code>program : expr EOF;</code></pre>
+      </div>
+      <div class="callout">
+        Nếu không dùng <code>EOF</code>, parser có thể chấp nhận phần đầu của chuỗi và bỏ sót phần dư không hợp lệ. Ví dụ, đầu vào <code>3 + 5 abc</code> có thể gây ra tình huống parser chỉ phân tích <code>3 + 5</code> và phần <code>abc</code> còn lại không được kiểm soát đúng.
+      </div>
+    </div>
+
+    <!-- Ví dụ văn phạm số học -->
+    <div class="article-section" id="vi-du-grammar">
+      <h2 class="section-heading">Ví dụ văn phạm số học</h2>
+      <p>Một grammar ANTLR4 hoàn chỉnh cho biểu thức số học:</p>
+      <div class="code-block">
+        <div class="code-label">Arithmetic.g4 — hoàn chỉnh</div>
+        <pre><code>grammar Arithmetic;
+program : expr EOF;
+expr    : expr '+' term | expr '-' term | term;
+term    : term '*' factor | term '/' factor | factor;
+factor  : '(' expr ')' | NUMBER;
+NUMBER  : [0-9]+;
+WS      : [ \t\r\n]+ -> skip;</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Luật</th><th>Vai trò</th><th>Toán tử</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>expr</code></td><td>Mức biểu thức</td><td><code>+</code>, <code>-</code></td></tr>
+          <tr><td><code>term</code></td><td>Mức hạng tử</td><td><code>*</code>, <code>/</code></td></tr>
+          <tr><td><code>factor</code></td><td>Mức nhân tử</td><td>Số hoặc biểu thức trong ngoặc</td></tr>
+        </tbody>
+      </table>
+
+      <p>Cách chia này giúp thể hiện độ ưu tiên toán tử. Vì <code>factor</code> nằm sâu hơn <code>term</code>, và <code>term</code> nằm sâu hơn <code>expr</code>, nên phép nhân và chia được nhóm chặt hơn phép cộng và trừ. Ví dụ <code>3 + 5 * 2</code> được hiểu là <code>3 + (5 * 2)</code>, không phải <code>(3 + 5) * 2</code>.</p>
+    </div>
+
+    <!-- Từ grammar đến parser -->
+    <div class="article-section" id="tu-grammar-den-parser">
+      <h2 class="section-heading">Từ grammar đến parser hoạt động</h2>
+      <p>Sau khi viết tệp grammar <code>Arithmetic.g4</code>, ta có thể chạy ANTLR4 để sinh mã nguồn. Nếu dùng Python làm ngôn ngữ đích:</p>
+      <div class="code-block">
+        <div class="code-label">Shell — sinh mã Python</div>
+        <pre><code>antlr4 -Dlanguage=Python3 Arithmetic.g4</code></pre>
+      </div>
+      <p>Sau đó, một chương trình Python có thể sử dụng các lớp sinh ra:</p>
+      <div class="code-block">
+        <div class="code-label">Python — sử dụng parser do ANTLR4 sinh</div>
+        <pre><code><span class="kw">from</span> antlr4 <span class="kw">import</span> InputStream, CommonTokenStream
+<span class="kw">from</span> ArithmeticLexer <span class="kw">import</span> ArithmeticLexer
+<span class="kw">from</span> ArithmeticParser <span class="kw">import</span> ArithmeticParser
+
+source = <span class="fn">InputStream</span>(<span class="str">"3 + 5 * 2"</span>)
+lexer  = <span class="fn">ArithmeticLexer</span>(source)
+tokens = <span class="fn">CommonTokenStream</span>(lexer)
+parser = <span class="fn">ArithmeticParser</span>(tokens)
+tree   = parser.<span class="fn">program</span>()
+<span class="fn">print</span>(tree.<span class="fn">toStringTree</span>(recog=parser))</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Dòng xử lý</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>InputStream(...)</code></td><td>Tạo đầu vào từ chuỗi ký tự</td></tr>
+          <tr><td><code>ArithmeticLexer(...)</code></td><td>Chuyển chuỗi ký tự thành chuỗi token</td></tr>
+          <tr><td><code>CommonTokenStream(...)</code></td><td>Gom token cho parser</td></tr>
+          <tr><td><code>ArithmeticParser(...)</code></td><td>Tạo parser từ chuỗi token</td></tr>
+          <tr><td><code>parser.program()</code></td><td>Bắt đầu phân tích từ luật <code>program</code></td></tr>
+          <tr><td><code>toStringTree(...)</code></td><td>In cây phân tích dạng văn bản</td></tr>
+        </tbody>
+      </table>
+
+      <p>Nhờ ANTLR4, người lập trình không cần tự viết toàn bộ mã nhận dạng cú pháp. Thay vào đó, trọng tâm chuyển sang thiết kế grammar đúng, rõ ràng và xử lý cây phân tích sau khi parser tạo ra.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 5: THÁCH THỨC ==================== -->
+    <div class="lesson-badge">Bài 5 / 5</div>
+    <h1 class="lesson-title" id="thach-thuc">Thách thức khi viết văn phạm</h1>
+    <div class="lesson-meta">CO3005 · Phân tích Cú pháp</div>
+
+    <!-- Văn phạm mơ hồ -->
+    <div class="article-section" id="mo-ho">
+      <h2 class="section-heading">Văn phạm mơ hồ</h2>
+      <p>Một <strong>văn phạm mơ hồ</strong> (<em>ambiguous grammar</em>) là văn phạm mà tồn tại ít nhất một chuỗi đầu vào có thể tạo ra từ hai hoặc nhiều cây phân tích cú pháp khác nhau. Điều này nguy hiểm vì cùng một chương trình có thể có nhiều cách hiểu hợp lệ. Ví dụ, xét văn phạm phẳng:</p>
+      <div class="code-block">
+        <div class="code-label">Văn phạm mơ hồ</div>
+        <pre><code>expr : expr op expr | NUMBER;
+op   : '+' | '*';</code></pre>
+      </div>
+      <p>Với đầu vào <code>3 + 5 * 2</code>, có ít nhất hai cách hiểu:</p>
+      <div class="code-block">
+        <div class="code-label">Hai cách hiểu khác nhau</div>
+        <pre><code>(3 + 5) * 2   <span class="cmt">// = 16</span>
+3 + (5 * 2)   <span class="cmt">// = 13</span></code></pre>
+      </div>
+      <p>Hai cách hiểu này cho kết quả khác nhau. Nếu grammar không quy định độ ưu tiên toán tử, parser không có cơ sở rõ ràng để chọn cách hiểu đúng. Hai cây phân tích tương ứng:</p>
+
+      <figure class="fig">
+        <img src="pic3.png" alt="Hai cây phân tích khác nhau cho cùng biểu thức 3 + 5 * 2 từ văn phạm mơ hồ">
+        <figcaption>Cách hiểu <code>(3 + 5) * 2</code> và <code>3 + (5 * 2)</code> từ văn phạm mơ hồ.</figcaption>
+      </figure>
+
+      <div class="callout">
+        Văn phạm mơ hồ thường gây xung đột khi sinh parser, làm cho trình sinh parser khó quyết định nên áp dụng luật nào. Để xử lý, ta cần viết lại văn phạm hoặc quy định rõ <strong>độ ưu tiên</strong> (<em>precedence</em>) và <strong>tính kết hợp</strong> (<em>associativity</em>) của toán tử.
+      </div>
+    </div>
+
+    <!-- Mẫu danh sách -->
+    <div class="article-section" id="mau-danh-sach">
+      <h2 class="section-heading">Các mẫu danh sách thường gặp</h2>
+      <p>Khi viết parser rules, ta thường gặp các cấu trúc danh sách. Bốn mẫu danh sách phổ biến:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Trường hợp</th><th>Ý nghĩa</th><th>EBNF</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Danh sách không rỗng các x</td><td>Có ít nhất một x</td><td><code>x+</code></td></tr>
+          <tr><td>Danh sách có thể rỗng các x</td><td>Có không hoặc nhiều x</td><td><code>x*</code></td></tr>
+          <tr><td>Danh sách không rỗng, phân cách bởi y</td><td>Ví dụ <code>x, x, x</code></td><td><code>x (y x)*</code></td></tr>
+          <tr><td>Danh sách có thể rỗng, phân cách bởi y</td><td>Ví dụ danh sách tham số có thể rỗng</td><td><code>(x (y x)*)?</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ, danh sách tham số trong lời gọi hàm <code>f(a, b, c)</code> có thể viết bằng ANTLR4:</p>
+      <div class="code-block">
+        <div class="code-label">ANTLRv4 — danh sách tham số</div>
+        <pre><code>call    : ID '(' argList? ')';
+argList : expr (',' expr)*;</code></pre>
+      </div>
+      <p>Vì trong <code>call</code> dùng <code>argList?</code>, lời gọi hàm không tham số cũng hợp lệ: <code>f()</code>. Nếu muốn viết trực tiếp theo mẫu danh sách có thể rỗng:</p>
+      <div class="code-block">
+        <div class="code-label">ANTLRv4 — viết inline</div>
+        <pre><code>call : ID '(' (expr (',' expr)*)? ')';</code></pre>
+      </div>
+    </div>
+
+    <!-- Biểu thức trung tố -->
+    <div class="article-section" id="bieu-thuc-trung-to">
+      <h2 class="section-heading">Biểu thức trung tố</h2>
+      <p><strong>Biểu thức trung tố</strong> (<em>infix expression</em>) là biểu thức trong đó toán tử nằm giữa các toán hạng, chẳng hạn <code>a + b * c</code>. Khi viết văn phạm cho biểu thức trung tố, ta phải xử lý hai vấn đề quan trọng: độ ưu tiên toán tử và tính kết hợp.</p>
+      <p><strong>Độ ưu tiên toán tử</strong> (<em>operator precedence</em>) quyết định toán tử nào được nhóm trước. Ví dụ, <code>*</code> và <code>/</code> thường có độ ưu tiên cao hơn <code>+</code> và <code>-</code>, nên <code>a + b * c</code> được hiểu là <code>a + (b * c)</code>.</p>
+      <p>Cách phổ biến để mã hóa độ ưu tiên là dùng nhiều tầng luật:</p>
+      <div class="code-block">
+        <div class="code-label">Văn phạm phân tầng theo độ ưu tiên</div>
+        <pre><code>expr   : expr '+' term | expr '-' term | term;
+term   : term '*' factor | term '/' factor | factor;
+factor : '(' expr ')' | ID | NUMBER;</code></pre>
+      </div>
+      <div class="callout">
+        <strong>Quy tắc quan trọng:</strong> Luật càng gần ký hiệu bắt đầu thì thường có độ ưu tiên thấp hơn; luật càng sâu trong cây thì có độ ưu tiên cao hơn. Trong ví dụ trên, <code>expr</code> xử lý <code>+</code> và <code>-</code>, còn <code>term</code> xử lý <code>*</code> và <code>/</code>, nên <code>*</code> và <code>/</code> gắn chặt hơn.
+      </div>
+    </div>
+
+    <!-- Tính kết hợp -->
+    <div class="article-section" id="tinh-ket-hop">
+      <h2 class="section-heading">Tính kết hợp của toán tử</h2>
+      <p><strong>Tính kết hợp</strong> (<em>associativity</em>) quyết định cách nhóm các toán tử có cùng độ ưu tiên. Ví dụ <code>a - b - c</code>:</p>
+      <div class="code-block">
+        <div class="code-label">Hai cách nhóm</div>
+        <pre><code>(a - b) - c   <span class="cmt">// kết hợp trái</span>
+a - (b - c)   <span class="cmt">// kết hợp phải</span></code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Hình dạng luật</th><th>Tính kết hợp</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Đệ quy trái (<code>expr : expr '-' term | term</code>)</td><td>Kết hợp trái</td></tr>
+          <tr><td>Đệ quy phải (<code>expr : term '-' expr | term</code>)</td><td>Kết hợp phải</td></tr>
+          <tr><td>Không đệ quy</td><td>Không kết hợp</td></tr>
+        </tbody>
+      </table>
+
+      <p>Một số toán tử thường kết hợp trái, chẳng hạn <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> trong nhiều ngôn ngữ. Một số toán tử thường kết hợp phải, chẳng hạn phép gán trong C: <code>a = b = c</code> thường được hiểu là <code>a = (b = c)</code>.</p>
+    </div>
+
+    <!-- Viết rõ ràng hơn -->
+    <div class="article-section" id="viet-ro-rang">
+      <h2 class="section-heading">Cách viết văn phạm rõ ràng hơn</h2>
+      <p>Để tránh mơ hồ và dễ bảo trì, khi viết grammar nên tách các mức ưu tiên thành các luật riêng. Thay vì viết:</p>
+      <div class="code-block">
+        <div class="code-label">Không nên viết — mơ hồ</div>
+        <pre><code>expr : expr '+' expr | expr '*' expr | NUMBER;</code></pre>
+      </div>
+      <p>Nên viết:</p>
+      <div class="code-block">
+        <div class="code-label">Nên viết — rõ ràng</div>
+        <pre><code>expr   : expr '+' term | term;
+term   : term '*' factor | factor;
+factor : NUMBER | '(' expr ')';</code></pre>
+      </div>
+      <p>Cách viết thứ hai dài hơn nhưng rõ ràng hơn. Nó thể hiện trực tiếp rằng phép nhân có độ ưu tiên cao hơn phép cộng. Tương tự, với danh sách tham số, thay vì viết một rule quá dài, ta có thể tách thành:</p>
+      <div class="code-block">
+        <div class="code-label">Tách rule để dễ đọc</div>
+        <pre><code>call    : ID '(' argList? ')';
+argList : expr (',' expr)*;</code></pre>
+      </div>
+      <p>Cách tách luật giúp grammar gần với tư duy cú pháp của ngôn ngữ hơn. Các rule có tên rõ ràng như <code>expr</code>, <code>term</code>, <code>factor</code>, <code>argList</code>, <code>statement</code>, <code>block</code> không chỉ giúp parser hoạt động, mà còn giúp người đọc grammar hiểu được cấu trúc thiết kế của ngôn ngữ.</p>
+
+      <div class="callout">
+        <strong>Nền tảng tiếp theo:</strong> Nắm vững phân tích cú pháp và cách viết grammar là cơ sở để học tiếp phân tích ngữ nghĩa, sinh cây cú pháp trừu tượng (AST) và sinh mã trung gian.
+      </div>
+    </div>
+
+    <!-- NAV FOOTER -->
+    <div class="nav-footer">
+      <span>Bài 1–5 / 5 · CO3005</span>
+      <div style="display:flex; gap:10px;">
+        <span class="nav-btn secondary">← Bài trước</span>
+        <span class="nav-btn">Bài tiếp theo →</span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('[id]');
+  const tocItems = document.querySelectorAll('.toc-item');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocItems.forEach(item => {
+          item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

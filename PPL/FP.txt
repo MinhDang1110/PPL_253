@@ -1,0 +1,987 @@
+Bảng điều khiển
+Học tập
+ĐĐ
+
+Đặng Đình Minh Hoàng
+
+hoang.dangdinhminh@hcmut.edu.vn
+
+Đăng xuất
+
+© DuyLMS
+
+Học tập · Lớp học của tôi
+Nguyên lý Ngôn ngữ Lập trình (CO3005)_Trần Ngọc Bảo Duy (DT_HK253) [DT01,DT02]
+Lập trình hàm
+Lập trình hàm như một mô hình lập trình
+Lập trình hàm như một mô hình lập trình
+Quay lại lớp học
+Hoàn thành
+Mục lục
+Lập trình hàm là gì?
+
+Lập trình hàm là một mô hình lập trình nhìn chương trình như quá trình đánh giá biểu thức và áp dụng hàm. Nếu lập trình mệnh lệnh nhấn mạnh vào chuỗi câu lệnh làm thay đổi trạng thái, lập trình hàm nhấn mạnh vào việc biến đổi giá trị thông qua các hàm. Thay vì hỏi “cần thay đổi biến nào, theo thứ tự nào?”, lập trình hàm thường hỏi “giá trị đầu vào được biến đổi thành giá trị đầu ra như thế nào?”.
+
+Trong chương này, ta tiếp cận lập trình hàm như một mô hình ngôn ngữ lập trình, không chỉ như một phong cách viết code. Các khái niệm quan trọng gồm biểu thức (expression), áp dụng hàm (function application), hàm thuần (pure function), bất biến (immutability), hiệu ứng phụ (side effect), hàm hạng nhất (first-class function), hàm bậc cao (higher-order function), bao đóng (closure) và kết hợp hàm (function composition).
+
+Lập trình hàm (functional programming) là mô hình lập trình trong đó tính toán chủ yếu được mô hình hóa như việc đánh giá biểu thức và áp dụng hàm. Chương trình được xây dựng bằng cách biến đổi giá trị đầu vào thành giá trị đầu ra, thay vì liên tục thay đổi trạng thái của chương trình.
+
+Trong lập trình hàm, ta thường ưu tiên:
+
+Ý tưởng	Diễn giải
+Biểu thức thay cho mệnh lệnh	Chương trình được cấu trúc bằng các biểu thức tạo ra giá trị
+Áp dụng hàm thay cho thay đổi trạng thái	Tính toán được thực hiện bằng lời gọi hàm
+Dữ liệu bất biến thay cho biến thay đổi	Tạo giá trị mới thay vì sửa giá trị cũ
+Hàm thuần thay cho mã nhiều hiệu ứng phụ	Cùng đầu vào cho cùng đầu ra và không làm thay đổi bên ngoài
+Kết hợp hàm nhỏ	Xây dựng tính toán lớn từ các hàm nhỏ
+
+Hình ảnh cốt lõi của lập trình hàm là:
+
+giá trị → hàm → giá trị
+
+Ví dụ:
+
+def square(x):
+    return x * x
+print(square(4))
+
+Kết quả:
+
+16
+
+Hàm square nhận một giá trị, biến đổi nó và trả về giá trị mới. Nó không cần thay đổi biến toàn cục, không ghi ra tệp, không sửa danh sách bên ngoài. Đây là dạng hàm dễ kiểm tra, dễ hiểu và dễ kết hợp.
+
+Một tính toán lớn có thể được tạo bằng cách lồng hoặc kết hợp các hàm nhỏ:
+
+def increment(x): return x + 1
+def double(x): return x * 2
+print(double(increment(3)))
+
+Kết quả:
+
+8
+
+Ở đây, increment(3) tạo ra 4, rồi double(4) tạo ra 8.
+
+Tư duy mệnh lệnh và tư duy hàm
+
+Trong lập trình mệnh lệnh, ta thường mô tả từng bước thực hiện. Ví dụ, để bình phương từng phần tử trong danh sách, ta có thể viết:
+
+numbers = [1, 2, 3, 4]
+result = []
+for x in numbers:
+    result.append(x * x)
+print(result)
+
+Cách viết này nhấn mạnh các bước: tạo danh sách rỗng, duyệt từng phần tử, thêm kết quả vào danh sách.
+
+Trong phong cách hàm, ta mô tả phép biến đổi trên dữ liệu:
+
+numbers = [1, 2, 3, 4]
+result = list(map(lambda x: x * x, numbers))
+print(result)
+
+Ở đây, map thể hiện mẫu tính toán “áp dụng một hàm cho từng phần tử”. Ta không trực tiếp mô tả cách tạo danh sách kết quả từng bước; ta mô tả phép biến đổi.
+
+Có thể so sánh ngắn gọn như sau:
+
+Khía cạnh	Phong cách mệnh lệnh	Phong cách hàm
+Đơn vị chính	Câu lệnh	Biểu thức
+Trạng thái	Thường xuyên cập nhật	Giảm thiểu hoặc bất biến
+Lặp	Vòng lặp	Đệ quy hoặc hàm bậc cao
+Trọng tâm	Cách thực hiện từng bước	Phép biến đổi cần biểu diễn
+
+Điều này không có nghĩa vòng lặp luôn xấu hoặc map luôn tốt hơn. Trong nhiều ngôn ngữ như Python, list comprehension có thể vừa rõ ràng vừa gần với tư duy hàm:
+
+numbers = [1, 2, 3, 4]
+result = [x * x for x in numbers]
+print(result)
+
+Điểm quan trọng là lập trình hàm khuyến khích người lập trình suy nghĩ về biến đổi giá trị hơn là cập nhật trạng thái.
+
+Tính toán như đánh giá biểu thức
+
+Trong lập trình hàm, chương trình thường được cấu trúc như các biểu thức (expressions) tạo ra giá trị. Một biểu thức có thể là hằng số, tên biến, lời gọi hàm, biểu thức điều kiện hoặc tổ hợp của nhiều biểu thức khác.
+
+Ví dụ:
+
+square = lambda x: x * x
+result = square(4)
+
+Quá trình đánh giá có thể hiểu như sau:
+
+square(4) → 4 * 4 → 16
+
+Trong Python, biểu thức điều kiện cũng tạo ra giá trị:
+
+x = -5
+abs_v = x if x >= 0 else -x
+print(abs_v)
+
+Kết quả:
+
+5
+
+Khác với câu lệnh if thông thường, biểu thức điều kiện trên có thể nằm bên phải phép gán vì nó trả về một giá trị.
+
+Trong tư duy hàm, một chương trình tốt thường được xây dựng bằng cách kết hợp các biểu thức nhỏ:
+
+def normalize(x): return x.strip().lower()
+print(normalize("  Hello  "))
+
+Kết quả:
+
+hello
+
+Biểu thức x.strip().lower() là sự kết hợp nhiều phép biến đổi: bỏ khoảng trắng hai đầu, rồi chuyển về chữ thường.
+
+Hàm như phép biến đổi
+
+Về mặt toán học, một hàm có thể được xem là ánh xạ từ tập giá trị đầu vào sang tập giá trị đầu ra:
+
+f : A → B
+
+Trong lập trình, hàm cũng có thể được hiểu như một phép biến đổi giá trị.
+
+def square(x):
+    return x * x
+
+Có thể đọc hàm này như:
+
+square : Number → Number
+
+Tức là square nhận một số và trả về một số.
+
+Một hàm lý tưởng trong lập trình hàm thường có các đặc điểm:
+
+Đặc điểm	Ý nghĩa
+Xác định	Cùng đầu vào luôn cho cùng đầu ra
+Không thay đổi trạng thái ẩn	Không âm thầm sửa biến toàn cục hoặc đối tượng bên ngoài
+Dễ kết hợp	Có thể dùng làm thành phần trong hàm lớn hơn
+Dễ kiểm tra	Chỉ cần kiểm tra quan hệ đầu vào – đầu ra
+
+Ví dụ hàm tốt:
+
+def fahrenheit(c):
+    return (9 / 5) * c + 32
+print(fahrenheit(37))
+
+Hàm này không phụ thuộc vào trạng thái bên ngoài. Muốn kiểm thử, chỉ cần cung cấp đầu vào và so sánh đầu ra mong đợi.
+
+Bài trước
+1. Lập trình hàm như một mô hình lập trình
+Bài sau
+Bài 1 / 5
+Hoàn thành
+
+Mẹo: ← → chuyển bài · Nhấn hình để phóng to · Tham chiếu Hình để nhảy tới minh họa
+Bảng điều khiển
+Học tập
+ĐĐ
+
+Đặng Đình Minh Hoàng
+
+hoang.dangdinhminh@hcmut.edu.vn
+
+Đăng xuất
+
+© DuyLMS
+
+Học tập · Lớp học của tôi
+Nguyên lý Ngôn ngữ Lập trình (CO3005)_Trần Ngọc Bảo Duy (DT_HK253) [DT01,DT02]
+Lập trình hàm
+Phép tính lambda như nền tảng khái niệm
+Phép tính lambda như nền tảng khái niệm
+Quay lại lớp học
+Hoàn thành
+Mục lục
+Vì sao nhắc đến phép tính lambda?
+
+Lập trình hàm có gốc rễ sâu trong ý tưởng xem tính toán là định nghĩa và áp dụng hàm. Phép tính lambda (lambda calculus) là một mô hình hình thức tối giản nắm bắt đúng tinh thần này. Nó không cần biến gán, vòng lặp, đối tượng hay bộ nhớ thay đổi; nó chỉ cần hàm và áp dụng hàm.
+
+Trong chương này, phép tính lambda chỉ được dùng như cầu nối khái niệm, không đi sâu vào lý thuyết hình thức đầy đủ. Mục tiêu là giúp người học hiểu vì sao lập trình hàm xem hàm là trung tâm của tính toán.
+
+Có thể hình dung mối liên hệ:
+
+Phép tính lambda
+→ hàm, biến, áp dụng hàm
+→ lập trình hàm
+→ hàm hạng nhất, hàm vô danh, hàm bậc cao, bao đóng
+
+Nhiều khái niệm quen thuộc trong ngôn ngữ lập trình hiện đại như lambda, hàm vô danh, truyền hàm làm đối số và trả về hàm đều có liên hệ trực tiếp với phép tính lambda.
+
+Ba khái niệm cốt lõi
+
+Phép tính lambda được xây dựng từ ba dạng cơ bản:
+
+Khái niệm	Ý nghĩa	Ví dụ trong lambda	Tương tự trong Python
+Biến	Một tên	x	x
+Trừu tượng hàm	Định nghĩa hàm	λx. x + 1	lambda x: x + 1
+Áp dụng hàm	Gọi hàm	(λx. x + 1) 3	(lambda x: x + 1)(3)
+
+Biểu thức:
+
+λx. x + 1
+
+có thể đọc là: hàm nhận tham số x và trả về x + 1.
+
+Trong Python:
+
+inc = lambda x: x + 1
+print(inc(3))
+
+Kết quả:
+
+4
+
+Ở đây, lambda x: x + 1 là một hàm không tên. Ta gán nó cho tên inc, rồi gọi inc(3).
+
+Từ trừu tượng lambda đến hàm lambda
+
+Một trừu tượng lambda (lambda abstraction) trong phép tính lambda tương ứng với hàm lambda (lambda function) trong nhiều ngôn ngữ lập trình.
+
+So sánh:
+
+λx. x + 1
+
+và:
+
+lambda x: x + 1
+
+Cả hai đều mô tả cùng một ý tưởng: một hàm nhận x và trả về x + 1.
+
+Trong Python, hàm lambda có một số đặc điểm:
+
+Đặc điểm	Ý nghĩa
+Không cần tên khi định nghĩa	Có thể dùng trực tiếp tại chỗ
+Có thể có nhiều tham số	lambda a, b: a + b
+Thân hàm là một biểu thức	Không chứa nhiều câu lệnh
+Có thể truyền cho hàm khác	Thường dùng với map, filter, sorted
+
+Ví dụ:
+
+print((lambda a, b: a + b)(3, 4))
+
+Kết quả:
+
+7
+
+Lambda hữu ích khi cần một hàm ngắn, dùng một lần.
+
+nums = [3, 1, 2]
+print(sorted(nums, key=lambda x: -x))
+
+Kết quả:
+
+[3, 2, 1]
+
+Ở đây, lambda x: -x được dùng để sắp xếp giảm dần.
+
+Áp dụng hàm và trực giác thay thế
+
+Áp dụng hàm (function application) nghĩa là đưa đối số vào hàm và đánh giá thân hàm. Trong trực giác đơn giản, có thể xem điều này như việc thay tham số bằng đối số trong thân hàm.
+
+Ví dụ:
+
+(λx. x * x) 4
+
+Ta thay x bằng 4 trong thân hàm:
+
+4 * 4 → 16
+
+Trong Python:
+
+print((lambda x: x * x)(4))
+
+Kết quả:
+
+16
+
+Ví dụ với hai tham số:
+
+print((lambda a, b: a * b + 1)(3, 5))
+
+Quá trình đánh giá:
+
+a = 3, b = 5
+a * b + 1 → 3 * 5 + 1 → 16
+
+Trực giác thay thế giúp người học hiểu vì sao hàm là “động cơ tính toán” của lập trình hàm. Chương trình được thực thi bằng cách liên tục áp dụng hàm cho giá trị, tạo ra giá trị mới.
+
+Bài trước
+2. Phép tính lambda như nền tảng khái niệm
+Bài sau
+Bài 2 / 5
+Hoàn thành
+
+Mẹo: ← → chuyển bài · Nhấn hình để phóng to · Tham chiếu Hình để nhảy tới minh họa
+Bảng điều khiển
+Học tập
+ĐĐ
+
+Đặng Đình Minh Hoàng
+
+hoang.dangdinhminh@hcmut.edu.vn
+
+Đăng xuất
+
+© DuyLMS
+
+Học tập · Lớp học của tôi
+Nguyên lý Ngôn ngữ Lập trình (CO3005)_Trần Ngọc Bảo Duy (DT_HK253) [DT01,DT02]
+Lập trình hàm
+Bất biến, hàm thuần và hiệu ứng phụ
+Bất biến, hàm thuần và hiệu ứng phụ
+Quay lại lớp học
+Hoàn thành
+Mục lục
+Dữ liệu thay đổi được và dữ liệu bất biến
+
+Dữ liệu thay đổi được (mutable data) là dữ liệu có thể bị thay đổi sau khi được tạo ra. Ví dụ, danh sách trong Python là đối tượng thay đổi được.
+
+xs = [1, 2, 3]
+xs.append(4)
+print(xs)
+
+Kết quả:
+
+[1, 2, 3, 4]
+
+Lời gọi append sửa chính danh sách ban đầu.
+
+Ngược lại, dữ liệu bất biến (immutable data) là dữ liệu không thể bị thay đổi sau khi được tạo ra. Ví dụ, số nguyên và chuỗi trong Python là bất biến.
+
+x = 10
+y = x + 1
+print(x)
+print(y)
+
+Kết quả:
+
+10
+11
+
+Giá trị 10 không bị sửa. Biểu thức x + 1 tạo ra giá trị mới 11.
+
+Chuỗi cũng bất biến:
+
+s = "hello"
+t = s.upper()
+print(s)
+print(t)
+
+Kết quả:
+
+hello
+HELLO
+
+Lập trình hàm ưu tiên bất biến vì nó làm chương trình dễ suy luận hơn. Nếu một giá trị không thể bị sửa, ta không cần hỏi “ai đã thay đổi nó?” hoặc “nó đã bị thay đổi lúc nào?”.
+
+Hiệu ứng phụ
+
+Hiệu ứng phụ (side effect) xảy ra khi việc đánh giá biểu thức hoặc gọi hàm làm thay đổi trạng thái chương trình, hoặc tương tác với thế giới bên ngoài.
+
+Ví dụ về hiệu ứng phụ:
+
+x = x + 1
+items.append(10)
+print(x)
+name = input()
+
+Các thao tác trên đều không chỉ tạo giá trị trả về. Chúng còn làm thay đổi biến, sửa đối tượng, ghi ra màn hình hoặc đọc dữ liệu từ bên ngoài.
+
+Một hàm có hiệu ứng phụ có thể:
+
+Hiệu ứng phụ	Ví dụ
+Sửa biến toàn cục	global_count += 1
+Sửa đối tượng truyền vào	items.append(x)
+Ghi ra ngoài	print(x)
+Đọc từ ngoài	input()
+Gây ngoại lệ	raise ValueError()
+Phụ thuộc trạng thái ngoài	đọc thời gian, đọc file, đọc random
+
+Ví dụ:
+
+items = []
+def add_item(x):
+    items.append(x)
+add_item(10)
+print(items)
+
+Hàm add_item không chỉ nhận đầu vào và trả kết quả. Nó làm thay đổi danh sách items bên ngoài.
+
+Hiệu ứng phụ không phải lúc nào cũng xấu. Chương trình thực tế cần đọc dữ liệu, ghi kết quả, cập nhật cơ sở dữ liệu và giao tiếp với người dùng. Tuy nhiên, lập trình hàm khuyến khích cô lập hiệu ứng phụ và giữ phần lõi tính toán càng thuần càng tốt.
+
+Hàm thuần
+
+Hàm thuần (pure function) là hàm luôn tạo ra cùng một kết quả với cùng một đầu vào và không có hiệu ứng phụ.
+
+Ví dụ:
+
+def square(x):
+    return x * x
+
+Hàm square là hàm thuần. Gọi square(4) bao nhiêu lần cũng trả về 16, và nó không sửa bất kỳ trạng thái bên ngoài nào.
+
+Ví dụ hàm không thuần:
+
+total = 0
+def add_to_total(x):
+    global total
+    total += x
+    return total
+
+Hàm này phụ thuộc vào giá trị trước đó của total.
+
+print(add_to_total(5))
+print(add_to_total(5))
+
+Kết quả:
+
+5
+10
+
+Cùng đầu vào 5, hai lần gọi cho hai kết quả khác nhau. Vì vậy, hàm không thuần.
+
+Hàm thuần có nhiều lợi ích:
+
+Lợi ích	Giải thích
+Dễ kiểm thử	Chỉ cần so sánh đầu vào và đầu ra
+Dễ suy luận	Không cần theo dõi trạng thái ẩn
+Dễ tái sử dụng	Không phụ thuộc ngữ cảnh bên ngoài
+Dễ kết hợp	Có thể dùng trong pipeline hàm
+Dễ song song hóa	Ít rủi ro tranh chấp trạng thái
+
+Ví dụ, thay vì sửa danh sách đầu vào:
+
+def add_one_in_place(xs):
+    for i in range(len(xs)):
+        xs[i] += 1
+
+ta viết hàm tạo danh sách mới:
+
+def add_one(xs):
+    return [x + 1 for x in xs]
+
+Hàm add_one dễ hiểu hơn vì nó không làm thay đổi danh sách ban đầu.
+
+Tính thay thế bằng giá trị
+
+Tính thay thế bằng giá trị (referential transparency) nghĩa là một biểu thức có thể được thay bằng giá trị của nó mà không làm thay đổi hành vi chương trình.
+
+Nếu square là hàm thuần:
+
+def square(x):
+    return x * x
+
+thì biểu thức:
+
+square(4)
+
+có thể được thay bằng:
+
+16
+
+mà không làm thay đổi hành vi chương trình.
+
+Ngược lại, xét hàm không thuần:
+
+counter = 0
+def next_id():
+    global counter
+    counter += 1
+    return counter
+
+Hai lần gọi:
+
+print(next_id())
+print(next_id())
+
+có thể cho kết quả:
+
+1
+2
+
+Ta không thể thay next_id() bằng một giá trị cố định, vì mỗi lần gọi có thể cho kết quả khác. Do đó, biểu thức này không có tính thay thế bằng giá trị.
+
+Tính thay thế bằng giá trị hỗ trợ:
+
+Lợi ích	Ý nghĩa
+Suy luận đại số	Có thể thay biểu thức bằng giá trị tương đương
+Gỡ lỗi dễ hơn	Ít trạng thái ẩn
+Tái cấu trúc an toàn hơn	Thay đổi cách viết mà ít đổi hành vi
+Tối ưu hóa	Compiler có thể thay lời gọi bằng kết quả nếu an toàn
+Bất biến và suy luận chương trình
+
+Trạng thái thay đổi được làm nảy sinh nhiều câu hỏi:
+
+Ai đã thay đổi giá trị này?
+Nó bị thay đổi khi nào?
+Có đối tượng nào khác đang chia sẻ dữ liệu này không?
+Hàm nào có thể sửa nó?
+
+Ví dụ:
+
+def append_zero(xs):
+    xs.append(0)
+    return xs
+a = [1, 2, 3]
+b = append_zero(a)
+print(a)
+print(b)
+
+Kết quả:
+
+[1, 2, 3, 0]
+[1, 2, 3, 0]
+
+Danh sách a bị thay đổi, dù nhìn vào lời gọi b = append_zero(a) người đọc có thể nghĩ hàm chỉ tạo kết quả mới.
+
+Cách viết theo phong cách bất biến:
+
+def append_zero(xs):
+    return xs + [0]
+a = [1, 2, 3]
+b = append_zero(a)
+print(a)
+print(b)
+
+Kết quả:
+
+[1, 2, 3]
+[1, 2, 3, 0]
+
+Ở đây, a không bị thay đổi. Hàm tạo ra danh sách mới. Điều này giúp chương trình dễ dự đoán hơn, đặc biệt khi dữ liệu được chia sẻ giữa nhiều phần của hệ thống.
+
+Bài trước
+3. Bất biến, hàm thuần và hiệu ứng phụ
+Bài sau
+Bài 3 / 5
+Hoàn thành
+
+Mẹo: ← → chuyển bài · Nhấn hình để phóng to · Tham chiếu Hình để nhảy tới minh họa
+Bảng điều khiển
+Học tập
+ĐĐ
+
+Đặng Đình Minh Hoàng
+
+hoang.dangdinhminh@hcmut.edu.vn
+
+Đăng xuất
+
+© DuyLMS
+
+Học tập · Lớp học của tôi
+Nguyên lý Ngôn ngữ Lập trình (CO3005)_Trần Ngọc Bảo Duy (DT_HK253) [DT01,DT02]
+Lập trình hàm
+Hàm hạng nhất, hàm bậc cao và kết hợp hàm
+Hàm hạng nhất, hàm bậc cao và kết hợp hàm
+Quay lại lớp học
+Hoàn thành
+Mục lục
+Hàm hạng nhất
+
+Một ngôn ngữ hỗ trợ hàm hạng nhất (first-class functions) khi hàm được đối xử như các giá trị thông thường. Nghĩa là hàm có thể được gán cho biến, truyền làm đối số, trả về như kết quả, lưu trong cấu trúc dữ liệu và gọi thông qua biến.
+
+Ví dụ:
+
+def add(a, b):
+    return a + b
+f = add
+print(f(3, 4))
+
+Kết quả:
+
+7
+
+Ở đây, add là một giá trị hàm. Ta gán nó cho biến f, rồi gọi f(3, 4).
+
+Hàm cũng có thể được lưu trong danh sách:
+
+def inc(x): return x + 1
+def double(x): return x * 2
+funcs = [inc, double]
+for f in funcs:
+    print(f(3))
+
+Kết quả:
+
+4
+6
+
+Cách nhìn “hàm là giá trị” là nền tảng để hiểu hàm bậc cao, closure, decorator và nhiều kỹ thuật lập trình hàm.
+
+Hàm làm đối số
+
+Vì hàm là giá trị, một hàm có thể nhận hàm khác làm đối số. Đây là cách chương trình tham số hóa hành vi.
+
+Ví dụ:
+
+def apply(f, x):
+    return f(x)
+print(apply(lambda a: a ** 2, 4))
+
+Kết quả:
+
+16
+
+Trong lời gọi apply(lambda a: a ** 2, 4), tham số f nhận hành vi “bình phương”, còn x nhận giá trị 4.
+
+Một ví dụ thực tế hơn:
+
+def select(xs, predicate):
+    return [x for x in xs if predicate(x)]
+nums = [1, 2, 3, 4, 5]
+print(select(nums, lambda x: x % 2 == 0))
+
+Kết quả:
+
+[2, 4]
+
+Hàm select không cố định điều kiện chọn. Điều kiện được truyền vào qua predicate. Đây là cách tăng tính tái sử dụng của mã.
+
+Hàm làm giá trị trả về
+
+Một hàm cũng có thể trả về một hàm khác. Điều này cho phép tạo hành vi mới một cách động.
+
+Ví dụ:
+
+def multiplier(x):
+    def multiply(y):
+        return x * y
+    return multiply
+times3 = multiplier(3)
+print(times3(4))
+
+Kết quả:
+
+12
+
+Hàm multiplier(3) trả về một hàm mới. Hàm mới này ghi nhớ rằng x = 3, nên khi gọi times3(4), kết quả là 3 * 4 = 12.
+
+Có thể tạo nhiều hàm từ cùng một khuôn:
+
+times2 = multiplier(2)
+times5 = multiplier(5)
+print(times2(10))
+print(times5(10))
+
+Kết quả:
+
+20
+50
+
+Đây là ví dụ quan trọng vì nó dẫn đến khái niệm closure ở phần sau.
+
+Hàm bậc cao
+
+Hàm bậc cao (higher-order function) là hàm nhận một hàm làm đối số, trả về một hàm, hoặc cả hai.
+
+Ví dụ nhận hàm làm đối số:
+
+def apply(f, x):
+    return f(x)
+
+Ví dụ trả về hàm:
+
+def multiplier(x):
+    return lambda y: x * y
+
+Các hàm bậc cao phổ biến:
+
+Hàm	Mẫu tính toán
+map	Biến đổi từng phần tử
+filter	Chọn phần tử thỏa điều kiện
+reduce hoặc fold	Gộp nhiều phần tử thành một giá trị
+compose	Kết hợp nhiều hàm
+Decorator	Bọc hàm để mở rộng hành vi
+Callback	Truyền hành vi để gọi lại sau
+
+Hàm bậc cao giúp trừu tượng hóa các mẫu lặp thường gặp. Thay vì viết lại vòng lặp cho từng tình huống, ta đặt phần hành vi thay đổi vào một hàm.
+
+Map, filter và reduce như các mẫu tính toán
+
+Ba hàm bậc cao quen thuộc là map, filter và reduce.
+
+Hàm	Mẫu	Ý nghĩa
+map	Biến đổi	Áp dụng hàm cho từng phần tử
+filter	Chọn lọc	Giữ các phần tử thỏa điều kiện
+reduce	Gộp	Kết hợp nhiều phần tử thành một giá trị
+
+Ví dụ map:
+
+nums = [1, 2, 3]
+print(list(map(lambda x: x * x, nums)))
+
+Kết quả:
+
+[1, 4, 9]
+
+Ví dụ filter:
+
+nums = [1, 2, 3, 4]
+print(list(filter(lambda x: x % 2 == 0, nums)))
+
+Kết quả:
+
+[2, 4]
+
+Ví dụ reduce:
+
+from functools import reduce
+nums = [1, 2, 3, 4]
+print(reduce(lambda x, y: x + y, nums, 0))
+
+Kết quả:
+
+10
+
+Nên truyền giá trị khởi tạo cho reduce, chẳng hạn 0 trong phép cộng, để xử lý an toàn cả trường hợp danh sách rỗng.
+
+print(reduce(lambda x, y: x + y, [], 0))
+
+Kết quả:
+
+0
+Kết hợp hàm
+
+Kết hợp hàm (function composition) là kỹ thuật xây dựng hàm lớn từ các hàm nhỏ. Trong toán học, nếu có hai hàm f và g, hàm hợp được viết:
+
+(f ∘ g)(x) = f(g(x))
+
+Trong Python:
+
+def compose(f, g):
+    return lambda x: f(g(x))
+
+Ví dụ:
+
+def double(x): return x * 2
+def increment(x): return x + 1
+h = compose(double, increment)
+print(h(3))
+
+Quá trình tính:
+
+h(3) = double(increment(3)) = double(4) = 8
+
+Kết quả:
+
+8
+
+Kết hợp hàm giúp tạo pipeline xử lý dữ liệu rõ ràng. Ví dụ:
+
+def strip_text(s): return s.strip()
+def lower_text(s): return s.lower()
+normalize = compose(lower_text, strip_text)
+print(normalize("  Hello  "))
+
+Kết quả:
+
+hello
+
+Thay vì viết một hàm lớn chứa nhiều bước, ta tách thành các hàm nhỏ, mỗi hàm có một trách nhiệm, rồi kết hợp chúng.
+
+Bài trước
+4. Hàm hạng nhất, hàm bậc cao và kết hợp hàm
+Bài sau
+Bài 4 / 5
+Hoàn thành
+
+Mẹo: ← → chuyển bài · Nhấn hình để phóng to · Tham chiếu Hình để nhảy tới minh họa
+Bảng điều khiển
+Học tập
+ĐĐ
+
+Đặng Đình Minh Hoàng
+
+hoang.dangdinhminh@hcmut.edu.vn
+
+Đăng xuất
+
+© DuyLMS
+
+Học tập · Lớp học của tôi
+Nguyên lý Ngôn ngữ Lập trình (CO3005)_Trần Ngọc Bảo Duy (DT_HK253) [DT01,DT02]
+Lập trình hàm
+Bao đóng và môi trường phi cục bộ
+Bao đóng và môi trường phi cục bộ
+Quay lại lớp học
+Hoàn thành
+Mục lục
+Biến tự do và môi trường phi cục bộ
+
+Một hàm có thể sử dụng biến không được định nghĩa trong thân hàm của chính nó. Biến như vậy được gọi là biến tự do (free variable) đối với hàm đó.
+
+Ví dụ:
+
+def multiplier(x):
+    def multiply(y):
+        return x * y
+    return multiply
+
+Trong hàm multiply, tham số y là biến cục bộ của multiply. Nhưng x không được định nghĩa bên trong multiply. Vì vậy, x là biến tự do của multiply.
+
+Câu hỏi là: khi multiply được gọi sau khi multiplier đã kết thúc, giá trị x lấy từ đâu?
+
+times3 = multiplier(3)
+print(times3(4))
+
+Hàm multiplier(3) đã chạy xong, nhưng hàm trả về vẫn cần giá trị x = 3. Python giữ lại môi trường cần thiết để multiply hoạt động. Đây chính là closure.
+
+Bao đóng là gì?
+
+Bao đóng (closure) là một giá trị hàm đi kèm với môi trường cần thiết để phân giải các biến tự do của nó.
+
+Có thể hiểu:
+
+closure = code + environment
+
+Với ví dụ:
+
+def multiplier(x):
+    def multiply(y):
+        return x * y
+    return multiply
+times3 = multiplier(3)
+
+Closure times3 gồm:
+
+Thành phần	Nội dung
+Code	multiply(y): return x * y
+Environment	x = 3
+
+Khi gọi:
+
+print(times3(4))
+
+Python dùng x = 3 đã được giữ lại và y = 4 được truyền vào khi gọi hàm. Kết quả là:
+
+12
+
+Có thể tạo nhiều closure khác nhau từ cùng một hàm ngoài:
+
+times2 = multiplier(2)
+times5 = multiplier(5)
+print(times2(10))
+print(times5(10))
+
+Kết quả:
+
+20
+50
+
+Mỗi closure có môi trường riêng: times2 ghi nhớ x = 2, còn times5 ghi nhớ x = 5.
+
+Vì sao chỉ có code là chưa đủ?
+
+Giả sử ta chỉ giữ lại code của hàm bên trong:
+
+def multiply(y):
+    return x * y
+
+Nếu không có môi trường, ta không biết x là gì. Sau khi lời gọi multiplier(3) kết thúc, biến cục bộ x lẽ ra không còn tồn tại trên ngăn xếp lời gọi. Nhưng hàm multiply được trả về vẫn cần x.
+
+Closure giải quyết vấn đề này bằng cách giữ lại giá trị cần thiết từ môi trường nơi hàm được tạo ra.
+
+Ví dụ:
+
+def make_power(n):
+    def power(x):
+        return x ** n
+    return power
+square = make_power(2)
+cube = make_power(3)
+print(square(5))
+print(cube(5))
+
+Kết quả:
+
+25
+125
+
+Hàm power trong square ghi nhớ n = 2; hàm power trong cube ghi nhớ n = 3.
+
+Closure rất quan trọng vì nó cho phép hàm được trả về từ hàm khác mà vẫn giữ được ngữ cảnh cần thiết để hoạt động.
+
+Decorator là gì?
+
+Decorator là một hàm bậc cao dùng để bọc một hàm khác nhằm mở rộng hành vi của hàm đó. Decorator nhận một hàm làm đầu vào và trả về một hàm mới.
+
+Về mặt kiểu, có thể hình dung:
+
+decorator : (A → B) → (A → B)
+
+Nghĩa là decorator nhận một hàm từ A sang B, rồi trả về một hàm mới cũng từ A sang B, nhưng có thêm hành vi.
+
+Ví dụ:
+
+def log_call(func):
+    def wrapper(x):
+        print("Calling...")
+        return func(x)
+    return wrapper
+
+Dùng decorator:
+
+@log_call
+def square(x):
+    return x * x
+print(square(4))
+
+Kết quả:
+
+Calling...
+16
+
+Cú pháp:
+
+@log_call
+def square(x):
+    return x * x
+
+tương đương với:
+
+def square(x):
+    return x * x
+square = log_call(square)
+
+Decorator kết hợp hai ý tưởng: hàm bậc cao và closure. log_call là hàm bậc cao vì nó nhận hàm func và trả về hàm wrapper. wrapper là closure vì nó ghi nhớ func từ môi trường nơi nó được tạo ra.
+
+Decorator và mở rộng hành vi
+
+Decorator thường được dùng để thêm hành vi phụ như ghi log, đo thời gian, kiểm tra quyền hoặc ghi nhớ kết quả mà không sửa trực tiếp thân hàm gốc.
+
+Ví dụ đo thời gian:
+
+import time
+def timing(func):
+    def wrapper(x):
+        start = time.time()
+        result = func(x)
+        end = time.time()
+        print("elapsed:", end - start)
+        return result
+    return wrapper
+
+Áp dụng:
+
+@timing
+def slow_square(x):
+    time.sleep(1)
+    return x * x
+print(slow_square(4))
+
+Decorator giúp tách hành vi phụ khỏi logic chính của hàm. Hàm slow_square chỉ tập trung tính bình phương; việc đo thời gian được đặt trong decorator.
+
+Tuy nhiên, cần dùng decorator cẩn thận. Nếu wrapper thay đổi kiểu trả về, nuốt lỗi, hoặc làm thay đổi hành vi quá nhiều, chương trình có thể khó hiểu hơn. Decorator tốt thường giữ giao diện của hàm gốc càng ổn định càng tốt.
+
+Bài trước
+5. Bao đóng và môi trường phi cục bộ
+Bài sau
+Bài 5 / 5
+Bài cuối chương
+Hoàn thành
+
+Mẹo: ← → chuyển bài · Nhấn hình để phóng to · Tham chiếu Hình để nhảy tới minh họa

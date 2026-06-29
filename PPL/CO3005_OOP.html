@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CO3005 – Lập trình hướng đối tượng</title>
+<meta name="description" content="Bài học về Lập trình hướng đối tượng (OOP) – CO3005 Nguyên lý Ngôn ngữ Lập trình, bao gồm đối tượng, lớp, đóng gói, kế thừa, đa hình, liên kết động và thiết kế ngôn ngữ OOP.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd9d0;
+    --text: #1a1916;
+    --muted: #6b6760;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --kw: #569cd6;
+    --str: #ce9178;
+    --cmt: #6a9955;
+    --num: #b5cea8;
+    --fn: #dcdcaa;
+    --tag-bg: #e8f0fb;
+    --tag-text: #1a56a0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .toc-item {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .toc-item.sub { padding-left: 32px; font-size: 12px; }
+
+  /* MAIN */
+  .main {
+    padding: 48px 56px 80px;
+    max-width: 820px;
+  }
+
+  .lesson-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--tag-text);
+    background: var(--tag-bg);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .lesson-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article-section {
+    margin-bottom: 52px;
+    scroll-margin-top: 24px;
+  }
+
+  .section-heading {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+  .section-heading::before {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 40px; height: 2px;
+    background: var(--accent);
+  }
+
+  p { margin-bottom: 14px; color: var(--text); }
+
+  /* CODE */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+    font-size: 13.5px;
+  }
+  .code-label {
+    background: #2d2d2d;
+    padding: 6px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #333;
+  }
+  pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1.6;
+    color: var(--code-text);
+  }
+  pre code { font-family: inherit; }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #e8e5de;
+    color: #b5451b;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+
+  .kw  { color: var(--kw); }
+  .str { color: var(--str); }
+  .cmt { color: var(--cmt); font-style: italic; }
+  .num { color: var(--num); }
+  .fn  { color: var(--fn); }
+  .type{ color: #4ec9b0; }
+
+  /* CALLOUT */
+  .callout {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .callout strong { color: var(--accent); }
+
+  /* DEF LIST */
+  .def-list { margin: 16px 0 20px; }
+  .def-item {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .def-item:first-child { border-top: 1px solid var(--border); }
+  .def-term {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    padding-top: 2px;
+  }
+
+  /* TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  /* FIGURE */
+  .fig { text-align: center; margin: 28px 0; }
+  .fig img { max-width: 560px; width: 100%; border-radius: 6px; }
+  .fig figcaption { margin-top: 10px; font-size: 13px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+
+  /* NAV FOOTER */
+  .nav-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 0 0; border-top: 1px solid var(--border);
+    margin-top: 48px; font-size: 14px; color: var(--muted);
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--accent); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 500;
+    text-decoration: none; cursor: default;
+  }
+  .nav-btn.secondary { background: var(--surface); color: var(--accent); border: 1px solid var(--accent); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+    .def-item { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-title">Mục lục bài học</div>
+    <a class="toc-item active" href="#mo-dau">Bài 1 · Mở đầu</a>
+    <a class="toc-item" href="#mo-hinh-oop">Bài 2 · Mô hình lập trình hướng đối tượng</a>
+    <a class="toc-item sub" href="#oop-la-gi">Lập trình hướng đối tượng là gì?</a>
+    <a class="toc-item sub" href="#chuong-trinh-tap-doi-tuong">Chương trình như tập đối tượng</a>
+    <a class="toc-item sub" href="#so-sanh-mo-hinh">So sánh với các mô hình khác</a>
+    <a class="toc-item sub" href="#class-based-prototype">Dựa trên lớp và nguyên mẫu</a>
+    <a class="toc-item" href="#doi-tuong-lop">Bài 3 · Đối tượng, lớp, đóng gói và ADT</a>
+    <a class="toc-item sub" href="#lop-va-doi-tuong">Lớp và đối tượng</a>
+    <a class="toc-item sub" href="#dinh-danh-trang-thai">Định danh, trạng thái và hành vi</a>
+    <a class="toc-item sub" href="#dong-goi">Đóng gói</a>
+    <a class="toc-item sub" href="#che-giau">Che giấu thông tin</a>
+    <a class="toc-item sub" href="#adt">Kiểu dữ liệu trừu tượng và OOP</a>
+    <a class="toc-item" href="#ke-thua">Bài 4 · Kế thừa, kiểu con và tái sử dụng mã</a>
+    <a class="toc-item sub" href="#phan-cap-lop">Phân cấp lớp</a>
+    <a class="toc-item sub" href="#ke-thua-tai-su-dung">Kế thừa như tái sử dụng mã</a>
+    <a class="toc-item sub" href="#ghi-de">Ghi đè phương thức</a>
+    <a class="toc-item sub" href="#kieu-con">Kiểu con và khả năng thay thế</a>
+    <a class="toc-item sub" href="#da-ke-thua">Đa kế thừa và bài toán kim cương</a>
+    <a class="toc-item" href="#da-hinh">Bài 5 · Đa hình, liên kết động và tìm phương thức</a>
+    <a class="toc-item sub" href="#da-hinh-la-gi">Đa hình là gì?</a>
+    <a class="toc-item sub" href="#kieu-tinh-dong">Kiểu tĩnh và kiểu động</a>
+    <a class="toc-item sub" href="#lien-ket-dong">Liên kết động</a>
+    <a class="toc-item sub" href="#tim-phuong-thuc">Tìm phương thức</a>
+    <a class="toc-item sub" href="#nap-chong-ghi-de">Nạp chồng và ghi đè</a>
+    <a class="toc-item" href="#thiet-ke-ngon-ngu">Bài 6 · Thiết kế ngôn ngữ hướng đối tượng</a>
+    <a class="toc-item sub" href="#kieu-tinh-dong-oop">Kiểu tĩnh và kiểu động trong OOP</a>
+    <a class="toc-item sub" href="#dinh-kieu">Định kiểu theo tên, cấu trúc và kiểu vịt</a>
+    <a class="toc-item sub" href="#interface-trait-mixin">Giao diện, trait và mixin</a>
+    <a class="toc-item sub" href="#loi-ich-gioi-han">Lợi ích và giới hạn của OOP</a>
+    <a class="toc-item" href="#tom-tat">Bài 7 · Tóm tắt chương</a>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+
+    <!-- ==================== BÀI 1: MỞ ĐẦU ==================== -->
+    <div class="lesson-badge">Bài 1 / 7</div>
+    <h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+    <div class="lesson-meta">CO3005 · Lập trình hướng đối tượng · Trần Ngọc Bảo Duy</div>
+
+    <div class="article-section">
+      <p>Lập trình hướng đối tượng là một trong những mô hình lập trình có ảnh hưởng lớn nhất trong lịch sử phát triển ngôn ngữ lập trình. Nhiều ngôn ngữ hiện đại như Java, C++, C#, Python, Ruby, JavaScript và Scala đều hỗ trợ lập trình hướng đối tượng ở những mức độ khác nhau. Tuy nhiên, để hiểu đúng lập trình hướng đối tượng, không nên chỉ nhìn vào cú pháp <code>class</code>, <code>object</code> hoặc <code>method</code>. Điều quan trọng hơn là hiểu các cơ chế ngôn ngữ đứng phía sau: đối tượng (<em>object</em>), lớp (<em>class</em>), đóng gói (<em>encapsulation</em>), che giấu thông tin (<em>information hiding</em>), kế thừa (<em>inheritance</em>), kiểu con (<em>subtyping</em>), đa hình (<em>polymorphism</em>), liên kết động (<em>dynamic binding</em>) và tìm phương thức (<em>method lookup</em>).</p>
+      <p>Trong chương này, lập trình hướng đối tượng được tiếp cận như một mô hình tổ chức chương trình. Một chương trình không chỉ là một chuỗi thủ tục xử lý dữ liệu, mà là một tập các đối tượng có trạng thái riêng, có hành vi riêng và tương tác với nhau thông qua lời gọi phương thức.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 2: MÔ HÌNH OOP ==================== -->
+    <div class="lesson-badge">Bài 2 / 7</div>
+    <h1 class="lesson-title" id="mo-hinh-oop">Mô hình lập trình hướng đối tượng</h1>
+    <div class="lesson-meta">CO3005 · Lập trình hướng đối tượng</div>
+
+    <div class="article-section" id="oop-la-gi">
+      <h2 class="section-heading">Lập trình hướng đối tượng là gì?</h2>
+      <p><strong>Lập trình hướng đối tượng</strong> (<em>Object-Oriented Programming, OOP</em>) là mô hình lập trình trong đó chương trình được tổ chức như một tập hợp các đối tượng (<em>objects</em>) tương tác với nhau. Mỗi đối tượng kết hợp dữ liệu và thao tác xử lý dữ liệu đó trong cùng một đơn vị chương trình. Một đối tượng thường được hiểu qua ba khía cạnh chính:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Khía cạnh</th><th>Ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Định danh</strong> (<em>identity</em>)</td><td>Mỗi đối tượng là một thực thể riêng biệt, ngay cả khi có cùng trạng thái với đối tượng khác</td></tr>
+          <tr><td><strong>Trạng thái</strong> (<em>state</em>)</td><td>Dữ liệu hiện đang được lưu trong các thuộc tính hoặc trường của đối tượng</td></tr>
+          <tr><td><strong>Hành vi</strong> (<em>behavior</em>)</td><td>Các thao tác mà đối tượng cung cấp thông qua phương thức</td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ, trong một hệ thống ngân hàng, một tài khoản có số dư, chủ tài khoản và trạng thái hoạt động. Đó là trạng thái của tài khoản. Tài khoản cũng có thể nạp tiền, rút tiền hoặc đóng tài khoản. Đó là hành vi của tài khoản.</p>
+      <div class="code-block">
+        <div class="code-label">Python</div>
+        <pre><code>account.<span class="fn">deposit</span>(<span class="num">100</span>)</code></pre>
+      </div>
+      <p>Lời gọi trên không chỉ là lời gọi một hàm thông thường. Nó có nghĩa là yêu cầu đối tượng <code>account</code> tự thực hiện thao tác <code>deposit</code> với số tiền 100. Trọng tâm của chương trình chuyển từ "hàm nào xử lý dữ liệu nào" sang "đối tượng nào cung cấp hành vi nào". Ví dụ khác:</p>
+      <div class="code-block">
+        <div class="code-label">Python</div>
+        <pre><code>shape.<span class="fn">draw</span>()</code></pre>
+      </div>
+      <p>Ở đây, chương trình không nhất thiết cần biết <code>shape</code> là hình tròn, hình chữ nhật hay tam giác. Nó chỉ yêu cầu đối tượng <code>shape</code> tự vẽ chính nó. Đây là cách tư duy rất quan trọng của OOP: đối tượng chịu trách nhiệm cho hành vi gắn với dữ liệu của chính nó.</p>
+    </div>
+
+    <div class="article-section" id="chuong-trinh-tap-doi-tuong">
+      <h2 class="section-heading">Chương trình như tập hợp các đối tượng tương tác</h2>
+      <p>Trong OOP, một chương trình có thể được xem như một mạng lưới các đối tượng giao tiếp với nhau. Giao tiếp này thường được thực hiện bằng lời gọi phương thức (<em>method call</em>). Dạng tổng quát của lời gọi phương thức là:</p>
+      <div class="code-block">
+        <div class="code-label">Cú pháp tổng quát</div>
+        <pre><code>receiver.method(arguments)</code></pre>
+      </div>
+      <p>Trong đó, <code>receiver</code> là đối tượng nhận yêu cầu, <code>method</code> là phương thức được gọi, và <code>arguments</code> là các đối số truyền vào. Ví dụ trong hệ thống bán hàng:</p>
+      <div class="code-block">
+        <div class="code-label">Python — hệ thống bán hàng</div>
+        <pre><code>order.<span class="fn">add_item</span>(product)
+customer.<span class="fn">pay</span>(order)
+invoice.<span class="fn">generate</span>(order)</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Đối tượng</th><th>Trách nhiệm</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>customer</code></td><td>Đại diện cho khách hàng</td></tr>
+          <tr><td><code>order</code></td><td>Quản lý danh sách sản phẩm được đặt</td></tr>
+          <tr><td><code>product</code></td><td>Lưu thông tin sản phẩm</td></tr>
+          <tr><td><code>invoice</code></td><td>Sinh hóa đơn cho đơn hàng</td></tr>
+          <tr><td><code>payment</code></td><td>Xử lý thanh toán</td></tr>
+        </tbody>
+      </table>
+
+      <p>Trong thiết kế hướng đối tượng, mỗi đối tượng sở hữu dữ liệu của nó và chỉ cung cấp một số thao tác công khai để đối tượng khác sử dụng. Điều này giúp chương trình được chia thành các đơn vị có trách nhiệm rõ ràng hơn. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — lớp Order</div>
+        <pre><code><span class="kw">class</span> <span class="type">Order</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>): <span class="kw">self</span>.items = []
+    <span class="kw">def</span> <span class="fn">add_item</span>(<span class="kw">self</span>, product): <span class="kw">self</span>.items.<span class="fn">append</span>(product)
+    <span class="kw">def</span> <span class="fn">total</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="fn">sum</span>(item.price <span class="kw">for</span> item <span class="kw">in</span> <span class="kw">self</span>.items)</code></pre>
+      </div>
+      <p>Đối tượng <code>Order</code> tự quản lý danh sách sản phẩm của nó. Mã bên ngoài không cần biết <code>items</code> được lưu bằng danh sách, mảng động, cơ sở dữ liệu hay cấu trúc khác. Nó chỉ cần gọi các phương thức mà <code>Order</code> cung cấp.</p>
+    </div>
+
+    <div class="article-section" id="so-sanh-mo-hinh">
+      <h2 class="section-heading">So sánh với các mô hình lập trình khác</h2>
+      <p>Các mô hình lập trình khác nhau tổ chức tính toán theo những cách khác nhau.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Mô hình</th><th>Ý tưởng tổ chức chính</th><th>Trọng tâm</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Thủ tục</td><td>Thủ tục thao tác trên dữ liệu</td><td>Trình tự hành động</td></tr>
+          <tr><td>Hàm</td><td>Hàm và biến đổi giá trị</td><td>Biểu thức, bất biến</td></tr>
+          <tr><td><strong>Hướng đối tượng</strong></td><td>Đối tượng có trạng thái và hành vi</td><td>Trừu tượng hóa và tương tác</td></tr>
+          <tr><td>Logic</td><td>Sự kiện và luật suy luận</td><td>Suy diễn</td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ, cùng một thao tác sắp xếp danh sách có thể được nhìn theo nhiều cách:</p>
+      <div class="code-block">
+        <div class="code-label">Ba cách tiếp cận</div>
+        <pre><code><span class="cmt">Procedural:      </span>sort(list)
+<span class="cmt">Object-oriented: </span>list.sort()
+<span class="cmt">Functional:      </span>sorted_list = sort(list)</code></pre>
+      </div>
+      <p>Trong cách viết thủ tục, hàm <code>sort</code> là trung tâm; danh sách là dữ liệu được truyền vào. Trong cách viết hướng đối tượng, danh sách là đối tượng và phương thức <code>sort</code> là hành vi của chính đối tượng đó. Trong cách viết hàm, ta thường tránh thay đổi danh sách ban đầu và tạo ra một danh sách mới đã được sắp xếp. Ví dụ trong Python:</p>
+      <div class="code-block">
+        <div class="code-label">Python — sắp xếp kiểu OOP (thay đổi tại chỗ)</div>
+        <pre><code>numbers = [<span class="num">3</span>, <span class="num">1</span>, <span class="num">2</span>]; numbers.<span class="fn">sort</span>(); <span class="fn">print</span>(numbers)</code></pre>
+      </div>
+      <p>Trong đoạn mã trên, <code>numbers</code> là một đối tượng danh sách, và <code>sort</code> là phương thức làm thay đổi trạng thái của đối tượng đó. Cách viết theo phong cách hàm hơn:</p>
+      <div class="code-block">
+        <div class="code-label">Python — sắp xếp kiểu hàm (không thay đổi bản gốc)</div>
+        <pre><code>numbers = [<span class="num">3</span>, <span class="num">1</span>, <span class="num">2</span>]; sorted_numbers = <span class="fn">sorted</span>(numbers); <span class="fn">print</span>(numbers, sorted_numbers)</code></pre>
+      </div>
+      <p>Ở đây, <code>sorted</code> trả về danh sách mới và không thay đổi <code>numbers</code> ban đầu.</p>
+    </div>
+
+    <div class="article-section" id="class-based-prototype">
+      <h2 class="section-heading">Lập trình hướng đối tượng dựa trên lớp và dựa trên nguyên mẫu</h2>
+      <p>Không phải mọi ngôn ngữ OOP đều dùng cùng một mô hình đối tượng. Hai hướng lớn là OOP dựa trên lớp (<em>class-based OOP</em>) và OOP dựa trên nguyên mẫu (<em>prototype-based OOP</em>).</p>
+      <p>Trong OOP dựa trên lớp, đối tượng được tạo ra từ lớp. Lớp đóng vai trò như bản mô tả cấu trúc và hành vi chung của các đối tượng.</p>
+      <div class="code-block">
+        <div class="code-label">Python — OOP dựa trên lớp</div>
+        <pre><code><span class="kw">class</span> <span class="type">Circle</span>: <span class="kw">pass</span>
+c = <span class="fn">Circle</span>()</code></pre>
+      </div>
+      <p>Ở đây, <code>Circle</code> là lớp, còn <code>c</code> là một đối tượng được tạo ra từ lớp <code>Circle</code>. Các ngôn ngữ như Java, C++, Python và Scala chủ yếu dùng mô hình dựa trên lớp.</p>
+      <p>Trong OOP dựa trên nguyên mẫu, đối tượng mới có thể được tạo bằng cách sao chép hoặc mở rộng từ một đối tượng đã có. JavaScript là ví dụ tiêu biểu.</p>
+      <div class="code-block">
+        <div class="code-label">JavaScript — OOP dựa trên nguyên mẫu</div>
+        <pre><code><span class="kw">const</span> prototypeCircle = { <span class="fn">draw</span>() { console.<span class="fn">log</span>(<span class="str">"Draw circle"</span>); } };
+<span class="kw">const</span> c = Object.<span class="fn">create</span>(prototypeCircle);
+c.<span class="fn">draw</span>();</code></pre>
+      </div>
+      <p>Ở đây, <code>c</code> không được tạo từ một lớp theo nghĩa truyền thống, mà được tạo dựa trên một đối tượng nguyên mẫu. Hai mô hình này khác nhau ở cách tạo và tổ chức đối tượng, nhưng cùng chia sẻ tư tưởng chung: chương trình được xây dựng từ các đối tượng có trạng thái và hành vi.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 3: ĐỐI TƯỢNG, LỚP, ĐÓNG GÓI ==================== -->
+    <div class="lesson-badge">Bài 3 / 7</div>
+    <h1 class="lesson-title" id="doi-tuong-lop">Đối tượng, lớp, đóng gói và kiểu dữ liệu trừu tượng</h1>
+    <div class="lesson-meta">CO3005 · Lập trình hướng đối tượng</div>
+
+    <div class="article-section" id="lop-va-doi-tuong">
+      <h2 class="section-heading">Lớp và đối tượng</h2>
+      <p><strong>Lớp</strong> (<em>class</em>) là mô tả chung về cấu trúc và hành vi của một nhóm đối tượng. <strong>Đối tượng</strong> (<em>object</em>) là một thực thể cụ thể được tạo ra khi chương trình chạy. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — lớp BankAccount</div>
+        <pre><code><span class="kw">class</span> <span class="type">BankAccount</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, balance): <span class="kw">self</span>.balance = balance
+    <span class="kw">def</span> <span class="fn">deposit</span>(<span class="kw">self</span>, amount): <span class="kw">self</span>.balance += amount
+    <span class="kw">def</span> <span class="fn">withdraw</span>(<span class="kw">self</span>, amount): <span class="kw">self</span>.balance -= amount</code></pre>
+      </div>
+      <p>Từ lớp <code>BankAccount</code>, ta có thể tạo nhiều đối tượng khác nhau:</p>
+      <div class="code-block">
+        <div class="code-label">Python — tạo đối tượng</div>
+        <pre><code>acc1 = <span class="fn">BankAccount</span>(<span class="num">100</span>)
+acc2 = <span class="fn">BankAccount</span>(<span class="num">100</span>)</code></pre>
+      </div>
+      <p><code>acc1</code> và <code>acc2</code> có cùng cấu trúc, cùng phương thức và thậm chí có cùng số dư ban đầu. Tuy nhiên, chúng là hai đối tượng khác nhau.</p>
+      <div class="code-block">
+        <div class="code-label">Python — kiểm tra định danh</div>
+        <pre><code><span class="fn">print</span>(acc1 <span class="kw">is</span> acc2)
+<span class="cmt"># Kết quả: False</span></code></pre>
+      </div>
+      <p>Điều này minh họa rằng định danh của đối tượng độc lập với trạng thái. Hai đối tượng có thể có trạng thái giống nhau nhưng vẫn là hai thực thể khác nhau.</p>
+    </div>
+
+    <div class="article-section" id="dinh-danh-trang-thai">
+      <h2 class="section-heading">Định danh, trạng thái và hành vi</h2>
+      <p>Một đối tượng có thể được phân tích qua ba thành phần: định danh, trạng thái và hành vi.</p>
+      <div class="code-block">
+        <div class="code-label">Python — lớp Student</div>
+        <pre><code><span class="kw">class</span> <span class="type">Student</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, gpa): <span class="kw">self</span>.name = name; <span class="kw">self</span>.gpa = gpa
+    <span class="kw">def</span> <span class="fn">is_excellent</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>.gpa &gt;= <span class="num">3.6</span></code></pre>
+      </div>
+      <p>Tạo hai đối tượng:</p>
+      <div class="code-block">
+        <div class="code-label">Python</div>
+        <pre><code>s1 = <span class="fn">Student</span>(<span class="str">"An"</span>, <span class="num">3.8</span>)
+s2 = <span class="fn">Student</span>(<span class="str">"An"</span>, <span class="num">3.8</span>)
+<span class="fn">print</span>(s1.name, s1.gpa)  <span class="cmt"># An 3.8</span>
+<span class="fn">print</span>(s2.name, s2.gpa)  <span class="cmt"># An 3.8</span>
+<span class="fn">print</span>(s1 <span class="kw">is</span> s2)         <span class="cmt"># False</span></code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Khía cạnh</th><th>Trong ví dụ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Định danh</td><td><code>s1</code> và <code>s2</code> là hai đối tượng khác nhau</td></tr>
+          <tr><td>Trạng thái</td><td><code>name</code>, <code>gpa</code></td></tr>
+          <tr><td>Hành vi</td><td><code>is_excellent()</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>OOP cho phép gắn dữ liệu và hành vi liên quan vào cùng một đơn vị, giúp chương trình gần với cách ta mô hình hóa các thực thể trong bài toán.</p>
+    </div>
+
+    <div class="article-section" id="dong-goi">
+      <h2 class="section-heading">Đóng gói</h2>
+      <p><strong>Đóng gói</strong> (<em>encapsulation</em>) là cơ chế kết hợp dữ liệu và các thao tác xử lý dữ liệu đó vào cùng một đơn vị chương trình, thường là đối tượng. Ví dụ, một ngăn xếp có thể được cài đặt như sau:</p>
+      <div class="code-block">
+        <div class="code-label">Python — lớp Stack</div>
+        <pre><code><span class="kw">class</span> <span class="type">Stack</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>): <span class="kw">self</span>.items = []
+    <span class="kw">def</span> <span class="fn">push</span>(<span class="kw">self</span>, x): <span class="kw">self</span>.items.<span class="fn">append</span>(x)
+    <span class="kw">def</span> <span class="fn">pop</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>.items.<span class="fn">pop</span>()
+    <span class="kw">def</span> <span class="fn">top</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>.items[-<span class="num">1</span>]
+    <span class="kw">def</span> <span class="fn">empty</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="fn">len</span>(<span class="kw">self</span>.items) == <span class="num">0</span></code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Thành phần</th><th>Ví dụ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Trạng thái</td><td><code>items</code></td></tr>
+          <tr><td>Hành vi</td><td><code>push</code>, <code>pop</code>, <code>top</code>, <code>empty</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block">
+        <div class="code-label">Python — sử dụng Stack</div>
+        <pre><code>s = <span class="fn">Stack</span>(); s.<span class="fn">push</span>(<span class="num">10</span>); s.<span class="fn">push</span>(<span class="num">20</span>); <span class="fn">print</span>(s.<span class="fn">pop</span>())
+<span class="cmt"># Kết quả: 20</span></code></pre>
+      </div>
+      <p>Việc tổ chức dữ liệu và thao tác liên quan trong cùng một lớp giúp chương trình dễ hiểu hơn. Thay vì có một danh sách dữ liệu rời rạc và nhiều hàm thao tác bên ngoài, ta có một đối tượng chịu trách nhiệm cho tính đúng đắn của chính nó.</p>
+    </div>
+
+    <div class="article-section" id="che-giau">
+      <h2 class="section-heading">Che giấu thông tin</h2>
+      <p><strong>Che giấu thông tin</strong> (<em>information hiding</em>) là nguyên tắc hạn chế truy cập trực tiếp vào biểu diễn bên trong của đối tượng và chỉ cho phép sử dụng thông qua giao diện được kiểm soát. Đóng gói và che giấu thông tin liên quan chặt chẽ nhưng không hoàn toàn giống nhau:</p>
+      <div class="def-list">
+        <div class="def-item">
+          <div class="def-term">Đóng gói</div>
+          <div>Gom dữ liệu và hành vi vào cùng một đơn vị</div>
+        </div>
+        <div class="def-item">
+          <div class="def-term">Che giấu thông tin</div>
+          <div>Không để mã bên ngoài phụ thuộc vào chi tiết cài đặt bên trong</div>
+        </div>
+      </div>
+      <p>Ví dụ, người dùng ngăn xếp chỉ nên thao tác qua giao diện:</p>
+      <div class="code-block">
+        <div class="code-label">Python — giao diện công khai</div>
+        <pre><code>s.<span class="fn">push</span>(<span class="num">10</span>)
+x = s.<span class="fn">pop</span>()</code></pre>
+      </div>
+      <p>Mã bên ngoài không nên phụ thuộc vào việc ngăn xếp được cài bằng danh sách, mảng động hay danh sách liên kết.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Giao diện công khai</th><th>Cài đặt ẩn bên trong</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>push(x)</code></td><td>Có thể dùng mảng</td></tr>
+          <tr><td><code>pop()</code></td><td>Có thể dùng danh sách liên kết</td></tr>
+          <tr><td><code>top()</code></td><td>Có thể dùng danh sách động</td></tr>
+          <tr><td><code>empty()</code></td><td>Có thể lưu kích thước riêng</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        Lợi ích của che giấu thông tin là nếu thay đổi cài đặt bên trong, mã sử dụng lớp không cần thay đổi. Ví dụ, hôm nay <code>Stack</code> dùng <code>list</code> của Python, ngày mai có thể đổi sang cấu trúc khác, miễn là các phương thức công khai giữ nguyên ý nghĩa.
+      </div>
+    </div>
+
+    <div class="article-section" id="adt">
+      <h2 class="section-heading">Kiểu dữ liệu trừu tượng và OOP</h2>
+      <p><strong>Kiểu dữ liệu trừu tượng</strong> (<em>Abstract Data Type, ADT</em>) mô tả một tập giá trị và các thao tác trên tập giá trị đó mà không tiết lộ cách biểu diễn bên trong. Ví dụ, ADT ngăn xếp có thể được mô tả bằng giao diện:</p>
+      <div class="code-block">
+        <div class="code-label">ADT ngăn xếp — giao diện</div>
+        <pre><code>create
+push(x)
+pop()
+top()
+empty()</code></pre>
+      </div>
+      <p>Người dùng ADT chỉ cần biết ý nghĩa của các thao tác. Họ không cần biết ngăn xếp được lưu bằng mảng hay danh sách liên kết. OOP mở rộng ý tưởng ADT bằng cách bổ sung thêm các khái niệm như đối tượng có định danh, lớp, đóng gói và liên kết động.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>ADT</th><th>OOP</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Tập giá trị và thao tác</td><td>Đối tượng có định danh, trạng thái và hành vi</td></tr>
+          <tr><td>Che giấu biểu diễn</td><td>Đóng gói trạng thái với phương thức</td></tr>
+          <tr><td>Giao diện độc lập với cài đặt</td><td>Hỗ trợ kế thừa, đa hình, liên kết động</td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ, hai lớp khác nhau có thể cùng cung cấp giao diện ngăn xếp:</p>
+      <div class="code-block">
+        <div class="code-label">Python — hai cài đặt cùng giao diện</div>
+        <pre><code><span class="kw">class</span> <span class="type">ListStack</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>): <span class="kw">self</span>.items = []
+    <span class="kw">def</span> <span class="fn">push</span>(<span class="kw">self</span>, x): <span class="kw">self</span>.items.<span class="fn">append</span>(x)
+    <span class="kw">def</span> <span class="fn">pop</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>.items.<span class="fn">pop</span>()
+
+<span class="kw">class</span> <span class="type">SimpleStack</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>): <span class="kw">self</span>.data = []
+    <span class="kw">def</span> <span class="fn">push</span>(<span class="kw">self</span>, x): <span class="kw">self</span>.data.<span class="fn">append</span>(x)
+    <span class="kw">def</span> <span class="fn">pop</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>.data.<span class="fn">pop</span>()</code></pre>
+      </div>
+      <p>Nếu mã khách chỉ dùng <code>push</code> và <code>pop</code>, nó không cần biết lớp bên trong tổ chức dữ liệu như thế nào.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 4: KẾ THỪA ==================== -->
+    <div class="lesson-badge">Bài 4 / 7</div>
+    <h1 class="lesson-title" id="ke-thua">Kế thừa, kiểu con và tái sử dụng mã</h1>
+    <div class="lesson-meta">CO3005 · Lập trình hướng đối tượng</div>
+
+    <div class="article-section" id="phan-cap-lop">
+      <h2 class="section-heading">Phân cấp lớp</h2>
+      <p><strong>Phân cấp lớp</strong> (<em>class hierarchy</em>) tổ chức các lớp theo quan hệ lớp cha và lớp con. Lớp cha (<em>superclass</em>) cung cấp cấu trúc hoặc hành vi chung, còn lớp con (<em>subclass</em>) có thể kế thừa, mở rộng hoặc thay thế hành vi đó. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — phân cấp Shape</div>
+        <pre><code><span class="kw">class</span> <span class="type">Shape</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"Draw a shape"</span>)
+
+<span class="kw">class</span> <span class="type">Circle</span>(<span class="type">Shape</span>):
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"Draw a circle"</span>)
+
+<span class="kw">class</span> <span class="type">Rectangle</span>(<span class="type">Shape</span>):
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"Draw a rectangle"</span>)</code></pre>
+      </div>
+
+      <figure class="fig">
+        <img src="oop_pic1.png" alt="Phân cấp lớp Shape, Circle và Rectangle" style="max-width:420px;">
+        <figcaption>Phân cấp lớp <code>Shape</code>, <code>Circle</code> và <code>Rectangle</code>.</figcaption>
+      </figure>
+
+      <p>Trong quan hệ này, <code>Circle</code> và <code>Rectangle</code> là các lớp con của <code>Shape</code>. Kế thừa cho phép diễn đạt quan hệ "là một loại của". Một hình tròn là một loại hình dạng; một hình chữ nhật cũng là một loại hình dạng. Tuy nhiên, không phải mọi quan hệ tái sử dụng mã đều nên được biểu diễn bằng kế thừa. Nếu quan hệ không phải "là một loại của", dùng kế thừa có thể làm thiết kế trở nên sai lệch.</p>
+    </div>
+
+    <div class="article-section" id="ke-thua-tai-su-dung">
+      <h2 class="section-heading">Kế thừa như tái sử dụng mã</h2>
+      <p><strong>Kế thừa</strong> (<em>inheritance</em>) cho phép lớp con tái sử dụng và mở rộng cài đặt của lớp cha. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — kế thừa Employee</div>
+        <pre><code><span class="kw">class</span> <span class="type">Employee</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name): <span class="kw">self</span>.name = name
+    <span class="kw">def</span> <span class="fn">get_info</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>.name
+
+<span class="kw">class</span> <span class="type">Lecturer</span>(<span class="type">Employee</span>):
+    <span class="kw">def</span> <span class="fn">teach</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="kw">self</span>.name, <span class="str">"is teaching"</span>)</code></pre>
+      </div>
+      <p>Lớp <code>Lecturer</code> không tự định nghĩa <code>get_info</code>, nhưng vẫn dùng được phương thức này vì nó kế thừa từ <code>Employee</code>.</p>
+      <div class="code-block">
+        <div class="code-label">Python — sử dụng Lecturer</div>
+        <pre><code>lec = <span class="fn">Lecturer</span>(<span class="str">"Nam"</span>); <span class="fn">print</span>(lec.<span class="fn">get_info</span>()); lec.<span class="fn">teach</span>()
+<span class="cmt"># Nam
+# Nam is teaching</span></code></pre>
+      </div>
+      <p>Kế thừa giúp tránh lặp mã. Những hành vi chung được viết một lần ở lớp cha và dùng lại ở các lớp con. Tuy nhiên, kế thừa cũng tạo ra sự phụ thuộc giữa lớp con và lớp cha. Nếu lớp cha thay đổi, lớp con có thể bị ảnh hưởng. Một lựa chọn khác là <strong>kết hợp</strong> (<em>composition</em>), tức là một đối tượng chứa hoặc sử dụng đối tượng khác thay vì kế thừa từ nó.</p>
+      <div class="code-block">
+        <div class="code-label">Python — kết hợp thay vì kế thừa</div>
+        <pre><code><span class="kw">class</span> <span class="type">Printer</span>:
+    <span class="kw">def</span> <span class="fn">print_doc</span>(<span class="kw">self</span>, doc): <span class="fn">print</span>(doc)
+
+<span class="kw">class</span> <span class="type">ReportService</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, printer): <span class="kw">self</span>.printer = printer
+    <span class="kw">def</span> <span class="fn">export</span>(<span class="kw">self</span>, report): <span class="kw">self</span>.printer.<span class="fn">print_doc</span>(report)</code></pre>
+      </div>
+      <p>Trong ví dụ này, <code>ReportService</code> không kế thừa từ <code>Printer</code>; nó sử dụng một <code>Printer</code>. Đây thường là thiết kế linh hoạt hơn nếu mục tiêu chỉ là tái sử dụng hành vi.</p>
+    </div>
+
+    <div class="article-section" id="ghi-de">
+      <h2 class="section-heading">Ghi đè phương thức</h2>
+      <p><strong>Ghi đè phương thức</strong> (<em>method overriding</em>) xảy ra khi lớp con cung cấp cài đặt mới cho một phương thức đã được kế thừa từ lớp cha. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — ghi đè draw</div>
+        <pre><code><span class="kw">class</span> <span class="type">Shape</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"Draw a shape"</span>)
+
+<span class="kw">class</span> <span class="type">Circle</span>(<span class="type">Shape</span>):
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"Draw a circle"</span>)
+
+<span class="type">Shape</span>().<span class="fn">draw</span>()    <span class="cmt"># Draw a shape</span>
+<span class="type">Circle</span>().<span class="fn">draw</span>()   <span class="cmt"># Draw a circle</span></code></pre>
+      </div>
+      <p>Cả <code>Shape</code> và <code>Circle</code> đều có phương thức <code>draw</code>, nhưng hành vi khác nhau. Ghi đè cho phép lớp con chuyên biệt hóa hành vi của lớp cha. Đây là cơ chế quan trọng để đạt được đa hình kiểu con, nơi cùng một lời gọi phương thức có thể tạo ra các hành vi khác nhau tùy vào đối tượng thật sự lúc chạy.</p>
+    </div>
+
+    <div class="article-section" id="kieu-con">
+      <h2 class="section-heading">Kiểu con và khả năng thay thế</h2>
+      <p><strong>Kiểu con</strong> (<em>subtyping</em>) là quan hệ trong hệ thống kiểu, trong đó giá trị thuộc một kiểu có thể được sử dụng ở nơi yêu cầu một kiểu khác. Nếu <code>Circle</code> là kiểu con của <code>Shape</code>, ta có thể dùng một đối tượng <code>Circle</code> ở nơi chương trình mong đợi một <code>Shape</code>. Ký hiệu thường dùng:</p>
+      <div class="code-block">
+        <div class="code-label">Ký hiệu kiểu con</div>
+        <pre><code>Circle &lt;: Shape</code></pre>
+      </div>
+      <p>Nghĩa là <code>Circle</code> là kiểu con của <code>Shape</code>. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — đa hình kiểu con</div>
+        <pre><code><span class="kw">def</span> <span class="fn">render</span>(shape): shape.<span class="fn">draw</span>()
+<span class="fn">render</span>(<span class="type">Circle</span>())
+<span class="fn">render</span>(<span class="type">Rectangle</span>())</code></pre>
+      </div>
+      <p>Hàm <code>render</code> không cần biết cụ thể <code>shape</code> là <code>Circle</code> hay <code>Rectangle</code>. Nó chỉ cần đối tượng đó có hành vi <code>draw</code>. Khái niệm này gắn với <strong>khả năng thay thế</strong> (<em>substitutability</em>): một đối tượng lớp con có thể thay thế cho đối tượng lớp cha nếu việc thay thế đó không làm sai kỳ vọng của chương trình.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Khái niệm</th><th>Câu hỏi chính</th><th>Góc nhìn</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Kế thừa</td><td>Cài đặt nào được tái sử dụng?</td><td>Cài đặt</td></tr>
+          <tr><td>Kiểu con</td><td>Đối tượng này có thể dùng an toàn ở đâu?</td><td>Hệ thống kiểu</td></tr>
+          <tr><td>Ghi đè</td><td>Hành vi kế thừa nào được thay thế?</td><td>Hành vi</td></tr>
+          <tr><td>Kết hợp</td><td>Có thể tái sử dụng mà không kế thừa không?</td><td>Thiết kế</td></tr>
+        </tbody>
+      </table>
+
+      <p>Trong nhiều ngôn ngữ, kế thừa lớp thường đồng thời tạo ra quan hệ kiểu con. Tuy nhiên, về mặt nguyên lý, đây là hai câu hỏi khác nhau: một câu hỏi về tái sử dụng cài đặt, một câu hỏi về khả năng thay thế trong hệ thống kiểu.</p>
+    </div>
+
+    <div class="article-section" id="da-ke-thua">
+      <h2 class="section-heading">Đa kế thừa và bài toán kim cương</h2>
+      <p><strong>Đa kế thừa</strong> (<em>multiple inheritance</em>) cho phép một lớp kế thừa từ nhiều lớp cha. Cơ chế này mạnh nhưng có thể gây mơ hồ. Bài toán nổi tiếng là <strong>bài toán kim cương</strong> (<em>diamond problem</em>).</p>
+
+      <figure class="fig">
+        <img src="oop_pic2.png" alt="Bài toán kim cương: D kế thừa từ B và C, cả hai đều kế thừa từ A" style="max-width:380px;">
+        <figcaption>Bài toán kim cương: <code>D</code> kế thừa từ <code>B</code> và <code>C</code>, cả hai đều kế thừa từ <code>A</code>.</figcaption>
+      </figure>
+
+      <div class="code-block">
+        <div class="code-label">Python — bài toán kim cương</div>
+        <pre><code><span class="kw">class</span> <span class="type">A</span>:
+    <span class="kw">def</span> <span class="fn">f</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"A"</span>)
+<span class="kw">class</span> <span class="type">B</span>(<span class="type">A</span>):
+    <span class="kw">def</span> <span class="fn">f</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"B"</span>)
+<span class="kw">class</span> <span class="type">C</span>(<span class="type">A</span>):
+    <span class="kw">def</span> <span class="fn">f</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"C"</span>)
+<span class="kw">class</span> <span class="type">D</span>(<span class="type">B</span>, <span class="type">C</span>): <span class="kw">pass</span>
+
+<span class="type">D</span>().<span class="fn">f</span>()             <span class="cmt"># B (do MRO)</span>
+<span class="fn">print</span>(<span class="type">D</span>.__mro__)
+<span class="cmt"># (&lt;class 'D'&gt;, &lt;class 'B'&gt;, &lt;class 'C'&gt;, &lt;class 'A'&gt;, &lt;class 'object'&gt;)</span></code></pre>
+      </div>
+      <p>Python giải quyết vấn đề này bằng <strong>thứ tự phân giải phương thức</strong> (<em>Method Resolution Order, MRO</em>). Với <code>D(B, C)</code>, Python tìm phương thức theo một thứ tự xác định. Các ngôn ngữ khác có cách xử lý khác nhau: Java và C# không cho phép đa kế thừa lớp trực tiếp, nhưng hỗ trợ interface; một số ngôn ngữ dùng trait hoặc mixin; một số yêu cầu lập trình viên chỉ rõ phương thức nào được chọn.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 5: ĐA HÌNH ==================== -->
+    <div class="lesson-badge">Bài 5 / 7</div>
+    <h1 class="lesson-title" id="da-hinh">Đa hình, liên kết động và tìm phương thức</h1>
+    <div class="lesson-meta">CO3005 · Lập trình hướng đối tượng</div>
+
+    <div class="article-section" id="da-hinh-la-gi">
+      <h2 class="section-heading">Đa hình là gì?</h2>
+      <p><strong>Đa hình</strong> (<em>polymorphism</em>) nghĩa là cùng một cấu trúc chương trình có thể hoạt động trên các giá trị thuộc nhiều kiểu khác nhau. Có nhiều dạng đa hình:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Dạng đa hình</th><th>Ý tưởng</th><th>Ví dụ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Đa hình đặc dụng (<em>ad-hoc polymorphism</em>)</td><td>Cùng tên, nhiều cài đặt khác nhau</td><td>Nạp chồng toán tử</td></tr>
+          <tr><td>Đa hình tham số (<em>parametric polymorphism</em>)</td><td>Cùng mã cho nhiều kiểu tham số</td><td>Generics</td></tr>
+          <tr><td>Đa hình kiểu con (<em>subtype polymorphism</em>)</td><td>Cùng giao diện, nhiều kiểu đối tượng khác nhau</td><td><code>shape.draw()</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Trong chương này, trọng tâm là đa hình kiểu con. Ví dụ:</p>
+      <div class="code-block">
+        <div class="code-label">Python — đa hình kiểu con</div>
+        <pre><code><span class="kw">class</span> <span class="type">Circle</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"Draw circle"</span>)
+<span class="kw">class</span> <span class="type">Rectangle</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"Draw rectangle"</span>)
+
+<span class="kw">def</span> <span class="fn">render</span>(shape): shape.<span class="fn">draw</span>()
+<span class="fn">render</span>(<span class="type">Circle</span>())     <span class="cmt"># Draw circle</span>
+<span class="fn">render</span>(<span class="type">Rectangle</span>())  <span class="cmt"># Draw rectangle</span></code></pre>
+      </div>
+      <p>Cùng lời gọi <code>shape.draw()</code> nhưng hành vi khác nhau tùy đối tượng thật sự là <code>Circle</code> hay <code>Rectangle</code>.</p>
+    </div>
+
+    <div class="article-section" id="kieu-tinh-dong">
+      <h2 class="section-heading">Kiểu tĩnh và kiểu động</h2>
+      <p>Trong nhiều ngôn ngữ OOP, một biến có thể được nhìn qua hai khái niệm: kiểu tĩnh (<em>static type</em>) và kiểu động (<em>dynamic type</em>). Ví dụ Java:</p>
+      <div class="code-block">
+        <div class="code-label">Java — kiểu tĩnh vs. kiểu động</div>
+        <pre><code><span class="type">Shape</span> s = <span class="kw">new</span> <span class="type">Circle</span>();
+s.<span class="fn">draw</span>();</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Khái niệm</th><th>Giá trị</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Kiểu tĩnh của <code>s</code></td><td><code>Shape</code></td></tr>
+          <tr><td>Kiểu động của đối tượng</td><td><code>Circle</code></td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Kiểu tĩnh</strong> (<em>static type</em>) là kiểu được biết từ mã nguồn và được bộ kiểm tra kiểu sử dụng trước khi chương trình chạy. Bộ kiểm tra kiểu hỏi: kiểu <code>Shape</code> có phương thức <code>draw</code> không? <strong>Kiểu động</strong> (<em>dynamic type</em>) là lớp thật sự của đối tượng khi chương trình chạy. Runtime hỏi: đối tượng thật sự là <code>Circle</code>, vậy phương thức <code>draw</code> nào sẽ được thực thi?</p>
+      <div class="callout">
+        Điểm quan trọng là: lời gọi có thể được cho phép dựa trên <strong>kiểu tĩnh</strong>, nhưng phương thức cụ thể được chạy có thể được chọn dựa trên <strong>kiểu động</strong>.
+      </div>
+    </div>
+
+    <div class="article-section" id="lien-ket-dong">
+      <h2 class="section-heading">Liên kết động</h2>
+      <p><strong>Liên kết động</strong> (<em>dynamic binding</em>) là cơ chế chọn cài đặt phương thức tại thời điểm chạy dựa trên kiểu động của đối tượng nhận lời gọi. Cơ chế này còn được gọi là <strong>liên kết muộn</strong> (<em>late binding</em>). Ví dụ Java:</p>
+      <div class="code-block">
+        <div class="code-label">Java — liên kết động</div>
+        <pre><code><span class="kw">class</span> <span class="type">Shape</span> { <span class="kw">void</span> <span class="fn">draw</span>() { System.out.<span class="fn">println</span>(<span class="str">"Shape"</span>); } }
+<span class="kw">class</span> <span class="type">Circle</span> <span class="kw">extends</span> <span class="type">Shape</span> { <span class="kw">void</span> <span class="fn">draw</span>() { System.out.<span class="fn">println</span>(<span class="str">"Circle"</span>); } }
+
+<span class="type">Shape</span> s = <span class="kw">new</span> <span class="type">Circle</span>();
+s.<span class="fn">draw</span>();   <span class="cmt">// Circle</span></code></pre>
+      </div>
+      <p>Mặc dù kiểu tĩnh của <code>s</code> là <code>Shape</code>, đối tượng thật sự được tạo ra là <code>Circle</code>. Vì vậy, liên kết động chọn <code>Circle.draw()</code>. Quá trình có thể mô tả ngắn gọn:</p>
+
+      <figure class="fig">
+        <img src="oop_pic3.png" alt="Quá trình liên kết động khi gọi s.draw()" style="max-width:320px;">
+        <figcaption>Quá trình liên kết động khi gọi <code>s.draw()</code> với <code>s</code> có kiểu tĩnh <code>Shape</code> nhưng kiểu động <code>Circle</code>.</figcaption>
+      </figure>
+
+      <p>Liên kết động là nền tảng để OOP hỗ trợ mở rộng. Ta có thể thêm lớp con mới mà không cần sửa mã gọi chung.</p>
+      <div class="code-block">
+        <div class="code-label">Python — thêm lớp mới không sửa render</div>
+        <pre><code><span class="kw">class</span> <span class="type">Triangle</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"Draw triangle"</span>)
+<span class="fn">render</span>(<span class="type">Triangle</span>())   <span class="cmt"># Draw triangle</span></code></pre>
+      </div>
+      <p>Nếu <code>render</code> chỉ gọi <code>shape.draw()</code>, nó có thể làm việc với lớp mới miễn là lớp đó cung cấp phương thức phù hợp.</p>
+    </div>
+
+    <div class="article-section" id="tim-phuong-thuc">
+      <h2 class="section-heading">Tìm phương thức</h2>
+      <p>Khi đánh giá lời gọi <code>receiver.method(arguments)</code>, ngôn ngữ phải quyết định cài đặt phương thức nào được chạy. Quá trình này gọi là <strong>tìm phương thức</strong> (<em>method lookup</em>). Trong mô hình kế thừa đơn giản, quá trình tìm phương thức thường diễn ra như sau:</p>
+
+      <figure class="fig">
+        <img src="oop_pic4.png" alt="Các bước tìm phương thức trong phân cấp kế thừa đơn giản" style="max-width:380px;">
+        <figcaption>Các bước tìm phương thức trong phân cấp kế thừa đơn giản.</figcaption>
+      </figure>
+
+      <div class="code-block">
+        <div class="code-label">Python — tìm phương thức từ lớp cha</div>
+        <pre><code><span class="kw">class</span> <span class="type">Shape</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"Shape"</span>)
+<span class="kw">class</span> <span class="type">Circle</span>(<span class="type">Shape</span>): <span class="kw">pass</span>
+
+<span class="type">Circle</span>().<span class="fn">draw</span>()   <span class="cmt"># Shape (không tìm thấy trong Circle, tìm tiếp trong Shape)</span></code></pre>
+      </div>
+      <p><code>Circle</code> không định nghĩa <code>draw</code>, nên Python tìm tiếp trong <code>Shape</code> và chạy <code>Shape.draw()</code>. Nếu <code>Circle</code> định nghĩa lại:</p>
+      <div class="code-block">
+        <div class="code-label">Python — tìm phương thức từ lớp hiện tại</div>
+        <pre><code><span class="kw">class</span> <span class="type">Circle</span>(<span class="type">Shape</span>):
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"Circle"</span>)
+
+<span class="type">Circle</span>().<span class="fn">draw</span>()   <span class="cmt"># Circle (tìm thấy ngay trong Circle)</span></code></pre>
+      </div>
+      <p>Lần này Python tìm thấy <code>draw</code> ngay trong <code>Circle</code>, nên chạy <code>Circle.draw()</code>.</p>
+    </div>
+
+    <div class="article-section" id="nap-chong-ghi-de">
+      <h2 class="section-heading">Nạp chồng và ghi đè</h2>
+      <p><strong>Nạp chồng</strong> (<em>overloading</em>) và <strong>ghi đè</strong> (<em>overriding</em>) là hai khái niệm dễ bị nhầm vì đều liên quan đến phương thức có cùng tên.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Khái niệm</th><th>Ý nghĩa</th><th>Thường quyết định khi nào</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Nạp chồng</td><td>Cùng tên phương thức nhưng khác danh sách tham số</td><td>Thời điểm biên dịch</td></tr>
+          <tr><td>Ghi đè</td><td>Lớp con thay thế cài đặt phương thức kế thừa</td><td>Thời điểm chạy thông qua liên kết động</td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ nạp chồng trong Java:</p>
+      <div class="code-block">
+        <div class="code-label">Java — nạp chồng (overloading)</div>
+        <pre><code><span class="kw">void</span> <span class="fn">print</span>(<span class="type">int</span> x) { }
+<span class="kw">void</span> <span class="fn">print</span>(<span class="type">String</span> s) { }</code></pre>
+      </div>
+      <p>Trình biên dịch chọn phương thức phù hợp dựa trên kiểu đối số. Ví dụ ghi đè:</p>
+      <div class="code-block">
+        <div class="code-label">Java — ghi đè (overriding)</div>
+        <pre><code><span class="kw">class</span> <span class="type">Shape</span> { <span class="kw">void</span> <span class="fn">draw</span>() { System.out.<span class="fn">println</span>(<span class="str">"Shape"</span>); } }
+<span class="kw">class</span> <span class="type">Circle</span> <span class="kw">extends</span> <span class="type">Shape</span> { <span class="kw">void</span> <span class="fn">draw</span>() { System.out.<span class="fn">println</span>(<span class="str">"Circle"</span>); } }
+
+<span class="type">Shape</span> s = <span class="kw">new</span> <span class="type">Circle</span>();
+s.<span class="fn">draw</span>();   <span class="cmt">// Circle — kiểu động quyết định</span></code></pre>
+      </div>
+      <p>Lý do: kiểu tĩnh của <code>s</code> là <code>Shape</code>, nên lời gọi <code>draw</code> hợp lệ. Nhưng kiểu động của đối tượng là <code>Circle</code>, nên liên kết động chọn <code>Circle.draw()</code>.</p>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 6: THIẾT KẾ NGÔN NGỮ ==================== -->
+    <div class="lesson-badge">Bài 6 / 7</div>
+    <h1 class="lesson-title" id="thiet-ke-ngon-ngu">Thiết kế ngôn ngữ hướng đối tượng</h1>
+    <div class="lesson-meta">CO3005 · Lập trình hướng đối tượng</div>
+
+    <div class="article-section" id="kieu-tinh-dong-oop">
+      <h2 class="section-heading">Kiểu tĩnh và kiểu động trong OOP</h2>
+      <p>Các ngôn ngữ OOP khác nhau ở thời điểm kiểm tra sự tồn tại của phương thức. Trong <strong>ngôn ngữ kiểu tĩnh</strong> (<em>statically typed</em>), sự tồn tại của phương thức được kiểm tra trước khi chương trình chạy. Ví dụ Java:</p>
+      <div class="code-block">
+        <div class="code-label">Java — kiểm tra kiểu tĩnh</div>
+        <pre><code><span class="type">Shape</span> s = <span class="kw">new</span> <span class="type">Circle</span>();
+s.<span class="fn">draw</span>();   <span class="cmt">// Bộ kiểm tra kiểu xác nhận Shape có draw() trước khi chạy</span></code></pre>
+      </div>
+      <p>Trong <strong>ngôn ngữ kiểu động</strong> (<em>dynamically typed</em>), sự tồn tại của phương thức thường được kiểm tra khi chương trình chạy. Ví dụ Python:</p>
+      <div class="code-block">
+        <div class="code-label">Python — kiểm tra khi chạy</div>
+        <pre><code>s.<span class="fn">draw</span>()   <span class="cmt"># Thành công nếu s có draw() tại thời điểm chạy</span></code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Cách kiểm tra</th><th>Ví dụ ngôn ngữ</th><th>Đặc điểm</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Kiểu tĩnh</td><td>Java, C++, Scala</td><td>Phát hiện nhiều lỗi trước khi chạy</td></tr>
+          <tr><td>Kiểu động</td><td>Python, Ruby, JavaScript</td><td>Linh hoạt hơn, lỗi có thể xuất hiện khi chạy</td></tr>
+        </tbody>
+      </table>
+
+      <p>Không có lựa chọn nào tuyệt đối tốt hơn. Kiểu tĩnh giúp phát hiện lỗi sớm và hỗ trợ công cụ tốt. Kiểu động giúp viết nhanh, linh hoạt và phù hợp với nhiều tình huống thử nghiệm.</p>
+    </div>
+
+    <div class="article-section" id="dinh-kieu">
+      <h2 class="section-heading">Định kiểu theo tên, theo cấu trúc và kiểu vịt</h2>
+      <p>Các ngôn ngữ cũng khác nhau ở cách quyết định một đối tượng có thể được sử dụng trong một ngữ cảnh hay không.</p>
+      <p><strong>Định kiểu theo tên</strong> (<em>nominal typing</em>) dựa trên tên kiểu và quan hệ khai báo. Ví dụ, trong Java, nếu <code>Circle extends Shape</code>, thì <code>Circle</code> có thể được dùng như <code>Shape</code>.</p>
+      <div class="code-block">
+        <div class="code-label">Java — định kiểu theo tên</div>
+        <pre><code><span class="kw">class</span> <span class="type">Circle</span> <span class="kw">extends</span> <span class="type">Shape</span> { }</code></pre>
+      </div>
+      <p><strong>Định kiểu theo cấu trúc</strong> (<em>structural typing</em>) dựa trên cấu trúc mà đối tượng cung cấp. Nếu một đối tượng có các phương thức hoặc trường cần thiết, nó được xem là phù hợp, dù không khai báo quan hệ kế thừa trực tiếp. TypeScript và Go thường được nhắc đến như các ngôn ngữ có nhiều đặc điểm định kiểu theo cấu trúc.</p>
+      <p><strong>Kiểu vịt</strong> (<em>duck typing</em>) là cách tiếp cận thường gặp trong Python, Ruby và JavaScript. Ý tưởng là: nếu một đối tượng có hành vi cần dùng tại thời điểm chạy, ta có thể sử dụng nó.</p>
+      <div class="code-block">
+        <div class="code-label">Python — kiểu vịt</div>
+        <pre><code><span class="kw">class</span> <span class="type">Circle</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"Circle"</span>)
+<span class="kw">class</span> <span class="type">Button</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(<span class="kw">self</span>): <span class="fn">print</span>(<span class="str">"Button"</span>)
+
+<span class="kw">def</span> <span class="fn">render</span>(x): x.<span class="fn">draw</span>()
+<span class="fn">render</span>(<span class="type">Circle</span>())   <span class="cmt"># Circle</span>
+<span class="fn">render</span>(<span class="type">Button</span>())   <span class="cmt"># Button</span></code></pre>
+      </div>
+      <p><code>Circle</code> và <code>Button</code> không cần cùng kế thừa từ một lớp cha. Chúng chỉ cần cùng cung cấp phương thức <code>draw</code>.</p>
+    </div>
+
+    <div class="article-section" id="interface-trait-mixin">
+      <h2 class="section-heading">Giao diện, trait và mixin</h2>
+      <p>Các ngôn ngữ OOP cung cấp nhiều cơ chế để mô tả năng lực hoặc tái sử dụng hành vi mà không cần đa kế thừa lớp không kiểm soát.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Cơ chế</th><th>Vai trò chính</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Giao diện (<em>interface</em>)</td><td>Chỉ ra các phương thức mà một lớp phải cung cấp</td></tr>
+          <tr><td>Trait (<em>trait</em>)</td><td>Gói các phương thức có thể tái sử dụng, đôi khi có cả cài đặt</td></tr>
+          <tr><td>Mixin (<em>mixin</em>)</td><td>Bổ sung hành vi có thể kết hợp vào lớp</td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ Java với interface:</p>
+      <div class="code-block">
+        <div class="code-label">Java — interface</div>
+        <pre><code><span class="kw">interface</span> <span class="type">Drawable</span> { <span class="kw">void</span> <span class="fn">draw</span>(); }
+<span class="kw">class</span> <span class="type">Button</span> <span class="kw">implements</span> <span class="type">Drawable</span> { <span class="kw">public void</span> <span class="fn">draw</span>() { } }</code></pre>
+      </div>
+      <p>Ví dụ Python với mixin:</p>
+      <div class="code-block">
+        <div class="code-label">Python — mixin</div>
+        <pre><code><span class="kw">class</span> <span class="type">JsonMixin</span>:
+    <span class="kw">def</span> <span class="fn">to_json</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="kw">self</span>.__dict__
+
+<span class="kw">class</span> <span class="type">Student</span>(<span class="type">JsonMixin</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name): <span class="kw">self</span>.name = name
+
+<span class="fn">print</span>(<span class="type">Student</span>(<span class="str">"An"</span>).<span class="fn">to_json</span>())
+<span class="cmt"># {'name': 'An'}</span></code></pre>
+      </div>
+      <p>Mixin cho phép bổ sung hành vi <code>to_json</code> mà không cần ép <code>Student</code> vào một phân cấp kế thừa sâu.</p>
+    </div>
+
+    <div class="article-section" id="loi-ich-gioi-han">
+      <h2 class="section-heading">Lợi ích và giới hạn của OOP</h2>
+      <p>OOP giúp mô hình hóa bài toán bằng đối tượng và giao diện, đóng gói dữ liệu với hành vi trong các đơn vị rõ ràng. Kế thừa, kết hợp và đa hình hỗ trợ tái sử dụng mã và mở rộng hệ thống mà ít sửa phần cũ. Với nhiều miền bài toán gồm nhiều thực thể tương tác, mô hình này thường khá tự nhiên.</p>
+      <p>Tuy nhiên, lạm dụng kế thừa hoặc xây phân cấp quá sâu dễ tạo cấu trúc cứng nhắc, khó biết hành vi thật sự nằm ở đâu. Trạng thái thay đổi và liên kết động làm chương trình khó suy luận hơn, vì luồng điều khiển ít tường minh. Không phải mọi bài toán đều phù hợp với hướng đối tượng; có lúc tư duy hàm, logic hoặc dữ liệu hiệu quả hơn.</p>
+      <div class="callout">
+        <strong>Kết luận:</strong> OOP nên được xem là một mô hình mạnh nhưng không phải lựa chọn duy nhất. Thiết kế tốt thường kết hợp nhiều tư duy: hướng đối tượng để tổ chức thực thể, hàm để xử lý biến đổi dữ liệu, và mô-đun để quản lý ranh giới hệ thống.
+      </div>
+    </div>
+
+    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+
+    <!-- ==================== BÀI 7: TÓM TẮT ==================== -->
+    <div class="lesson-badge">Bài 7 / 7</div>
+    <h1 class="lesson-title" id="tom-tat">Tóm tắt chương</h1>
+    <div class="lesson-meta">CO3005 · Lập trình hướng đối tượng</div>
+
+    <div class="article-section">
+      <p>Lập trình hướng đối tượng nên được hiểu qua các cơ chế ngôn ngữ — đối tượng, lớp, đóng gói, kế thừa, kiểu con, đa hình và liên kết động — chứ không chỉ qua cú pháp <code>class</code>. Một chương trình OOP là tập các đối tượng có định danh, trạng thái và hành vi, giao tiếp qua lời gọi phương thức.</p>
+      <p>Đóng gói gộp dữ liệu với thao tác liên quan; che giấu thông tin giữ mã bên ngoài khỏi phụ thuộc vào cài đặt bên trong. Kế thừa tái sử dụng cài đặt lớp cha; kiểu con nói về khả năng thay thế trong hệ thống kiểu — hai khái niệm liên quan nhưng không trùng nhau.</p>
+      <p>Ghi đè và đa hình kiểu con cho phép cùng lời gọi tạo ra hành vi khác nhau tùy đối tượng thực sự lúc chạy; liên kết động chọn cài đặt dựa trên kiểu động, không phải kiểu tĩnh. Các ngôn ngữ OOP khác nhau ở cách kiểm tra kiểu, định kiểu theo tên hay theo cấu trúc, và các cơ chế như interface, trait hay mixin.</p>
+      <p>OOP mạnh khi mô hình hóa các thực thể tương tác, nhưng không phải lựa chọn duy nhất; thiết kế tốt thường kết hợp hướng đối tượng với lập trình hàm và mô-đun hóa.</p>
+    </div>
+
+    <!-- NAV FOOTER -->
+    <div class="nav-footer">
+      <span>Bài 1–7 / 7 · CO3005</span>
+      <div style="display:flex; gap:10px;">
+        <span class="nav-btn secondary">← Bài trước</span>
+        <span class="nav-btn">Bài tiếp theo →</span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('[id]');
+  const tocItems = document.querySelectorAll('.toc-item');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocItems.forEach(item => {
+          item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
