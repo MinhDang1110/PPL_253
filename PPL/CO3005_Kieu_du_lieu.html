@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CO3005 – Kiểu dữ liệu và biểu diễn dữ liệu</title>
+<meta name="description" content="Bài học về Kiểu dữ liệu và biểu diễn dữ liệu – CO3005 Nguyên lý Ngôn ngữ Lập trình: kiểu vô hướng, kiểu hợp thành, biểu diễn mảng, bản ghi, con trỏ và an toàn bộ nhớ.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd9d0;
+    --text: #1a1916;
+    --muted: #6b6760;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --kw: #569cd6;
+    --str: #ce9178;
+    --cmt: #6a9955;
+    --num: #b5cea8;
+    --fn: #dcdcaa;
+    --type: #4ec9b0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .toc-item {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .toc-item.sub { padding-left: 32px; font-size: 12px; }
+
+  .main {
+    padding: 48px 56px 80px;
+    max-width: 820px;
+  }
+
+  .lesson-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .lesson-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article-section {
+    margin-bottom: 52px;
+    scroll-margin-top: 24px;
+  }
+
+  .section-heading {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+  .section-heading::before {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 40px; height: 2px;
+    background: var(--accent);
+  }
+
+  p { margin-bottom: 14px; }
+
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+    font-size: 13.5px;
+  }
+  .code-label {
+    background: #2d2d2d;
+    padding: 6px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #333;
+  }
+  pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1.6;
+    color: var(--code-text);
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #e8e5de;
+    color: #b5451b;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+
+  .kw   { color: var(--kw); }
+  .str  { color: var(--str); }
+  .cmt  { color: var(--cmt); font-style: italic; }
+  .num  { color: var(--num); }
+  .fn   { color: var(--fn); }
+  .type { color: var(--type); }
+
+  .callout {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .callout strong { color: var(--accent); }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  .fig { text-align: center; margin: 28px 0; }
+  .fig img { max-width: 600px; width: 100%; border-radius: 6px; border: 1px solid var(--border); background: #fff; padding: 8px; }
+  .fig figcaption { margin-top: 10px; font-size: 13px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+  .fig-wide img { max-width: 720px; }
+  .fig-narrow img { max-width: 360px; }
+
+  hr.divider {
+    border: none;
+    border-top: 2px dashed var(--border);
+    margin: 48px 0;
+  }
+
+  .nav-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 0 0; border-top: 1px solid var(--border);
+    margin-top: 48px; font-size: 14px; color: var(--muted);
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--accent); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 500;
+    text-decoration: none;
+  }
+  .nav-btn.secondary { background: var(--surface); color: var(--accent); border: 1px solid var(--accent); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ============================================================
+     SIDEBAR
+============================================================ -->
+<nav class="sidebar">
+  <div class="sidebar-title">Mục lục bài học</div>
+  <a class="toc-item active" href="#mo-dau">Bài 1 · Mở đầu</a>
+
+  <a class="toc-item" href="#gioi-thieu">Bài 2 · Giới thiệu kiểu dữ liệu</a>
+  <a class="toc-item sub" href="#kieu-dl-la-gi">Kiểu dữ liệu là gì</a>
+  <a class="toc-item sub" href="#vi-sao-can-kieu">Vì sao cần kiểu</a>
+  <a class="toc-item sub" href="#he-thong-kieu">Hệ thống kiểu</a>
+
+  <a class="toc-item" href="#kieu-vo-huong">Bài 3 · Kiểu vô hướng &amp; thứ tự</a>
+  <a class="toc-item sub" href="#so-nguyen">Kiểu số nguyên</a>
+  <a class="toc-item sub" href="#dau-cham-dong">Kiểu dấu chấm động</a>
+  <a class="toc-item sub" href="#thap-phan-luan-ly-ky-tu">Thập phân, luận lý, ký tự</a>
+  <a class="toc-item sub" href="#liet-ke">Kiểu liệt kê</a>
+  <a class="toc-item sub" href="#mien-con">Kiểu miền con</a>
+
+  <a class="toc-item" href="#kieu-hop-thanh">Bài 4 · Kiểu hợp thành</a>
+  <a class="toc-item sub" href="#mang">Kiểu mảng</a>
+  <a class="toc-item sub" href="#phan-loai-mang">Phân loại mảng</a>
+  <a class="toc-item sub" href="#chuoi">Kiểu chuỗi</a>
+  <a class="toc-item sub" href="#ban-ghi">Kiểu bản ghi</a>
+  <a class="toc-item sub" href="#hop-nhat">Kiểu hợp nhất</a>
+  <a class="toc-item sub" href="#tap-hop-de-quy">Tập hợp &amp; đệ quy</a>
+
+  <a class="toc-item" href="#bieu-dien">Bài 5 · Biểu diễn dữ liệu trong bộ nhớ</a>
+  <a class="toc-item sub" href="#bieu-dien-mang">Biểu diễn mảng</a>
+  <a class="toc-item sub" href="#bieu-dien-ban-ghi">Biểu diễn bản ghi</a>
+
+  <a class="toc-item" href="#con-tro">Bài 6 · Con trỏ, tham chiếu &amp; an toàn</a>
+  <a class="toc-item sub" href="#kieu-con-tro">Kiểu con trỏ</a>
+  <a class="toc-item sub" href="#phep-toan-con-tro">Phép toán con trỏ</a>
+  <a class="toc-item sub" href="#so-hoc-con-tro">Số học con trỏ</a>
+  <a class="toc-item sub" href="#tham-chieu">Kiểu tham chiếu</a>
+  <a class="toc-item sub" href="#con-tro-treo">Con trỏ treo</a>
+  <a class="toc-item sub" href="#bien-heap-mat">Biến heap bị mất</a>
+  <a class="toc-item sub" href="#so-sanh-loi">So sánh con trỏ treo &amp; rò rỉ</a>
+  <a class="toc-item sub" href="#danh-doi-thiet-ke">Đánh đổi thiết kế</a>
+
+  <a class="toc-item" href="#tong-ket">Bài 7 · Tổng kết</a>
+</nav>
+
+<!-- ============================================================
+     MAIN CONTENT
+============================================================ -->
+<main class="main" id="mainContent">
+
+<!-- ===================== BÀI 1: MỞ ĐẦU ===================== -->
+<div class="lesson-badge">Bài 1 / 7</div>
+<h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+<div class="lesson-meta">CO3005 · Kiểu dữ liệu và biểu diễn dữ liệu · Trần Ngọc Bảo Duy</div>
+
+<div class="article-section">
+  <p>Mọi chương trình đều thao tác trên dữ liệu: số nguyên, số thực, ký tự, danh sách, bản ghi, đối tượng. Câu hỏi nền tảng mà chương này đặt ra là: ngôn ngữ lập trình tổ chức, ràng buộc và biểu diễn các giá trị như thế nào?</p>
+  <p>Ở Chương 7, ta đã thấy một tên được ràng buộc với một thực thể, và một trong những ràng buộc đầu tiên quanh một tên là ràng buộc với một kiểu. Chương này đi sâu vào chính kiểu đó: kiểu là gì, có những loại kiểu nào, và mỗi kiểu được hiện thực trong bộ nhớ ra sao. Ta tiếp cận vấn đề dưới góc độ nguyên lý, minh họa bằng nhiều ngôn ngữ như C, Java, Python, C#, Pascal để làm bật bản chất chung và các đánh đổi thiết kế, thay vì hướng dẫn một ngôn ngữ cụ thể.</p>
+  <p>Cần phân định rõ phạm vi: chương này tập trung vào thiết kế kiểu dữ liệu và biểu diễn dữ liệu, chứ chưa bàn sâu về kiểm tra kiểu, suy diễn kiểu hay tương đương kiểu. Những chủ đề đó thuộc về một chương riêng về hệ thống kiểu. Ở đây ta chỉ cần nắm rằng kiểu dữ liệu được điều phối bởi các quy tắc của ngôn ngữ.</p>
+  <p>Mục tiêu của chương này là làm rõ kiểu dữ liệu (<em>data type</em>) là gì và vì sao ngôn ngữ cần kiểu, phân biệt các kiểu vô hướng và kiểu hợp thành, hiểu cách các kiểu được biểu diễn trong bộ nhớ qua bố trí mảng và bản ghi, căn lề và đệm, và cuối cùng là cách con trỏ và tham chiếu cho phép truy cập gián tiếp cùng những vấn đề an toàn bộ nhớ đi kèm.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ===================== BÀI 2 ===================== -->
+<div class="lesson-badge">Bài 2 / 7</div>
+<h1 class="lesson-title" id="gioi-thieu">Giới thiệu về kiểu dữ liệu</h1>
+<div class="lesson-meta">CO3005 · Kiểu dữ liệu và biểu diễn dữ liệu</div>
+
+<div class="article-section" id="kieu-dl-la-gi">
+  <h2 class="section-heading">Kiểu dữ liệu là gì</h2>
+  <p>Một kiểu dữ liệu là một tập các giá trị cùng với một tập các phép toán có thể áp dụng lên những giá trị đó. Định nghĩa này rộng hơn so với cách nghĩ thường gặp rằng "kiểu chỉ là kích thước của một biến trong bộ nhớ".</p>
+  <p>Ví dụ, xét kiểu <code>int</code>:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> x = <span class="num">10</span>;
+x = x + <span class="num">1</span>;</code></pre>
+  </div>
+  <p>Với kiểu <code>int</code>, ta có thể tách ra ba khía cạnh: tập giá trị là các số nguyên trong một khoảng nhất định; tập phép toán gồm các phép số học, so sánh và gán; còn cách biểu diễn thường là một số bit cố định. Ba khía cạnh này luôn đi cùng nhau và tạo nên một kiểu hoàn chỉnh:</p>
+
+  <figure class="fig">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/1.png" alt="Sơ đồ ba thành phần của một kiểu dữ liệu: tập giá trị, tập phép toán và cách biểu diễn">
+    <figcaption>Hình 1 – Ba thành phần cốt lõi của một kiểu dữ liệu.</figcaption>
+  </figure>
+
+  <p>Như sơ đồ trên, một kiểu nói cho ta biết những giá trị nào tồn tại và những phép toán nào là có nghĩa. Số nguyên hỗ trợ phép số học, luận lý hỗ trợ phép logic, còn bản ghi hỗ trợ phép truy cập trường. Chính sự gắn bó giữa giá trị và phép toán, chứ không phải riêng kích thước lưu trữ, mới là tinh thần cốt lõi của khái niệm kiểu.</p>
+</div>
+
+<div class="article-section" id="vi-sao-can-kieu">
+  <h2 class="section-heading">Vì sao ngôn ngữ lập trình cần kiểu</h2>
+  <p>Kiểu phục vụ ba mục tiêu lớn, ứng với ba mức nhìn khác nhau về chương trình.</p>
+  <p><strong>Thứ nhất là tổ chức khái niệm.</strong> Kiểu giúp người lập trình cấu trúc dữ liệu một cách có ý nghĩa, gắn tên với đúng phạm trù của nó:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> age;
+<span class="type">float</span> temperature;
+<span class="type">bool</span> isPassed;</code></pre>
+  </div>
+  <p><strong>Thứ hai là phát hiện lỗi.</strong> Kiểu giúp phát hiện các phép toán không hợp lệ trước khi chúng gây hại. Một biểu thức như chia một chuỗi cho một số là vô nghĩa và bị xem là lỗi kiểu:</p>
+  <div class="code-block">
+    <div class="code-label">Ví dụ</div>
+    <pre><code><span class="str">"hello"</span> / <span class="num">2</span>   <span class="cmt">// lỗi kiểu</span></code></pre>
+  </div>
+  <p><strong>Thứ ba là hiện thực.</strong> Kiểu giúp trình biên dịch quyết định kích thước bộ nhớ, cách bố trí, và lệnh máy phù hợp:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> x;       <span class="cmt">// thường 4 byte</span>
+<span class="type">double</span> y;    <span class="cmt">// thường 8 byte</span></code></pre>
+  </div>
+  <div class="callout">
+    <strong>Nói gọn:</strong> kiểu là cây cầu nối ý nghĩa của chương trình với cách biểu diễn trên máy. Kiểu hữu ích ở nhiều mức: với người lập trình, kiểu tổ chức khái niệm; với trình biên dịch, kiểu giúp bắt lỗi và chọn cách biểu diễn; với môi trường thực thi, kiểu có thể hỗ trợ kiểm tra an toàn và liên kết động.
+  </div>
+</div>
+
+<div class="article-section" id="he-thong-kieu">
+  <h2 class="section-heading">Hệ thống kiểu</h2>
+  <p>Tập hợp các quy tắc chi phối kiểu trong một ngôn ngữ được gọi là hệ thống kiểu (<em>type system</em>): một tập quy tắc gán kiểu cho các thành phần chương trình và kiểm soát cách các giá trị thuộc những kiểu khác nhau được sử dụng.</p>
+  <p>Một hệ thống kiểu thường quy định: các kiểu định sẵn của ngôn ngữ, cơ chế để định nghĩa kiểu mới, các ràng buộc trên phép toán, các quy tắc về tính tương thích kiểu, và thời điểm các lỗi kiểu được kiểm tra. Chẳng hạn, một câu hỏi tưởng đơn giản:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> x = <span class="num">10</span>;
+<span class="type">float</span> y = x;   <span class="cmt">// có được phép không?</span></code></pre>
+  </div>
+  <p>không có câu trả lời tuyệt đối; nó phụ thuộc vào hệ thống kiểu của từng ngôn ngữ. Một số ngôn ngữ tự động chuyển <code>int</code> sang <code>float</code>, số khác đòi hỏi chuyển kiểu tường minh.</p>
+  <p>Nói ngắn gọn, hệ thống kiểu định nghĩa thế nào là một chương trình "đúng kiểu". Trong chương này, ta chưa đi sâu vào kiểm tra kiểu, suy diễn kiểu, tương đương kiểu hay đa hình; những nội dung đó dành cho chương về hệ thống kiểu. Ở đây ta chỉ cần ghi nhận rằng mọi thiết kế kiểu dưới đây đều nằm trong khuôn khổ các quy tắc do ngôn ngữ đặt ra.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ===================== BÀI 3 ===================== -->
+<div class="lesson-badge">Bài 3 / 7</div>
+<h1 class="lesson-title" id="kieu-vo-huong">Kiểu vô hướng và kiểu thứ tự</h1>
+<div class="lesson-meta">CO3005 · Kiểu dữ liệu và biểu diễn dữ liệu</div>
+
+<div class="article-section">
+  <p>Một kiểu vô hướng (<em>scalar type</em>) biểu diễn các giá trị nguyên tử, không được cấu thành từ các thành phần nhỏ hơn. Dù bên trong một số kiểu vô hướng có cách biểu diễn phức tạp, ở mức ngôn ngữ chúng hành xử như những giá trị không thể chia tách.</p>
+  <p>Các kiểu vô hướng thường gặp gồm số nguyên, dấu chấm động, thập phân, luận lý, ký tự, liệt kê và miền con. Có thể nhóm chúng lại như sau:</p>
+
+  <figure class="fig">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/2.png" alt="Phân loại các kiểu vô hướng: số nguyên, dấu chấm động, thập phân, luận lý, ký tự, liệt kê, miền con">
+    <figcaption>Hình 2 – Phân loại các kiểu vô hướng thường gặp.</figcaption>
+  </figure>
+
+  <div class="callout">
+    Các kiểu vô hướng đóng vai trò viên gạch nền tảng để xây nên những kiểu phức tạp hơn như mảng, bản ghi và đối tượng. Trong đó, liệt kê và miền con thuộc nhóm kiểu thứ tự (<em>ordinal type</em>): các kiểu mà mỗi giá trị có một vị trí thứ tự rõ ràng trong một dãy hữu hạn.
+  </div>
+</div>
+
+<div class="article-section" id="so-nguyen">
+  <h2 class="section-heading">Kiểu số nguyên</h2>
+  <p>Kiểu số nguyên biểu diễn các số nguyên. Nhiều ngôn ngữ cung cấp vài cỡ số nguyên khác nhau, ví dụ trong Java:</p>
+  <div class="code-block">
+    <div class="code-label">Java</div>
+    <pre><code><span class="type">byte</span> a;
+<span class="type">short</span> b;
+<span class="type">int</span> c;
+<span class="type">long</span> d;</code></pre>
+  </div>
+  <p>Phía sau vẻ đơn giản đó là một loạt câu hỏi thiết kế: ngôn ngữ hỗ trợ bao nhiêu cỡ số nguyên, có hỗ trợ số nguyên không dấu (<em>unsigned integer</em>) hay không, điều gì xảy ra khi tràn số (<em>overflow</em>), và số nguyên có cỡ cố định hay có độ chính xác tùy ý.</p>
+  <p>Câu hỏi về tràn số đặc biệt quan trọng. Xét đoạn mã C:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">unsigned int</span> x = <span class="num">0</span>;
+x = x - <span class="num">1</span>;</code></pre>
+  </div>
+  <p>Sau phép trừ, <code>x</code> không âm như trực giác mong đợi mà trở thành giá trị không dấu lớn nhất (trên hệ 32 bit là 4294967295), do số nguyên không dấu được biểu diễn theo số học modulo và "quấn vòng" từ 0 xuống giá trị lớn nhất.</p>
+  <p>Để thấy rõ "các ngôn ngữ chọn khác nhau" cụ thể ra sao, bảng dưới đây tóm tắt cách các ngôn ngữ thực tế trả lời bốn câu hỏi thiết kế:</p>
+  <table class="data-table">
+    <thead><tr><th>Câu hỏi thiết kế</th><th>Cách các ngôn ngữ trả lời</th></tr></thead>
+    <tbody>
+      <tr><td>Bao nhiêu cỡ số nguyên?</td><td>Java: byte 8 · short 16 · int 32 · long 64 bit, chọn theo miền giá trị cần.</td></tr>
+      <tr><td>Có số nguyên không dấu không?</td><td>C, C++, Rust có không dấu; Java bỏ qua, dùng kiểu có dấu rộng hơn thay thế.</td></tr>
+      <tr><td>Tràn số thì sao?</td><td>C không dấu quấn vòng (mod 2ⁿ); Java quấn vòng âm thầm; Python tự nâng lên số nguyên lớn; Rust dừng chương trình ở chế độ gỡ lỗi.</td></tr>
+      <tr><td>Cỡ cố định hay độ chính xác tùy ý?</td><td>C, Java dùng từ máy cỡ cố định (nhanh); Python, Haskell cho số nguyên lớn vô hạn (an toàn, chậm hơn).</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    Nhìn xuyên suốt bảng này, mỗi lựa chọn đều là một đánh đổi giữa hiệu năng và tính an toàn: kiểm tra tràn số hay cho phép số nguyên lớn vô hạn làm chương trình an toàn hơn nhưng thêm chi phí lúc chạy, trong khi dùng từ máy cỡ cố định thì nhanh nhưng đặt trách nhiệm tránh tràn số lên vai người lập trình.
+  </div>
+</div>
+
+<div class="article-section" id="dau-cham-dong">
+  <h2 class="section-heading">Kiểu dấu chấm động</h2>
+  <p>Kiểu dấu chấm động (<em>floating-point type</em>) mô hình hóa các số thực, nhưng chỉ một cách xấp xỉ.</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">float</span> x;
+<span class="type">double</span> y;</code></pre>
+  </div>
+  <p>Quanh kiểu này có vài khái niệm quan trọng: độ chính xác (<em>precision</em>), miền giá trị, làm tròn, và chuẩn biểu diễn IEEE 754. Một giá trị dấu chấm động theo chuẩn này được chia thành ba phần: bit dấu, các bit số mũ, và các bit phần định trị.</p>
+
+  <figure class="fig">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/3.png" alt="Cấu trúc IEEE 754: bit dấu, số mũ, phần định trị">
+    <figcaption>Hình 3 – Cấu trúc biểu diễn dấu chấm động theo chuẩn IEEE 754.</figcaption>
+  </figure>
+
+  <p>Vì chỉ xấp xỉ, dấu chấm động dẫn tới những kết quả ban đầu trông kỳ lạ. Ví dụ điển hình trong Python:</p>
+  <div class="code-block">
+    <div class="code-label">Python</div>
+    <pre><code><span class="num">0.1</span> + <span class="num">0.2</span> == <span class="num">0.3</span>   <span class="cmt"># có thể cho kết quả: False</span></code></pre>
+  </div>
+  <p>Lý do là nhiều phân số thập phân không biểu diễn được chính xác trong hệ nhị phân, nên 0.1, 0.2 và 0.3 đều bị làm tròn, và tổng hai số đầu lệch một lượng cực nhỏ so với số thứ ba. Đây là lý do vì sao so sánh bằng giữa các kết quả dấu chấm động thường không đáng tin.</p>
+  <p>Để thấy cụ thể vì sao sai số xuất hiện, hãy mã hóa giá trị 3.6 theo một định dạng nhỏ kiểu IEEE 754, gồm 1 bit dấu, 3 bit số mũ và 5 bit phần định trị, với độ chệch (<em>bias</em>) là 2² − 1 = 3. Quá trình gồm năm bước:</p>
+  <div class="code-block">
+    <div class="code-label">Ví dụ mã hóa 3.6</div>
+    <pre><code>Bước 1 — đổi sang nhị phân:   3.6 = 11.10011001...
+Bước 2 — chuẩn hóa:           = 1.110011001... × 2^1
+Bước 3 — bit dấu:             dương → 0
+Bước 4 — số mũ (3 bit):       1 + bias(3) = 4 → 100
+Bước 5 — phần định trị (5 bit): lấy 5 bit sau dấu chấm → 11001
+
+Ghép lại: 0   100   11001
+          dấu  mũ   định trị   →   010011001</code></pre>
+  </div>
+  <div class="callout">
+    Điều đáng chú ý nằm ở bước 5: phần thập phân của 3.6 là một dãy nhị phân tuần hoàn vô hạn <code>1001 1001...</code>, nhưng ta chỉ giữ được 5 bit. Giá trị thực sự được lưu vì thế là 1.11001₂ × 2¹ = 11.1001₂ = 3.5625, lệch hẳn so với 3.6. Kiểu dấu chấm động được thiết kế cho miền giá trị rộng và hiệu năng cao, chứ không phải cho số học số thực chính xác tuyệt đối; đó là một đánh đổi cố hữu.
+  </div>
+</div>
+
+<div class="article-section" id="thap-phan-luan-ly-ky-tu">
+  <h2 class="section-heading">Kiểu thập phân, luận lý và ký tự</h2>
+  <p>Ba kiểu vô hướng tiếp theo tuy quen thuộc nhưng vẫn cho thấy mỗi kiểu là một bộ ba gồm giá trị, phép toán và cách biểu diễn.</p>
+  <p><strong>Kiểu thập phân</strong> (<em>decimal type</em>) được dùng khi cần biểu diễn thập phân chính xác, đặc biệt trong các ứng dụng tài chính. Trong C#:</p>
+  <div class="code-block">
+    <div class="code-label">C#</div>
+    <pre><code><span class="type">decimal</span> amount = <span class="num">19.99m</span>;</code></pre>
+  </div>
+  <p>Ưu điểm của kiểu thập phân là độ chính xác thập phân tốt hơn dấu chấm động; nhược điểm là miền giá trị hẹp hơn và chi phí lưu trữ cao hơn. Đây lại là một đánh đổi giữa độ chính xác và hiệu năng.</p>
+  <p><strong>Kiểu luận lý</strong> (<em>boolean type</em>) biểu diễn các giá trị chân lý <code>true</code> và <code>false</code>, dùng trong điều kiện và các phép logic.</p>
+  <p><strong>Kiểu ký tự</strong> (<em>character type</em>) biểu diễn các ký hiệu văn bản:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">char</span> c = <span class="str">'A'</span>;</code></pre>
+  </div>
+  <p>Ký tự được lưu bằng các bảng mã số như ASCII hoặc Unicode; nói cách khác, một ký tự thực chất được biểu diễn bằng một mã số nguyên. Điểm chung của cả ba kiểu là: ngay cả những kiểu vô hướng đơn giản cũng kéo theo các lựa chọn thiết kế về giá trị, phép toán và cách biểu diễn.</p>
+</div>
+
+<div class="article-section" id="liet-ke">
+  <h2 class="section-heading">Kiểu liệt kê</h2>
+  <p>Kiểu liệt kê (<em>enumeration type</em>) định nghĩa một tập hữu hạn các giá trị có tên. Ví dụ trong C#:</p>
+  <div class="code-block">
+    <div class="code-label">C#</div>
+    <pre><code><span class="kw">enum</span> Day {
+    Mon, Tue, Wed, Thu, Fri, Sat, Sun
+}
+
+Day today = Day.Mon;</code></pre>
+  </div>
+  <p>Lợi ích của kiểu liệt kê là làm chương trình dễ đọc hơn, giới hạn giá trị vào một tập có ý nghĩa, ngăn các phép gán không hợp lệ, và tránh việc biểu diễn khái niệm bằng những con số tùy tiện. Thay vì viết:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> color = <span class="num">2</span>;  <span class="cmt">// 2 nghĩa là gì?</span></code></pre>
+  </div>
+  <p>người lập trình viết:</p>
+  <div class="code-block">
+    <div class="code-label">C#</div>
+    <pre><code>Color color = Red;  <span class="cmt">// rõ nghĩa hơn</span></code></pre>
+  </div>
+  <p>Cách thứ hai diễn đạt trực tiếp khái niệm miền vấn đề trong chương trình. Tên <code>Red</code> rõ nghĩa hơn hẳn con số <code>2</code>, vốn buộc người đọc phải nhớ quy ước ngầm. Cần lưu ý rằng các ngôn ngữ khác nhau về việc giá trị liệt kê có tự động bị ép sang số nguyên hay không; ngôn ngữ càng nghiêm ngặt về điểm này thì càng an toàn nhưng kém linh hoạt hơn.</p>
+</div>
+
+<div class="article-section" id="mien-con">
+  <h2 class="section-heading">Kiểu miền con</h2>
+  <p>Kiểu miền con (<em>subrange type</em>) là một tập con liên tục của một kiểu thứ tự. Ví dụ trong Pascal:</p>
+  <div class="code-block">
+    <div class="code-label">Pascal</div>
+    <pre><code><span class="kw">type</span> Score = <span class="num">0</span> .. <span class="num">10</span>;
+<span class="kw">type</span> Index = <span class="num">1</span> .. <span class="num">100</span>;</code></pre>
+  </div>
+  <p>Kiểu miền con hữu ích cho các chỉ số mảng, khoảng điểm, số tháng hợp lệ, hay các giá trị số nguyên bị chặn. Khi một phép gán vượt ra ngoài miền, đó là lỗi:</p>
+  <div class="code-block">
+    <div class="code-label">Pascal</div>
+    <pre><code>score := <span class="num">15</span>;   <span class="cmt">// lỗi vượt miền</span></code></pre>
+  </div>
+  <p>Có thể hình dung miền hợp lệ như một đoạn được tô đậm trên trục số, còn giá trị ngoài miền nằm ngoài đoạn đó:</p>
+
+  <figure class="fig">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/4.png" alt="Miền hợp lệ 0..10 trên trục số, giá trị ngoài miền bị tô xám">
+    <figcaption>Hình 4 – Miền hợp lệ của kiểu miền con được hình dung như một đoạn trên trục số.</figcaption>
+  </figure>
+
+  <p>Giá trị của kiểu miền con là nó diễn đạt ràng buộc giá trị ngay trong hệ thống kiểu. Thay vì phải tự tay kiểm tra mọi giá trị, người lập trình để ngôn ngữ hoặc trình biên dịch chèn kiểm tra khi cần. Đây cũng là một biểu hiện cụ thể của ý tưởng từ Chương 7: ràng buộc một số quyết định càng sớm thì càng nhiều lỗi được phát hiện sớm.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ===================== BÀI 4 ===================== -->
+<div class="lesson-badge">Bài 4 / 7</div>
+<h1 class="lesson-title" id="kieu-hop-thanh">Kiểu hợp thành</h1>
+<div class="lesson-meta">CO3005 · Kiểu dữ liệu và biểu diễn dữ liệu</div>
+
+<div class="article-section">
+  <h2 class="section-heading">Kiểu hợp thành là gì</h2>
+  <p>Một kiểu hợp thành (<em>composite type</em>) chứa nhiều thành phần có thể được truy cập riêng lẻ. Thay vì liệt kê các kiểu hợp thành một cách máy móc, sẽ sáng tỏ hơn nếu so sánh chúng theo một số chiều thiết kế chung:</p>
+  <table class="data-table">
+    <thead><tr><th>Chiều thiết kế</th><th>Câu hỏi thiết kế</th></tr></thead>
+    <tbody>
+      <tr><td>Tính đồng nhất</td><td>Mọi thành phần có cùng kiểu không?</td></tr>
+      <tr><td>Cách truy cập</td><td>Bằng chỉ số, tên trường, khóa, hay con trỏ?</td></tr>
+      <tr><td>Kích thước</td><td>Cố định hay động?</td></tr>
+      <tr><td>An toàn</td><td>Truy cập có được kiểm tra không?</td></tr>
+      <tr><td>Biểu diễn</td><td>Giá trị được lưu trong bộ nhớ như thế nào?</td></tr>
+    </tbody>
+  </table>
+  <p>Soi qua các chiều này, các kiểu hợp thành tiêu biểu khác nhau rõ rệt: mảng thì đồng nhất và truy cập bằng chỉ số; bản ghi thì không đồng nhất và truy cập bằng tên trường; chuỗi là một dãy ký tự; kiểu hợp nhất dùng chung vùng nhớ với nhiều cách diễn giải; còn tập hợp là một bộ sưu tập không thứ tự các giá trị phân biệt.</p>
+</div>
+
+<div class="article-section" id="mang">
+  <h2 class="section-heading">Kiểu mảng</h2>
+  <p>Một kiểu mảng (<em>array type</em>) là một bộ sưu tập các phần tử đồng nhất, mỗi phần tử được xác định bởi vị trí của nó. Ví dụ trong C:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> a[<span class="num">5</span>] = {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>};
+
+a[<span class="num">0</span>]   <span class="cmt">// 10</span>
+a[<span class="num">3</span>]   <span class="cmt">// 40</span></code></pre>
+  </div>
+  <p>Có thể hình dung mảng như một dãy ô liền nhau, mỗi ô gắn với một chỉ số:</p>
+
+  <figure class="fig">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/5.png" alt="Dãy ô mảng liền nhau a[0] đến a[4] với giá trị 10 20 30 40 50">
+    <figcaption>Hình 5 – Mảng một chiều: các phần tử được lưu liền nhau và truy cập bằng chỉ số.</figcaption>
+  </figure>
+
+  <p>Mảng có một số đặc điểm chung: mọi phần tử cùng kiểu, được truy cập bằng chỉ số, thường được lưu liền nhau trong bộ nhớ, và việc lập chỉ số có thể được kiểm tra biên (<em>bounds checking</em>) hoặc không. Sức mạnh của mảng đến từ việc địa chỉ của một phần tử có thể tính trực tiếp từ địa chỉ cơ sở, chỉ số và kích thước phần tử.</p>
+</div>
+
+<div class="article-section" id="phan-loai-mang">
+  <h2 class="section-heading">Phân loại mảng theo thời điểm ràng buộc</h2>
+  <p>Thiết kế mảng phụ thuộc vào thời điểm kích thước và vùng lưu trữ của nó được ràng buộc, nối trực tiếp với khái niệm thời điểm ràng buộc và các kiểu cấp phát đã học ở Chương 7.</p>
+  <table class="data-table">
+    <thead><tr><th>Loại mảng</th><th>Ví dụ</th><th>Ràng buộc kích thước</th><th>Ràng buộc lưu trữ</th></tr></thead>
+    <tbody>
+      <tr><td>Tĩnh</td><td><code>int a[10]</code> toàn cục</td><td>lúc biên dịch</td><td>trước khi chạy</td></tr>
+      <tr><td>Cố định trên ngăn xếp</td><td><code>int a[10]</code> cục bộ</td><td>lúc biên dịch</td><td>lúc chạy</td></tr>
+      <tr><td>Động trên ngăn xếp</td><td><code>int a[n]</code> cục bộ</td><td>lúc chạy</td><td>lúc chạy</td></tr>
+      <tr><td>Cố định trên heap</td><td><code>new int[10]</code></td><td>lúc chạy</td><td>lúc chạy</td></tr>
+      <tr><td>Động trên heap</td><td><code>vector / list</code></td><td>lúc chạy</td><td>lúc chạy</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    Mảng tĩnh nhanh và đơn giản nhưng cứng nhắc; mảng động trên heap linh hoạt nhất nhưng kéo theo chi phí quản lý lúc chạy. Đây chính là sự đánh đổi giữa hiệu năng và tính linh hoạt áp dụng cụ thể cho mảng.
+  </div>
+</div>
+
+<div class="article-section" id="chuoi">
+  <h2 class="section-heading">Kiểu chuỗi</h2>
+  <p>Một kiểu chuỗi (<em>string type</em>) là một dãy ký tự. Cùng một khái niệm này được các ngôn ngữ hiện thực rất khác nhau:</p>
+  <div class="code-block">
+    <div class="code-label">C / Java / Python</div>
+    <pre><code><span class="type">char</span> name[] = <span class="str">"Alice"</span>;    <span class="cmt">// C</span>
+String name = <span class="str">"Alice"</span>;   <span class="cmt">// Java</span>
+name = <span class="str">"Alice"</span>           <span class="cmt"># Python</span></code></pre>
+  </div>
+  <p>Quanh chuỗi có nhiều câu hỏi thiết kế: chuỗi là một kiểu nguyên thủy hay chỉ là một mảng ký tự, độ dài cố định hay động, chuỗi khả biến (<em>mutable</em>) hay bất biến (<em>immutable</em>), và những phép toán nào được hỗ trợ. Các phép toán điển hình trên chuỗi gồm gán, so sánh, ghép nối, lấy chuỗi con và so khớp mẫu.</p>
+  <p>Sự khác biệt trong hiện thực rất lớn. Trong C, chuỗi gắn chặt với mảng ký tự và người lập trình phải tự quản lý vùng nhớ cùng ký tự kết thúc. Trong Java và Python, chuỗi là các đối tượng mức cao có hỗ trợ lúc chạy, thường bất biến, và đi kèm một bộ mô tả lưu độ dài cùng địa chỉ.</p>
+</div>
+
+<div class="article-section" id="ban-ghi">
+  <h2 class="section-heading">Kiểu bản ghi</h2>
+  <p>Một kiểu bản ghi (<em>record type</em>) là một kết hợp không đồng nhất, trong đó các thành phần được xác định bằng tên. Ví dụ trong C:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="kw">struct</span> Student {
+    <span class="type">int</span> id;
+    <span class="type">char</span> name[<span class="num">50</span>];
+    <span class="type">float</span> gpa;
+};
+
+<span class="cmt">// Truy cập bằng tên trường:</span>
+s.id
+s.name
+s.gpa</code></pre>
+  </div>
+  <p>So sánh mảng và bản ghi làm nổi bật sự khác biệt thiết kế giữa truy cập bằng chỉ số và truy cập bằng tên:</p>
+  <table class="data-table">
+    <thead><tr><th>Mảng</th><th>Bản ghi</th></tr></thead>
+    <tbody>
+      <tr><td>Đồng nhất</td><td>Không đồng nhất</td></tr>
+      <tr><td>Truy cập bằng chỉ số</td><td>Truy cập bằng tên trường</td></tr>
+      <tr><td>Cùng một mẫu thao tác</td><td>Thao tác riêng theo trường</td></tr>
+      <tr><td>Chỉ số động</td><td>Độ dời trường cố định</td></tr>
+    </tbody>
+  </table>
+  <p>Khác với mảng, các thành phần của bản ghi có thể khác kiểu và được truy cập bằng tên thay vì chỉ số. Trong các ngôn ngữ hướng đối tượng, có thể xem đối tượng một phần như một bản ghi kèm phương thức và ngữ nghĩa bổ sung. Vị trí của mỗi trường thường được biết lúc biên dịch, nên truy cập trường có thể rất hiệu quả.</p>
+</div>
+
+<div class="article-section" id="hop-nhat">
+  <h2 class="section-heading">Kiểu hợp nhất</h2>
+  <p>Một kiểu hợp nhất (<em>union type</em>) là một kiểu mà giá trị của nó có thể mang những kiểu khác nhau ở những thời điểm khác nhau, dùng chung một vùng lưu trữ. Ví dụ trong C:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="kw">union</span> Data {
+    <span class="type">int</span> i;
+    <span class="type">float</span> f;
+    <span class="type">char</span> c;
+};</code></pre>
+  </div>
+  <p>Tại mỗi thời điểm chỉ một cách diễn giải là hợp lệ: cùng một vùng nhớ có thể được hiểu là <code>int</code>, <code>float</code> hay <code>char</code>.</p>
+
+  <figure class="fig">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/6.png" alt="Kiểu hợp nhất: cùng một vùng nhớ được diễn giải là int, float hoặc char">
+    <figcaption>Hình 6 – Kiểu hợp nhất: nhiều cách diễn giải cho cùng một vùng lưu trữ.</figcaption>
+  </figure>
+
+  <p>Điều này đặt ra một câu hỏi thiết kế then chốt: ngôn ngữ làm sao biết trường nào đang hợp lệ? Có hai cách tiếp cận. <strong>Hợp nhất tự do</strong> (<em>free union</em>) không có cơ chế an toàn kiểu sẵn có; người lập trình phải tự bảo đảm chỉ đọc đúng trường đã ghi. <strong>Hợp nhất có phân biệt</strong> (<em>discriminated union</em>) kèm thêm một thẻ phân biệt (<em>tag</em>) cho biết biến thể nào đang hoạt động.</p>
+  <div class="callout">
+    Kiểu hợp nhất cải thiện tính linh hoạt về bộ nhớ nhưng có thể làm giảm an toàn kiểu; hợp nhất có phân biệt lấy lại phần an toàn đó bằng cách trả thêm một ô nhớ cho thẻ.
+  </div>
+</div>
+
+<div class="article-section" id="tap-hop-de-quy">
+  <h2 class="section-heading">Kiểu tập hợp và kiểu đệ quy</h2>
+  <p>Hai kiểu hợp thành cuối cùng mở rộng khả năng biểu diễn theo hai hướng khác nhau.</p>
+  <p>Một kiểu tập hợp (<em>set type</em>) biểu diễn một bộ sưu tập không thứ tự các giá trị phân biệt. Ví dụ trong Pascal:</p>
+  <div class="code-block">
+    <div class="code-label">Pascal</div>
+    <pre><code><span class="kw">var</span> s: <span class="kw">set of</span> <span class="num">1</span>..<span class="num">10</span>;</code></pre>
+  </div>
+  <p>Các phép toán thường gặp trên tập hợp gồm kiểm tra thành viên, hợp, giao và hiệu, đúng theo tinh thần tập hợp trong toán học.</p>
+  <p>Một kiểu đệ quy (<em>recursive type</em>) chứa một tham chiếu tới một giá trị cùng kiểu với chính nó. Ví dụ kinh điển là nút của một danh sách liên kết:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="kw">struct</span> Node {
+    <span class="type">int</span> value;
+    <span class="kw">struct</span> Node* next;
+};</code></pre>
+  </div>
+
+  <figure class="fig fig-narrow">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/7.png" alt="Danh sách liên kết: mỗi Node chứa value và con trỏ next đến Node kế">
+    <figcaption>Hình 7 – Kiểu đệ quy: mỗi nút trỏ đến nút kế tiếp cùng kiểu.</figcaption>
+  </figure>
+
+  <p>Kiểu đệ quy là điều kiện để biểu diễn các cấu trúc dữ liệu động như danh sách và cây. Đáng chú ý là một kiểu đệ quy hầu như luôn cần con trỏ hoặc tham chiếu ở trường tự trỏ; nếu không, một giá trị sẽ phải chứa chính nó vô hạn lần và không thể có kích thước hữu hạn.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ===================== BÀI 5 ===================== -->
+<div class="lesson-badge">Bài 5 / 7</div>
+<h1 class="lesson-title" id="bieu-dien">Biểu diễn dữ liệu trong bộ nhớ</h1>
+<div class="lesson-meta">CO3005 · Kiểu dữ liệu và biểu diễn dữ liệu</div>
+
+<div class="article-section">
+  <h2 class="section-heading">Vì sao biểu diễn quan trọng</h2>
+  <p>Một kiểu không chỉ là một khái niệm toán học hay logic; nó còn phải được biểu diễn trong bộ nhớ. Cách biểu diễn dữ liệu (<em>data representation</em>) ảnh hưởng tới mức sử dụng bộ nhớ, tốc độ truy cập, khả năng kiểm tra an toàn, khả năng tương tác giữa các hệ thống, và mức tối ưu hóa mà trình biên dịch có thể thực hiện.</p>
+  <p>Ví dụ, với một khai báo tưởng đơn giản:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> a[<span class="num">100</span>];</code></pre>
+  </div>
+  <p>trình biên dịch phải biết kích thước phần tử, địa chỉ cơ sở, miền chỉ số và quy tắc tính địa chỉ. Thiếu những thông tin kiểu này, việc sinh mã vừa hiệu quả vừa an toàn sẽ rất khó.</p>
+  <div class="callout">
+    Có thể nói thiết kế kiểu định hình bố trí lúc chạy và phần hiện thực trong trình biên dịch: thông tin kiểu là cầu nối từ thiết kế kiểu, qua bố trí bộ nhớ, đến mã máy được sinh ra.
+  </div>
+</div>
+
+<div class="article-section" id="bieu-dien-mang">
+  <h2 class="section-heading">Biểu diễn của mảng</h2>
+  <p>Một mảng một chiều thường được lưu trong các ô nhớ liền nhau. Với khai báo <code>int a[5];</code>, giả sử mỗi <code>int</code> chiếm 4 byte, các phần tử nằm kế tiếp nhau, địa chỉ tăng dần từ trái sang phải:</p>
+
+  <figure class="fig">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/8.png" alt="Bộ nhớ liền nhau của mảng int a[5]: 4 byte mỗi phần tử, địa chỉ tăng dần">
+    <figcaption>Hình 8 – Mảng một chiều được lưu liền nhau trong bộ nhớ.</figcaption>
+  </figure>
+
+  <p>Nhờ bố trí liền nhau, địa chỉ của một phần tử bất kỳ tính được trực tiếp:</p>
+  <div class="code-block">
+    <div class="code-label">Công thức địa chỉ</div>
+    <pre><code>address(a[k]) = base_address + k × element_size
+
+<span class="cmt">// Nếu biên dưới khác 0:</span>
+address(a[k]) = address(a[lower_bound]) + (k - lower_bound) × element_size</code></pre>
+  </div>
+  <p>Công thức này giải thích vì sao truy cập mảng hiệu quả: nếu biết kích thước phần tử và địa chỉ cơ sở, ta tính được địa chỉ của bất kỳ phần tử nào chỉ bằng một phép nhân và một phép cộng. Nói cách khác, lập chỉ số mảng được hiện thực bằng số học địa chỉ.</p>
+  <p>Với mảng nhiều chiều, bộ nhớ về bản chất là một dãy ô một chiều nên mảng nhiều chiều phải được tuyến tính hóa. Có hai cách phổ biến:</p>
+  <p><strong>Thứ tự theo hàng</strong> (<em>row-major order</em>), dùng bởi các ngôn ngữ kiểu C, lưu lần lượt hết một hàng rồi mới sang hàng kế:</p>
+  <div class="code-block">
+    <div class="code-label">Row-major</div>
+    <pre><code>a[0][0], a[0][1], a[0][2],
+a[1][0], a[1][1], a[1][2]</code></pre>
+  </div>
+  <p><strong>Thứ tự theo cột</strong> (<em>column-major order</em>), dùng bởi Fortran, MATLAB và R, lưu lần lượt hết một cột rồi mới sang cột kế:</p>
+  <div class="code-block">
+    <div class="code-label">Column-major</div>
+    <pre><code>a[0][0], a[1][0], a[2][0],
+a[0][1], a[1][1], a[2][1]</code></pre>
+  </div>
+  <p>Có thể hình dung hai cách duyệt qua một ma trận 3×3 như sau:</p>
+
+  <figure class="fig">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/9.png" alt="So sánh row-major và column-major order trên ma trận 3x3">
+    <figcaption>Hình 9 – Thứ tự hàng và thứ tự cột khi lưu mảng nhiều chiều.</figcaption>
+  </figure>
+
+  <p>Mỗi cách lưu kéo theo một công thức tính địa chỉ riêng. Đặt B là địa chỉ cơ sở, w là kích thước một phần tử, Nₖ là số phần tử của chiều k. Với mảng n chiều, công thức tổng quát cho thứ tự theo hàng là:</p>
+  <div class="code-block">
+    <div class="code-label">Công thức địa chỉ tổng quát</div>
+    <pre><code><span class="cmt">// Thứ tự hàng:</span>
+addr(A[i₁]…[iₙ]) = B + w × offset
+offset = Σ (iₖ − Lₖ) × (Nₖ₊₁ × … × Nₙ)
+
+<span class="cmt">// Thứ tự cột:</span>
+offset = Σ (iₖ − Lₖ) × (N₁ × … × Nₖ₋₁)</code></pre>
+  </div>
+  <p>Ví dụ cụ thể với <code>int A[2][3][4]</code>, B = 1000, w = 4, biên dưới = 0, truy cập A[1][0][2]:</p>
+  <div class="code-block">
+    <div class="code-label">Ví dụ tính địa chỉ</div>
+    <pre><code><span class="cmt">// Thứ tự hàng:</span>
+offset = i₁·(N₂·N₃) + i₂·N₃ + i₃ = 1·(3·4) + 0·4 + 2 = 14
+addr   = 1000 + 4×14 = 1056
+
+<span class="cmt">// Thứ tự cột:</span>
+offset = i₁ + i₂·N₁ + i₃·(N₁·N₂) = 1 + 0·2 + 2·(2·3) = 13
+addr   = 1000 + 4×13 = 1052</code></pre>
+  </div>
+  <div class="callout">
+    Cùng một phần tử nhưng hai cách lưu cho hai địa chỉ khác nhau. Khác biệt này ảnh hưởng tới hiệu năng khi duyệt các mảng lớn: duyệt theo "chiều sai" so với cách lưu có thể chậm hơn nhiều dù về mặt logic là tương đương.
+  </div>
+  <p>Khi nói "mảng nhiều chiều", các ngôn ngữ thực ra cung cấp hai cơ chế khác nhau về biểu diễn. <strong>Mảng chữ nhật</strong> (<em>rectangular array</em>) là mảng hai chiều thực sự: mọi hàng cùng độ dài và được lưu trong một khối liền duy nhất. <strong>Mảng răng cưa</strong> (<em>jagged array</em>) thực chất là một mảng các tham chiếu tới hàng, mỗi hàng là một khối riêng và có thể dài ngắn khác nhau:</p>
+
+  <figure class="fig">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/10.png" alt="So sánh mảng chữ nhật và mảng răng cưa trong bộ nhớ">
+    <figcaption>Hình 10 – Mảng chữ nhật (một khối liền) vs mảng răng cưa (các hàng rời).</figcaption>
+  </figure>
+
+  <p>C dùng mảng chữ nhật (<code>int m[3][4]</code>), C# hỗ trợ cả hai (<code>int[,]</code> chữ nhật và <code>int[][]</code> răng cưa), còn Java chỉ có mảng răng cưa (<code>int[][]</code>). Đánh đổi rất rõ: mảng chữ nhật là một khối, số học chỉ số nhanh; mảng răng cưa linh hoạt về độ dài hàng nhưng tốn thêm một lần giải tham chiếu qua mảng con trỏ.</p>
+  <p>Để lưu các thuộc tính chỉ biết được lúc chạy, ngôn ngữ dùng bộ mô tả (<em>descriptor</em>): một cấu trúc dữ liệu chứa siêu dữ liệu cần thiết để quản lý một đối tượng lúc chạy.</p>
+  <table class="data-table">
+    <thead><tr><th>Khía cạnh</th><th>Bộ mô tả lúc biên dịch</th><th>Bộ mô tả lúc chạy</th></tr></thead>
+    <tbody>
+      <tr><td>Dựng bởi</td><td>trình biên dịch, trước khi thực thi</td><td>lúc chạy, giữ trong bộ nhớ cùng đối tượng</td></tr>
+      <tr><td>Lưu trữ</td><td>dùng để sinh mã rồi bỏ đi</td><td>sống cạnh dữ liệu để mã đọc động</td></tr>
+      <tr><td>Chi phí</td><td>không tốn gì lúc chạy</td><td>thêm bộ nhớ và một mức gián tiếp</td></tr>
+      <tr><td>Dùng cho</td><td>mảng tĩnh, chuỗi độ dài cố định</td><td>mảng động, chuỗi co giãn</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <strong>Quy tắc nhớ gọn:</strong> nếu trình biên dịch không cố định được một thuộc tính, thì bộ mô tả phải tồn tại đến lúc chạy.
+  </div>
+  <p>Chuỗi, vốn là một dãy ký tự, được biểu diễn rất gần với mảng, và lựa chọn thiết kế trung tâm của chuỗi là độ dài có thể thay đổi tới đâu. Có ba chính sách:</p>
+  <table class="data-table">
+    <thead><tr><th>Chính sách độ dài</th><th>Mô tả</th><th>Ngôn ngữ</th><th>Biểu diễn</th></tr></thead>
+    <tbody>
+      <tr><td>Tĩnh (<em>static</em>)</td><td>cố định khi tạo, bất biến</td><td>Python str, Java String</td><td>bộ mô tả lúc biên dịch</td></tr>
+      <tr><td>Động giới hạn (<em>limited dynamic</em>)</td><td>đổi được nhưng có trần cố định</td><td>C, C++</td><td>bộ mô tả lúc chạy: đệm + độ dài hiện tại</td></tr>
+      <tr><td>Động (<em>dynamic</em>)</td><td>đổi tự do, không trần</td><td>Perl, JavaScript</td><td>bộ mô tả lúc chạy + lưu trữ liên kết</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="article-section" id="bieu-dien-ban-ghi">
+  <h2 class="section-heading">Biểu diễn của bản ghi</h2>
+  <p>Khác với mảng, một bản ghi được lưu như một dãy các trường có thể khác kiểu, mỗi trường đặt tại một độ dời (<em>offset</em>) cố định so với địa chỉ cơ sở. Xét:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="kw">struct</span> Student {
+    <span class="type">int</span> id;
+    <span class="type">char</span> grade;
+    <span class="type">float</span> gpa;
+};</code></pre>
+  </div>
+  <p>Một bố trí khả dĩ:</p>
+  <div class="code-block">
+    <div class="code-label">Bố trí bộ nhớ</div>
+    <pre><code>độ dời 0: id
+độ dời 4: grade
+độ dời 8: gpa</code></pre>
+  </div>
+
+  <figure class="fig">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/11.png" alt="Bố trí bộ nhớ của struct Student: id tại 0, grade tại 4, gpa tại 8">
+    <figcaption>Hình 11 – Bố trí các trường của bản ghi trong bộ nhớ với độ dời cố định.</figcaption>
+  </figure>
+
+  <p>Trình biên dịch dùng các độ dời này để sinh mã. Một biểu thức như <code>s.gpa</code> được dịch thành "địa chỉ cơ sở của s cộng với độ dời của gpa". Như vậy, tên trường là thứ người lập trình dùng, còn mã sinh ra dùng độ dời.</p>
+  <p>Tuy nhiên, bố trí bản ghi không đơn giản là xếp các trường liền nhau, vì phần cứng đặt ra yêu cầu về căn lề dữ liệu (<em>data alignment</em>): đặt các đối tượng tại những địa chỉ thỏa mãn yêu cầu căn lề của phần cứng. Xét ví dụ:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="kw">struct</span> Example {
+    <span class="type">char</span> c;
+    <span class="type">int</span> x;
+    <span class="type">char</span> d;
+};</code></pre>
+  </div>
+  <p>Giả sử <code>char</code> chiếm 1 byte với căn lề 1, còn <code>int</code> chiếm 4 byte với căn lề 4. Vì <code>int x</code> phải nằm tại địa chỉ là bội của 4, trình biên dịch chèn đệm (<em>padding</em>) sau <code>c</code> để đẩy <code>x</code> về độ dời 4:</p>
+  <div class="code-block">
+    <div class="code-label">Bố trí với đệm</div>
+    <pre><code>độ dời 0    : c
+độ dời 1–3  : đệm
+độ dời 4–7  : x
+độ dời 8    : d
+độ dời 9–11 : đệm đuôi
+
+sizeof(struct Example) = 12   <span class="cmt">// không phải 9</span></code></pre>
+  </div>
+
+  <figure class="fig">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/12.png" alt="struct Example với đệm: c tại 0, padding 1-3, x tại 4-7, d tại 8, tail padding 9-11">
+    <figcaption>Hình 12 – Đệm (<em>padding</em>) được chèn để đảm bảo căn lề — kích thước thực là 12 thay vì 9.</figcaption>
+  </figure>
+
+  <p>Một quy tắc quan trọng giải thích con số 12: kích thước của một bản ghi thường được làm tròn lên thành bội của yêu cầu căn lề lớn nhất trong các trường của nó. Ở đây căn lề lớn nhất là 4 (của <code>int</code>), nên kích thước phải là bội của 4, và 9 được làm tròn lên 12. Như vậy đệm có thể được chèn cả giữa các trường lẫn ở cuối bản ghi; phần đệm cuối này được gọi là đệm đuôi (<em>tail padding</em>).</p>
+  <p>Lý do của đệm đuôi trở nên rõ ràng khi ta đặt nhiều bản ghi liền nhau trong một mảng:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="kw">struct</span> Example arr[<span class="num">2</span>];</code></pre>
+  </div>
+  <p>Giả sử kích thước cấu trúc chỉ là 9 byte. Khi đó <code>arr[0]</code> bắt đầu ở độ dời 0, còn <code>arr[1]</code> bắt đầu ở độ dời 9. Nhưng 9 không phải bội của 4, nên trường <code>int x</code> bên trong <code>arr[1]</code> sẽ lệch căn lề. Bằng cách làm tròn kích thước lên 12, trình biên dịch bảo đảm <code>arr[1]</code> bắt đầu ở độ dời 12:</p>
+
+  <figure class="fig fig-wide">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/13.png" alt="Mảng hai struct Example: arr[0] tại 0 và arr[1] tại 12 nhờ đệm đuôi">
+    <figcaption>Hình 13 – Đệm đuôi bảo toàn căn lề đúng cho mọi phần tử trong mảng bản ghi.</figcaption>
+  </figure>
+
+  <div class="callout">
+    Kích thước cuối cùng của một bản ghi phải bảo đảm căn lề đúng không chỉ cho một bản ghi đơn lẻ mà cho cả một mảng các bản ghi. Đó là lý do <code>sizeof</code> của một cấu trúc có thể lớn hơn tổng kích thước các trường của nó.
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ===================== BÀI 6 ===================== -->
+<div class="lesson-badge">Bài 6 / 7</div>
+<h1 class="lesson-title" id="con-tro">Con trỏ, tham chiếu và an toàn bộ nhớ</h1>
+<div class="lesson-meta">CO3005 · Kiểu dữ liệu và biểu diễn dữ liệu</div>
+
+<div class="article-section" id="kieu-con-tro">
+  <h2 class="section-heading">Kiểu con trỏ</h2>
+  <p>Một con trỏ (<em>pointer</em>) là một giá trị lưu địa chỉ của một đối tượng khác. Con trỏ là kiểu dữ liệu gắn với việc truy cập gián tiếp. Ví dụ trong C:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> x = <span class="num">10</span>;
+<span class="type">int</span> *p = &amp;x;</code></pre>
+  </div>
+  <p>Ở đây <code>p</code> lưu địa chỉ của <code>x</code>. Bản thân con trỏ cũng có vùng lưu trữ riêng, nhưng giá trị nó chứa là địa chỉ của một đối tượng khác:</p>
+
+  <figure class="fig fig-narrow">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/14.png" alt="Con trỏ p lưu địa chỉ của biến x có giá trị 10">
+    <figcaption>Hình 14 – Con trỏ <code>p</code> lưu địa chỉ của biến <code>x</code>.</figcaption>
+  </figure>
+
+  <p>Thao tác giải tham chiếu (<em>dereferencing</em>) đi theo địa chỉ để truy cập đối tượng được trỏ tới:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code>*p = <span class="num">20</span>;   <span class="cmt">// làm thay đổi chính giá trị của x</span></code></pre>
+  </div>
+  <p>Như vậy, con trỏ cho phép truy cập gián tiếp tới bộ nhớ; đây là nền tảng để xây các cấu trúc động như danh sách và cây, nhưng cũng là nguồn gốc của nhiều vấn đề an toàn.</p>
+</div>
+
+<div class="article-section" id="phep-toan-con-tro">
+  <h2 class="section-heading">Các phép toán trên con trỏ</h2>
+  <p>Có hai phép toán cơ bản trên con trỏ, và việc tách bạch chúng rất quan trọng.</p>
+  <p><strong>Phép thứ nhất là gán:</strong> con trỏ nhận một địa chỉ.</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> *p;
+p = &amp;x;</code></pre>
+  </div>
+  <p><strong>Phép thứ hai là giải tham chiếu:</strong> truy cập đối tượng nằm tại địa chỉ mà con trỏ đang giữ.</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> x = <span class="num">10</span>;
+<span class="type">int</span> *p = &amp;x;
+<span class="type">int</span> y = *p;   <span class="cmt">// y = 10</span></code></pre>
+  </div>
+  <div class="callout">
+    Sự khác biệt là cốt lõi: <strong>gán</strong> làm thay đổi con trỏ trỏ đi đâu, còn <strong>giải tham chiếu</strong> truy cập đối tượng được trỏ tới. Lẫn lộn hai phép này là một trong những nguồn lỗi phổ biến nhất khi mới làm việc với con trỏ.
+  </div>
+</div>
+
+<div class="article-section" id="so-hoc-con-tro">
+  <h2 class="section-heading">Số học con trỏ</h2>
+  <p>Một số ngôn ngữ cho phép số học con trỏ (<em>pointer arithmetic</em>), tức cộng trừ trực tiếp trên giá trị con trỏ. Ví dụ trong C:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> a[<span class="num">5</span>] = {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>};
+<span class="type">int</span> *p = a;
+
+*(p + <span class="num">1</span>)   <span class="cmt">// 20</span>
+p[<span class="num">1</span>]       <span class="cmt">// 20 — cách viết khác của *(p + 1)</span>
+
+*(p + <span class="num">10</span>)  <span class="cmt">// không an toàn — trỏ ra ngoài mảng</span></code></pre>
+  </div>
+  <div class="callout">
+    Số học con trỏ phơi bày mô hình bộ nhớ trực tiếp cho người lập trình: nó hiệu quả và linh hoạt, nhưng làm suy yếu an toàn vì ngôn ngữ có thể không ngăn được truy cập ngoài biên.
+  </div>
+</div>
+
+<div class="article-section" id="tham-chieu">
+  <h2 class="section-heading">Kiểu tham chiếu</h2>
+  <p>Một kiểu tham chiếu (<em>reference type</em>) là một bí danh cho một đối tượng đã tồn tại. Ví dụ trong C++:</p>
+  <div class="code-block">
+    <div class="code-label">C++</div>
+    <pre><code><span class="type">int</span> a = <span class="num">10</span>;
+<span class="type">int</span>&amp; r = a;
+
+r = <span class="num">20</span>;   <span class="cmt">// a bằng 20</span></code></pre>
+  </div>
+  <p>Sau khi thực thi, <code>a</code> bằng 20, vì <code>r</code> chỉ là một tên khác cho cùng đối tượng mà <code>a</code> đặt tên. So sánh tham chiếu với con trỏ:</p>
+  <table class="data-table">
+    <thead><tr><th>Tham chiếu</th><th>Con trỏ</th></tr></thead>
+    <tbody>
+      <tr><td>Trỏ tới một đối tượng</td><td>Lưu một địa chỉ</td></tr>
+      <tr><td>Thường không thể null</td><td>Có thể null</td></tr>
+      <tr><td>Không thể gắn lại đối tượng khác</td><td>Có thể trỏ nơi khác</td></tr>
+      <tr><td>Truy cập ngầm</td><td>Giải tham chiếu tường minh</td></tr>
+      <tr><td>Trừu tượng an toàn hơn</td><td>Điều khiển mức thấp hơn</td></tr>
+    </tbody>
+  </table>
+  <p>Tham chiếu thường an toàn hơn con trỏ vì nó loại bỏ một số thao tác nguy hiểm như giá trị null, gắn lại, hay số học con trỏ. Tuy nhiên, ngữ nghĩa chính xác của tham chiếu khác nhau giữa các ngôn ngữ.</p>
+</div>
+
+<div class="article-section" id="con-tro-treo">
+  <h2 class="section-heading">Con trỏ treo</h2>
+  <p>Truy cập gián tiếp mở ra hai lỗi an toàn bộ nhớ kinh điển. Lỗi thứ nhất là con trỏ treo (<em>dangling pointer</em>): một con trỏ trỏ tới một đối tượng đã được giải phóng.</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> *p = <span class="fn">malloc</span>(<span class="kw">sizeof</span>(<span class="type">int</span>));
+<span class="type">int</span> *q = p;
+
+<span class="fn">free</span>(p);
+
+*q = <span class="num">10</span>;   <span class="cmt">// con trỏ treo!</span></code></pre>
+  </div>
+  <p>Diễn biến của lỗi này là: <code>p</code> và <code>q</code> cùng trỏ tới một đối tượng trên heap; <code>free(p)</code> giải phóng đối tượng đó; nhưng <code>q</code> vẫn giữ địa chỉ cũ, nên việc dùng <code>q</code> là không an toàn.</p>
+
+  <figure class="fig fig-wide">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/15.png" alt="Trước và sau free(p): p và q cùng trỏ đối tượng, sau free(p) vùng nhớ bị hủy nhưng q vẫn giữ địa chỉ">
+    <figcaption>Hình 15 – Con trỏ treo: <code>free(p)</code> hủy đối tượng nhưng <code>q</code> vẫn trỏ tới vùng nhớ đó.</figcaption>
+  </figure>
+
+  <div class="callout">
+    Hậu quả của việc dùng một con trỏ treo có thể là hành vi không xác định, chương trình sụp đổ, hỏng dữ liệu, hoặc lỗ hổng bảo mật. Điểm mấu chốt là giải phóng bộ nhớ qua một con trỏ không tự động cập nhật mọi bí danh khác.
+  </div>
+</div>
+
+<div class="article-section" id="bien-heap-mat">
+  <h2 class="section-heading">Biến heap động bị mất</h2>
+  <p>Lỗi đối nghịch với con trỏ treo là biến heap động bị mất (<em>lost heap-dynamic variable</em>): một đối tượng đã cấp phát nhưng không còn cách nào truy cập được từ chương trình.</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> *p = <span class="fn">malloc</span>(<span class="kw">sizeof</span>(<span class="type">int</span>));
+
+p = <span class="kw">NULL</span>;   <span class="cmt">// rò rỉ bộ nhớ!</span></code></pre>
+  </div>
+  <p>Diễn biến: một đối tượng trên heap đã được cấp phát; <code>p</code> là tham chiếu duy nhất tới nó; <code>p</code> bị đổi thành <code>NULL</code>; và chương trình không còn cách nào truy cập đối tượng đó nữa.</p>
+
+  <figure class="fig fig-wide">
+    <img src="Kieu_du_lieu_va_bieu_dien_du_lieu/16.png" alt="Trước: p trỏ đối tượng heap. Sau p=NULL: đối tượng còn tồn tại nhưng không thể với tới">
+    <figcaption>Hình 16 – Biến heap bị mất: đối tượng vẫn còn nhưng không còn tham chiếu nào trỏ đến.</figcaption>
+  </figure>
+
+  <p>Đối tượng vẫn còn tồn tại nhưng đã trở nên không thể với tới; đây cũng chính là hiện tượng rò rỉ bộ nhớ đã nêu ở Chương 7.</p>
+</div>
+
+<div class="article-section" id="so-sanh-loi">
+  <h2 class="section-heading">So sánh con trỏ treo và rò rỉ bộ nhớ</h2>
+  <p>Đặt cạnh nhau, hai lỗi này là hai mặt đối nghịch của cùng một vấn đề: sự mất đồng bộ giữa đối tượng và tham chiếu.</p>
+  <table class="data-table">
+    <thead><tr><th>Vấn đề</th><th>Trạng thái đối tượng</th><th>Trạng thái tham chiếu</th><th>Rủi ro chính</th></tr></thead>
+    <tbody>
+      <tr><td>Con trỏ treo</td><td>đã bị hủy</td><td>vẫn còn</td><td>truy cập vùng nhớ không hợp lệ</td></tr>
+      <tr><td>Rò rỉ bộ nhớ</td><td>vẫn còn</td><td>đã mất</td><td>lãng phí bộ nhớ</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <strong>Con trỏ treo:</strong> tham chiếu còn, đối tượng mất.<br>
+    <strong>Rò rỉ bộ nhớ:</strong> đối tượng còn, tham chiếu mất.
+  </div>
+  <p>Sự đối nghịch này chuẩn bị nền cho các chủ đề về sau như thu gom rác, sở hữu và mượn trong các ngôn ngữ thiết kế theo hướng an toàn bộ nhớ: mọi cơ chế đó đều cố giải đồng thời hai bài toán, vừa không hủy một đối tượng còn được tham chiếu, vừa không giữ lại một đối tượng không còn ai tham chiếu.</p>
+</div>
+
+<div class="article-section" id="danh-doi-thiet-ke">
+  <h2 class="section-heading">Con trỏ và tham chiếu: đánh đổi thiết kế</h2>
+  <p>Cuối cùng, việc một ngôn ngữ chọn hỗ trợ con trỏ, tham chiếu hay cả hai là một quyết định thiết kế cân giữa điều khiển mức thấp và an toàn.</p>
+  <table class="data-table">
+    <thead><tr><th>Đặc điểm</th><th>Con trỏ</th><th>Tham chiếu</th></tr></thead>
+    <tbody>
+      <tr><td>Truy cập gián tiếp</td><td>Có</td><td>Có</td></tr>
+      <tr><td>Có thể null</td><td>Thường có</td><td>Thường không</td></tr>
+      <tr><td>Có thể gắn lại</td><td>Có</td><td>Thường không</td></tr>
+      <tr><td>Số học con trỏ</td><td>Có trong C/C++</td><td>Không</td></tr>
+      <tr><td>Rủi ro an toàn bộ nhớ</td><td>Cao hơn</td><td>Thấp hơn</td></tr>
+      <tr><td>Tính linh hoạt</td><td>Cao hơn</td><td>Thấp hơn</td></tr>
+    </tbody>
+  </table>
+  <p>Các ngôn ngữ chọn khác nhau dọc theo trục đánh đổi này: C chỉ có con trỏ; C++ có cả con trỏ lẫn tham chiếu; Java chỉ có tham chiếu, không có con trỏ thô; C# có tham chiếu kèm con trỏ không an toàn bị hạn chế. Mỗi lựa chọn phản ánh một mức cân bằng khác nhau: phơi bày càng nhiều điều khiển mức thấp thì càng linh hoạt và hiệu quả, nhưng càng đặt gánh nặng an toàn lên vai người lập trình.</p>
+  <div class="callout">
+    Đây chính là câu hỏi thiết kế trung tâm mà nhà thiết kế ngôn ngữ phải trả lời: nên trao cho người lập trình bao nhiêu quyền điều khiển, và ngôn ngữ nên tự bảo đảm bao nhiêu phần an toàn.
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ===================== BÀI 7: TỔNG KẾT ===================== -->
+<div class="lesson-badge">Bài 7 / 7</div>
+<h1 class="lesson-title" id="tong-ket">Tổng kết chương</h1>
+<div class="lesson-meta">CO3005 · Kiểu dữ liệu và biểu diễn dữ liệu</div>
+
+<div class="article-section">
+  <p>Chương này đã đi từ định nghĩa của một kiểu dữ liệu đến cách kiểu được biểu diễn trong bộ nhớ và những vấn đề an toàn đi kèm. Một kiểu dữ liệu được xác định bởi ba thành phần gắn bó: tập giá trị, tập phép toán và cách biểu diễn. Kiểu phục vụ ba mục tiêu là tổ chức khái niệm, phát hiện lỗi và hỗ trợ hiện thực, tất cả nằm trong khuôn khổ các quy tắc của hệ thống kiểu.</p>
+  <p>Ta đã phân biệt các kiểu vô hướng như số nguyên, dấu chấm động, thập phân, luận lý, ký tự, cùng các kiểu thứ tự tự định nghĩa là liệt kê và miền con, và thấy rằng ngay cả những kiểu đơn giản nhất cũng kéo theo các lựa chọn thiết kế về tràn số, độ chính xác và bảng mã. Sang các kiểu hợp thành, ta so sánh mảng, chuỗi, bản ghi, hợp nhất, tập hợp và kiểu đệ quy theo những chiều thiết kế chung như tính đồng nhất, cách truy cập, kích thước và an toàn.</p>
+  <p>Phần biểu diễn trong bộ nhớ tách thành hai mảng lớn là biểu diễn của mảng và biểu diễn của bản ghi. Với mảng, lập chỉ số là số học địa chỉ, mảng nhiều chiều được tuyến tính hóa theo hàng hoặc theo cột với công thức địa chỉ tương ứng, các ngôn ngữ khác nhau về cách khởi tạo cũng như giữa mảng chữ nhật và mảng răng cưa, và bộ mô tả lưu siêu dữ liệu cần đến lúc chạy, vốn cũng chi phối ba chính sách độ dài chuỗi. Với bản ghi, các trường được truy cập qua những độ dời cố định kèm căn lề, đệm và đệm đuôi để bảo toàn căn lề cả trong mảng bản ghi. Cuối cùng, con trỏ và tham chiếu cho phép truy cập gián tiếp với những mức an toàn khác nhau, và hai lỗi đối nghịch là con trỏ treo và rò rỉ bộ nhớ nhắc lại đúng những vấn đề về tham chiếu và thời gian sống từ Chương 7.</p>
+  <p>Thông điệp xuyên suốt là: kiểu dữ liệu không chỉ nói về giá trị. Chúng còn quyết định cách dữ liệu được tổ chức, truy cập, kiểm tra và biểu diễn trong bộ nhớ, nối liền các khái niệm lập trình mức cao với phần hiện thực mức thấp. Những hiểu biết này là nền tảng cho các chương về sau như hệ thống kiểu, kiểm tra kiểu và thiết kế ngôn ngữ an toàn bộ nhớ.</p>
+</div>
+
+<!-- NAV FOOTER -->
+<div class="nav-footer">
+  <span>Bài 1–7 / 7 · CO3005</span>
+  <div style="display:flex; gap:10px;">
+    <a class="nav-btn secondary" href="CO3005.html">← Về trang chủ</a>
+    <span class="nav-btn" style="cursor:default; opacity:.6;">Bài tiếp →</span>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('[id]');
+  const tocItems = document.querySelectorAll('.toc-item');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocItems.forEach(item => {
+          item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
