@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CO3005 – Giới thiệu về Ngôn ngữ Lập trình</title>
+<meta name="description" content="Bài học Giới thiệu về Ngôn ngữ Lập trình – CO3005: hệ ký hiệu, đặc trưng, thiết kế, cài đặt (biên dịch, thông dịch, JIT) và cấu trúc trình biên dịch.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
 
@@ -23,8 +24,7 @@
     --cmt: #6a9955;
     --num: #b5cea8;
     --fn: #dcdcaa;
-    --tag-bg: #e8f0fb;
-    --tag-text: #1a56a0;
+    --type: #4ec9b0;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,7 +37,6 @@
     line-height: 1.75;
   }
 
-  /* LAYOUT */
   .layout {
     display: grid;
     grid-template-columns: 260px 1fr;
@@ -83,7 +82,7 @@
   }
   .toc-item.sub { padding-left: 32px; font-size: 12px; }
 
-  /* MAIN CONTENT */
+  /* MAIN */
   .main {
     padding: 48px 56px 80px;
     max-width: 820px;
@@ -96,13 +95,12 @@
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.08em;
-    color: var(--tag-text);
-    background: var(--tag-bg);
+    color: var(--accent);
+    background: var(--accent-light);
     padding: 4px 10px;
     border-radius: 4px;
     margin-bottom: 16px;
   }
-
   .lesson-title {
     font-family: 'IBM Plex Serif', serif;
     font-size: 30px;
@@ -111,7 +109,6 @@
     color: var(--text);
     margin-bottom: 8px;
   }
-
   .lesson-meta {
     font-size: 13px;
     color: var(--muted);
@@ -120,7 +117,6 @@
     border-bottom: 1px solid var(--border);
   }
 
-  /* ARTICLE SECTIONS */
   .article-section {
     margin-bottom: 52px;
     scroll-margin-top: 24px;
@@ -139,19 +135,13 @@
   .section-heading::before {
     content: '';
     position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 40px;
-    height: 2px;
+    bottom: -2px; left: 0;
+    width: 40px; height: 2px;
     background: var(--accent);
   }
 
-  p {
-    margin-bottom: 14px;
-    color: var(--text);
-  }
+  p { margin-bottom: 14px; }
 
-  /* CODE BLOCKS */
   .code-block {
     background: var(--code-bg);
     border-radius: 8px;
@@ -175,9 +165,6 @@
     line-height: 1.6;
     color: var(--code-text);
   }
-  pre code { font-family: inherit; }
-
-  /* Inline code */
   code {
     font-family: 'IBM Plex Mono', monospace;
     background: #e8e5de;
@@ -186,23 +173,15 @@
     border-radius: 3px;
     font-size: 0.88em;
   }
-  pre code {
-    background: none;
-    color: inherit;
-    padding: 0;
-    border-radius: 0;
-    font-size: inherit;
-  }
+  pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
 
-  /* Syntax highlighting helpers */
-  .kw { color: var(--kw); }
-  .str { color: var(--str); }
-  .cmt { color: var(--cmt); font-style: italic; }
-  .num { color: var(--num); }
-  .fn  { color: var(--fn); }
-  .type { color: #4ec9b0; }
+  .kw   { color: var(--kw); }
+  .str  { color: var(--str); }
+  .cmt  { color: var(--cmt); font-style: italic; }
+  .num  { color: var(--num); }
+  .fn   { color: var(--fn); }
+  .type { color: var(--type); }
 
-  /* CALLOUT / INFO BOX */
   .callout {
     background: var(--accent-light);
     border-left: 4px solid var(--accent);
@@ -213,33 +192,13 @@
   }
   .callout strong { color: var(--accent); }
 
-  /* DEFINITION LIST */
-  .def-list { margin: 16px 0 20px; }
-  .def-item {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 15px;
-  }
-  .def-item:first-child { border-top: 1px solid var(--border); }
-  .def-term {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    color: var(--accent);
-    font-weight: 600;
-    padding-top: 2px;
-  }
-
-  /* COMPARISON TABLE */
-  .compare-table {
+  .data-table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
     font-size: 14px;
   }
-  .compare-table th {
+  .data-table th {
     background: var(--surface2);
     padding: 10px 14px;
     text-align: left;
@@ -249,1013 +208,733 @@
     color: var(--muted);
     border-bottom: 2px solid var(--border);
   }
-  .compare-table td {
+  .data-table td {
     padding: 10px 14px;
     border-bottom: 1px solid var(--border);
     vertical-align: top;
   }
-  .compare-table tr:last-child td { border-bottom: none; }
-  .compare-table tr:hover td { background: var(--surface2); }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
 
-  /* CRITERION CARDS */
-  .criteria-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin: 20px 0;
-  }
-  .criterion-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 18px;
-  }
-  .criterion-card h4 {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 8px;
-  }
-  .criterion-card p { font-size: 14px; margin: 0; }
+  .fig { text-align: center; margin: 28px 0; }
+  .fig img { max-width: 600px; width: 100%; border-radius: 6px; border: 1px solid var(--border); background: #fff; padding: 8px; }
+  .fig figcaption { margin-top: 10px; font-size: 13px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+  .fig-wide img { max-width: 720px; }
+  .fig-narrow img { max-width: 360px; }
 
-  /* PIPELINE STEPS */
-  .pipeline {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    margin: 24px 0;
-    position: relative;
+  hr.divider {
+    border: none;
+    border-top: 2px dashed var(--border);
+    margin: 48px 0;
   }
-  .pipeline::before {
-    content: '';
-    position: absolute;
-    left: 20px;
-    top: 28px;
-    bottom: 28px;
-    width: 2px;
-    background: var(--border);
-  }
-  .pipe-step {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 18px;
-    margin-bottom: 8px;
-    position: relative;
-    z-index: 1;
-  }
-  .pipe-num {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: #fff;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .pipe-content h4 {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 3px;
-    color: var(--text);
-  }
-  .pipe-content p { font-size: 13px; color: var(--muted); margin: 0; }
 
-  /* DOMAIN CARDS */
-  .domain-list { margin: 20px 0; }
-  .domain-item {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 14px;
-    overflow: hidden;
-  }
-  .domain-header {
-    background: var(--surface2);
-    padding: 12px 18px;
-    font-weight: 600;
-    font-size: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .domain-header .badge {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    background: var(--accent);
-    color: #fff;
-    padding: 2px 7px;
-    border-radius: 3px;
-  }
-  .domain-body { padding: 14px 18px; background: var(--surface); }
-  .domain-body p { font-size: 14px; margin-bottom: 8px; }
-  .domain-body p:last-child { margin-bottom: 0; }
-
-  /* NAV FOOTER */
   .nav-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px 0 0;
-    border-top: 1px solid var(--border);
-    margin-top: 48px;
-    font-size: 14px;
-    color: var(--muted);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 0 0; border-top: 1px solid var(--border);
+    margin-top: 48px; font-size: 14px; color: var(--muted);
   }
   .nav-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    background: var(--accent);
-    color: #fff;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--accent); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 500;
     text-decoration: none;
-    cursor: default;
   }
-  .nav-btn.secondary {
-    background: var(--surface);
-    color: var(--accent);
-    border: 1px solid var(--accent);
-  }
-
-
+  .nav-btn.secondary { background: var(--surface); color: var(--accent); border: 1px solid var(--accent); }
 
   @media (max-width: 900px) {
     .layout { grid-template-columns: 1fr; }
     .sidebar { display: none; }
     .main { padding: 32px 24px 60px; }
-    .criteria-grid { grid-template-columns: 1fr; }
-    .def-item { grid-template-columns: 1fr; gap: 4px; }
   }
 </style>
 </head>
 <body>
-
-
 <div class="layout">
 
-  <!-- SIDEBAR -->
-  <nav class="sidebar">
-    <div class="sidebar-title">Mục lục bài học</div>
-    <a class="toc-item active" href="#mo-dau">Bài 1 · Mở đầu</a>
-    <a class="toc-item" href="#he-ky-hieu">Bài 2 · Ngôn ngữ lập trình</a>
-    <a class="toc-item sub" href="#he-ky-hieu">Ngôn ngữ như một hệ ký hiệu</a>
-    <a class="toc-item sub" href="#mien-ung-dung">Các miền ứng dụng</a>
-    <a class="toc-item sub" href="#dac-trung">Các đặc trưng</a>
-    <a class="toc-item sub" href="#tieu-chi">Tiêu chí đánh giá</a>
-    <a class="toc-item" href="#cai-dat">Bài 4 · Cài đặt ngôn ngữ</a>
-    <a class="toc-item sub" href="#bien-dich">Biên dịch</a>
-    <a class="toc-item sub" href="#thong-dich">Thông dịch thuần túy</a>
-    <a class="toc-item sub" href="#he-thong-lai">Hệ thống lai</a>
-    <a class="toc-item sub" href="#jit">Biên dịch tức thời (JIT)</a>
-    <a class="toc-item" href="#cau-truc-compiler">Bài 5 · Cấu trúc trình biên dịch</a>
-    <a class="toc-item sub" href="#lexical">Phân tích từ vựng</a>
-    <a class="toc-item sub" href="#syntax">Phân tích cú pháp</a>
-    <a class="toc-item sub" href="#ast">Sinh AST</a>
-    <a class="toc-item sub" href="#semantic">Phân tích ngữ nghĩa</a>
-    <a class="toc-item sub" href="#ir">Sinh mã trung gian</a>
-    <a class="toc-item sub" href="#codegen">Tối ưu hóa và sinh mã đích</a>
-    <a class="toc-item" href="#ung-dung">Bài 6 · Ứng dụng & chương trình liên quan</a>
-  </nav>
+<!-- ═══════════════════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-title">Mục lục bài học</div>
 
-  <!-- MAIN -->
-  <main class="main" id="mainContent">
+  <a class="toc-item active" href="#mo-dau">Bài 1 · Mở đầu</a>
 
-    <!-- ==================== BÀI 1: MỞ ĐẦU ==================== -->
-    <div class="lesson-badge">Bài 1 / 7</div>
-    <h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
-    <div class="lesson-meta">CO3005 · Giới thiệu về Ngôn ngữ Lập trình · Trần Ngọc Bảo Duy</div>
+  <a class="toc-item" href="#ngon-ngu-lap-trinh">Bài 2 · Ngôn ngữ lập trình</a>
+  <a class="toc-item sub" href="#he-ki-hieu">Ngôn ngữ như hệ ký hiệu</a>
+  <a class="toc-item sub" href="#mien-ung-dung">Các miền ứng dụng</a>
+  <a class="toc-item sub" href="#dac-trung">Các đặc trưng</a>
+  <a class="toc-item sub" href="#tieu-chi">Tiêu chí đánh giá</a>
 
-    <div class="article-section">
-      <p>Ngôn ngữ lập trình là một trong những phát minh quan trọng nhất của khoa học máy tính. Nếu phần cứng cung cấp khả năng thực hiện tính toán, thì ngôn ngữ lập trình cung cấp phương tiện để con người mô tả những tính toán đó một cách có cấu trúc, có thể đọc được, có thể kiểm tra được và cuối cùng có thể được máy tính thực thi.</p>
-      <p>Trong chương này, chúng ta tiếp cận ngôn ngữ lập trình dưới góc độ nguyên lý. Thay vì chỉ hỏi "ngôn ngữ nào dễ học hơn" hoặc "ngôn ngữ nào chạy nhanh hơn", chương này đặt ra những câu hỏi nền tảng hơn:</p>
-      <ul style="margin: 12px 0 12px 24px; line-height: 2;">
-        <li>Ngôn ngữ lập trình dùng để biểu diễn điều gì?</li>
-        <li>Một ngôn ngữ tốt cần có những đặc trưng nào?</li>
-        <li>Vì sao các ngôn ngữ khác nhau lại được thiết kế theo những hướng khác nhau?</li>
-        <li>Chương trình được thực thi như thế nào?</li>
-        <li>Một trình biên dịch xử lý chương trình nguồn qua những giai đoạn nào?</li>
-      </ul>
-    </div>
+  <a class="toc-item" href="#yeu-to-thiet-ke">Bài 3 · Các yếu tố ảnh hưởng đến thiết kế</a>
+  <a class="toc-item sub" href="#kien-truc-may">Kiến trúc máy tính</a>
+  <a class="toc-item sub" href="#phuong-phap-luan">Phương pháp luận lập trình</a>
+  <a class="toc-item sub" href="#tien-hoa">Sự tiến hóa của phương pháp luận</a>
+  <a class="toc-item sub" href="#danh-doi">Các đánh đổi trong thiết kế</a>
 
-    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+  <a class="toc-item" href="#cai-dat">Bài 4 · Cài đặt ngôn ngữ</a>
+  <a class="toc-item sub" href="#bien-dich">Biên dịch</a>
+  <a class="toc-item sub" href="#thong-dich">Thông dịch thuần túy</a>
+  <a class="toc-item sub" href="#he-thong-lai">Hệ thống lai</a>
+  <a class="toc-item sub" href="#jit">Biên dịch tức thời (JIT)</a>
 
-    <!-- ==================== BÀI 2: NGÔN NGỮ LẬP TRÌNH ==================== -->
-    <div class="lesson-badge">Bài 2 / 7</div>
-    <h1 class="lesson-title" id="he-ky-hieu">Ngôn ngữ Lập trình</h1>
-    <div class="lesson-meta">CO3005 · Giới thiệu về Ngôn ngữ Lập trình</div>
+  <a class="toc-item" href="#compiler">Bài 5 · Cấu trúc của trình biên dịch</a>
+  <a class="toc-item sub" href="#lexical">Phân tích từ vựng</a>
+  <a class="toc-item sub" href="#syntax">Phân tích cú pháp</a>
+  <a class="toc-item sub" href="#ast">Sinh cây cú pháp trừu tượng</a>
+  <a class="toc-item sub" href="#semantic">Phân tích ngữ nghĩa</a>
+  <a class="toc-item sub" href="#ir">Sinh mã trung gian</a>
+  <a class="toc-item sub" href="#codegen">Tối ưu hóa và sinh mã đích</a>
 
-    <!-- Section 1: Hệ ký hiệu -->
-    <div class="article-section">
-      <h2 class="section-heading">Ngôn ngữ lập trình như một hệ ký hiệu</h2>
+  <a class="toc-item" href="#ung-dung">Bài 6 · Ứng dụng và chương trình liên quan</a>
+  <a class="toc-item sub" href="#app">Ứng dụng</a>
+  <a class="toc-item sub" href="#tools">Các chương trình liên quan</a>
 
-      <p>Ở mức cơ bản nhất, <strong>ngôn ngữ lập trình</strong> (<em>programming language</em>) là một hệ thống ký hiệu dùng để mô tả các phép tính, thao tác dữ liệu và hành vi của chương trình. Một chương trình không chỉ được viết cho máy tính thực thi; nó còn được viết để con người đọc, hiểu, sửa đổi và phát triển tiếp.</p>
+  <a class="toc-item" href="#tong-ket">Bài 7 · Tóm tắt chương</a>
+</nav>
 
-      <p>Một câu lệnh đơn giản như sau:</p>
-      <div class="code-block">
-        <div class="code-label">C-like</div>
-        <pre><code>a = b + c * 60;</code></pre>
-      </div>
-      <p>đối với máy tính, cuối cùng sẽ phải được chuyển thành một chuỗi lệnh ở mức thấp hơn để đọc dữ liệu, thực hiện phép nhân, phép cộng và ghi kết quả vào bộ nhớ. Tuy nhiên, đối với người lập trình, câu lệnh trên biểu diễn một ý tưởng rất rõ ràng: lấy giá trị của <code>c</code>, nhân với 60, cộng với <code>b</code>, rồi gán kết quả cho <code>a</code>.</p>
+<!-- ═══════════════════════════════════════════════════════
+     MAIN
+════════════════════════════════════════════════════════════ -->
+<main class="main" id="mainContent">
 
-      <p>Chính vì vậy, ngôn ngữ lập trình đóng vai trò là cầu nối giữa hai thế giới. Một mặt, nó phải đủ hình thức để máy tính có thể xử lý một cách chính xác. Mặt khác, nó phải đủ gần với tư duy của con người để người lập trình có thể diễn đạt thuật toán, cấu trúc dữ liệu và ý định thiết kế một cách rõ ràng.</p>
+<!-- ─── BÀI 1: MỞ ĐẦU ─── -->
+<div class="lesson-badge">Bài 1 / 7</div>
+<h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+<div class="lesson-meta">CO3005 · Giới thiệu về Ngôn ngữ Lập trình · Trần Ngọc Bảo Duy</div>
 
-      <p>Một <strong>hệ ký hiệu</strong> (<em>notation</em>) là cách dùng các ký hiệu, quy tắc và cấu trúc để biểu diễn một nội dung nào đó. Ví dụ, trong toán học:</p>
-      <div class="code-block">
-        <div class="code-label">Toán học</div>
-        <pre><code>f(x) = x^2 + 1</code></pre>
-      </div>
-      <p>Trong Python, ý tưởng này có thể được viết thành:</p>
-      <div class="code-block">
-        <div class="code-label">Python</div>
-        <pre><code><span class="kw">def</span> <span class="fn">f</span>(x):
+<div class="article-section">
+  <p>Ngôn ngữ lập trình là một trong những phát minh quan trọng nhất của khoa học máy tính. Nếu phần cứng cung cấp khả năng thực hiện tính toán, thì ngôn ngữ lập trình cung cấp phương tiện để con người mô tả những tính toán đó một cách có cấu trúc, có thể đọc được, có thể kiểm tra được và cuối cùng có thể được máy tính thực thi.</p>
+  <p>Trong chương này, chúng ta tiếp cận ngôn ngữ lập trình dưới góc độ nguyên lý. Thay vì chỉ hỏi "ngôn ngữ nào dễ học hơn" hoặc "ngôn ngữ nào chạy nhanh hơn", chương này đặt ra những câu hỏi nền tảng hơn: ngôn ngữ lập trình dùng để biểu diễn điều gì, một ngôn ngữ tốt cần có những đặc trưng nào, vì sao các ngôn ngữ khác nhau lại được thiết kế theo những hướng khác nhau, chương trình được thực thi như thế nào, và một trình biên dịch xử lý chương trình nguồn qua những giai đoạn nào.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ─── BÀI 2: NGÔN NGỮ LẬP TRÌNH ─── -->
+<div class="lesson-badge">Bài 2 / 7</div>
+<h1 class="lesson-title" id="ngon-ngu-lap-trinh">Ngôn ngữ lập trình</h1>
+<div class="lesson-meta">CO3005 · Giới thiệu về Ngôn ngữ Lập trình</div>
+
+<div class="article-section" id="he-ki-hieu">
+  <h2 class="section-heading">Ngôn ngữ lập trình như một hệ ký hiệu</h2>
+  <p>Ở mức cơ bản nhất, ngôn ngữ lập trình (programming language) là một hệ thống ký hiệu dùng để mô tả các phép tính, thao tác dữ liệu và hành vi của chương trình. Một chương trình không chỉ được viết cho máy tính thực thi; nó còn được viết để con người đọc, hiểu, sửa đổi và phát triển tiếp. Một câu lệnh đơn giản như sau:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code>a = b + c * 60;</code></pre>
+  </div>
+  <p>đối với máy tính, cuối cùng sẽ phải được chuyển thành một chuỗi lệnh ở mức thấp hơn để đọc dữ liệu, thực hiện phép nhân, phép cộng và ghi kết quả vào bộ nhớ. Tuy nhiên, đối với người lập trình, câu lệnh trên biểu diễn một ý tưởng rất rõ ràng: lấy giá trị của c, nhân với 60, cộng với b, rồi gán kết quả cho a. Chính vì vậy, ngôn ngữ lập trình đóng vai trò là cầu nối giữa hai thế giới. Một mặt, nó phải đủ hình thức để máy tính có thể xử lý một cách chính xác. Mặt khác, nó phải đủ gần với tư duy của con người để người lập trình có thể diễn đạt thuật toán, cấu trúc dữ liệu và ý định thiết kế một cách rõ ràng.</p>
+  <p>Một hệ ký hiệu (notation) là cách dùng các ký hiệu, quy tắc và cấu trúc để biểu diễn một nội dung nào đó. Toán học dùng ký hiệu để biểu diễn quan hệ giữa các đại lượng. Âm nhạc dùng khuông nhạc và nốt nhạc để biểu diễn âm thanh. Ngôn ngữ lập trình dùng từ khóa, biểu thức, câu lệnh, kiểu dữ liệu và cấu trúc chương trình để biểu diễn tính toán. Ví dụ, trong toán học, ta có thể viết:</p>
+  <div class="code-block">
+    <div class="code-label">Toán học</div>
+    <pre><code>f(x) = x² + 1</code></pre>
+  </div>
+  <p>Trong một ngôn ngữ lập trình như Python, ý tưởng này có thể được viết thành:</p>
+  <div class="code-block">
+    <div class="code-label">Python</div>
+    <pre><code><span class="kw">def</span> <span class="fn">f</span>(x):
     <span class="kw">return</span> x * x + <span class="num">1</span></code></pre>
-      </div>
+  </div>
+  <p>Cả hai cách viết đều biểu diễn một hàm nhận đầu vào x và trả về x² + 1. Tuy nhiên, chương trình Python còn phải tuân theo nhiều quy tắc cụ thể hơn: cách định nghĩa hàm, cách đặt tên biến, cách thụt lề, cách thực hiện phép nhân và cách trả về kết quả. Một ngôn ngữ lập trình vì thế không chỉ là tập hợp các ký hiệu rời rạc. Nó là một hệ thống gồm:</p>
+  <ul style="margin: 0 0 14px 24px; line-height: 2;">
+    <li><strong>Từ vựng (lexicon):</strong> các đơn vị nhỏ nhất như từ khóa, tên biến, toán tử, hằng số.</li>
+    <li><strong>Cú pháp (syntax):</strong> quy tắc kết hợp các đơn vị từ vựng thành biểu thức, câu lệnh và chương trình.</li>
+    <li><strong>Ngữ nghĩa (semantics):</strong> ý nghĩa của các cấu trúc trong chương trình.</li>
+    <li><strong>Mô hình thực thi (execution model):</strong> cách chương trình được chạy trên máy thật hoặc máy ảo.</li>
+  </ul>
+  <p>Ví dụ, đoạn mã sau hợp lệ về mặt từ vựng vì các ký hiệu đều có thể nhận diện được:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code>x = y + <span class="num">1</span>;</code></pre>
+  </div>
+  <p>Nó cũng hợp lệ về mặt cú pháp trong C nếu nằm trong ngữ cảnh phù hợp. Nhưng nó chỉ hợp lệ về mặt ngữ nghĩa nếu x và y đã được khai báo, có kiểu phù hợp, và phép cộng <code>y + 1</code> là hợp lệ.</p>
+</div>
 
-      <p>Cả hai cách viết đều biểu diễn một hàm nhận đầu vào x và trả về x² + 1. Tuy nhiên, chương trình Python còn phải tuân theo nhiều quy tắc cụ thể hơn: cách định nghĩa hàm, cách đặt tên biến, cách thụt lề, cách thực hiện phép nhân và cách trả về kết quả.</p>
-
-      <p>Một ngôn ngữ lập trình vì thế không chỉ là tập hợp các ký hiệu rời rạc. Nó là một hệ thống gồm:</p>
-      <div class="def-list">
-        <div class="def-item">
-          <div class="def-term">Từ vựng (lexicon)</div>
-          <div>Các đơn vị nhỏ nhất như từ khóa, tên biến, toán tử, hằng số.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Cú pháp (syntax)</div>
-          <div>Quy tắc kết hợp các đơn vị từ vựng thành biểu thức, câu lệnh và chương trình.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Ngữ nghĩa (semantics)</div>
-          <div>Ý nghĩa của các cấu trúc trong chương trình.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Mô hình thực thi</div>
-          <div>Cách chương trình được chạy trên máy thật hoặc máy ảo.</div>
-        </div>
-      </div>
-
-      <p>Ví dụ, đoạn mã sau hợp lệ về mặt từ vựng vì các ký hiệu đều có thể nhận diện được:</p>
-      <div class="code-block">
-        <div class="code-label">C</div>
-        <pre><code>x = y + <span class="num">1</span>;</code></pre>
-      </div>
-      <p>Nó cũng hợp lệ về mặt cú pháp trong C nếu nằm trong ngữ cảnh phù hợp. Nhưng nó chỉ hợp lệ về mặt ngữ nghĩa nếu <code>x</code> và <code>y</code> đã được khai báo, có kiểu phù hợp, và phép cộng <code>y + 1</code> là hợp lệ.</p>
-    </div>
-
-    <!-- Section 2: Miền ứng dụng -->
-    <div class="article-section" id="mien-ung-dung">
-      <h2 class="section-heading">Các miền ứng dụng của ngôn ngữ lập trình</h2>
-
-      <p>Không có một ngôn ngữ lập trình duy nhất phù hợp nhất cho mọi bài toán. Mỗi ngôn ngữ thường được thiết kế trong một bối cảnh lịch sử, phần cứng, nhu cầu ứng dụng và phương pháp lập trình nhất định.</p>
-
-      <div class="domain-list">
-        <div class="domain-item">
-          <div class="domain-header">
-            <span>Tính toán khoa học và dữ liệu</span>
-            <span class="badge">Scientific Computing</span>
-          </div>
-          <div class="domain-body">
-            <p>Các chương trình thường xử lý số học, ma trận, mô phỏng, thống kê và trực quan hóa dữ liệu. Các ngôn ngữ cổ điển như Fortran và ALGOL 60 từng đóng vai trò rất quan trọng. Ngày nay, Python, Julia, R và MATLAB được sử dụng rộng rãi nhờ hệ sinh thái thư viện phong phú.</p>
-            <div class="code-block">
-              <div class="code-label">Python</div>
-              <pre><code>values = [<span class="num">1.2</span>, <span class="num">3.5</span>, <span class="num">4.8</span>, <span class="num">2.1</span>]
+<div class="article-section" id="mien-ung-dung">
+  <h2 class="section-heading">Các miền ứng dụng của ngôn ngữ lập trình</h2>
+  <p>Không có một ngôn ngữ lập trình duy nhất phù hợp nhất cho mọi bài toán. Mỗi ngôn ngữ thường được thiết kế trong một bối cảnh lịch sử, phần cứng, nhu cầu ứng dụng và phương pháp lập trình nhất định.</p>
+  <p>Trong lĩnh vực <strong>tính toán khoa học và dữ liệu</strong> (scientific and data computing), các chương trình thường xử lý số học, ma trận, mô phỏng, thống kê và trực quan hóa dữ liệu. Các ngôn ngữ cổ điển như Fortran và ALGOL 60 từng đóng vai trò rất quan trọng. Ngày nay, Python, Julia, R và MATLAB được sử dụng rộng rãi:</p>
+  <div class="code-block">
+    <div class="code-label">Python</div>
+    <pre><code>values = [<span class="num">1.2</span>, <span class="num">3.5</span>, <span class="num">4.8</span>, <span class="num">2.1</span>]
 average = <span class="fn">sum</span>(values) / <span class="fn">len</span>(values)
 <span class="fn">print</span>(average)</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="domain-item">
-          <div class="domain-header">
-            <span>Nghiệp vụ và quản lý dữ liệu</span>
-            <span class="badge">Business</span>
-          </div>
-          <div class="domain-body">
-            <p>Chương trình thường xử lý giao dịch, hồ sơ, báo cáo, cơ sở dữ liệu và các quy trình nghiệp vụ. COBOL từng là ngôn ngữ rất quan trọng trong các hệ thống ngân hàng, bảo hiểm và hành chính. Ngày nay, Java, C#, SQL và nhiều nền tảng doanh nghiệp khác được sử dụng phổ biến. SQL được thiết kế để truy vấn dữ liệu theo cách khai báo — người lập trình mô tả "muốn lấy gì" thay vì mô tả chi tiết từng bước:</p>
-            <div class="code-block">
-              <div class="code-label">SQL</div>
-              <pre><code><span class="kw">SELECT</span> department, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> number_of_employees
+  </div>
+  <p>Trong lĩnh vực <strong>nghiệp vụ và quản lý dữ liệu</strong> (business and data processing), SQL được thiết kế để truy vấn dữ liệu theo cách khai báo — người lập trình mô tả "muốn lấy gì" thay vì chi tiết từng bước:</p>
+  <div class="code-block">
+    <div class="code-label">SQL</div>
+    <pre><code><span class="kw">SELECT</span> department, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> number_of_employees
 <span class="kw">FROM</span> employees
 <span class="kw">GROUP BY</span> department;</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="domain-item">
-          <div class="domain-header">
-            <span>Trí tuệ nhân tạo và khoa học dữ liệu</span>
-            <span class="badge">AI & Data Science</span>
-          </div>
-          <div class="domain-body">
-            <p>Lisp phù hợp với xử lý ký hiệu và biểu thức dạng cây, trong khi Prolog phù hợp với lập trình logic. Ngày nay, Python và R chiếm ưu thế nhờ các thư viện như NumPy, pandas, scikit-learn, PyTorch và TensorFlow.</p>
-            <div class="code-block">
-              <div class="code-label">Python (scikit-learn)</div>
-              <pre><code><span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LinearRegression
+  </div>
+  <p>Trong lĩnh vực <strong>trí tuệ nhân tạo và khoa học dữ liệu</strong>, Lisp và Prolog từng có vai trò lịch sử quan trọng. Ngày nay Python và R chiếm ưu thế nhờ các thư viện như NumPy, PyTorch, TensorFlow:</p>
+  <div class="code-block">
+    <div class="code-label">Python</div>
+    <pre><code><span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LinearRegression
 X = [[<span class="num">1</span>], [<span class="num">2</span>], [<span class="num">3</span>], [<span class="num">4</span>]]
 y = [<span class="num">2</span>, <span class="num">4</span>, <span class="num">6</span>, <span class="num">8</span>]
-model = LinearRegression()
-model.fit(X, y)
-<span class="fn">print</span>(model.predict([[<span class="num">5</span>]]))</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="domain-item">
-          <div class="domain-header">
-            <span>Hệ thống và backend</span>
-            <span class="badge">Systems</span>
-          </div>
-          <div class="domain-body">
-            <p>Yêu cầu thường bao gồm hiệu năng, kiểm soát tài nguyên, quản lý bộ nhớ, xử lý đồng thời và khả năng triển khai ổn định. Các ngôn ngữ như C, C++, Go và Rust thường được dùng.</p>
-            <div class="code-block">
-              <div class="code-label">C</div>
-              <pre><code><span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span>
-<span class="type">int</span> <span class="fn">main</span>() {
-    <span class="type">int</span> x = <span class="num">10</span>;
-    <span class="type">int</span> *p = &amp;x;
-    <span class="fn">printf</span>(<span class="str">"%d\n"</span>, *p);
-    <span class="kw">return</span> <span class="num">0</span>;
-}</code></pre>
-            </div>
-            <p>Đoạn mã trên cho thấy sức mạnh của C trong việc làm việc trực tiếp với địa chỉ bộ nhớ, nhưng cũng gợi mở nguy cơ lỗi nếu con trỏ được sử dụng không cẩn thận.</p>
-          </div>
-        </div>
-
-        <div class="domain-item">
-          <div class="domain-header">
-            <span>Web và di động</span>
-            <span class="badge">Web & Mobile</span>
-          </div>
-          <div class="domain-body">
-            <p>Các ngôn ngữ như JavaScript, TypeScript, Kotlin và Swift rất phổ biến. JavaScript ban đầu được thiết kế cho trình duyệt, nhưng ngày nay đã mở rộng sang backend thông qua Node.js.</p>
-            <div class="code-block">
-              <div class="code-label">JavaScript</div>
-              <pre><code><span class="kw">const</span> button = document.<span class="fn">querySelector</span>(<span class="str">"#submit"</span>);
+model = <span class="fn">LinearRegression</span>()
+model.<span class="fn">fit</span>(X, y)
+<span class="fn">print</span>(model.<span class="fn">predict</span>([[<span class="num">5</span>]]))</code></pre>
+  </div>
+  <p>Trong lĩnh vực <strong>hệ thống và backend</strong>, các ngôn ngữ như C, C++, Go và Rust thường được dùng. C cho phép thao tác gần với bộ nhớ, nhưng cũng gợi mở nguy cơ lỗi nếu con trỏ được sử dụng không cẩn thận:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> x = <span class="num">10</span>;
+<span class="type">int</span> *p = &amp;x;
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, *p);</code></pre>
+  </div>
+  <p>Trong lĩnh vực <strong>web và di động</strong>, JavaScript ban đầu được thiết kế cho trình duyệt nhưng ngày nay đã mở rộng sang backend qua Node.js:</p>
+  <div class="code-block">
+    <div class="code-label">JavaScript</div>
+    <pre><code><span class="kw">const</span> button = document.<span class="fn">querySelector</span>(<span class="str">"#submit"</span>);
 button.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, <span class="kw">function</span> () {
     console.<span class="fn">log</span>(<span class="str">"Button clicked"</span>);
 });</code></pre>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  </div>
+  <div class="callout">Các ví dụ trên cho thấy mỗi ngôn ngữ thường phản ánh một tập ưu tiên thiết kế: có ngôn ngữ ưu tiên hiệu năng, có ngôn ngữ ưu tiên biểu diễn dữ liệu, có ngôn ngữ ưu tiên tính an toàn, có ngôn ngữ ưu tiên năng suất lập trình.</div>
+</div>
 
-    <!-- Section 3: Đặc trưng -->
-    <div class="article-section" id="dac-trung">
-      <h2 class="section-heading">Các đặc trưng của ngôn ngữ lập trình</h2>
-
-      <p>Khi đánh giá một ngôn ngữ lập trình, ta không chỉ quan tâm đến việc ngôn ngữ đó có "mạnh" hay không. Một ngôn ngữ mạnh nhưng khó đọc, khó kiểm tra hoặc dễ gây lỗi có thể không phù hợp cho việc xây dựng hệ thống lớn.</p>
-
-      <h3 style="font-size:17px; margin: 24px 0 10px; color: var(--text);">① Sự rõ ràng, đơn giản và thống nhất</h3>
-      <p>Một ngôn ngữ tốt nên cung cấp cho người lập trình một khung tư duy nhất quán để biểu diễn thuật toán. Nếu cùng một khái niệm nhưng có quá nhiều cách biểu diễn khác nhau, người học và người đọc chương trình sẽ gặp khó khăn.</p>
-      <div class="code-block">
-        <div class="code-label">Python — rõ ràng</div>
-        <pre><code>total = <span class="num">0</span>
+<div class="article-section" id="dac-trung">
+  <h2 class="section-heading">Các đặc trưng của ngôn ngữ lập trình</h2>
+  <p>Khi đánh giá một ngôn ngữ lập trình, ta không chỉ quan tâm đến việc ngôn ngữ đó có "mạnh" hay không.</p>
+  <p>Đặc trưng thứ nhất là <strong>sự rõ ràng, đơn giản và thống nhất</strong> (clarity, simplicity, and unity). Ví dụ, Python thường được xem là dễ đọc vì cú pháp gần với cách diễn đạt tự nhiên:</p>
+  <div class="code-block">
+    <div class="code-label">Python</div>
+    <pre><code>total = <span class="num">0</span>
 <span class="kw">for</span> value <span class="kw">in</span> values:
     total += value</code></pre>
-      </div>
-      <div class="code-block">
-        <div class="code-label">Perl-like — ngắn gọn nhưng khó đọc</div>
-        <pre><code>$total += $_ <span class="kw">for</span> @values;</code></pre>
-      </div>
-      <p>Đoạn mã ngắn không nhất thiết là xấu. Tuy nhiên, nếu sự ngắn gọn làm người đọc khó nhận ra ý định của chương trình, tính rõ ràng sẽ bị ảnh hưởng.</p>
-
-      <h3 style="font-size:17px; margin: 24px 0 10px; color: var(--text);">② Tính trực giao (Orthogonality)</h3>
-      <p>Một ngôn ngữ có tính trực giao cao khi các đặc trưng của nó có thể kết hợp với nhau một cách độc lập, nhất quán và ít ngoại lệ. Nếu người lập trình hiểu một cơ chế trong một ngữ cảnh, họ có thể dự đoán cơ chế đó hoạt động tương tự trong ngữ cảnh khác.</p>
-      <div class="code-block">
-        <div class="code-label">Python — hàm được đối xử như giá trị</div>
-        <pre><code><span class="kw">def</span> <span class="fn">apply_twice</span>(f, x):
-    <span class="kw">return</span> f(f(x))
-
+  </div>
+  <p>Trong khi đó, cùng một ý tưởng nếu bị viết quá ngắn hoặc quá nhiều ký hiệu có thể làm giảm khả năng đọc hiểu:</p>
+  <div class="code-block">
+    <div class="code-label">Perl</div>
+    <pre><code>$total += $_ <span class="kw">for</span> @values;</code></pre>
+  </div>
+  <p>Đặc trưng thứ hai là <strong>tính trực giao</strong> (orthogonality). Một ngôn ngữ có tính trực giao cao khi các đặc trưng của nó có thể kết hợp với nhau một cách độc lập, nhất quán và ít ngoại lệ. Ví dụ, hàm được đối xử như một giá trị:</p>
+  <div class="code-block">
+    <div class="code-label">Python</div>
+    <pre><code><span class="kw">def</span> <span class="fn">apply_twice</span>(f, x):
+    <span class="kw">return</span> <span class="fn">f</span>(<span class="fn">f</span>(x))
 <span class="kw">def</span> <span class="fn">increment</span>(x):
     <span class="kw">return</span> x + <span class="num">1</span>
-
-<span class="fn">print</span>(<span class="fn">apply_twice</span>(increment, <span class="num">10</span>))  <span class="cmt"># 12</span></code></pre>
-      </div>
-      <p>Ở đây, hàm được đối xử như một giá trị. Điều này tạo ra sự thống nhất trong thiết kế: nếu một thực thể là giá trị, nó có thể được gán, truyền và trả về.</p>
-
-      <h3 style="font-size:17px; margin: 24px 0 10px; color: var(--text);">③ Hỗ trợ trừu tượng hóa (Abstraction)</h3>
-      <p>Trừu tượng hóa cho phép người lập trình che giấu chi tiết không cần thiết và tập trung vào bản chất của vấn đề. Có hai dạng: trừu tượng hóa dữ liệu và trừu tượng hóa điều khiển.</p>
-      <div class="code-block">
-        <div class="code-label">Python — biến rời rạc</div>
-        <pre><code>student_name = <span class="str">"An"</span>
-student_id   = <span class="str">"SV001"</span>
-student_gpa  = <span class="num">3.5</span></code></pre>
-      </div>
-      <div class="code-block">
-        <div class="code-label">Python — lớp có trừu tượng hóa</div>
-        <pre><code><span class="kw">class</span> <span class="type">Student</span>:
+<span class="fn">print</span>(<span class="fn">apply_twice</span>(increment, <span class="num">10</span>))</code></pre>
+  </div>
+  <p>Đặc trưng thứ ba là <strong>hỗ trợ trừu tượng hóa</strong> (support for abstraction). Trừu tượng hóa cho phép người lập trình che giấu chi tiết không cần thiết. Ví dụ, dùng lớp để biểu diễn rõ hơn khái niệm sinh viên:</p>
+  <div class="code-block">
+    <div class="code-label">Python</div>
+    <pre><code><span class="kw">class</span> <span class="type">Student</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(self, name, student_id, gpa):
         self.name = name
         self.student_id = student_id
         self.gpa = gpa
-
     <span class="kw">def</span> <span class="fn">is_excellent</span>(self):
         <span class="kw">return</span> self.gpa &gt;= <span class="num">3.6</span></code></pre>
-      </div>
+  </div>
+  <p>Đặc trưng thứ tư là <strong>tính an toàn</strong> (safety). Ví dụ, trong Java, truy cập mảng vượt biên sẽ gây lỗi tại thời điểm chạy:</p>
+  <div class="code-block">
+    <div class="code-label">Java</div>
+    <pre><code><span class="type">int</span>[] a = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>};
+System.out.<span class="fn">println</span>(a[<span class="num">5</span>]); <span class="cmt">// error: array index out of bounds</span></code></pre>
+  </div>
+  <p>Trong C, nếu truy cập ngoài phạm vi mảng, chương trình có thể đọc vùng nhớ không hợp lệ, gây ra hành vi không xác định:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="type">int</span> a[<span class="num">3</span>] = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>};
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, a[<span class="num">5</span>]);  <span class="cmt">// undefined behavior</span></code></pre>
+  </div>
+</div>
 
-      <h3 style="font-size:17px; margin: 24px 0 10px; color: var(--text);">④ Tính an toàn (Safety)</h3>
-      <p>Một ngôn ngữ an toàn giúp người lập trình phát hiện lỗi sớm, tránh các hành vi nguy hiểm và giảm xác suất chương trình chạy sai mà không được nhận biết.</p>
+<div class="article-section" id="tieu-chi">
+  <h2 class="section-heading">Tiêu chí đánh giá ngôn ngữ lập trình</h2>
+  <p>Một ngôn ngữ lập trình có thể được đánh giá theo bốn tiêu chí cơ bản:</p>
+  <table class="data-table">
+    <thead><tr><th>Tiêu chí</th><th>Mô tả</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Khả năng đọc hiểu</strong> (readability)</td><td>Mức độ dễ dàng để người đọc hiểu chương trình. Đặc biệt quan trọng trong các hệ thống lớn được bảo trì bởi nhiều người.</td></tr>
+      <tr><td><strong>Khả năng viết</strong> (writability)</td><td>Mức độ dễ dàng để người lập trình biểu diễn một tính toán. Liên quan đến thư viện, cú pháp và cơ chế trừu tượng.</td></tr>
+      <tr><td><strong>Độ tin cậy</strong> (reliability)</td><td>Mức độ chương trình thực hiện đúng theo đặc tả. Hỗ trợ bởi hệ thống kiểu, kiểm tra biên mảng, quản lý bộ nhớ tự động.</td></tr>
+      <tr><td><strong>Chi phí</strong> (cost)</td><td>Chi phí học, viết, biên dịch, thực thi, kiểm thử, bảo trì và đào tạo nhân lực.</td></tr>
+    </tbody>
+  </table>
+  <p>Ví dụ, xử lý danh sách trong Python thường ngắn gọn hơn C:</p>
+  <div class="code-block">
+    <div class="code-label">Python vs C</div>
+    <pre><code><span class="cmt"># Python – ngắn gọn, khả năng viết cao</span>
+squares = [x * x <span class="kw">for</span> x <span class="kw">in</span> numbers <span class="kw">if</span> x &gt; <span class="num">0</span>]
 
-      <div class="compare-table" style="margin-top:16px;">
-        <table class="compare-table" style="width:100%; border-collapse:collapse;">
-          <thead>
-            <tr>
-              <th>Java (an toàn)</th>
-              <th>C (không kiểm tra)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="code-block" style="margin:0;">
-                  <pre style="font-size:12px;"><code><span class="type">int</span>[] a = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>};
-<span class="cmt">// Gây lỗi rõ ràng tại runtime:</span>
-System.out.<span class="fn">println</span>(a[<span class="num">5</span>]);</code></pre>
-                </div>
-              </td>
-              <td>
-                <div class="code-block" style="margin:0;">
-                  <pre style="font-size:12px;"><code><span class="type">int</span> a[<span class="num">3</span>] = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>};
-<span class="cmt">// Undefined behavior — nguy hiểm:</span>
-<span class="fn">printf</span>(<span class="str">"%d\n"</span>, a[<span class="num">5</span>]);</code></pre>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p style="margin-top:12px;">Sự khác biệt này cho thấy một đánh đổi quan trọng: ngôn ngữ càng cho phép kiểm soát thấp và linh hoạt, người lập trình càng phải chịu trách nhiệm nhiều hơn về tính đúng đắn và an toàn.</p>
-    </div>
-
-    <!-- Section 4: Tiêu chí đánh giá -->
-    <div class="article-section" id="tieu-chi">
-      <h2 class="section-heading">Tiêu chí đánh giá ngôn ngữ lập trình</h2>
-      <p>Một ngôn ngữ lập trình có thể được đánh giá theo nhiều tiêu chí, nhưng bốn tiêu chí cơ bản thường được sử dụng là:</p>
-
-      <div class="criteria-grid">
-        <div class="criterion-card">
-          <h4>Readability</h4>
-          <p><strong>Khả năng đọc hiểu</strong> — mức độ dễ dàng để người đọc hiểu chương trình. Đặc biệt quan trọng trong các hệ thống lớn, nơi mã nguồn được đọc, kiểm tra và bảo trì nhiều lần bởi nhiều người.</p>
-        </div>
-        <div class="criterion-card">
-          <h4>Writability</h4>
-          <p><strong>Khả năng viết</strong> — mức độ dễ dàng để người lập trình biểu diễn một tính toán. Một ngôn ngữ có khả năng viết tốt cung cấp thư viện, cấu trúc dữ liệu và cú pháp thuận tiện cho miền bài toán.</p>
-        </div>
-        <div class="criterion-card">
-          <h4>Reliability</h4>
-          <p><strong>Độ tin cậy</strong> — mức độ chương trình thực hiện đúng theo đặc tả. Được hỗ trợ bởi hệ thống kiểu mạnh, kiểm tra biên mảng, quản lý bộ nhớ tự động, cơ chế ngoại lệ.</p>
-        </div>
-        <div class="criterion-card">
-          <h4>Cost</h4>
-          <p><strong>Chi phí</strong> — bao gồm chi phí học ngôn ngữ, viết chương trình, biên dịch, thực thi, kiểm thử, bảo trì và đào tạo nhân lực.</p>
-        </div>
-      </div>
-
-      <p>Ví dụ, xử lý danh sách trong Python thường ngắn gọn (writability cao):</p>
-      <div class="code-block">
-        <div class="code-label">Python</div>
-        <pre><code>squares = [x * x <span class="kw">for</span> x <span class="kw">in</span> numbers <span class="kw">if</span> x &gt; <span class="num">0</span>]</code></pre>
-      </div>
-      <p>Nếu viết bằng C, người lập trình phải quản lý vòng lặp, mảng kết quả và chỉ số một cách thủ công hơn:</p>
-      <div class="code-block">
-        <div class="code-label">C</div>
-        <pre><code><span class="type">int</span> j = <span class="num">0</span>;
+<span class="cmt">/* C – kiểm soát chi tiết hơn */</span>
+<span class="type">int</span> j = <span class="num">0</span>;
 <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) {
     <span class="kw">if</span> (numbers[i] &gt; <span class="num">0</span>) {
         squares[j] = numbers[i] * numbers[i];
         j++;
     }
 }</code></pre>
-      </div>
-      <p>Điều này không có nghĩa Python luôn tốt hơn C. Nó chỉ cho thấy Python có khả năng biểu diễn một số thao tác mức cao một cách ngắn gọn hơn, còn C cho phép kiểm soát chi tiết hơn đối với bộ nhớ và hiệu năng.</p>
+  </div>
+  <div class="callout">Điều này không có nghĩa Python luôn tốt hơn C. Nó chỉ cho thấy Python có khả năng biểu diễn một số thao tác mức cao một cách ngắn gọn hơn, còn C cho phép kiểm soát chi tiết hơn đối với bộ nhớ và hiệu năng.</div>
+</div>
 
-      <p>Về độ tin cậy, trong Java, lỗi kiểu có thể được phát hiện <em>trước khi chạy</em> (kiểm tra tĩnh):</p>
-      <div class="code-block">
-        <div class="code-label">Java — lỗi kiểu phát hiện lúc biên dịch</div>
-        <pre><code><span class="type">int</span> n = <span class="num">5</span>;
-<span class="type">String</span> s = <span class="str">"hi"</span>;
-n = n + s; <span class="cmt">// type error</span></code></pre>
-      </div>
-      <p>Trong ngôn ngữ kiểm tra kiểu động, lỗi có thể chỉ xuất hiện khi chương trình chạy đến dòng đó:</p>
-      <div class="code-block">
-        <div class="code-label">Python — lỗi kiểu tại runtime</div>
-        <pre><code>n = <span class="num">5</span>
-s = <span class="str">"hi"</span>
-n = n + s  <span class="cmt"># TypeError at runtime</span></code></pre>
-      </div>
-      <p>Cả hai cách thiết kế đều có lý do riêng. Kiểm tra tĩnh giúp phát hiện lỗi sớm hơn, trong khi kiểm tra động có thể tạo ra sự linh hoạt hơn trong một số bối cảnh.</p>
-    </div>
+<hr class="divider">
 
-    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+<!-- ─── BÀI 3: CÁC YẾU TỐ ẢNH HƯỞNG ─── -->
+<div class="lesson-badge">Bài 3 / 7</div>
+<h1 class="lesson-title" id="yeu-to-thiet-ke">Các yếu tố ảnh hưởng đến thiết kế</h1>
+<div class="lesson-meta">CO3005 · Giới thiệu về Ngôn ngữ Lập trình</div>
 
-    <!-- ==================== BÀI 4: CÀI ĐẶT NGÔN NGỮ ==================== -->
-    <div class="lesson-badge">Bài 4 / 7</div>
-    <h1 class="lesson-title" id="cai-dat">Cài đặt Ngôn ngữ</h1>
-    <div class="lesson-meta">CO3005 · Giới thiệu về Ngôn ngữ Lập trình</div>
-
-    <div class="article-section" id="bien-dich">
-      <h2 class="section-heading">Biên dịch</h2>
-      <p>Một chương trình được viết bằng ngôn ngữ bậc cao không thể được phần cứng thực thi trực tiếp nếu chưa được chuyển sang một dạng phù hợp. Hệ thống phần mềm thực hiện việc chuyển đổi hoặc thực thi này được gọi chung là <strong>bộ dịch</strong> (<em>translator</em>). Có bốn phương pháp cài đặt ngôn ngữ lập trình quan trọng:</p>
-
-      <div class="callout"><strong>Bốn phương pháp:</strong> Biên dịch (Compilation) · Thông dịch thuần túy (Pure Interpretation) · Hệ thống lai (Hybrid System) · Biên dịch tức thời (JIT)</div>
-
-      <p>Trong <strong>biên dịch</strong> (<em>compilation</em>), toàn bộ chương trình nguồn được dịch thành chương trình đích trước khi chạy. Nếu chương trình đích là mã máy, nó có thể được hệ điều hành nạp và thực thi trực tiếp trên phần cứng.</p>
-
-      <div class="callout">
-        <strong>Mô hình biên dịch:</strong><br>
-        <code>source program</code> → <strong>Compiler</strong> → <code>target program</code> → (input) → <code>output</code>
-      </div>
-
-      <div class="code-block">
-        <div class="code-label">C — biên dịch và chạy</div>
-        <pre><code><span class="cmt">// hello.c</span>
-<span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span>
-<span class="type">int</span> <span class="fn">main</span>() {
-    <span class="fn">printf</span>(<span class="str">"Hello, world!\n"</span>);
-    <span class="kw">return</span> <span class="num">0</span>;
-}
-
-<span class="cmt">// Biên dịch:</span>
-<span class="cmt">// gcc hello.c -o hello</span>
-
-<span class="cmt">// Chạy:</span>
-<span class="cmt">// ./hello</span></code></pre>
-      </div>
-
-      <p>Ưu điểm lớn của biên dịch là chương trình đích thường chạy nhanh, vì nhiều công việc phân tích và chuyển đổi đã được thực hiện trước thời điểm thực thi. Tuy nhiên, chương trình sau khi biên dịch thường phụ thuộc vào nền tảng đích — một file thực thi được biên dịch cho Linux trên kiến trúc x86-64 không nhất thiết chạy được trên Windows hoặc trên kiến trúc ARM nếu không biên dịch lại.</p>
-    </div>
-
-    <div class="article-section" id="thong-dich">
-      <h2 class="section-heading">Thông dịch thuần túy</h2>
-
-      <p>Trong <strong>thông dịch thuần túy</strong> (<em>pure interpretation</em>), chương trình nguồn được thực thi trực tiếp bởi một trình thông dịch (<em>interpreter</em>), không tạo ra một chương trình đích độc lập trước khi chạy.</p>
-
-      <div class="callout">
-        <strong>Mô hình thông dịch:</strong><br>
-        <code>source program</code> + <code>input</code> → <strong>Interpreter</strong> → <code>output</code>
-      </div>
-
-      <div class="code-block">
-        <div class="code-label">Ngôn ngữ giả định — thông dịch từng dòng</div>
-        <pre><code>x = 10      <span class="cmt">-> store 10 in variable x</span>
-y = x + 5   <span class="cmt">-> load x, add 5, store in y</span>
-print y     <span class="cmt">-> print value of y</span></code></pre>
-      </div>
-
-      <p>Ưu điểm của thông dịch thuần túy là linh hoạt, dễ hỗ trợ môi trường tương tác và thường cho thông báo lỗi gần với vị trí đang thực thi. Tuy nhiên, do chương trình không được dịch trước thành mã đích, trình thông dịch có thể phải lặp lại việc phân tích và xử lý cấu trúc lệnh trong quá trình chạy, nên thường chậm hơn biên dịch.</p>
-
-      <div class="callout">Cần lưu ý rằng các hệ thống hiện đại như Python không nên được xem đơn giản là ví dụ của thông dịch thuần túy. Trong nhiều cài đặt phổ biến, mã nguồn Python được dịch sang bytecode rồi thực thi bởi một máy ảo, nên phù hợp hơn với mô hình hệ thống lai.</div>
-    </div>
-
-    <div class="article-section" id="he-thong-lai">
-      <h2 class="section-heading">Hệ thống lai</h2>
-
-      <p><strong>Hệ thống lai</strong> (<em>hybrid implementation system</em>) kết hợp ưu điểm của biên dịch và thông dịch. Thay vì dịch chương trình nguồn trực tiếp thành mã máy, hệ thống dịch chương trình nguồn thành một dạng trung gian, sau đó dạng trung gian này được thực thi bởi một máy ảo (<em>virtual machine</em>).</p>
-
-      <div class="callout">
-        <strong>Mô hình hệ thống lai:</strong><br>
-        <code>source program</code> → <strong>Translator</strong> → <code>intermediate program</code> → <strong>Virtual Machine</strong> + <code>input</code> → <code>output</code>
-      </div>
-
-      <p>Ví dụ điển hình là Java:</p>
-      <div class="code-block">
-        <div class="code-label">Java — biên dịch sang bytecode rồi chạy trên JVM</div>
-        <pre><code><span class="kw">public class</span> <span class="type">Main</span> {
-    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
-        System.out.<span class="fn">println</span>(<span class="str">"Hello, world!"</span>);
-    }
-}
-
-<span class="cmt">// Biên dịch sang bytecode:  javac Main.java</span>
-<span class="cmt">// Chạy trên JVM:             java Main</span></code></pre>
-      </div>
-
-      <p>Mô hình này có một ưu điểm quan trọng: bytecode có thể chạy trên bất kỳ nền tảng nào có JVM tương thích — ý tưởng "viết một lần, chạy ở nhiều nơi". Python cũng thường được triển khai theo hướng lai:</p>
-      <div class="code-block">
-        <div class="code-label">Python — pipeline thực thi</div>
-        <pre><code><span class="cmt">Python source → Python bytecode → Python VM → Result</span></code></pre>
-      </div>
-    </div>
-
-    <div class="article-section" id="jit">
-      <h2 class="section-heading">Biên dịch tức thời (JIT)</h2>
-
-      <p><strong>Biên dịch tức thời</strong> (<em>Just-in-Time compilation, JIT</em>) là phương pháp trong đó một trình biên dịch nằm bên trong máy ảo hoặc runtime. Thay vì biên dịch toàn bộ chương trình trước khi chạy, JIT theo dõi quá trình thực thi và biên dịch những phần được chạy thường xuyên thành mã máy gốc.</p>
-
-      <div class="callout">
-        <strong>Mô hình JIT trên JVM:</strong><br>
-        bytecode → <em>bytecode interpreter</em> (ban đầu) hoặc → <em>JIT compiler</em> → machine code (khi phát hiện hot path)
-      </div>
-
-      <p>Những phần được chạy nhiều lần thường được gọi là <strong>đường nóng</strong> (<em>hot paths</em>) hoặc <strong>phương thức nóng</strong> (<em>hot methods</em>).</p>
-
-      <div class="code-block">
-        <div class="code-label">Java — hot method được JIT tối ưu</div>
-        <pre><code><span class="kw">public class</span> <span class="type">Sum</span> {
-    <span class="kw">public static int</span> <span class="fn">sum</span>(<span class="type">int</span> n) {
-        <span class="type">int</span> s = <span class="num">0</span>;
-        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= n; i++) {
-            s += i;
-        }
-        <span class="kw">return</span> s;
-    }
-    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
-        <span class="kw">for</span> (<span class="type">int</span> k = <span class="num">0</span>; k &lt; <span class="num">100000</span>; k++) {
-            <span class="fn">sum</span>(<span class="num">1000</span>);  <span class="cmt">// gọi rất nhiều lần → JIT sẽ biên dịch</span>
-        }
-    }
+<div class="article-section" id="kien-truc-may">
+  <h2 class="section-heading">Kiến trúc máy tính</h2>
+  <p>Thiết kế của một ngôn ngữ lập trình không xuất hiện một cách ngẫu nhiên. Nó chịu ảnh hưởng bởi phần cứng, mô hình tính toán, phương pháp lập trình, yêu cầu ứng dụng và các đánh đổi giữa nhiều tiêu chí khác nhau.</p>
+  <p>Một trong những ảnh hưởng quan trọng nhất là kiến trúc von Neumann. Trong mô hình này, chương trình và dữ liệu cùng được lưu trong bộ nhớ. Bộ xử lý trung tâm lấy lệnh từ bộ nhớ, giải mã lệnh và thực thi lệnh theo chu kỳ <em>fetch – decode – execute</em>. Mô hình này ảnh hưởng rất mạnh đến các ngôn ngữ mệnh lệnh, qua ba khái niệm cơ bản:</p>
+  <ul style="margin: 0 0 14px 24px; line-height: 2;">
+    <li><strong>Biến (variable)</strong> mô hình hóa ô nhớ: <code>int x = 10;</code></li>
+    <li><strong>Phép gán (assignment)</strong> mô hình hóa thao tác ghi giá trị vào ô nhớ: <code>x = x + 1;</code></li>
+    <li><strong>Vòng lặp (iteration)</strong> ánh xạ hiệu quả xuống các cơ chế lặp ở mức phần cứng.</li>
+  </ul>
+  <div class="code-block">
+    <div class="code-label">C – Vòng lặp mô hình hóa cơ chế phần cứng</div>
+    <pre><code><span class="type">int</span> sum = <span class="num">0</span>;
+<span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= <span class="num">100</span>; i++) {
+    sum = sum + i;
 }</code></pre>
-      </div>
+  </div>
+</div>
 
-      <p>Cách tiếp cận JIT có ba đặc điểm quan trọng:</p>
-      <div class="def-list">
-        <div class="def-item">
-          <div class="def-term">Khởi động nhanh</div>
-          <div>Chương trình có thể bắt đầu chạy tương đối nhanh vì không cần biên dịch toàn bộ ngay từ đầu.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Tối ưu chính xác</div>
-          <div>Runtime có thể quan sát hành vi thực tế của chương trình để tối ưu chính xác hơn — biết nhánh nào thường được đi qua hoặc kiểu dữ liệu nào thường xuất hiện.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Tăng tốc đáng kể</div>
-          <div>Sau khi một đoạn mã được biên dịch sang mã máy, việc thực thi đoạn đó có thể nhanh hơn nhiều so với thông dịch.</div>
-        </div>
-      </div>
+<div class="article-section" id="phuong-phap-luan">
+  <h2 class="section-heading">Phương pháp luận lập trình</h2>
+  <p>Bên cạnh kiến trúc máy tính, thiết kế ngôn ngữ còn chịu ảnh hưởng bởi phương pháp luận lập trình — câu hỏi: chúng ta nên tổ chức suy nghĩ và cấu trúc chương trình như thế nào?</p>
+  <p>Trong <strong>lập trình mệnh lệnh</strong>, chương trình mô tả <em>cách</em> thực hiện từng bước:</p>
+  <div class="code-block">
+    <div class="code-label">Python – Mệnh lệnh</div>
+    <pre><code>numbers = [<span class="num">-2</span>, <span class="num">3</span>, <span class="num">5</span>, <span class="num">-1</span>, <span class="num">4</span>]
+total = <span class="num">0</span>
+<span class="kw">for</span> x <span class="kw">in</span> numbers:
+    <span class="kw">if</span> x &gt; <span class="num">0</span>:
+        total += x
+<span class="fn">print</span>(total)</code></pre>
+  </div>
+  <p>Trong <strong>lập trình khai báo</strong>, chương trình tập trung mô tả <em>cái gì</em> cần được tính:</p>
+  <div class="code-block">
+    <div class="code-label">SQL – Khai báo</div>
+    <pre><code><span class="kw">SELECT SUM</span>(amount)
+<span class="kw">FROM</span> transactions
+<span class="kw">WHERE</span> amount &gt; <span class="num">0</span>;</code></pre>
+  </div>
+  <p>Trong <strong>lập trình hàm</strong>, một dạng khai báo, chương trình được biểu diễn thông qua các phép biến đổi trên dữ liệu:</p>
+  <div class="code-block">
+    <div class="code-label">Python – Hàm</div>
+    <pre><code>numbers = [<span class="num">-2</span>, <span class="num">3</span>, <span class="num">5</span>, <span class="num">-1</span>, <span class="num">4</span>]
+total = <span class="fn">sum</span>(<span class="fn">filter</span>(<span class="kw">lambda</span> x: x &gt; <span class="num">0</span>, numbers))</code></pre>
+  </div>
+  <p>Trong <strong>lập trình logic</strong> (Prolog), người lập trình mô tả các sự kiện và quy tắc suy luận:</p>
+  <div class="code-block">
+    <div class="code-label">Prolog</div>
+    <pre><code>parent(an, binh).
+parent(binh, cuong).
+grandparent(X, Z) :- parent(X, Y), parent(Y, Z).</code></pre>
+  </div>
+  <div class="callout">Sự khác biệt giữa mệnh lệnh và khai báo phản ánh hai cách tư duy khác nhau về chương trình: một bên xem chương trình như một chuỗi thao tác làm thay đổi trạng thái, bên kia xem chương trình như một mô tả quan hệ, biểu thức hoặc ràng buộc cần được thỏa mãn.</div>
+</div>
 
-      <p>JIT cho thấy ranh giới giữa biên dịch và thông dịch không phải lúc nào cũng tuyệt đối. Nhiều hệ thống hiện đại kết hợp cả hai để đạt được sự cân bằng giữa tốc độ khởi động, tính linh hoạt, tính di động và hiệu năng khi chạy lâu dài.</p>
-    </div>
+<div class="article-section" id="tien-hoa">
+  <h2 class="section-heading">Sự tiến hóa của phương pháp luận lập trình</h2>
+  <p>Lịch sử ngôn ngữ lập trình gắn liền với sự tiến hóa của phương pháp phát triển phần mềm:</p>
+  <table class="data-table">
+    <thead><tr><th>Thập niên</th><th>Phương pháp</th><th>Đặc điểm</th></tr></thead>
+    <tbody>
+      <tr><td>1950 – đầu 1960</td><td>Tối ưu hiệu suất máy</td><td>Chương trình cần chạy nhanh, dùng ít bộ nhớ, tận dụng phần cứng.</td></tr>
+      <tr><td>Cuối 1960</td><td>Lập trình có cấu trúc</td><td>Cấu trúc điều khiển rõ ràng (tuần tự, rẽ nhánh, lặp), hạn chế <code>goto</code>.</td></tr>
+      <tr><td>Cuối 1970</td><td>Thiết kế hướng dữ liệu</td><td>Mô hình hóa khái niệm bằng kiểu dữ liệu, module và giao diện.</td></tr>
+      <tr><td>Giữa 1980</td><td>Lập trình hướng đối tượng</td><td>Đóng gói, kế thừa, đa hình — đối tượng biết cách xử lý chính mình.</td></tr>
+    </tbody>
+  </table>
+  <p>Ví dụ, thay vì dùng <code>goto</code>:</p>
+  <div class="code-block">
+    <div class="code-label">C – goto (không có cấu trúc)</div>
+    <pre><code><span class="type">int</span> i = <span class="num">0</span>;
+start:
+<span class="kw">if</span> (i &gt;= <span class="num">10</span>) <span class="kw">goto</span> end;
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, i);
+i++;
+<span class="kw">goto</span> start;
+end:</code></pre>
+  </div>
+  <p>ta viết bằng vòng lặp có cấu trúc:</p>
+  <div class="code-block">
+    <div class="code-label">C – vòng lặp có cấu trúc</div>
+    <pre><code><span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">10</span>; i++) {
+    <span class="fn">printf</span>(<span class="str">"%d\n"</span>, i);
+}</code></pre>
+  </div>
+  <p>Đây là biểu hiện của đa hình trong lập trình hướng đối tượng:</p>
+  <div class="code-block">
+    <div class="code-label">Python – Đa hình (OOP)</div>
+    <pre><code><span class="kw">class</span> <span class="type">Shape</span>:
+    <span class="kw">def</span> <span class="fn">area</span>(self): <span class="kw">raise</span> NotImplementedError
+<span class="kw">class</span> <span class="type">Rectangle</span>(Shape):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, width, height):
+        self.width = width; self.height = height
+    <span class="kw">def</span> <span class="fn">area</span>(self): <span class="kw">return</span> self.width * self.height
+<span class="kw">class</span> <span class="type">Circle</span>(Shape):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, radius): self.radius = radius
+    <span class="kw">def</span> <span class="fn">area</span>(self): <span class="kw">return</span> <span class="num">3.14</span> * self.radius * self.radius
 
-    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+shapes = [<span class="fn">Rectangle</span>(<span class="num">3</span>, <span class="num">4</span>), <span class="fn">Circle</span>(<span class="num">5</span>)]
+<span class="kw">for</span> shape <span class="kw">in</span> shapes:
+    <span class="fn">print</span>(shape.<span class="fn">area</span>())</code></pre>
+  </div>
+</div>
 
-    <!-- ==================== BÀI 5: CẤU TRÚC TRÌNH BIÊN DỊCH ==================== -->
-    <div class="lesson-badge">Bài 5 / 7</div>
-    <h1 class="lesson-title" id="cau-truc-compiler">Cấu trúc của Trình biên dịch</h1>
-    <div class="lesson-meta">CO3005 · Giới thiệu về Ngôn ngữ Lập trình</div>
+<div class="article-section" id="danh-doi">
+  <h2 class="section-heading">Các đánh đổi trong thiết kế ngôn ngữ</h2>
+  <p>Thiết kế ngôn ngữ lập trình luôn chứa các đánh đổi. Một quyết định giúp ngôn ngữ an toàn hơn có thể làm chương trình chạy chậm hơn. Một cú pháp giúp viết nhanh hơn có thể làm chương trình khó đọc hơn.</p>
+  <table class="data-table">
+    <thead><tr><th>Đánh đổi</th><th>Ví dụ</th></tr></thead>
+    <tbody>
+      <tr><td>Độ tin cậy vs. hiệu năng</td><td>Java kiểm tra chỉ số mảng lúc chạy (an toàn hơn), C không kiểm tra (nhanh hơn).</td></tr>
+      <tr><td>Khả năng đọc vs. khả năng viết</td><td>List comprehension ngắn nhưng khi quá phức tạp sẽ khó đọc hơn vòng lặp tường minh.</td></tr>
+      <tr><td>Tính linh hoạt vs. độ tin cậy</td><td>C++ cho con trỏ, cấp phát động (linh hoạt); Java, C# dùng GC (ít lỗi bộ nhớ hơn).</td></tr>
+    </tbody>
+  </table>
+  <div class="code-block">
+    <div class="code-label">C++ – use-after-free</div>
+    <pre><code><span class="type">int</span>* p = <span class="kw">new</span> <span class="type">int</span>(<span class="num">10</span>);
+<span class="kw">delete</span> p;
+std::cout &lt;&lt; *p; <span class="cmt">// error: use of freed memory</span></code></pre>
+  </div>
+  <div class="callout">Các ngôn ngữ có bộ thu gom rác như Java, C# hoặc Python giảm bớt loại lỗi này bằng cách tự động quản lý vòng đời đối tượng, nhưng đổi lại có thể phát sinh chi phí thực thi và độ phức tạp của runtime.</div>
+</div>
 
-    <div class="article-section">
-      <p>Một <strong>trình biên dịch</strong> (<em>compiler</em>) là một chương trình dịch chương trình nguồn từ một ngôn ngữ sang một ngôn ngữ đích. Quá trình biên dịch thường được chia thành nhiều giai đoạn — mỗi giai đoạn nhận đầu vào từ giai đoạn trước, xử lý và tạo đầu ra cho giai đoạn sau.</p>
+<hr class="divider">
 
-      <p>Để minh họa, ta dùng xuyên suốt câu lệnh sau: <code>a = b + c * 60;</code></p>
+<!-- ─── BÀI 4: CÀI ĐẶT NGÔN NGỮ ─── -->
+<div class="lesson-badge">Bài 4 / 7</div>
+<h1 class="lesson-title" id="cai-dat">Cài đặt ngôn ngữ</h1>
+<div class="lesson-meta">CO3005 · Giới thiệu về Ngôn ngữ Lập trình</div>
 
-      <p>Trong nhiều trình biên dịch, các giai đoạn đầu được gọi là <strong>front-end</strong> (tập trung vào ngôn ngữ nguồn: từ vựng, cú pháp, ngữ nghĩa), còn các giai đoạn sau là <strong>back-end</strong> (tập trung vào mã trung gian, tối ưu hóa và sinh mã cho máy đích).</p>
+<div class="article-section" id="bien-dich">
+  <h2 class="section-heading">Biên dịch</h2>
+  <p>Một chương trình được viết bằng ngôn ngữ bậc cao không thể được phần cứng thực thi trực tiếp nếu chưa được chuyển sang một dạng phù hợp. Hệ thống phần mềm thực hiện việc chuyển đổi hoặc thực thi này được gọi chung là bộ dịch (translator). Có bốn phương pháp cài đặt quan trọng: biên dịch, thông dịch thuần túy, hệ thống lai và biên dịch tức thời (JIT).</p>
+  <p>Trong phương pháp <strong>biên dịch</strong> (compilation), toàn bộ chương trình nguồn được dịch thành chương trình đích trước khi chạy. Nếu chương trình đích là mã máy, nó có thể được thực thi trực tiếp trên phần cứng.</p>
 
-      <div class="pipeline">
-        <div class="pipe-step">
-          <div class="pipe-num">1</div>
-          <div class="pipe-content">
-            <h4>Phân tích từ vựng (Lexical Analysis / Scanning)</h4>
-            <p>Đọc chuỗi ký tự và nhóm thành các token.</p>
-          </div>
-        </div>
-        <div class="pipe-step">
-          <div class="pipe-num">2</div>
-          <div class="pipe-content">
-            <h4>Phân tích cú pháp (Syntax Analysis / Parsing)</h4>
-            <p>Kiểm tra chuỗi token có tạo thành cấu trúc hợp lệ theo văn phạm.</p>
-          </div>
-        </div>
-        <div class="pipe-step">
-          <div class="pipe-num">3</div>
-          <div class="pipe-content">
-            <h4>Sinh cây cú pháp trừu tượng (AST)</h4>
-            <p>Xây dựng cấu trúc cây gọn, tập trung vào bản chất ngữ nghĩa.</p>
-          </div>
-        </div>
-        <div class="pipe-step">
-          <div class="pipe-num">4</div>
-          <div class="pipe-content">
-            <h4>Phân tích ngữ nghĩa (Semantic Analysis)</h4>
-            <p>Kiểm tra kiểu, khai báo, phạm vi và các ràng buộc ngữ nghĩa.</p>
-          </div>
-        </div>
-        <div class="pipe-step">
-          <div class="pipe-num">5</div>
-          <div class="pipe-content">
-            <h4>Sinh mã trung gian (Intermediate Code Generation)</h4>
-            <p>Tạo biểu diễn trung gian (IR) độc lập với máy đích.</p>
-          </div>
-        </div>
-        <div class="pipe-step">
-          <div class="pipe-num">6</div>
-          <div class="pipe-content">
-            <h4>Tối ưu hóa và sinh mã đích (Optimization & Code Generation)</h4>
-            <p>Tối ưu IR và sinh mã máy cho kiến trúc cụ thể.</p>
-          </div>
-        </div>
-      </div>
-    </div>
+  <figure class="fig">
+    <img src="intro/1.png" alt="Mô hình biên dịch: source program được dịch thành target program; khi chạy, target program nhận input và tạo output">
+    <figcaption>Hình 1 – Mô hình biên dịch: source program được dịch thành target program; khi chạy, target program nhận input và tạo output.</figcaption>
+  </figure>
 
-    <div class="article-section" id="lexical">
-      <h2 class="section-heading">Phân tích từ vựng (Lexical Analysis)</h2>
+  <div class="code-block">
+    <div class="code-label">Shell – Biên dịch và chạy C</div>
+    <pre><code>gcc hello.c -o hello
+./hello</code></pre>
+  </div>
+  <p>Quá trình này gồm hai giai đoạn rõ ràng: giai đoạn dịch và giai đoạn chạy. Ưu điểm lớn của biên dịch là chương trình đích thường chạy nhanh, vì nhiều công việc phân tích và chuyển đổi đã được thực hiện trước thời điểm thực thi. Tuy nhiên, chương trình sau khi biên dịch thường phụ thuộc vào nền tảng đích.</p>
+</div>
 
-      <p>Phân tích từ vựng (<em>lexical analysis</em> hoặc <em>scanning</em>) là giai đoạn đầu tiên của trình biên dịch. Nó đọc chương trình nguồn như một chuỗi ký tự và nhóm các ký tự thành các đơn vị có ý nghĩa gọi là <strong>token</strong>.</p>
+<div class="article-section" id="thong-dich">
+  <h2 class="section-heading">Thông dịch thuần túy</h2>
+  <p>Trong <strong>thông dịch thuần túy</strong> (pure interpretation), chương trình nguồn được thực thi trực tiếp bởi một trình thông dịch (interpreter), không tạo ra một chương trình đích độc lập trước khi chạy.</p>
 
-      <p>Với câu lệnh <code>a = b + c * 60;</code>, chuỗi ký tự đầu vào được nhóm thành các token:</p>
+  <figure class="fig">
+    <img src="intro/2.png" alt="Mô hình thông dịch thuần túy: interpreter đọc source program và input, rồi tạo output trực tiếp">
+    <figcaption>Hình 2 – Mô hình thông dịch thuần túy: interpreter đọc source program và input, rồi tạo output trực tiếp.</figcaption>
+  </figure>
 
-      <div class="code-block">
-        <div class="code-label">Token stream</div>
-        <pre><code>(ID,   "a")
-(EQUAL, "=")
-(ID,   "b")
-(PLUS,  "+")
-(ID,   "c")
-(MUL,   "*")
-(INT,  "60")
-(SEMI,  ";")</code></pre>
-      </div>
+  <p>Về mặt khái niệm, trình thông dịch đọc từng phần của chương trình, xác định thao tác cần thực hiện và thực thi ngay thao tác đó:</p>
+  <div class="code-block">
+    <div class="code-label">Minh họa thông dịch từng dòng</div>
+    <pre><code>x = 10      -&gt; store 10 in variable x
+y = x + 5   -&gt; load x, add 5, store in y
+print y     -&gt; print value of y</code></pre>
+  </div>
+  <p>Ưu điểm của thông dịch thuần túy là linh hoạt, dễ hỗ trợ môi trường tương tác và thường cho thông báo lỗi gần với vị trí đang thực thi. Tuy nhiên, do chương trình không được dịch trước thành mã đích, trình thông dịch có thể phải lặp lại việc phân tích và xử lý cấu trúc lệnh, nên thường chậm hơn biên dịch.</p>
+  <div class="callout">Cần lưu ý rằng các hệ thống hiện đại như Python không nên được xem đơn giản là ví dụ của thông dịch thuần túy. Trong nhiều cài đặt phổ biến, mã nguồn Python được dịch sang bytecode rồi thực thi bởi một máy ảo, nên phù hợp hơn với mô hình hệ thống lai.</div>
+</div>
 
-      <p>Một token thường gồm hai phần: <strong>loại token</strong> (token type) và <strong>giá trị từ vựng</strong> (lexeme). Bộ phân tích từ vựng thực hiện một số nhiệm vụ chính:</p>
-      <ul style="margin: 10px 0 10px 24px; line-height: 2;">
-        <li>Nhóm các ký tự thành lexeme (ví dụ: '6' và '0' → "60").</li>
-        <li>Loại bỏ khoảng trắng và chú thích.</li>
-        <li>Gắn thông tin vị trí (dòng, cột) để phục vụ báo lỗi.</li>
-      </ul>
+<div class="article-section" id="he-thong-lai">
+  <h2 class="section-heading">Hệ thống lai</h2>
+  <p><strong>Hệ thống lai</strong> (hybrid implementation system) kết hợp ưu điểm của biên dịch và thông dịch. Thay vì dịch chương trình nguồn trực tiếp thành mã máy, hệ thống dịch chương trình nguồn thành một dạng trung gian, sau đó dạng trung gian này được thực thi bởi một máy ảo (virtual machine).</p>
 
-      <div class="code-block">
-        <div class="code-label">C — chú thích bị scanner bỏ qua</div>
-        <pre><code>a = b + c * <span class="num">60</span>;  <span class="cmt">// compute new value of a</span>
-<span class="cmt">// Phần chú thích "// compute new value of a" được bỏ qua.</span></code></pre>
-      </div>
-    </div>
+  <figure class="fig">
+    <img src="intro/3.png" alt="Mô hình hệ thống lai: translator sinh intermediate program; virtual machine thực thi chương trình trung gian với input và tạo output">
+    <figcaption>Hình 3 – Mô hình hệ thống lai: translator sinh intermediate program; virtual machine thực thi chương trình trung gian với input và tạo output.</figcaption>
+  </figure>
 
-    <div class="article-section" id="syntax">
-      <h2 class="section-heading">Phân tích cú pháp (Syntax Analysis)</h2>
+  <p>Ví dụ điển hình là Java. Mã nguồn Java được biên dịch thành bytecode, sau đó bytecode được chạy trên Máy ảo Java (JVM):</p>
+  <div class="code-block">
+    <div class="code-label">Shell – Java biên dịch và chạy</div>
+    <pre><code>javac Main.java
+java Main</code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-label">Python – cũng là hệ thống lai</div>
+    <pre><code>Python source -&gt; Python bytecode -&gt; Python VM -&gt; Result</code></pre>
+  </div>
+  <p>Mô hình này có một ưu điểm quan trọng: bytecode có thể chạy trên bất kỳ nền tảng nào có JVM tương thích — ý tưởng "viết một lần, chạy ở nhiều nơi". Hệ thống lai thường nhanh hơn thông dịch thuần túy vì chương trình nguồn không cần được phân tích lại từ đầu mỗi lần thực hiện.</p>
+</div>
 
-      <p>Phân tích cú pháp (<em>syntax analysis</em> hoặc <em>parsing</em>) là giai đoạn thứ hai. Nếu phân tích từ vựng trả lời câu hỏi "các từ trong chương trình là gì?", thì phân tích cú pháp trả lời câu hỏi "các từ đó được sắp xếp có đúng ngữ pháp hay không?".</p>
+<div class="article-section" id="jit">
+  <h2 class="section-heading">Biên dịch tức thời (JIT)</h2>
+  <p><strong>Biên dịch tức thời</strong> (Just-in-Time compilation, JIT) là phương pháp trong đó một trình biên dịch nằm bên trong máy ảo hoặc runtime. Thay vì biên dịch toàn bộ chương trình trước khi chạy, JIT theo dõi quá trình thực thi và biên dịch những phần được chạy thường xuyên thành mã máy gốc.</p>
 
-      <p>Với câu lệnh <code>a = b + c * 60;</code>, parser cần nhận ra đây là một câu lệnh gán, trong đó vế trái là định danh <code>a</code>, vế phải là biểu thức <code>b + c * 60</code>. Cây phân tích cú pháp thể hiện cấu trúc ngữ pháp đầy đủ và độ ưu tiên toán tử: <code>c * 60</code> được nhóm lại trước, sau đó mới cộng với <code>b</code>.</p>
+  <figure class="fig">
+    <img src="intro/4.png" alt="Mô hình JIT trên JVM: bytecode có thể được bytecode interpreter thông dịch hoặc được JIT compiler dịch thành machine language rồi thực thi">
+    <figcaption>Hình 4 – Mô hình JIT trên JVM: bytecode có thể được bytecode interpreter thông dịch hoặc được JIT compiler dịch thành machine language rồi thực thi.</figcaption>
+  </figure>
 
-      <p>Nếu viết sai cú pháp:</p>
-      <div class="code-block">
-        <div class="code-label">Lỗi cú pháp</div>
-        <pre><code>a = b + * <span class="num">60</span>;  <span class="cmt">// lỗi: sau '+' phải là toán hạng, không phải '*'</span></code></pre>
-      </div>
-      <p>Một điểm quan trọng là phân tích cú pháp chủ yếu kiểm tra cấu trúc hình thức. Nó chưa nhất thiết biết <code>a</code>, <code>b</code>, <code>c</code> đã được khai báo hay chưa — những vấn đề đó thuộc về phân tích ngữ nghĩa.</p>
-    </div>
+  <p>Những phần được chạy nhiều lần thường được gọi là đường nóng (hot paths) hoặc phương thức nóng (hot methods). Ví dụ, hàm <code>sum</code> được gọi rất nhiều lần:</p>
+  <div class="code-block">
+    <div class="code-label">Java – ví dụ hot method</div>
+    <pre><code><span class="kw">public static</span> <span class="type">int</span> <span class="fn">sum</span>(<span class="type">int</span> n) {
+    <span class="type">int</span> s = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= n; i++) s += i;
+    <span class="kw">return</span> s;
+}
+<span class="kw">for</span> (<span class="type">int</span> k = <span class="num">0</span>; k &lt; <span class="num">100000</span>; k++) <span class="fn">sum</span>(<span class="num">1000</span>); <span class="cmt">// hot!</span></code></pre>
+  </div>
+  <p>Cách tiếp cận JIT có ba đặc điểm quan trọng. <strong>Thứ nhất</strong>, chương trình có thể bắt đầu chạy tương đối nhanh vì không cần biên dịch toàn bộ ngay từ đầu. <strong>Thứ hai</strong>, runtime có thể quan sát hành vi thực tế của chương trình để tối ưu chính xác hơn. <strong>Thứ ba</strong>, sau khi một đoạn mã được biên dịch sang mã máy, việc thực thi đoạn đó có thể nhanh hơn nhiều so với thông dịch.</p>
+  <div class="callout">JIT cho thấy ranh giới giữa biên dịch và thông dịch không phải lúc nào cũng tuyệt đối. Nhiều hệ thống hiện đại kết hợp cả hai để đạt được sự cân bằng giữa tốc độ khởi động, tính linh hoạt, tính di động và hiệu năng khi chạy lâu dài.</div>
+</div>
 
-    <div class="article-section" id="ast">
-      <h2 class="section-heading">Sinh cây cú pháp trừu tượng (AST)</h2>
+<hr class="divider">
 
-      <p>Cây phân tích cú pháp (parse tree) thường chứa đầy đủ chi tiết về cách chuỗi token được suy dẫn từ văn phạm. Tuy nhiên, không phải mọi chi tiết trong parse tree đều cần thiết cho các giai đoạn sau.</p>
+<!-- ─── BÀI 5: CẤU TRÚC TRÌNH BIÊN DỊCH ─── -->
+<div class="lesson-badge">Bài 5 / 7</div>
+<h1 class="lesson-title" id="compiler">Cấu trúc của trình biên dịch</h1>
+<div class="lesson-meta">CO3005 · Giới thiệu về Ngôn ngữ Lập trình</div>
 
-      <p><strong>Cây cú pháp trừu tượng</strong> (<em>Abstract Syntax Tree, AST</em>) là một cấu trúc gọn hơn, tập trung vào bản chất của chương trình — bỏ bớt các node nhân tạo và giữ lại các thành phần có ý nghĩa ngữ nghĩa rõ ràng.</p>
+<div class="article-section">
+  <p>Một trình biên dịch (compiler) là một chương trình dịch chương trình nguồn từ một ngôn ngữ sang một ngôn ngữ đích. Quá trình biên dịch thường được chia thành nhiều giai đoạn. Mỗi giai đoạn nhận đầu vào từ giai đoạn trước, xử lý và tạo đầu ra cho giai đoạn sau. Cách chia này giúp trình biên dịch có cấu trúc rõ ràng, dễ thiết kế, dễ kiểm tra và dễ mở rộng.</p>
 
-      <div class="code-block">
-        <div class="code-label">Python — mô hình hóa AST bằng lớp</div>
-        <pre><code><span class="kw">class</span> <span class="type">Assignment</span>:
+  <figure class="fig fig-wide">
+    <img src="intro/5.png" alt="Pipeline biên dịch: luồng dữ liệu và các giai đoạn xử lý">
+    <figcaption>Hình 5 – Pipeline biên dịch: luồng dữ liệu (trái) và các giai đoạn xử lý (phải).</figcaption>
+  </figure>
+
+  <p>Trong nhiều trình biên dịch, các giai đoạn đầu được gọi là <strong>front-end</strong> (tập trung vào ngôn ngữ nguồn: từ vựng, cú pháp, ngữ nghĩa), còn các giai đoạn sau được gọi là <strong>back-end</strong> (tập trung vào mã trung gian, tối ưu hóa và sinh mã cho máy đích). Ta dùng xuyên suốt câu lệnh sau làm ví dụ minh họa:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code>a = b + c * <span class="num">60</span>;</code></pre>
+  </div>
+</div>
+
+<div class="article-section" id="lexical">
+  <h2 class="section-heading">Phân tích từ vựng</h2>
+  <p>Phân tích từ vựng (<em>lexical analysis</em> hoặc <em>scanning</em>) là giai đoạn đầu tiên. Nó đọc chương trình nguồn như một chuỗi ký tự và nhóm các ký tự thành các đơn vị có ý nghĩa gọi là token. Với câu lệnh <code>a = b + c * 60;</code>, bộ phân tích từ vựng sẽ nhóm thành các token:</p>
+  <div class="code-block">
+    <div class="code-label">Danh sách token</div>
+    <pre><code>(ID, <span class="str">"a"</span>)
+(EQUAL, <span class="str">"="</span>)
+(ID, <span class="str">"b"</span>)
+(PLUS, <span class="str">"+"</span>)
+(ID, <span class="str">"c"</span>)
+(MUL, <span class="str">"*"</span>)
+(INT, <span class="str">"60"</span>)
+(SEMI, <span class="str">";"</span>)</code></pre>
+  </div>
+  <p>Bộ phân tích từ vựng thực hiện một số nhiệm vụ chính: nhóm các ký tự thành lexeme, loại bỏ khoảng trắng và chú thích không cần thiết cho các giai đoạn sau, và gắn thông tin vị trí (dòng, cột) để phục vụ báo lỗi. Ví dụ, nếu chương trình có lỗi:</p>
+  <div class="code-block">
+    <div class="code-label">C – lỗi cú pháp</div>
+    <pre><code>a = b + * <span class="num">60</span>;</code></pre>
+  </div>
+  <p>trình biên dịch có thể báo lỗi gần vị trí dấu *, nhờ thông tin dòng và cột của token.</p>
+</div>
+
+<div class="article-section" id="syntax">
+  <h2 class="section-heading">Phân tích cú pháp</h2>
+  <p>Phân tích cú pháp (<em>syntax analysis</em> hoặc <em>parsing</em>) là giai đoạn thứ hai. Giai đoạn này nhận chuỗi token từ scanner và kiểm tra xem các token có tạo thành một chương trình hợp lệ theo văn phạm của ngôn ngữ hay không. Với câu lệnh <code>a = b + c * 60;</code>, parser cần nhận ra đây là một câu lệnh gán, trong đó vế trái là định danh a, vế phải là biểu thức <code>b + c * 60</code>. Một cây phân tích cú pháp có thể biểu diễn như sau:</p>
+
+  <figure class="fig">
+    <img src="intro/6.png" alt="Cây phân tích cú pháp của a = b + c * 60">
+    <figcaption>Hình 6 – Cây phân tích cú pháp của <code>a = b + c * 60;</code>.</figcaption>
+  </figure>
+
+  <p>Cây này cho thấy cấu trúc ngữ pháp đầy đủ của câu lệnh. Nó cũng thể hiện độ ưu tiên toán tử: <code>c * 60</code> được nhóm lại trước, sau đó mới cộng với b. Một điểm quan trọng là phân tích cú pháp chủ yếu kiểm tra cấu trúc hình thức. Nó chưa nhất thiết biết a, b, c đã được khai báo hay chưa, hoặc kiểu của chúng có phù hợp hay không. Những vấn đề đó thuộc về phân tích ngữ nghĩa.</p>
+</div>
+
+<div class="article-section" id="ast">
+  <h2 class="section-heading">Sinh cây cú pháp trừu tượng</h2>
+  <p>Cây phân tích cú pháp (parse tree) thường chứa đầy đủ chi tiết về cách chuỗi token được suy dẫn từ văn phạm. Tuy nhiên, không phải mọi chi tiết trong parse tree đều cần thiết cho các giai đoạn sau. Cấu trúc gọn hơn, tập trung vào bản chất của chương trình, gọi là cây cú pháp trừu tượng (Abstract Syntax Tree, AST). Với câu lệnh <code>a = b + c * 60;</code>, AST có thể biểu diễn như sau:</p>
+
+  <figure class="fig">
+    <img src="intro/7.png" alt="Cây cú pháp trừu tượng (AST) của a = b + c * 60: phép nhân được nhóm sâu hơn phép cộng">
+    <figcaption>Hình 7 – Cây cú pháp trừu tượng (AST) của <code>a = b + c * 60;</code>: phép nhân được nhóm sâu hơn phép cộng.</figcaption>
+  </figure>
+
+  <p>So với parse tree, AST bỏ bớt các node nhân tạo và giữ lại các thành phần có ý nghĩa ngữ nghĩa rõ ràng. Trong một trình biên dịch hoặc trình thông dịch viết bằng Python, ta có thể mô hình hóa AST bằng các lớp:</p>
+  <div class="code-block">
+    <div class="code-label">Python – mô hình hóa AST</div>
+    <pre><code><span class="kw">class</span> <span class="type">Assignment</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(self, lhs, rhs):
-        self.lhs = lhs
-        self.rhs = rhs
-
+        self.lhs = lhs; self.rhs = rhs
 <span class="kw">class</span> <span class="type">Id</span>:
-    <span class="kw">def</span> <span class="fn">__init__</span>(self, name):
-        self.name = name
-
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, name): self.name = name
 <span class="kw">class</span> <span class="type">IntLit</span>:
-    <span class="kw">def</span> <span class="fn">__init__</span>(self, value):
-        self.value = value
-
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, value): self.value = value
 <span class="kw">class</span> <span class="type">BinExp</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(self, op, left, right):
-        self.op = op
-        self.left = left
-        self.right = right
+        self.op = op; self.left = left; self.right = right
 
-<span class="cmt"># AST của: a = b + c * 60</span>
 ast = <span class="fn">Assignment</span>(
     <span class="fn">Id</span>(<span class="str">"a"</span>),
-    <span class="fn">BinExp</span>(
-        <span class="str">"+"</span>,
-        <span class="fn">Id</span>(<span class="str">"b"</span>),
-        <span class="fn">BinExp</span>(<span class="str">"*"</span>, <span class="fn">Id</span>(<span class="str">"c"</span>), <span class="fn">IntLit</span>(<span class="num">60</span>))
-    )
+    <span class="fn">BinExp</span>(<span class="str">"+"</span>, <span class="fn">Id</span>(<span class="str">"b"</span>), <span class="fn">BinExp</span>(<span class="str">"*"</span>, <span class="fn">Id</span>(<span class="str">"c"</span>), <span class="fn">IntLit</span>(<span class="num">60</span>)))
 )</code></pre>
-      </div>
+  </div>
+  <div class="callout">AST là một cấu trúc trung tâm trong nhiều công cụ xử lý chương trình. Không chỉ trình biên dịch, mà cả trình thông dịch, bộ định dạng mã, công cụ kiểm tra lỗi, công cụ refactoring và công cụ phân tích tĩnh đều thường dựa trên AST.</div>
+</div>
 
-      <p>AST là một cấu trúc trung tâm trong nhiều công cụ xử lý chương trình. Không chỉ trình biên dịch, mà cả trình thông dịch, bộ định dạng mã, công cụ kiểm tra lỗi, công cụ refactoring và công cụ phân tích tĩnh đều thường dựa trên AST.</p>
-    </div>
-
-    <div class="article-section" id="semantic">
-      <h2 class="section-heading">Phân tích ngữ nghĩa (Semantic Analysis)</h2>
-
-      <p>Sau khi chương trình đã đúng về mặt cú pháp, trình biên dịch cần kiểm tra chương trình có hợp lệ về mặt ý nghĩa hay không. Giai đoạn này gọi là <strong>phân tích ngữ nghĩa</strong> (<em>semantic analysis</em>) hoặc kiểm tra tĩnh (<em>static checking</em>).</p>
-
-      <div class="code-block">
-        <div class="code-label">C — đúng cú pháp nhưng sai ngữ nghĩa (lỗi kiểu)</div>
-        <pre><code><span class="type">int</span> n = <span class="num">5</span>;
+<div class="article-section" id="semantic">
+  <h2 class="section-heading">Phân tích ngữ nghĩa</h2>
+  <p>Sau khi chương trình đã đúng về mặt cú pháp, trình biên dịch cần kiểm tra chương trình có hợp lệ về mặt ý nghĩa hay không. Giai đoạn này gọi là phân tích ngữ nghĩa (semantic analysis) hoặc kiểm tra tĩnh (static checking).</p>
+  <p>Một chương trình có thể đúng cú pháp nhưng sai ngữ nghĩa. Ví dụ:</p>
+  <div class="code-block">
+    <div class="code-label">C – lỗi kiểu</div>
+    <pre><code><span class="type">int</span> n = <span class="num">5</span>;
 <span class="type">char</span>* s = <span class="str">"hi"</span>;
-n = n + s;  <span class="cmt">// lỗi: không thể cộng int và char*</span></code></pre>
-      </div>
-
-      <p>Các nhiệm vụ quan trọng của phân tích ngữ nghĩa:</p>
-      <div class="def-list">
-        <div class="def-item">
-          <div class="def-term">Kiểm tra kiểu</div>
-          <div>Đảm bảo toán tử và hàm được áp dụng cho đúng số lượng và đúng kiểu toán hạng.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Kiểm tra khai báo</div>
-          <div>Đảm bảo biến được khai báo trước khi sử dụng, không khai báo trùng tên trong cùng phạm vi.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Kiểm tra ngữ cảnh</div>
-          <div>Ví dụ: <code>break</code> chỉ hợp lệ bên trong vòng lặp hoặc <code>switch</code>.</div>
-        </div>
-      </div>
-
-      <div class="code-block">
-        <div class="code-label">C — break ngoài vòng lặp (lỗi ngữ nghĩa)</div>
-        <pre><code><span class="type">int</span> <span class="fn">main</span>() {
+n = n + s; <span class="cmt">// type error: int + char*</span></code></pre>
+  </div>
+  <p>Các nhiệm vụ quan trọng của phân tích ngữ nghĩa gồm:</p>
+  <ul style="margin: 0 0 14px 24px; line-height: 2;">
+    <li><strong>Kiểm tra kiểu</strong> (type checking): đảm bảo toán tử được áp dụng cho đúng kiểu toán hạng.</li>
+    <li><strong>Kiểm tra khai báo và phạm vi</strong>: biến phải được khai báo trước khi sử dụng.</li>
+    <li><strong>Kiểm tra các quy tắc ngữ nghĩa khác</strong>: ví dụ <code>break</code> chỉ hợp lệ bên trong vòng lặp.</li>
+  </ul>
+  <div class="code-block">
+    <div class="code-label">C – break ngoài vòng lặp</div>
+    <pre><code><span class="type">int</span> <span class="fn">main</span>() {
     <span class="kw">break</span>;  <span class="cmt">// error: break outside loop or switch</span>
 }</code></pre>
-      </div>
+  </div>
+  <p>Kết quả của phân tích ngữ nghĩa thường là AST đã được bổ sung thông tin: kiểu của biểu thức, liên kết giữa mỗi lần sử dụng biến với khai báo tương ứng, hoặc thông tin phạm vi.</p>
+</div>
 
-      <p>Kết quả của phân tích ngữ nghĩa thường là AST đã được bổ sung thông tin — kiểu của biểu thức, liên kết giữa mỗi lần sử dụng biến với khai báo tương ứng, thông tin phạm vi. Với biểu thức <code>a = b + c * 60;</code>, sau phân tích ngữ nghĩa trình biên dịch có thể biết rằng <code>a</code>, <code>b</code>, <code>c</code> đều là <code>int</code> và phép gán là hợp lệ.</p>
-    </div>
-
-    <div class="article-section" id="ir">
-      <h2 class="section-heading">Sinh mã trung gian</h2>
-
-      <p>Sau khi chương trình đã được phân tích cú pháp và ngữ nghĩa, nhiều trình biên dịch sinh ra một dạng biểu diễn thấp hơn gọi là <strong>mã trung gian</strong> (<em>intermediate code</em>) hoặc <strong>biểu diễn trung gian</strong> (<em>Intermediate Representation, IR</em>).</p>
-
-      <p>Mã trung gian có thể được xem như chương trình cho một máy trừu tượng. Một IR tốt thường có hai đặc điểm: dễ sinh ra từ chương trình nguồn và dễ dịch tiếp sang mã máy đích.</p>
-
-      <div class="code-block">
-        <div class="code-label">Three-address code (IR của a = b + c * 60)</div>
-        <pre><code>t1 = c * 60
+<div class="article-section" id="ir">
+  <h2 class="section-heading">Sinh mã trung gian</h2>
+  <p>Sau khi chương trình đã được phân tích cú pháp và ngữ nghĩa, nhiều trình biên dịch sinh ra một dạng biểu diễn thấp hơn gọi là mã trung gian (intermediate code) hoặc biểu diễn trung gian (Intermediate Representation, IR). Với câu lệnh <code>a = b + c * 60;</code>, một dạng mã trung gian phổ biến là mã ba địa chỉ (three-address code):</p>
+  <div class="code-block">
+    <div class="code-label">Mã ba địa chỉ</div>
+    <pre><code>t1 = c * <span class="num">60</span>
 t2 = b + t1
-a  = t2</code></pre>
-      </div>
-
-      <p>Mã trung gian giúp trình biên dịch dễ tối ưu hóa hơn. Ví dụ, <strong>tính toán hằng</strong> (<em>constant folding</em>):</p>
-      <div class="code-block">
-        <div class="code-label">Constant folding</div>
-        <pre><code><span class="cmt">// Trước tối ưu:</span>
+a = t2</code></pre>
+  </div>
+  <p>Mã trung gian giúp trình biên dịch dễ tối ưu hóa hơn. Ví dụ, tính toán hằng (constant folding):</p>
+  <div class="code-block">
+    <div class="code-label">Constant folding</div>
+    <pre><code><span class="cmt">// Trước tối ưu:</span>
 t1 = <span class="num">10</span> * <span class="num">60</span>
 x = t1
 
 <span class="cmt">// Sau tối ưu:</span>
 x = <span class="num">600</span></code></pre>
-      </div>
-    </div>
+  </div>
+  <div class="callout">Một số hệ thống dùng IR như một định dạng thực thi bởi máy ảo. Java dùng bytecode, còn .NET dùng Common Intermediate Language (CIL). Sự tồn tại của bytecode giúp Java có tính di động giữa nhiều nền tảng.</div>
+</div>
 
-    <div class="article-section" id="codegen">
-      <h2 class="section-heading">Tối ưu hóa và sinh mã đích</h2>
+<div class="article-section" id="codegen">
+  <h2 class="section-heading">Tối ưu hóa và sinh mã đích</h2>
+  <p>Sau khi có mã trung gian, trình biên dịch có thể thực hiện <strong>tối ưu hóa độc lập máy</strong> (machine-independent optimization). Ví dụ:</p>
+  <div class="code-block">
+    <div class="code-label">Tối ưu đơn giản</div>
+    <pre><code><span class="cmt">// Trước:</span>
+x = y * <span class="num">1</span>;
+<span class="cmt">// Sau:</span>
+x = y;
 
-      <p>Sau khi có mã trung gian, trình biên dịch có thể thực hiện <strong>tối ưu hóa độc lập máy</strong> (<em>machine-independent optimization</em>). Ví dụ:</p>
-
-      <div class="code-block">
-        <div class="code-label">Tối ưu hóa đơn giản</div>
-        <pre><code><span class="cmt">// x = y * 1  →  x = y</span>
-
-<span class="cmt">// if (true) { x = 1; } else { x = 2; }  →  x = 1;</span></code></pre>
-      </div>
-
-      <p>Sau đó, trình biên dịch sinh <strong>mã đích</strong> (<em>target code</em>), thường là mã assembly hoặc mã máy cho một kiến trúc cụ thể. Ví dụ, phép cộng <code>a = b + c</code> có thể được ánh xạ thành:</p>
-
-      <div class="code-block">
-        <div class="code-label">Mã máy giả định</div>
-        <pre><code>LOAD  R1, b
-LOAD  R2, c
-ADD   R3, R1, R2
+<span class="cmt">// Trước:</span>
+<span class="kw">if</span> (<span class="kw">true</span>) { x = <span class="num">1</span>; } <span class="kw">else</span> { x = <span class="num">2</span>; }
+<span class="cmt">// Sau:</span>
+x = <span class="num">1</span>;</code></pre>
+  </div>
+  <p>Sau đó, trình biên dịch <strong>sinh mã đích</strong> (target code), thường là mã assembly hoặc mã máy cho một kiến trúc cụ thể:</p>
+  <div class="code-block">
+    <div class="code-label">Assembly giả định – a = b + c</div>
+    <pre><code>LOAD R1, b
+LOAD R2, c
+ADD  R3, R1, R2
 STORE a, R3</code></pre>
-      </div>
+  </div>
+  <p>Ở giai đoạn này, trình biên dịch phải quan tâm đến chi tiết của máy đích: số lượng thanh ghi, cách truy cập bộ nhớ, tập lệnh, quy ước gọi hàm và cách tổ chức stack. Sau khi sinh mã đích, trình biên dịch có thể tiếp tục thực hiện <strong>tối ưu hóa phụ thuộc máy</strong> (machine-specific optimization), chẳng hạn chọn lệnh máy hiệu quả hơn, cấp phát thanh ghi tốt hơn hoặc sắp xếp lệnh để tận dụng pipeline của CPU.</p>
+</div>
 
-      <p>Ở giai đoạn này, trình biên dịch phải quan tâm đến chi tiết của máy đích: số lượng thanh ghi, cách truy cập bộ nhớ, tập lệnh, quy ước gọi hàm và cách tổ chức stack. Sau khi sinh mã đích, trình biên dịch có thể tiếp tục thực hiện <strong>tối ưu hóa phụ thuộc máy</strong> (<em>machine-specific optimization</em>) — chẳng hạn chọn lệnh máy hiệu quả hơn, cấp phát thanh ghi tốt hơn hoặc sắp xếp lệnh để tận dụng pipeline của CPU.</p>
-    </div>
+<hr class="divider">
 
-    <hr style="border:none; border-top: 2px dashed var(--border); margin: 48px 0;">
+<!-- ─── BÀI 6: ỨNG DỤNG ─── -->
+<div class="lesson-badge">Bài 6 / 7</div>
+<h1 class="lesson-title" id="ung-dung">Ứng dụng và các chương trình liên quan</h1>
+<div class="lesson-meta">CO3005 · Giới thiệu về Ngôn ngữ Lập trình</div>
 
-    <!-- ==================== BÀI 6: ỨNG DỤNG ==================== -->
-    <div class="lesson-badge">Bài 6 / 7</div>
-    <h1 class="lesson-title" id="ung-dung">Ứng dụng và các chương trình liên quan</h1>
-    <div class="lesson-meta">CO3005 · Giới thiệu về Ngôn ngữ Lập trình</div>
-
-    <div class="article-section">
-      <h2 class="section-heading">Ứng dụng</h2>
-
-      <p>Nguyên lý ngôn ngữ lập trình và kỹ thuật biên dịch không chỉ dùng để xây dựng compiler cho các ngôn ngữ như C, Java hay Python. Chúng còn có nhiều ứng dụng rộng hơn trong khoa học máy tính và công nghiệp phần mềm.</p>
-
-      <div class="def-list">
-        <div class="def-item">
-          <div class="def-term">① Cài đặt ngôn ngữ bậc cao</div>
-          <div>Mỗi ngôn ngữ bậc cao cần một hệ thống để dịch hoặc thực thi chương trình — có thể là compiler, interpreter, virtual machine hoặc kết hợp nhiều thành phần.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">② Tối ưu hóa kiến trúc</div>
-          <div>Trình biên dịch hiện đại không chỉ dịch đúng mà còn cố gắng dịch tốt: sắp xếp lại mã, loại bỏ tính toán dư thừa, tận dụng thanh ghi và sinh mã phù hợp với đặc điểm phần cứng.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">③ Thiết kế kiến trúc máy mới</div>
-          <div>Khi thiết kế phần cứng mới, người ta cần quan tâm đến việc chương trình sẽ được biên dịch và thực thi như thế nào — compiler và architecture có quan hệ chặt chẽ.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">④ Dịch chương trình</div>
-          <div>Dịch từ ngôn ngữ này sang ngôn ngữ khác, chẳng hạn từ TypeScript sang JavaScript:</div>
-        </div>
-      </div>
-
-      <div class="code-block">
-        <div class="code-label">TypeScript → JavaScript</div>
-        <pre><code><span class="cmt">// TypeScript:</span>
+<div class="article-section" id="app">
+  <h2 class="section-heading">Ứng dụng</h2>
+  <p>Nguyên lý ngôn ngữ lập trình và kỹ thuật biên dịch không chỉ dùng để xây dựng compiler cho các ngôn ngữ như C, Java hay Python. Chúng còn có nhiều ứng dụng rộng hơn:</p>
+  <table class="data-table">
+    <thead><tr><th>#</th><th>Ứng dụng</th><th>Mô tả</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Cài đặt ngôn ngữ bậc cao</td><td>Mỗi ngôn ngữ bậc cao cần compiler, interpreter, virtual machine hoặc kết hợp.</td></tr>
+      <tr><td>2</td><td>Tối ưu hóa cho kiến trúc máy tính</td><td>Trình biên dịch sắp xếp lại mã, loại bỏ tính toán dư thừa, tận dụng thanh ghi.</td></tr>
+      <tr><td>3</td><td>Thiết kế kiến trúc máy tính mới</td><td>Compiler và architecture có quan hệ chặt chẽ trong việc thiết kế phần cứng mới.</td></tr>
+      <tr><td>4</td><td>Dịch chương trình</td><td>TypeScript → JavaScript; phiên bản JS hiện đại → phiên bản cũ hơn.</td></tr>
+      <tr><td>5</td><td>Công cụ nâng cao năng suất</td><td>Formatter, linter, type checker, code completion, refactoring, static analyzer.</td></tr>
+    </tbody>
+  </table>
+  <p>Ví dụ, TypeScript:</p>
+  <div class="code-block">
+    <div class="code-label">TypeScript → JavaScript</div>
+    <pre><code><span class="cmt">// TypeScript</span>
 <span class="kw">let</span> message: <span class="type">string</span> = <span class="str">"Hello"</span>;
 console.<span class="fn">log</span>(message);
 
-<span class="cmt">// JavaScript (sau khi dịch):</span>
+<span class="cmt">// JavaScript (sau dịch)</span>
 <span class="kw">let</span> message = <span class="str">"Hello"</span>;
 console.<span class="fn">log</span>(message);</code></pre>
-      </div>
+  </div>
+</div>
 
-      <div class="def-list">
-        <div class="def-item">
-          <div class="def-term">⑤ Công cụ năng suất phần mềm</div>
-          <div>Nhiều công cụ phát triển hiện đại dựa trên phân tích chương trình: formatter, linter, type checker, code completion, refactoring tool, static analyzer và debugger.</div>
-        </div>
-      </div>
+<div class="article-section" id="tools">
+  <h2 class="section-heading">Các chương trình liên quan</h2>
+  <p>Trong thực tế, quá trình phát triển và thực thi chương trình không chỉ có compiler. Nó còn liên quan đến nhiều chương trình khác trong chuỗi công cụ:</p>
+  <table class="data-table">
+    <thead><tr><th>Chương trình</th><th>Vai trò</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Preprocessor</strong> (bộ tiền xử lý)</td><td>Chuẩn bị mã nguồn trước khi biên dịch. Trong C, xử lý các chỉ thị <code>#define</code>, <code>#include</code>.</td></tr>
+      <tr><td><strong>Assembler</strong></td><td>Dịch mã assembly thành mã máy (object file).</td></tr>
+      <tr><td><strong>Linker</strong></td><td>Kết hợp nhiều object file và thư viện thành một chương trình hoàn chỉnh.</td></tr>
+      <tr><td><strong>Loader</strong></td><td>Nạp chương trình và các thư viện cần thiết vào bộ nhớ để thực thi.</td></tr>
+      <tr><td><strong>Debugger</strong></td><td>Hỗ trợ kiểm tra và gỡ lỗi: breakpoint, chạy từng bước, xem biến, kiểm tra stack.</td></tr>
+      <tr><td><strong>IDE / Editor</strong></td><td>Tô màu cú pháp, gợi ý mã, kiểm tra lỗi, định dạng mã, kết nối với trình biên dịch.</td></tr>
+    </tbody>
+  </table>
+  <p>Ví dụ, trong C khi gọi hàm từ thư viện toán học, cần liên kết thêm thư viện qua linker:</p>
+  <div class="code-block">
+    <div class="code-label">Shell – linker flags</div>
+    <pre><code>gcc main.c -lm</code></pre>
+  </div>
+</div>
 
-      <div class="code-block">
-        <div class="code-label">JavaScript — linter phát hiện biến không dùng</div>
-        <pre><code><span class="kw">let</span> count = <span class="num">0</span>;
-console.<span class="fn">log</span>(<span class="str">"Hello"</span>);
-<span class="cmt">// Linter cảnh báo: 'count' is declared but never used.</span></code></pre>
-      </div>
-    </div>
+<hr class="divider">
 
-    <div class="article-section">
-      <h2 class="section-heading">Các chương trình liên quan</h2>
+<!-- ─── BÀI 7: TÓM TẮT ─── -->
+<div class="lesson-badge">Bài 7 / 7</div>
+<h1 class="lesson-title" id="tong-ket">Tóm tắt chương</h1>
+<div class="lesson-meta">CO3005 · Giới thiệu về Ngôn ngữ Lập trình</div>
 
-      <p>Trong thực tế, quá trình phát triển và thực thi chương trình không chỉ có compiler. Nó còn liên quan đến nhiều chương trình khác trong chuỗi công cụ.</p>
+<div class="article-section">
+  <p>Chương này đã giới thiệu những khái niệm nền tảng để học nguyên lý ngôn ngữ lập trình.</p>
+  <p>Trước hết, ngôn ngữ lập trình là một hệ ký hiệu để mô tả tính toán cho cả con người và máy tính. Một ngôn ngữ không chỉ cần giúp máy thực thi chương trình mà còn phải giúp con người đọc, hiểu, kiểm tra và bảo trì chương trình.</p>
+  <p>Tiếp theo, chương đã trình bày các đặc trưng và tiêu chí đánh giá ngôn ngữ, bao gồm sự rõ ràng, tính trực giao, khả năng trừu tượng hóa, tính an toàn, khả năng đọc, khả năng viết, độ tin cậy và chi phí. Những tiêu chí này cho thấy thiết kế ngôn ngữ luôn là quá trình cân bằng giữa nhiều mục tiêu.</p>
+  <p>Chương cũng chỉ ra rằng thiết kế ngôn ngữ chịu ảnh hưởng sâu sắc từ kiến trúc máy tính, đặc biệt là mô hình von Neumann, cũng như từ sự tiến hóa của phương pháp luận lập trình: từ tối ưu hiệu suất máy, đến lập trình có cấu trúc, thiết kế hướng dữ liệu và lập trình hướng đối tượng.</p>
+  <p>Về cài đặt ngôn ngữ, chương đã phân biệt biên dịch, thông dịch thuần túy, hệ thống lai và biên dịch tức thời. Các phương pháp này không loại trừ nhau tuyệt đối; nhiều hệ thống hiện đại kết hợp chúng để đạt được sự cân bằng giữa tính di động, hiệu năng và tính linh hoạt.</p>
+  <p>Cuối cùng, chương đã giới thiệu cấu trúc tổng quát của một trình biên dịch, từ phân tích từ vựng, phân tích cú pháp, sinh AST, phân tích ngữ nghĩa, sinh mã trung gian, tối ưu hóa đến sinh mã đích. Đây là nền tảng quan trọng cho các chương tiếp theo, nơi chúng ta sẽ đi sâu hơn vào từng thành phần của ngôn ngữ lập trình và cách chúng ảnh hưởng đến hành vi chương trình.</p>
+</div>
 
-      <div class="def-list">
-        <div class="def-item">
-          <div class="def-term">Preprocessor</div>
-          <div>Chuẩn bị mã nguồn trước khi đưa vào trình biên dịch. Trong C, xử lý các chỉ thị bắt đầu bằng <code>#</code> — ví dụ <code>#define PI 3.14159</code> sẽ thay thế <code>PI</code> bằng <code>3.14159</code> trước khi biên dịch.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Assembler</div>
-          <div>Dịch mã assembly thành mã máy. Nếu compiler sinh ra assembly, assembler sẽ chuyển assembly thành object file.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Linker</div>
-          <div>Kết hợp nhiều object file và thư viện thành một chương trình hoàn chỉnh. Khi chương trình gọi một hàm trong thư viện, linker chịu trách nhiệm liên kết lời gọi đó với mã thực thi tương ứng.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Loader</div>
-          <div>Nạp chương trình và các thư viện cần thiết vào bộ nhớ để thực thi. Khi người dùng chạy chương trình, hệ điều hành sử dụng loader để chuẩn bị không gian địa chỉ, nạp mã, nạp dữ liệu và chuyển quyền điều khiển cho chương trình.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Debugger</div>
-          <div>Hỗ trợ kiểm tra và gỡ lỗi chương trình: đặt breakpoint, chạy từng bước, xem giá trị biến và kiểm tra stack lời gọi.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Editor / IDE</div>
-          <div>Môi trường phát triển tích hợp — tô màu cú pháp, gợi ý mã, kiểm tra lỗi, định dạng mã và kết nối với trình biên dịch hoặc trình thông dịch.</div>
-        </div>
-      </div>
+<!-- NAV FOOTER -->
+<div class="nav-footer">
+  <span>Bài 1–7 / 7 · CO3005</span>
+  <div style="display:flex; gap:10px;">
+    <a class="nav-btn secondary" href="CO3005.html">← Về trang chủ</a>
+    <a class="nav-btn" href="CO3005_Phan_tich_tu_vung.html">Chương tiếp →</a>
+  </div>
+</div>
 
-      <div class="code-block">
-        <div class="code-label">C — liên kết thư viện toán học</div>
-        <pre><code><span class="kw">#include</span> <span class="str">&lt;math.h&gt;</span>
-<span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span>
-
-<span class="type">int</span> <span class="fn">main</span>() {
-    <span class="fn">printf</span>(<span class="str">"%f\n"</span>, <span class="fn">sqrt</span>(<span class="num">16.0</span>));
-    <span class="kw">return</span> <span class="num">0</span>;
-}
-
-<span class="cmt">// Biên dịch với liên kết thư viện toán:  gcc main.c -lm</span></code></pre>
-      </div>
-    </div>
-
-    <!-- NAV FOOTER -->
-    <div class="nav-footer">
-      <span>Bài 1–6 / 7 · CO3005</span>
-      <div style="display:flex; gap:10px;">
-        <span class="nav-btn secondary">← Bài trước</span>
-        <span class="nav-btn">Bài tiếp theo →</span>
-      </div>
-    </div>
-
-  </main>
+</main>
 </div>
 
 <script>
-  // Active TOC
   const sections = document.querySelectorAll('[id]');
   const tocItems = document.querySelectorAll('.toc-item');
   const observer = new IntersectionObserver(entries => {
@@ -1270,6 +949,5 @@ console.<span class="fn">log</span>(<span class="str">"Hello"</span>);
   }, { rootMargin: '-20% 0px -70% 0px' });
   sections.forEach(s => observer.observe(s));
 </script>
-
 </body>
 </html>
