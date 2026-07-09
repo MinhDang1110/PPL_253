@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ôn tập Chương 2 · CO3005 · Phân tích Từ vựng</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap');
+
+  :root{
+    --paper:#0e1117; --panel:#161b26; --panel2:#1c2231;
+    --line:#2a3446; --line2:#374357;
+    --text:#e6e9ef; --muted:#98a2b6; --dim:#6c7688;
+    --amber:#f2b134; --amber-dim:#3a2f16;
+    --blue:#5aa2f0; --blue-dim:#16233a;
+    --green:#4bd08b; --green-dim:#123024;
+    --violet:#b18cf0; --violet-dim:#241a3a;
+    --red:#f2685e; --red-dim:#331714;
+    --grid:rgba(255,255,255,0.022);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:
+      linear-gradient(var(--grid) 1px,transparent 1px) 0 0/26px 26px,
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/26px 26px,
+      var(--paper);
+    color:var(--text);line-height:1.6;font-size:15.5px;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px 120px}
+
+  header{padding:44px 0 26px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--amber);margin-bottom:14px;display:flex;gap:10px;align-items:center}
+  .eyebrow::before{content:"";width:22px;height:2px;background:var(--amber);display:inline-block}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:33px;line-height:1.12;letter-spacing:-.01em;margin-bottom:10px}
+  h1 .n{color:var(--amber)}
+  .sub{color:var(--muted);font-size:14.5px;max-width:640px}
+  .sub code{font-family:'JetBrains Mono',monospace;font-size:.86em;background:var(--panel2);padding:1px 6px;border-radius:4px;color:var(--blue)}
+
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:26px 0 8px}
+  .stat{background:var(--panel);padding:14px 16px}
+  .stat .k{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  .stat .v{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;margin-top:2px}
+  .stat .v small{font-size:14px;color:var(--muted);font-weight:500}
+  #vScore .v{color:var(--amber)}
+  .bar{height:6px;background:var(--panel2);border-radius:99px;overflow:hidden;margin-top:14px}
+  .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--amber),#ffd873);transition:width .3s ease}
+
+  .controls{margin:26px 0 8px;display:flex;flex-direction:column;gap:14px}
+  .ctl-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .ctl-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-right:4px;min-width:64px}
+  .chip{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;padding:6px 12px;
+    border:1px solid var(--line2);background:var(--panel);color:var(--muted);border-radius:99px;cursor:pointer;transition:all .12s;user-select:none;white-space:nowrap}
+  .chip:hover{border-color:var(--amber);color:var(--text)}
+  .chip.on{background:var(--amber);border-color:var(--amber);color:#1a1206;font-weight:600}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:7px 14px;
+    border-radius:8px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);cursor:pointer;transition:all .12s}
+  .btn:hover{border-color:var(--blue);color:var(--blue)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding-top:6px}
+  .toolbar .grp{display:flex;gap:8px;flex-wrap:wrap}
+  .count{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim)}
+
+  #list{margin-top:22px;display:flex;flex-direction:column;gap:16px}
+  .q{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;scroll-margin-top:16px;position:relative}
+  .q-top{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .qid{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);font-weight:600}
+  .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;padding:3px 8px;border-radius:5px;text-transform:uppercase;font-weight:600}
+  .tag.topic{background:var(--blue-dim);color:var(--blue)}
+  .tag.hieu{background:var(--green-dim);color:var(--green)}
+  .tag.vandung{background:var(--amber-dim);color:var(--amber)}
+  .tag.phantich{background:var(--blue-dim);color:#7ab8ff}
+  .tag.danhgia{background:var(--violet-dim);color:var(--violet)}
+  .q-text{font-size:16px;font-weight:500;margin-bottom:16px;line-height:1.55}
+  .q-text code,.opt code,.exp code{font-family:'JetBrains Mono',monospace;font-size:.85em;background:#0f1420;padding:1.5px 6px;border-radius:4px;color:#8fd0ff}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;gap:11px;align-items:flex-start;padding:11px 14px;border:1px solid var(--line2);
+    background:#0f1420;border-radius:10px;cursor:pointer;transition:all .1s;font-size:14.5px}
+  .opt:hover:not(.locked){border-color:var(--muted)}
+  .opt .mk{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12.5px;color:var(--muted);
+    border:1px solid var(--line2);border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .opt.locked{cursor:default}
+  .opt.correct{border-color:var(--green);background:var(--green-dim)}
+  .opt.correct .mk{background:var(--green);color:#062015;border-color:var(--green)}
+  .opt.wrong{border-color:var(--red);background:var(--red-dim)}
+  .opt.wrong .mk{background:var(--red);color:#2a0a08;border-color:var(--red)}
+  .opt.dim{opacity:.5}
+  .exp{margin-top:14px;padding:13px 15px;border-radius:10px;background:var(--panel2);
+    border-left:3px solid var(--amber);font-size:14px;color:var(--muted);display:none}
+  .exp.show{display:block;animation:fade .2s ease}
+  .exp b{color:var(--text);font-weight:600}
+  @keyframes fade{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+
+  .empty{text-align:center;color:var(--dim);padding:60px 0;font-family:'JetBrains Mono',monospace;font-size:13px}
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);color:var(--dim);font-size:12.5px;font-family:'JetBrains Mono',monospace;text-align:center}
+
+  @media(max-width:640px){
+    h1{font-size:26px}.board{grid-template-columns:repeat(2,1fr)}
+    .wrap{padding:0 14px 90px}.q{padding:16px}.ctl-label{min-width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">CO3005 · Ôn tập giữa kỳ · Chương 2</div>
+    <h1>Phân tích Từ vựng <span class="n">— Bộ câu hỏi ôn tập</span></h1>
+    <p class="sub">Tự kiểm tra trước, chọn đáp án, rồi mới lộ lời giải. Mỗi câu gắn nhãn <b>chủ đề</b> và <b>mức Bloom</b>. Chương 2 trong đề có 10 câu (2 hiểu, 2 vận dụng, 3 phân tích, 3 đánh giá) — nên bộ này nhấn mạnh <b>phân tích</b> và <b>đánh giá</b>, không chỉ nhớ định nghĩa. Ví dụ xuyên suốt: <code>a = b + c * 60;</code></p>
+
+    <div class="board">
+      <div class="stat"><div class="k">Đã làm</div><div class="v"><span id="mDone">0</span><small>/<span id="mTotal">0</span></small></div></div>
+      <div class="stat" id="vScore"><div class="k">Đúng</div><div class="v" id="mRight">0</div></div>
+      <div class="stat"><div class="k">Chính xác</div><div class="v"><span id="mPct">0</span><small>%</small></div></div>
+      <div class="stat"><div class="k">Đang hiển thị</div><div class="v" id="mShown">0</div></div>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+  </header>
+
+  <div class="controls">
+    <div class="ctl-row" id="topicChips"><span class="ctl-label">Chủ đề</span></div>
+    <div class="ctl-row" id="bloomChips"><span class="ctl-label">Mức Bloom</span></div>
+    <div class="toolbar">
+      <div class="grp">
+        <button class="btn" id="btnShuffle">⇄ Xáo trộn</button>
+        <button class="btn" id="btnReset">↻ Làm lại</button>
+      </div>
+      <span class="count" id="cShown"></span>
+    </div>
+  </div>
+
+  <div id="list"></div>
+  <footer>Bộ câu hỏi tự luyện — không phải đề chính thức · CO3005 Principles of Programming Languages</footer>
+</div>
+
+<script>
+const T = {
+  t1:"Tổng quan & vị trí", t2:"Token & Lexeme", t3:"Biểu thức chính quy",
+  t4:"Ký hiệu viết tắt & tập ký tự", t5:"Vai trò của scanner", t6:"Scanner thủ công vs sinh tự động",
+  t7:"Ô-tô-mát hữu hạn (NFA/DFA)", t8:"Khớp dài nhất & ưu tiên", t9:"Lỗi từ vựng", t10:"ANTLR"
+};
+const H="Hiểu", V="Vận dụng", A="Phân tích", E="Đánh giá";
+
+const QUESTIONS = [
+/* t1 — Tổng quan & vị trí */
+{t:"t1",b:H,q:"Đầu vào của pha phân tích từ vựng là gì?",
+ o:["Chuỗi token","Chuỗi ký tự (character stream)","Cây phân tích cú pháp","Mã trung gian"],a:1,
+ e:"Scanner nhận <b>chuỗi ký tự thô</b> của chương trình nguồn và sinh ra chuỗi token."},
+{t:"t1",b:H,q:"Đầu ra của pha phân tích từ vựng là gì?",
+ o:["Cây cú pháp trừu tượng","Chuỗi token","Mã máy","Bảng ký hiệu"],a:1,
+ e:"Đầu ra là <b>chuỗi token</b> (token stream), làm đầu vào cho phân tích cú pháp."},
+{t:"t1",b:H,q:"Bộ phận thực hiện phân tích từ vựng thường được gọi là gì?",
+ o:["parser","scanner / lexer","optimizer","loader"],a:1,
+ e:"Gọi là <b>bộ quét (scanner)</b> hay <b>bộ phân tích từ vựng (lexer)</b>."},
+{t:"t1",b:H,q:"Phân tích từ vựng nằm ở đâu trong trình biên dịch?",
+ o:["Pha cuối của back-end","Pha đầu tiên của front-end (tiền tuyến)","Trong bộ tối ưu hóa","Sau phân tích ngữ nghĩa"],a:1,
+ e:"Đây là <b>pha đầu tiên</b> của phần front-end."},
+{t:"t1",b:V,q:"Với <code>a = b + c * 60;</code>, scanner có nhiệm vụ gì?",
+ o:["Hiểu đây là phép gán và tính độ ưu tiên","Chỉ chia câu lệnh thành các token","Xây cây cú pháp","Kiểm tra kiểu của b, c"],a:1,
+ e:"Scanner chỉ tách token; hiểu phép gán và độ ưu tiên <code>*</code> &gt; <code>+</code> là việc của các pha sau."},
+{t:"t1",b:A,q:"Đầu ra của phân tích từ vựng trở thành đầu vào của pha nào?",
+ o:["Phân tích cú pháp (parser)","Sinh mã đích","Tối ưu hóa","Loader"],a:0,
+ e:"Chuỗi token được chuyển tới <b>parser</b> để phân tích cú pháp."},
+{t:"t1",b:A,q:"Vì sao các pha sau không làm việc trực tiếp với từng ký tự rời rạc?",
+ o:["Vì ký tự chiếm nhiều bộ nhớ","Vì cần các đơn vị có ý nghĩa hơn (token) để xử lý cấu trúc","Vì ký tự không mã hóa được","Vì scanner xóa ký tự gốc"],a:1,
+ e:"Chia thành token (định danh, toán tử, số...) giúp các pha sau xử lý cấu trúc thay vì từng ký tự."},
+{t:"t1",b:V,q:"Chú thích <code>// initial value</code> có được scanner gửi sang parser không?",
+ o:["Có, như một token COMMENT","Không, vì nó không ảnh hưởng cấu trúc cú pháp","Có, nhưng chỉ khi có lỗi","Chỉ gửi nếu dài quá 10 ký tự"],a:1,
+ e:"Scanner bỏ qua chú thích — không gửi sang parser vì không ảnh hưởng cấu trúc."},
+
+/* t2 — Token & Lexeme */
+{t:"t2",b:H,q:"Token là gì?",
+ o:["Một dòng mã nguồn","Đơn vị cơ bản mà lexer trả về cho parser","Một quy tắc văn phạm","Một trạng thái của DFA"],a:1,
+ e:"Token là <b>đơn vị cơ bản</b> (mảnh nhỏ nhất có ý nghĩa) lexer trả cho parser."},
+{t:"t2",b:H,q:"Lexeme (trị từ vựng) là gì?",
+ o:["Loại/nhóm của token","Chuỗi ký tự cụ thể tạo thành token trong mã nguồn","Một biểu thức chính quy","Một luật trong ANTLR"],a:1,
+ e:"Lexeme là <b>chuỗi ký tự cụ thể</b> xuất hiện trong mã nguồn tạo nên token."},
+{t:"t2",b:V,q:"Trong token <code>(ID, &quot;count&quot;)</code>, đâu là loại token và đâu là lexeme?",
+ o:["ID là lexeme, &quot;count&quot; là loại","ID là loại token, &quot;count&quot; là lexeme","Cả hai đều là lexeme","Cả hai đều là loại token"],a:1,
+ e:"<code>ID</code> là <b>loại token</b>, <code>&quot;count&quot;</code> là <b>lexeme</b>."},
+{t:"t2",b:V,q:"Với <code>int count = 42;</code>, token ứng với <code>int</code> là gì?",
+ o:["(ID, &quot;int&quot;)","(INT_KEYWORD, &quot;int&quot;)","(INT_LITERAL, &quot;int&quot;)","(ASSIGN, &quot;int&quot;)"],a:1,
+ e:"<code>int</code> là từ khóa kiểu → <code>(INT_KEYWORD, &quot;int&quot;)</code>."},
+{t:"t2",b:A,q:"Với <code>int count = 42;</code> có bao nhiêu token (bỏ khoảng trắng)?",
+ o:["3","4","5","6"],a:2,
+ e:"5 token: <code>int</code>, <code>count</code>, <code>=</code>, <code>42</code>, <code>;</code>."},
+{t:"t2",b:V,q:"<code>42</code> trong <code>int count = 42;</code> thuộc loại token nào?",
+ o:["ID","INT_KEYWORD","INT_LITERAL","ASSIGN"],a:2,
+ e:"<code>42</code> là hằng số nguyên → <b>INT_LITERAL</b>."},
+{t:"t2",b:A,q:"Hai token <code>(ID,&quot;x&quot;)</code> và <code>(ID,&quot;y&quot;)</code> giống và khác nhau ở đâu?",
+ o:["Khác loại token, cùng lexeme","Cùng loại token (ID), khác lexeme","Cùng cả loại và lexeme","Không thể so sánh"],a:1,
+ e:"Cùng <b>loại token</b> (ID) nhưng khác <b>lexeme</b> (&quot;x&quot; vs &quot;y&quot;)."},
+{t:"t2",b:H,q:"<code>if</code>, <code>return</code>, <code>struct</code> thuộc nhóm token nào?",
+ o:["Định danh","Từ khóa","Toán tử","Dấu phân cách"],a:1,
+ e:"Đây là các <b>từ khóa</b> (keyword) của ngôn ngữ."},
+{t:"t2",b:V,q:"<code>my_variable</code>, <code>printf</code> thuộc nhóm token nào?",
+ o:["Từ khóa","Định danh","Số nguyên","Toán tử"],a:1,
+ e:"Tên do người lập trình đặt → <b>định danh (identifier)</b>."},
+{t:"t2",b:A,q:"<code>==</code> trong C là một token hay hai token <code>=</code> liên tiếp?",
+ o:["Hai token =","Một token so sánh bằng","Không phải token","Tùy trình biên dịch"],a:1,
+ e:"<code>==</code> là <b>một token</b> so sánh bằng (nhờ luật khớp dài nhất)."},
+{t:"t2",b:E,q:"Vì sao việc phân biệt 'loại token' và 'lexeme' lại quan trọng?",
+ o:["Để scanner chạy nhanh hơn","Parser cần loại token để xử lý cú pháp, còn lexeme cần cho ngữ nghĩa/sinh mã (giá trị cụ thể)","Để tiết kiệm bộ nhớ","Không quan trọng, chỉ là quy ước"],a:1,
+ e:"Parser làm việc theo <b>loại token</b>; các pha sau cần <b>lexeme</b> (giá trị thật) để kiểm tra kiểu, sinh mã."},
+{t:"t2",b:A,q:"<code>3.14</code> và <code>42</code> khác nhau về loại token thế nào?",
+ o:["Cùng loại số nguyên","3.14 là số thực, 42 là số nguyên","Cùng loại số thực","3.14 là định danh"],a:1,
+ e:"<code>3.14</code> là số thực (float), <code>42</code> là số nguyên (int) — hai loại token khác nhau."},
+
+/* t3 — Biểu thức chính quy */
+{t:"t3",b:H,q:"Lặp Kleene <code>R*</code> nghĩa là gì?",
+ o:["Lặp đúng một lần","Lặp không hoặc nhiều lần","Lặp một hoặc nhiều lần","Không lặp"],a:1,
+ e:"<code>R*</code> = lặp <b>0 hoặc nhiều lần</b>."},
+{t:"t3",b:H,q:"<code>R | S</code> nghĩa là gì?",
+ o:["R nối tiếp S","Khớp R hoặc S","Lặp cả R và S","R trừ S"],a:1,
+ e:"Toán tử lựa chọn: khớp <b>R hoặc S</b>."},
+{t:"t3",b:V,q:"<code>a(b|c)</code> mô tả tập chuỗi nào?",
+ o:["{a, b, c}","{ab, ac}","{abc}","{ba, ca}"],a:1,
+ e:"<code>a</code> rồi (b hoặc c) → <b>{ab, ac}</b>."},
+{t:"t3",b:A,q:"<code>ab*</code> khác <code>(ab)*</code> ở điểm nào?",
+ o:["Chúng giống hệt nhau","ab*: a rồi 0+ ký tự b; (ab)*: lặp cả cụm ab 0+ lần","ab* lặp cụm ab; (ab)* lặp b","Cả hai chỉ khớp chuỗi rỗng"],a:1,
+ e:"<code>ab*</code> = a, ab, abb...; <code>(ab)*</code> = ε, ab, abab..."},
+{t:"t3",b:A,q:"Chuỗi nào KHỚP với <code>ab*</code>?",
+ o:["abab","b","abbb","ba"],a:2,
+ e:"<code>ab*</code> = một <code>a</code> rồi không/nhiều <code>b</code> → <code>abbb</code> khớp."},
+{t:"t3",b:A,q:"Chuỗi nào KHỚP với <code>(ab)*</code>?",
+ o:["aba","abab","abb","aaa"],a:1,
+ e:"<code>(ab)*</code> lặp cụm <code>ab</code> → ε, ab, <code>abab</code>, ababab..."},
+{t:"t3",b:A,q:"Chuỗi rỗng ε có khớp <code>(ab)*</code> không?",
+ o:["Có (lặp 0 lần)","Không, cần ít nhất một ab","Chỉ khi có dấu ε tường minh","Tùy công cụ"],a:0,
+ e:"<code>*</code> cho phép lặp 0 lần → ε khớp <code>(ab)*</code>."},
+{t:"t3",b:A,q:"Chuỗi rỗng ε có khớp <code>ab*</code> không?",
+ o:["Có","Không, vì luôn cần ít nhất một a","Chỉ khi b vắng mặt","Tùy công cụ"],a:1,
+ e:"<code>ab*</code> luôn bắt đầu bằng một <code>a</code> bắt buộc → ε không khớp."},
+{t:"t3",b:H,q:"Theo luật <code>id → letter (letter | digit)*</code>, định danh bắt đầu bằng gì?",
+ o:["Chữ số","Chữ cái","Dấu gạch dưới","Ký tự bất kỳ"],a:1,
+ e:"Định danh bắt đầu bằng <b>chữ cái (letter)</b>, sau đó là chữ cái/chữ số."},
+{t:"t3",b:V,q:"Theo <code>id → letter(letter|digit)*</code>, chuỗi nào HỢP LỆ?",
+ o:["1abc","a1","_count","a-b"],a:1,
+ e:"<code>a1</code> hợp lệ; các chuỗi kia bắt đầu bằng số / chứa <code>_</code> hoặc <code>-</code> không cho phép."},
+{t:"t3",b:A,q:"Vì sao <code>1abc</code> KHÔNG hợp lệ theo <code>letter(letter|digit)*</code>?",
+ o:["Vì quá dài","Vì bắt đầu bằng chữ số, không phải chữ cái","Vì chứa chữ cái","Vì thiếu dấu chấm phẩy"],a:1,
+ e:"Luật yêu cầu ký tự đầu là <b>chữ cái</b>; <code>1abc</code> bắt đầu bằng số."},
+{t:"t3",b:A,q:"Vì sao <code>_count</code> KHÔNG hợp lệ theo <code>[a-zA-Z][a-zA-Z0-9]*</code>?",
+ o:["Vì count là từ khóa","Vì _ không nằm trong [a-zA-Z]","Vì có 6 ký tự","Vì bắt đầu bằng chữ thường"],a:1,
+ e:"Ký tự đầu <code>_</code> không thuộc <code>[a-zA-Z]</code> nên bị loại."},
+{t:"t3",b:V,q:"Để cho phép <code>_temp</code> hợp lệ, luật định danh nên sửa thành?",
+ o:["[a-zA-Z][a-zA-Z0-9]*","[a-zA-Z_][a-zA-Z0-9_]*","[0-9_]+","[a-z]+"],a:1,
+ e:"Thêm <code>_</code> vào cả tập đầu và tập lặp → <code>[a-zA-Z_][a-zA-Z0-9_]*</code>."},
+{t:"t3",b:H,q:"<code>unsigned_int → digit digit*</code> mô tả gì?",
+ o:["Số nguyên có dấu","Số nguyên không dấu, ít nhất một chữ số","Số thực","Định danh"],a:1,
+ e:"Một chữ số đầu rồi 0+ chữ số → số nguyên không dấu, ≥ 1 chữ số."},
+{t:"t3",b:A,q:"<code>digit digit*</code> tương đương ký hiệu viết tắt nào?",
+ o:["[0-9]*","[0-9]+","[0-9]?","(0-9)"],a:1,
+ e:"'Một rồi không/nhiều' = 'một hoặc nhiều' = <code>[0-9]+</code>."},
+{t:"t3",b:A,q:"Theo <code>unsigned_num → unsigned_int(.unsigned_int)?(e(+|-)?unsigned_int)?</code>, vì sao <code>10e-3</code> hợp lệ?",
+ o:["Vì có dấu chấm","Phần nguyên 10, không có thập phân, phần mũ e-3 hợp lệ","Vì e là chữ cái","Vì -3 là định danh"],a:1,
+ e:"Phần nguyên bắt buộc (10), phần thập phân tùy chọn (không có), phần mũ <code>e-3</code> hợp lệ."},
+{t:"t3",b:E,q:"Regex <code>[0-9]+(.[0-9]+)?(e(+|-)?[0-9]+)?</code> từ chối <code>.</code> và <code>1e</code> — lý do đúng là?",
+ o:["Cả hai đều thiếu dấu mũ","'.' thiếu phần nguyên bắt buộc; '1e' có e nhưng thiếu chữ số mũ","Vì regex sai cú pháp","Vì chúng quá ngắn"],a:1,
+ e:"<code>.</code> thiếu <code>[0-9]+</code> bắt buộc; <code>1e</code> mở phần mũ nhưng thiếu <code>[0-9]+</code> sau <code>e</code>."},
+{t:"t3",b:A,q:"Chuỗi nào bị regex số thực TỪ CHỐI?",
+ o:["3.14","1e9",".","6.02e23"],a:2,
+ e:"<code>.</code> không có phần nguyên bắt buộc → bị từ chối."},
+{t:"t3",b:A,q:"Trong <code>unsigned_num</code>, thành phần <code>( . unsigned_int )?</code> có ý nghĩa gì?",
+ o:["Phần mũ bắt buộc","Phần thập phân tùy chọn (có thể có hoặc không)","Dấu của số","Phần nguyên"],a:1,
+ e:"<code>?</code> khiến phần thập phân là <b>tùy chọn</b>."},
+{t:"t3",b:V,q:"<code>(+|-)?[0-9]+</code> mô tả gì?",
+ o:["Số thực có mũ","Số nguyên có thể có dấu + hoặc - ở đầu","Định danh","Chuỗi ký tự"],a:1,
+ e:"Dấu tùy chọn rồi một hoặc nhiều chữ số → số nguyên có thể có dấu."},
+{t:"t3",b:A,q:"Trong regex, vì sao dấu <code>+</code> đôi khi phải viết là <code>&#92;+</code>?",
+ o:["Để cho đẹp","Vì + là ký hiệu đặc biệt (lặp một hoặc nhiều), cần thoát để hiểu là ký tự cộng","Vì + không hợp lệ","Vì công cụ yêu cầu hai dấu"],a:1,
+ e:"<code>+</code> là ký hiệu lặp; muốn khớp ký tự cộng phải <b>thoát</b>: <code>&#92;+</code>."},
+{t:"t3",b:A,q:"<code>ab*</code> và <code>a[b]*</code> có mô tả cùng tập chuỗi không?",
+ o:["Không","Có, vì [b] chỉ là một tập gồm ký tự b","Chỉ khi thêm ngoặc","Tùy công cụ regex"],a:1,
+ e:"<code>[b]</code> là tập một phần tử = <code>b</code>, nên <code>a[b]*</code> = <code>ab*</code>."},
+{t:"t3",b:H,q:"Ngoặc <code>()</code> trong biểu thức chính quy dùng để làm gì?",
+ o:["Chú thích","Gom nhóm để tránh mơ hồ","Kết thúc biểu thức","Phủ định"],a:1,
+ e:"Ngoặc <b>gom nhóm</b>, ví dụ <code>(R|S)T</code> tránh nhập nhằng."},
+{t:"t3",b:A,q:"<code>a|bc</code> khác <code>(a|b)c</code> thế nào?",
+ o:["Giống nhau","a|bc = {a, bc}; (a|b)c = {ac, bc}","a|bc = {ac}; (a|b)c = {a, bc}","Cả hai = {abc}"],a:1,
+ e:"Nối tiếp ưu tiên hơn lựa chọn: <code>a|bc</code> = {a, bc}; ngoặc đổi nhóm → {ac, bc}."},
+{t:"t3",b:V,q:"Biểu thức chính quy cho 'một hoặc nhiều chữ số' là?",
+ o:["[0-9]*","[0-9]+","[0-9]?","[a-z]+"],a:1,
+ e:"<code>[0-9]+</code> = một hoặc nhiều chữ số."},
+
+/* t4 — Ký hiệu viết tắt & tập ký tự */
+{t:"t4",b:H,q:"<code>α+</code> tương đương với biểu thức nào?",
+ o:["α*","αα*","ε | α","α?"],a:1,
+ e:"'Một hoặc nhiều' = một rồi không/nhiều = <code>αα*</code>."},
+{t:"t4",b:H,q:"<code>α?</code> tương đương với?",
+ o:["αα*","ε | α","α*","α+"],a:1,
+ e:"'Có hoặc không' = <code>ε | α</code>."},
+{t:"t4",b:H,q:"<code>[xyz]</code> tương đương với?",
+ o:["xyz (nối tiếp)","x | y | z","(xyz)*","x y z?"],a:1,
+ e:"Tập ký tự = lựa chọn một trong các ký tự → <code>x | y | z</code>."},
+{t:"t4",b:V,q:"<code>[^0-9]</code> nghĩa là gì?",
+ o:["Một chữ số","Một ký tự KHÔNG nằm trong 0-9","Không có ký tự","Bắt đầu bằng số"],a:1,
+ e:"<code>[^...]</code> là phủ định tập → ký tự không thuộc 0-9."},
+{t:"t4",b:H,q:"Dấu <code>.</code> trong biểu thức chính quy thường nghĩa là?",
+ o:["Kết thúc câu","Một ký tự bất kỳ","Dấu thập phân bắt buộc","Chuỗi rỗng"],a:1,
+ e:"<code>.</code> khớp <b>một ký tự bất kỳ</b> (tùy quy ước công cụ)."},
+{t:"t4",b:A,q:"Kết quả của <code>[x-y]</code> phụ thuộc vào yếu tố nào?",
+ o:["Độ dài chuỗi","Bảng mã (encoding) xác định khoảng ký tự","Số trạng thái DFA","Ngôn ngữ đích"],a:1,
+ e:"Khoảng <code>[x-y]</code> phụ thuộc <b>bảng mã</b> để biết ký tự nào nằm giữa x và y."},
+{t:"t4",b:V,q:"<code>[a-zA-Z_][a-zA-Z0-9_]*</code> mô tả token gì?",
+ o:["Số thực","Định danh kiểu quen thuộc (cho phép _)","Chuỗi ký tự","Toán tử"],a:1,
+ e:"Đây là mẫu <b>định danh</b> phổ biến, cho phép dấu gạch dưới."},
+{t:"t4",b:A,q:"<code>α+</code> và <code>α*</code> khác nhau ở điểm nào?",
+ o:["Không khác gì","+ cần ít nhất một lần; * cho phép không lần nào","+ cho phép 0 lần; * cần ≥1","+ chỉ dùng cho số"],a:1,
+ e:"<code>+</code> ≥ 1 lần; <code>*</code> ≥ 0 lần (có thể rỗng)."},
+{t:"t4",b:E,q:"Nên dùng <code>[0-9]</code> hay <code>0|1|2|3|4|5|6|7|8|9</code> để mô tả một chữ số? Vì sao?",
+ o:["Dùng dạng liệt kê vì rõ ràng hơn","Dùng [0-9] vì ngắn gọn, dễ đọc, cùng ý nghĩa","Hai cách khác nghĩa nhau","Dùng dạng liệt kê vì chạy nhanh hơn"],a:1,
+ e:"Cùng tập chuỗi, nhưng <code>[0-9]</code> ngắn gọn và dễ đọc hơn — ưu điểm về khả năng đọc/viết."},
+{t:"t4",b:A,q:"<code>[x-y]</code> và <code>[^x-y]</code> có quan hệ gì?",
+ o:["Giống hệt nhau","Phủ định của nhau (bù tập ký tự)","Không liên quan","[^x-y] là con của [x-y]"],a:1,
+ e:"<code>[^x-y]</code> là <b>phủ định</b> của <code>[x-y]</code>."},
+
+/* t5 — Vai trò scanner */
+{t:"t5",b:H,q:"Bộ phân tích từ vựng đảm nhiệm bao nhiêu vai trò chính (theo bài)?",
+ o:["2","3","4","5"],a:2,
+ e:"4 vai trò: nhận diện lexeme, trả về token, bỏ ký tự thừa, ghi nhận vị trí."},
+{t:"t5",b:H,q:"'Bỏ khoảng trắng, tab, chú thích' là vai trò nào của scanner?",
+ o:["Nhận diện lexeme","Bỏ qua ký tự không cần thiết","Ghi nhận vị trí","Trả về token"],a:1,
+ e:"Đây là vai trò <b>bỏ qua ký tự không cần thiết</b>."},
+{t:"t5",b:A,q:"Vì sao scanner cần ghi nhận dòng và cột?",
+ o:["Để đếm số token","Để báo lỗi đúng vị trí cho người lập trình","Để tối ưu DFA","Để nén mã nguồn"],a:1,
+ e:"Ghi dòng/cột giúp scanner <b>báo lỗi đúng vị trí</b>."},
+{t:"t5",b:V,q:"Với <code>x=10+20;</code> (không khoảng trắng), scanner có tách được token không?",
+ o:["Không, vì thiếu dấu cách","Có, vì scanner dựa trên luật nhận dạng token chứ không chỉ dấu cách","Chỉ tách được số","Chỉ tách nếu thêm dấu cách"],a:1,
+ e:"Scanner dựa trên <b>luật token</b>, nên vẫn tách đúng dù không có khoảng trắng."},
+{t:"t5",b:E,q:"Nhận định 'scanner chỉ tách chuỗi theo khoảng trắng' đúng hay sai?",
+ o:["Đúng hoàn toàn","Sai — scanner dựa trên luật nhận dạng token; ví dụ x=10+20; vẫn tách đúng","Đúng với ngôn ngữ nhỏ","Chỉ đúng trong ANTLR"],a:1,
+ e:"Sai. Nếu chỉ dựa dấu cách thì <code>x=10+20;</code> không tách được — thực tế scanner dùng luật token."},
+{t:"t5",b:A,q:"Với <code>int x = @;</code>, scanner làm gì với ký tự <code>@</code>?",
+ o:["Bỏ qua như khoảng trắng","Báo lỗi: @ không khớp luật token nào, kèm vị trí","Nhận thành token ID","Nhận thành số"],a:1,
+ e:"<code>@</code> không thuộc token nào → scanner báo <b>lỗi từ vựng</b> kèm vị trí."},
+{t:"t5",b:V,q:"Vai trò 'gắn loại token cho lexeme' tạo ra kết quả dạng gì?",
+ o:["Một cây cú pháp","Cặp (loại, lexeme), ví dụ (ID, &quot;count&quot;)","Mã máy","Một DFA"],a:1,
+ e:"Kết quả là cặp <b>(loại token, lexeme)</b> như <code>(ID, &quot;count&quot;)</code>."},
+{t:"t5",b:H,q:"Chú thích có được scanner phát ra thành token cho parser không?",
+ o:["Có","Không","Chỉ chú thích khối","Chỉ khi có lỗi"],a:1,
+ e:"Chú thích bị bỏ qua, <b>không</b> phát thành token cho parser."},
+
+/* t6 — Scanner thủ công vs sinh tự động */
+{t:"t6",b:H,q:"Scanner viết thủ công còn được gọi là gì?",
+ o:["DFA scanner","Ad hoc scanner (scanner tùy biến)","Generated scanner","Recursive scanner"],a:1,
+ e:"Còn gọi là <b>ad hoc scanner</b> — viết mã kiểm tra từng trường hợp."},
+{t:"t6",b:V,q:"Trong scanner thủ công, khi gặp ký tự là chữ cái thì làm gì?",
+ o:["Báo lỗi","Đọc tiếp để tạo định danh hoặc từ khóa","Bỏ qua","Kết thúc quét"],a:1,
+ e:"Gặp chữ cái → đọc tiếp các ký tự để tạo <b>định danh/từ khóa</b>."},
+{t:"t6",b:V,q:"Trong scanner thủ công, gặp chữ số thì làm gì?",
+ o:["Bỏ qua","Đọc tiếp để tạo số","Tạo token ID","Báo lỗi"],a:1,
+ e:"Gặp chữ số → đọc tiếp để tạo <b>số</b>."},
+{t:"t6",b:E,q:"Ưu điểm của scanner thủ công với ngôn ngữ nhỏ là gì?",
+ o:["Luôn nhanh nhất khi chạy","Dễ hiểu và nhanh triển khai","Tự động tối ưu DFA","Không cần luật token"],a:1,
+ e:"Với ngôn ngữ nhỏ: <b>dễ hiểu, nhanh triển khai</b>."},
+{t:"t6",b:E,q:"Nhược điểm chính của scanner thủ công khi ngôn ngữ lớn dần?",
+ o:["Chạy chậm hơn DFA","Dài, rối, khó bảo trì; thêm token dễ ảnh hưởng token cũ","Không nhận được số","Không báo được lỗi"],a:1,
+ e:"Khi tập token tăng, mã trở nên <b>dài, rối, khó bảo trì</b>."},
+{t:"t6",b:A,q:"Vì sao scanner thủ công cần cẩn thận với <code>=</code>, <code>==</code>, <code>=&gt;</code>?",
+ o:["Vì chúng là từ khóa","Vì phải tránh tách sai: == phải là một token, không phải hai =","Vì chúng chiếm nhiều bộ nhớ","Vì chúng không hợp lệ"],a:1,
+ e:"Toán tử nhiều ký tự dễ bị tách sai; cần kiểm tra kỹ để <code>==</code> là một token."},
+{t:"t6",b:E,q:"Với ngôn ngữ lớn nhiều token, nên chọn scanner thủ công hay sinh tự động? Vì sao?",
+ o:["Thủ công, vì luôn nhanh hơn","Sinh tự động, vì dễ bảo trì và mở rộng hơn","Thủ công, vì không cần công cụ","Không khác biệt"],a:1,
+ e:"Ngôn ngữ lớn nên dùng công cụ sinh (cấu trúc hơn), <b>dễ bảo trì/mở rộng</b>."},
+{t:"t6",b:A,q:"Trong scanner Python mẫu, điều kiện <code>ch==':' và ký tự sau là '='</code> nhận dạng token nào?",
+ o:["PLUS","TIMES","ASSIGN (:=)","ID"],a:2,
+ e:"Nhận diện <code>:=</code> → token <b>ASSIGN</b>."},
+{t:"t6",b:A,q:"Nếu bỏ kiểm tra ký tự sau <code>:</code> mà chỉ thấy <code>:</code> đơn, chương trình sẽ ra sao với <code>:=</code>?",
+ o:["Vẫn nhận đúng ASSIGN","Có thể báo lỗi vì : đơn không khớp token nào trong ngôn ngữ đó","Nhận thành số","Bỏ qua như khoảng trắng"],a:1,
+ e:"Ngôn ngữ này không có token cho <code>:</code> đơn → dễ dẫn tới lỗi/nhận sai."},
+{t:"t6",b:V,q:"Scanner thủ công gặp ký tự không khớp luật nào thì làm gì (theo code mẫu)?",
+ o:["Bỏ qua","Raise Exception 'Invalid character'","Tạo token UNKNOWN","Dừng im lặng"],a:1,
+ e:"Code mẫu <b>raise Exception</b> báo ký tự không hợp lệ."},
+
+/* t7 — Ô-tô-mát hữu hạn */
+{t:"t7",b:H,q:"Ô-tô-mát hữu hạn gồm những thành phần cơ bản nào?",
+ o:["Biến và hàm","Các trạng thái và chuyển trạng thái theo ký tự đầu vào","Token và lexeme","Luật văn phạm"],a:1,
+ e:"Gồm <b>các trạng thái</b> và <b>chuyển trạng thái</b> dựa trên ký tự đầu vào."},
+{t:"t7",b:H,q:"Khi nào ô-tô-mát nhận ra một token?",
+ o:["Khi đọc ký tự đầu tiên","Khi đạt đến trạng thái chấp nhận","Khi hết bộ nhớ","Khi gặp khoảng trắng"],a:1,
+ e:"Đạt <b>trạng thái chấp nhận</b> → nhận ra một token."},
+{t:"t7",b:A,q:"Với automaton định danh, đầu vào <code>abc123+</code>, token nhận được là gì?",
+ o:["abc123+","abc","abc123","123"],a:2,
+ e:"Đọc a,b,c,1,2,3 (giữ S1), gặp <code>+</code> không chuyển được → token <code>abc123</code>."},
+{t:"t7",b:A,q:"Vì sao <code>+</code> kết thúc token trong ví dụ <code>abc123+</code>?",
+ o:["Vì + là chữ cái","Vì không có chuyển trạng thái hợp lệ cho + từ S1","Vì đã đủ 6 ký tự","Vì + là khoảng trắng"],a:1,
+ e:"Từ S1 không có cạnh cho <code>+</code> → token kết thúc trước <code>+</code>."},
+{t:"t7",b:H,q:"NFA là viết tắt của?",
+ o:["New Finite Automaton","Nondeterministic Finite Automaton","Null Finite Automaton","Nested Finite Automaton"],a:1,
+ e:"<b>Nondeterministic Finite Automaton</b> — ô-tô-mát hữu hạn không đơn định."},
+{t:"t7",b:H,q:"DFA là viết tắt của?",
+ o:["Direct Finite Automaton","Deterministic Finite Automaton","Double Finite Automaton","Dynamic Finite Automaton"],a:1,
+ e:"<b>Deterministic Finite Automaton</b> — ô-tô-mát hữu hạn đơn định."},
+{t:"t7",b:A,q:"Khác biệt cốt lõi giữa NFA và DFA là gì?",
+ o:["NFA nhanh hơn DFA","NFA: một trạng thái có thể có nhiều lựa chọn chuyển; DFA: mỗi (trạng thái, ký tự) có nhiều nhất một chuyển","DFA nhận nhiều chuỗi hơn","NFA không có trạng thái chấp nhận"],a:1,
+ e:"NFA cho phép nhiều lựa chọn; DFA <b>quyết định</b> — mỗi (trạng thái, ký tự) tối đa một chuyển."},
+{t:"t7",b:H,q:"Ba bước sinh scanner tự động từ biểu thức chính quy là?",
+ o:["regex → parser → AST","regex → NFA → DFA → DFA tối thiểu","token → lexeme → tree","NFA → regex → DFA"],a:1,
+ e:"regex → NFA → DFA (subset construction) → DFA tối thiểu."},
+{t:"t7",b:H,q:"Kỹ thuật chuyển NFA thành DFA gọi là gì?",
+ o:["Kleene closure","Subset construction (xây dựng tập con)","Constant folding","Tokenization"],a:1,
+ e:"Chuyển NFA→DFA bằng <b>subset construction</b>."},
+{t:"t7",b:A,q:"Mục đích của bước DFA → DFA tối thiểu là gì?",
+ o:["Thêm trạng thái để an toàn","Giảm số trạng thái (gộp trạng thái tương đương), vẫn nhận cùng tập chuỗi","Đổi sang NFA","Thêm luật token"],a:1,
+ e:"Gộp trạng thái tương đương → DFA nhỏ hơn, <b>nhận cùng tập chuỗi</b>."},
+{t:"t7",b:E,q:"Vì sao DFA phù hợp để cài đặt scanner hơn NFA?",
+ o:["Vì DFA nhận nhiều chuỗi hơn","Vì mỗi ký tự dẫn đến một trạng thái tiếp theo duy nhất → chạy quyết định, hiệu quả","Vì DFA không cần trạng thái chấp nhận","Vì DFA viết tay dễ hơn"],a:1,
+ e:"DFA <b>đơn định</b>: mỗi bước có một trạng thái kế duy nhất → cài đặt hiệu quả."},
+{t:"t7",b:A,q:"DFA tối thiểu và DFA gốc có nhận cùng tập chuỗi không?",
+ o:["Không, DFA tối thiểu nhận ít hơn","Có, chỉ khác số trạng thái","Không, DFA tối thiểu nhận nhiều hơn","Chỉ giống với đầu vào ngắn"],a:1,
+ e:"Chúng <b>tương đương</b> về ngôn ngữ; chỉ khác số trạng thái."},
+{t:"t7",b:V,q:"Trong automaton định danh, ký tự <code>letter</code> chuyển S0 sang trạng thái nào?",
+ o:["S0","S1","Trạng thái lỗi","Không chuyển"],a:1,
+ e:"<code>letter</code> chuyển <b>S0 → S1</b> (bắt đầu định danh)."},
+{t:"t7",b:V,q:"Tại S1, gặp <code>letter | digit</code> thì ô-tô-mát làm gì?",
+ o:["Về S0","Giữ nguyên S1","Sang trạng thái chấp nhận mới","Báo lỗi"],a:1,
+ e:"Ở S1, chữ cái hoặc chữ số <b>giữ nguyên S1</b> (tiếp tục định danh)."},
+{t:"t7",b:E,q:"Nhận định 'NFA luôn nhận nhiều chuỗi hơn DFA tương ứng' đúng hay sai?",
+ o:["Đúng","Sai — NFA và DFA tương ứng nhận cùng ngôn ngữ, chỉ khác cách biểu diễn","Đúng với chuỗi dài","Chỉ sai khi DFA tối thiểu"],a:1,
+ e:"NFA và DFA tương ứng <b>nhận cùng ngôn ngữ</b>; khác nhau ở cách chuyển trạng thái."},
+
+/* t8 — Khớp dài nhất & ưu tiên */
+{t:"t8",b:H,q:"Luật khớp dài nhất (longest-match) nói gì?",
+ o:["Chọn token ngắn nhất","Scanner đọc càng xa càng tốt để tạo token dài nhất có thể","Chọn token viết trước","Bỏ qua token dài"],a:1,
+ e:"Scanner tạo <b>token dài nhất</b> có thể từ vị trí hiện tại."},
+{t:"t8",b:A,q:"Với <code>count123</code>, theo longest-match, scanner nhận gì?",
+ o:["count và 123 (hai token)","Một token count123","count (bỏ 123)","123 (bỏ count)"],a:1,
+ e:"Longest-match → một định danh <code>count123</code>, không tách thành hai."},
+{t:"t8",b:A,q:"Với <code>==</code>, longest-match cho kết quả gì?",
+ o:["Hai token =","Một token ==","Lỗi","Bỏ qua"],a:1,
+ e:"Đọc xa nhất → một token <code>==</code>, không phải hai <code>=</code>."},
+{t:"t8",b:E,q:"Nếu KHÔNG áp dụng longest-match, <code>count123</code> có thể bị nhận sai thế nào?",
+ o:["Không sao cả","Bị tách thành count (id) và 123 (number) — sai ý định","Bị bỏ qua","Thành một token number"],a:1,
+ e:"Không có longest-match, scanner dễ tách sớm thành <code>count</code> + <code>123</code>."},
+{t:"t8",b:H,q:"Trong ANTLRv4, nguyên tắc ưu tiên số 1 khi nhiều luật cùng khớp là gì?",
+ o:["Thứ tự định nghĩa","Khớp dài nhất","Luật ngắn nhất","Luật viết sau"],a:1,
+ e:"Ưu tiên số 1 là <b>khớp dài nhất</b>."},
+{t:"t8",b:A,q:"Trong ANTLRv4, khi hai luật khớp cùng độ dài, luật nào thắng?",
+ o:["Luật viết sau","Luật được định nghĩa trước (thứ tự định nghĩa)","Luật tên dài hơn","Luật có fragment"],a:1,
+ e:"Khi độ dài bằng nhau, <b>luật viết trước</b> thắng."},
+{t:"t8",b:E,q:"Vì sao nên đặt <code>IF : 'if';</code> TRƯỚC luật <code>ID</code> trong ANTLR?",
+ o:["Để grammar ngắn hơn","Để 'if' được nhận là IF; nếu ID trước, 'if' bị nhận thành ID — sai thiết kế","Để chạy nhanh hơn","Không cần thiết"],a:1,
+ e:"Thứ tự sai làm từ khóa bị 'nuốt' thành định danh; đặt <code>IF</code> trước để giữ đúng ý định."},
+{t:"t8",b:A,q:"Nếu <code>ID</code> được định nghĩa TRƯỚC <code>IF</code> trong ANTLR, chuỗi <code>if</code> thành token gì?",
+ o:["IF","ID (sai ý định)","Lỗi","Bỏ qua"],a:1,
+ e:"Cùng độ dài, ID viết trước thắng → <code>if</code> bị nhận thành <b>ID</b>."},
+{t:"t8",b:E,q:"Thứ tự các luật lexer ảnh hưởng gì tới tính đúng đắn của scanner?",
+ o:["Không ảnh hưởng","Ảnh hưởng lớn: thứ tự sai làm từ khóa bị nhận thành định danh","Chỉ ảnh hưởng tốc độ","Chỉ ảnh hưởng thông báo lỗi"],a:1,
+ e:"Thứ tự quyết định luật nào thắng khi hòa độ dài → ảnh hưởng <b>tính đúng đắn</b>."},
+{t:"t8",b:A,q:"Với luật <code>IF:'if'; ID:[a-z]+;</code> và đầu vào <code>ifx</code>, longest-match cho token gì?",
+ o:["IF rồi ID","Một token ID &quot;ifx&quot; (dài hơn 'if')","Lỗi từ vựng","Hai token: i, fx"],a:1,
+ e:"ID khớp <code>ifx</code> (3 ký tự) dài hơn IF (<code>if</code>, 2 ký tự) → chọn <b>ID &quot;ifx&quot;</b>."},
+{t:"t8",b:A,q:"Với luật <code>IF:'if'; ID:[a-z]+;</code> và đầu vào <code>if</code> (đúng 2 ký tự), token là?",
+ o:["ID","IF","Cả hai","Lỗi"],a:1,
+ e:"Cùng độ dài; IF là literal/định nghĩa trước → chọn <b>IF</b>."},
+{t:"t8",b:E,q:"Longest-match giúp giải quyết vấn đề nào mà scanner thủ công phải tự xử lý?",
+ o:["Ghi nhận dòng cột","Tự động chọn token dài nhất, tránh tách sai toán tử nhiều ký tự / định danh dài","Bỏ qua khoảng trắng","Sinh mã máy"],a:1,
+ e:"Longest-match tự động tránh tách sai (vd <code>==</code>, <code>count123</code>) mà scanner thủ công phải xử lý tay."},
+
+/* t9 — Lỗi từ vựng */
+{t:"t9",b:H,q:"Lỗi từ vựng (lexical error) xảy ra khi nào?",
+ o:["Khi thiếu dấu ngoặc trong biểu thức","Khi gặp chuỗi không thuộc token hợp lệ nào, hoặc token chưa kết thúc đúng","Khi kiểu dữ liệu sai","Khi biến chưa khai báo"],a:1,
+ e:"Lỗi từ vựng: chuỗi không khớp token hợp lệ, hoặc token chưa đóng đúng."},
+{t:"t9",b:V,q:"<code>&quot;hello BK</code> (thiếu nháy đóng) là loại lỗi từ vựng nào?",
+ o:["Ký tự thoát không hợp lệ","Chuỗi chưa đóng (unclosed string)","Ký tự không thuộc token","Chú thích chưa đóng"],a:1,
+ e:"Thiếu dấu nháy đóng → <b>chuỗi chưa đóng</b>."},
+{t:"t9",b:V,q:"<code>/* comment</code> (thiếu <code>*/</code>) là loại lỗi gì?",
+ o:["Chuỗi chưa đóng","Chú thích khối chưa đóng","Ký tự không hợp lệ","Ký tự thoát sai"],a:1,
+ e:"Thiếu <code>*/</code> → <b>chú thích khối chưa đóng</b>."},
+{t:"t9",b:A,q:"<code>&quot;path&#92;qfile&quot;</code> mắc lỗi ở đâu?",
+ o:["Thiếu nháy đóng","&#92;q không phải chuỗi thoát hợp lệ","path là từ khóa","Không có lỗi"],a:1,
+ e:"<code>&#92;q</code> không phải ký tự thoát hợp lệ → lỗi ký tự thoát."},
+{t:"t9",b:V,q:"Trong <code>x = @ + 1;</code>, ký tự <code>@</code> gây lỗi gì?",
+ o:["Chuỗi chưa đóng","Ký tự không thuộc token nào","Ký tự thoát sai","Chú thích chưa đóng"],a:1,
+ e:"<code>@</code> không được ngôn ngữ cho phép → <b>ký tự không thuộc token nào</b>."},
+{t:"t9",b:E,q:"Vì sao thông báo lỗi tốt nên kèm dòng và cột?",
+ o:["Để thông báo dài hơn","Để người lập trình định vị và sửa lỗi nhanh","Để scanner chạy nhanh hơn","Để nén mã nguồn"],a:1,
+ e:"Vị trí dòng/cột giúp <b>định vị và sửa lỗi</b> hiệu quả."},
+{t:"t9",b:E,q:"So sánh hai thông báo: 'Syntax error' và 'Error at line 1, column 5: invalid character @'. Cái nào tốt hơn, vì sao?",
+ o:["Cái đầu, vì ngắn gọn","Cái sau, vì chỉ rõ vị trí và nguyên nhân cụ thể","Như nhau","Cái đầu, vì tổng quát hơn"],a:1,
+ e:"Thông báo chỉ rõ <b>vị trí + nguyên nhân</b> giúp sửa lỗi tốt hơn."},
+{t:"t9",b:A,q:"Ghi nhận dòng/cột nên xem là 'chi tiết phụ' hay 'nhiệm vụ quan trọng' của scanner?",
+ o:["Chi tiết phụ, có thể bỏ","Nhiệm vụ quan trọng, phục vụ báo lỗi","Chỉ cần khi debug","Việc của parser"],a:1,
+ e:"Đây là <b>nhiệm vụ quan trọng</b> của phân tích từ vựng để báo lỗi rõ ràng."},
+
+/* t10 — ANTLR */
+{t:"t10",b:H,q:"ANTLR là viết tắt của cụm nào?",
+ o:["Automatic Native Translator","ANother Tool for Language Recognition","Advanced Notation for Tokenizing Rules","Abstract Node Tree Language Reader"],a:1,
+ e:"<b>ANother Tool for Language Recognition</b>."},
+{t:"t10",b:H,q:"ANTLR sinh ra những gì từ grammar do người dùng định nghĩa?",
+ o:["Chỉ lexer","Lexer và parser","Chỉ mã máy","Chỉ AST"],a:1,
+ e:"ANTLR sinh cả <b>lexer</b> và <b>parser</b> từ luật ngữ pháp."},
+{t:"t10",b:H,q:"Tên token (lexer rule) trong ANTLRv4 phải bắt đầu bằng gì?",
+ o:["Chữ thường","Chữ cái in hoa","Dấu gạch dưới","Chữ số"],a:1,
+ e:"Lexer rule bắt đầu bằng <b>chữ in hoa</b> theo quy ước ANTLRv4."},
+{t:"t10",b:A,q:"Quy ước viết hoa tên token giúp ANTLR phân biệt điều gì?",
+ o:["Token với lexeme","Lexer rule với parser rule","NFA với DFA","Số với chữ"],a:1,
+ e:"Giúp phân biệt <b>lexer rule</b> (in hoa) với <b>parser rule</b> (thường viết thường)."},
+{t:"t10",b:V,q:"<code>INTEGER : [0-9]+ ;</code> mô tả token gì?",
+ o:["Định danh","Một hoặc nhiều chữ số (số nguyên)","Chuỗi ký tự","Toán tử"],a:1,
+ e:"<code>[0-9]+</code> → một hoặc nhiều chữ số = số nguyên."},
+{t:"t10",b:V,q:"<code>WHITESPACE : [ &#92;t&#92;r&#92;n]+ -&gt; skip ;</code> — lệnh <code>skip</code> làm gì?",
+ o:["Đổi loại token","Bỏ qua, không phát token cho parser","Báo lỗi","Lặp lại token"],a:1,
+ e:"<code>-&gt; skip</code> khiến khoảng trắng <b>không được phát</b> thành token."},
+{t:"t10",b:A,q:"Với grammar Hello.g4, đầu vào <code>sum(123)</code> sinh ra bao nhiêu token?",
+ o:["3","4","5","6"],a:1,
+ e:"4 token: IDENTIFIER &quot;sum&quot;, OPEN_PAREN, INTEGER &quot;123&quot;, CLOSE_PAREN."},
+{t:"t10",b:A,q:"Với <code>sum ( 123 )</code> (có khoảng trắng), token stream có khác <code>sum(123)</code> không?",
+ o:["Có, thêm token WHITESPACE","Không khác, vì khoảng trắng bị skip","Có, thiếu token","Báo lỗi"],a:1,
+ e:"Whitespace bị <code>skip</code> → chuỗi token <b>giống hệt</b> trường hợp không có khoảng trắng."},
+{t:"t10",b:H,q:"<code>-&gt; skip</code> và <code>-&gt; type(T)</code> khác nhau thế nào?",
+ o:["Giống nhau","skip: không phát token; type(T): phát token với loại T","skip phát token, type bỏ qua","Cả hai đều báo lỗi"],a:1,
+ e:"<code>skip</code> bỏ token; <code>type(T)</code> phát token với <b>loại T</b>."},
+{t:"t10",b:H,q:"Khối hành động <code>{ ... }</code> trong lexer rule là gì?",
+ o:["Một chú thích","Đoạn mã ngôn ngữ đích được chạy khi khớp rule","Một fragment","Một tập ký tự"],a:1,
+ e:"Action block là <b>mã ngôn ngữ đích</b> chạy trong quá trình nhận dạng token."},
+{t:"t10",b:E,q:"Vì sao không nên lạm dụng action block trong grammar?",
+ o:["Vì action chạy chậm","Vì làm grammar khó đọc và phụ thuộc mạnh vào ngôn ngữ đích","Vì ANTLR cấm action","Vì action gây lỗi từ vựng"],a:1,
+ e:"Quá nhiều action làm grammar <b>khó đọc</b> và <b>phụ thuộc ngôn ngữ đích</b>."},
+{t:"t10",b:H,q:"<code>fragment</code> trong ANTLRv4 là gì?",
+ o:["Một token đặc biệt","Luật tái sử dụng được nhưng bản thân không tạo token","Một lệnh bỏ qua","Một parser rule"],a:1,
+ e:"Fragment là phần luật <b>tái sử dụng</b>, không tự phát token."},
+{t:"t10",b:A,q:"Trong <code>fragment DIGIT: [0-9];</code>, <code>DIGIT</code> có tự tạo token riêng không?",
+ o:["Có","Không, chỉ được dùng lại trong lexer rule khác","Chỉ khi đứng đầu file","Tùy phiên bản ANTLR"],a:1,
+ e:"Fragment <b>không tạo token riêng</b> — chỉ là thành phần tái sử dụng."},
+{t:"t10",b:V,q:"Với <code>INTEGER: DIGIT+ | '0' [Xx] HEX_DIGIT+;</code>, chuỗi nào HỢP LỆ?",
+ o:["x1A","0x1A","1.5","-5"],a:1,
+ e:"<code>0x1A</code> khớp nhánh <code>'0' [Xx] HEX_DIGIT+</code>."},
+{t:"t10",b:E,q:"Lợi ích của fragment với grammar là gì?",
+ o:["Làm grammar chạy nhanh hơn","Gọn hơn, dễ đọc, dễ bảo trì nhờ tái sử dụng (vd DIGIT dùng cho cả FLOAT và INTEGER)","Tự động sinh AST","Bắt buộc để có token"],a:1,
+ e:"Fragment giúp grammar <b>gọn, dễ đọc, dễ bảo trì</b> qua tái sử dụng."},
+{t:"t10",b:A,q:"Với <code>FLOAT: DIGIT+ '.' DIGIT+; INTEGER: DIGIT+; fragment DIGIT:[0-9];</code>, <code>3.14</code> khớp rule nào?",
+ o:["INTEGER","FLOAT","DIGIT","Không khớp"],a:1,
+ e:"Có dấu chấm giữa hai nhóm chữ số → khớp <b>FLOAT</b>."},
+{t:"t10",b:A,q:"Cũng với grammar đó, <code>123</code> khớp FLOAT hay INTEGER?",
+ o:["FLOAT","INTEGER","Cả hai","Không khớp"],a:1,
+ e:"Không có dấu chấm → khớp <b>INTEGER</b>."},
+{t:"t10",b:H,q:"<code>~'&quot;'</code> trong ANTLR nghĩa là gì?",
+ o:["Dấu nháy kép","Ký tự bất kỳ TRỪ dấu nháy kép","Lặp dấu nháy","Chuỗi rỗng"],a:1,
+ e:"<code>~x</code> là ký tự bất kỳ <b>trừ</b> x; <code>~'&quot;'</code> = ký tự khác dấu nháy kép."},
+{t:"t10",b:A,q:"<code>STRING : '&quot;' ~'&quot;'* '&quot;' ;</code> mô tả gì?",
+ o:["Một định danh","Chuỗi mở bằng &quot;, giữa là các ký tự không phải &quot;, đóng bằng &quot;","Một số thực","Một chú thích"],a:1,
+ e:"Mở nháy kép, 0+ ký tự không phải nháy kép, đóng nháy kép → chuỗi đơn giản."},
+{t:"t10",b:E,q:"Luật <code>STRING : '&quot;' ~'&quot;'* '&quot;' ;</code> có xử lý được ký tự thoát <code>&#92;&quot;</code> không?",
+ o:["Có, mọi trường hợp","Không — cần luật phức tạp hơn (dùng fragment ESC)","Chỉ với chuỗi ngắn","Chỉ trong ANTLRv3"],a:1,
+ e:"Luật đơn giản này <b>không</b> xử lý ký tự thoát; cần luật có <code>ESC</code>."},
+{t:"t10",b:H,q:"Tác giả của ANTLR là ai?",
+ o:["Terence Parr","Dennis Ritchie","Guido van Rossum","Ken Thompson"],a:0,
+ e:"ANTLR do <b>Terence Parr</b> (Đại học San Francisco) tạo ra."}
+];
+
+let state = {topic:"all", bloom:"all", answered:{}, order:QUESTIONS.map((_,i)=>i)};
+try{const s=localStorage.getItem("ppl_ch2");if(s){const p=JSON.parse(s);if(p.answered)state.answered=p.answered;}}catch(e){}
+
+const listEl=document.getElementById("list");
+const topicChips=document.getElementById("topicChips");
+const bloomChips=document.getElementById("bloomChips");
+const bloomCls={[H]:"hieu",[V]:"vandung",[A]:"phantich",[E]:"danhgia"};
+
+function save(){try{localStorage.setItem("ppl_ch2",JSON.stringify({answered:state.answered}));}catch(e){}}
+
+(function(){
+  const all=document.createElement("span");all.className="chip on";all.textContent="Tất cả";all.dataset.v="all";topicChips.appendChild(all);
+  Object.keys(T).forEach(k=>{const c=document.createElement("span");c.className="chip";c.textContent=T[k];c.dataset.v=k;topicChips.appendChild(c);});
+  topicChips.addEventListener("click",e=>{if(!e.target.dataset.v)return;state.topic=e.target.dataset.v;
+    [...topicChips.querySelectorAll(".chip")].forEach(c=>c.classList.toggle("on",c.dataset.v===state.topic));render();});
+
+  [["all","Tất cả"],[H,"Hiểu"],[V,"Vận dụng"],[A,"Phân tích"],[E,"Đánh giá"]].forEach((p,i)=>{
+    const c=document.createElement("span");c.className="chip"+(i===0?" on":"");c.textContent=p[1];c.dataset.v=p[0];bloomChips.appendChild(c);});
+  bloomChips.addEventListener("click",e=>{if(!e.target.dataset.v)return;state.bloom=e.target.dataset.v;
+    [...bloomChips.querySelectorAll(".chip")].forEach(c=>c.classList.toggle("on",c.dataset.v===state.bloom));render();});
+})();
+
+function visible(){return state.order.filter(i=>{
+  const q=QUESTIONS[i];
+  return (state.topic==="all"||q.t===state.topic)&&(state.bloom==="all"||q.b===state.bloom);});}
+
+const MK=["A","B","C","D","E"];
+function render(){
+  const vis=visible();
+  listEl.innerHTML="";
+  if(vis.length===0){listEl.innerHTML='<div class="empty">Không có câu hỏi khớp bộ lọc.</div>';}
+  vis.forEach((idx,pos)=>{
+    const q=QUESTIONS[idx];
+    const ans=state.answered[idx];
+    const card=document.createElement("div");card.className="q";card.id="q"+idx;
+    card.innerHTML=
+      '<div class="q-top">'+
+        '<span class="qid">#'+String(pos+1).padStart(2,"0")+'</span>'+
+        '<span class="tag topic">'+T[q.t]+'</span>'+
+        '<span class="tag '+bloomCls[q.b]+'">'+q.b+'</span>'+
+      '</div>'+
+      '<div class="q-text">'+q.q+'</div>';
+    const opts=document.createElement("div");opts.className="opts";
+    q.o.forEach((text,oi)=>{
+      const o=document.createElement("div");o.className="opt";
+      o.innerHTML='<span class="mk">'+MK[oi]+'</span><span>'+text+'</span>';
+      if(ans!==undefined){
+        o.classList.add("locked");
+        if(oi===q.a)o.classList.add("correct");
+        else if(oi===ans.picked)o.classList.add("wrong");
+        else o.classList.add("dim");
+      }else{
+        o.addEventListener("click",()=>{state.answered[idx]={picked:oi};save();render();
+          setTimeout(()=>{const el=document.getElementById("q"+idx);if(el)el.scrollIntoView({block:"nearest"});},0);});
+      }
+      opts.appendChild(o);
+    });
+    card.appendChild(opts);
+    const exp=document.createElement("div");exp.className="exp"+(ans!==undefined?" show":"");
+    const ok=ans!==undefined&&ans.picked===q.a;
+    exp.innerHTML=(ans!==undefined?('<b>'+(ok?"✓ Chính xác. ":"✗ Chưa đúng. Đáp án đúng: "+MK[q.a]+". ")+'</b>'):"")+q.e;
+    card.appendChild(exp);
+    listEl.appendChild(card);
+  });
+  updateStats();
+}
+
+function updateStats(){
+  const total=QUESTIONS.length;
+  const done=Object.keys(state.answered).length;
+  const right=Object.keys(state.answered).filter(i=>state.answered[i].picked===QUESTIONS[i].a).length;
+  const pct=done?Math.round(right/done*100):0;
+  document.getElementById("mTotal").textContent=total;
+  document.getElementById("mDone").textContent=done;
+  document.getElementById("mRight").textContent=right;
+  document.getElementById("mPct").textContent=pct;
+  document.getElementById("mShown").textContent=visible().length;
+  document.getElementById("barFill").style.width=(done/total*100)+"%";
+  document.getElementById("cShown").textContent=visible().length+" câu đang hiển thị · "+total+" câu tổng cộng";
+}
+
+document.getElementById("btnShuffle").addEventListener("click",()=>{
+  for(let i=state.order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[state.order[i],state.order[j]]=[state.order[j],state.order[i]];}
+  render();window.scrollTo({top:0,behavior:"smooth"});
+});
+document.getElementById("btnReset").addEventListener("click",()=>{
+  if(confirm("Xóa toàn bộ câu trả lời và làm lại từ đầu?")){state.answered={};save();render();window.scrollTo({top:0,behavior:"smooth"});}
+});
+
+render();
+</script>
+</body>
+</html>
