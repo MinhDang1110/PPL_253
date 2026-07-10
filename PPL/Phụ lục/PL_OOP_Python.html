@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phụ lục – OOP trong Python · CO3005</title>
+<meta name="description" content="Phụ lục CO3005: OOP trong Python – lớp, đối tượng, phương thức, self, đóng gói, kế thừa, MRO, C3, duck typing.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg:          #f7f6f2;
+    --surface:     #ffffff;
+    --surface2:    #f0ede6;
+    --border:      #ddd9d0;
+    --text:        #1a1916;
+    --muted:       #6b6760;
+    --accent:      #1a56a0;
+    --accent-light:#e8f0fb;
+    --code-bg:     #1e1e1e;
+    --code-text:   #d4d4d4;
+    --kw:          #569cd6;
+    --str:         #ce9178;
+    --cmt:         #6a9955;
+    --num:         #b5cea8;
+    --fn:          #dcdcaa;
+    --type:        #4ec9b0;
+    --dec:         #c586c0;
+    --capp:        #7c3a1a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  /* ── TOP NAV ── */
+  .topnav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 200;
+  }
+  .nav-brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--capp); text-decoration: none; letter-spacing: 0.04em;
+  }
+  .nav-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--muted); letter-spacing: 0.08em;
+  }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 52px);
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    position: sticky; top: 52px;
+    height: calc(100vh - 52px);
+    overflow-y: auto;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 10px;
+  }
+  .toc-item {
+    display: block; padding: 7px 20px;
+    font-size: 13px; color: var(--muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s; line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    color: var(--capp); border-left-color: var(--capp);
+    background: #fdf6f1;
+  }
+  .toc-item.sub { padding-left: 32px; font-size: 12px; }
+
+  /* ── MAIN ── */
+  .main { padding: 48px 56px 100px; max-width: 820px; }
+
+  /* ── LESSON HEADER ── */
+  .lesson-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.08em; color: var(--capp);
+    background: #fdeee6; border: 1px solid #f0c4a8;
+    padding: 4px 10px; border-radius: 4px; margin-bottom: 16px;
+  }
+  .lesson-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 30px; font-weight: 600; line-height: 1.25;
+    color: var(--text); margin-bottom: 8px;
+  }
+  .lesson-meta {
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 36px; padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── SECTION ── */
+  .article-section { margin-bottom: 48px; scroll-margin-top: 24px; }
+
+  h2.section-heading {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 21px; font-weight: 600; color: var(--text);
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 2px solid var(--border); position: relative;
+  }
+  h2.section-heading::before {
+    content: ''; position: absolute; bottom: -2px; left: 0;
+    width: 36px; height: 2px; background: var(--capp);
+  }
+
+  p { margin-bottom: 14px; }
+  ul, ol { margin: 0 0 14px 24px; line-height: 2; }
+
+  /* ── CODE ── */
+  .code-block {
+    background: var(--code-bg); border-radius: 8px;
+    margin: 18px 0; overflow: hidden; font-size: 13.5px;
+  }
+  .code-label {
+    background: #2d2d2d; padding: 6px 16px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    color: #888; letter-spacing: 0.06em; border-bottom: 1px solid #333;
+  }
+  pre {
+    padding: 16px 20px; overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace; line-height: 1.6;
+    color: var(--code-text);
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #e8e5de; color: #b5451b;
+    padding: 1px 6px; border-radius: 3px; font-size: 0.88em;
+  }
+  pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+
+  .kw   { color: var(--kw); }
+  .str  { color: var(--str); }
+  .cmt  { color: var(--cmt); font-style: italic; }
+  .num  { color: var(--num); }
+  .fn   { color: var(--fn); }
+  .type { color: var(--type); }
+  .dec  { color: var(--dec); }
+
+  /* ── TABLE ── */
+  .data-table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14px; }
+  .data-table th {
+    background: var(--surface2); padding: 10px 14px; text-align: left;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    letter-spacing: 0.05em; color: var(--muted); border-bottom: 2px solid var(--border);
+  }
+  .data-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: #fdeee6; border-left: 4px solid var(--capp);
+    border-radius: 0 6px 6px 0; padding: 14px 18px;
+    margin: 18px 0; font-size: 15px;
+  }
+
+  /* ── FIGURE ── */
+  .fig-wrap { margin: 24px 0; text-align: center; }
+  .fig-wrap img {
+    max-width: 100%; border-radius: 8px;
+    border: 1px solid var(--border);
+    cursor: zoom-in; transition: transform 0.2s;
+  }
+  .fig-wrap img:hover { transform: scale(1.02); }
+  .fig-caption {
+    margin-top: 10px; font-size: 13px; color: var(--muted); font-style: italic;
+  }
+
+  /* ── ALGORITHM BOX ── */
+  .algo-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 4px solid #6b3fa0;
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px; margin: 18px 0;
+    font-family: 'IBM Plex Mono', monospace; font-size: 13.5px;
+    line-height: 1.8;
+  }
+  .algo-box ol, .algo-box ul { font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+
+  /* ── DIVIDER ── */
+  hr.divider { border: none; border-top: 2px dashed var(--border); margin: 52px 0; }
+
+  /* ── NAV FOOTER ── */
+  .nav-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 0 0; border-top: 1px solid var(--border); margin-top: 48px;
+    font-size: 14px; color: var(--muted);
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--capp); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 500; text-decoration: none;
+  }
+  .nav-btn.sec { background: var(--surface); color: var(--capp); border: 1px solid var(--capp); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 28px 20px 64px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a class="nav-brand" href="../CO3005.html">← CO3005 · Phụ lục</a>
+  <span class="nav-meta">Phụ lục 03 · OOP trong Python · HK253</span>
+</nav>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-title">Phụ lục – OOP trong Python</div>
+
+  <a class="toc-item active" href="#mo-dau">Tài liệu 1 · Mở đầu</a>
+  <a class="toc-item" href="#lop-doi-tuong">Tài liệu 2 · Lớp và đối tượng</a>
+  <a class="toc-item sub" href="#instance-vs-class-attr">Instance vs. class attribute</a>
+  <a class="toc-item" href="#phuong-thuc-self">Tài liệu 3 · Phương thức và self</a>
+  <a class="toc-item sub" href="#ba-loai-phuong-thuc">Ba loại phương thức</a>
+  <a class="toc-item" href="#dong-goi">Tài liệu 4 · Quy ước đóng gói</a>
+  <a class="toc-item sub" href="#name-mangling">Name mangling</a>
+  <a class="toc-item sub" href="#property">Property</a>
+  <a class="toc-item" href="#ke-thua-mro">Tài liệu 5 · Kế thừa và MRO</a>
+  <a class="toc-item sub" href="#ke-thua-don">Kế thừa đơn</a>
+  <a class="toc-item sub" href="#da-ke-thua">Đa kế thừa &amp; kim cương</a>
+  <a class="toc-item sub" href="#giai-thuat-c3">Giải thuật C3</a>
+  <a class="toc-item sub" href="#mro-phuc-tap">Ví dụ MRO phức tạp</a>
+  <a class="toc-item sub" href="#mro-khong-hop-le">Khi MRO không hợp lệ</a>
+  <a class="toc-item sub" href="#super-mro">MRO và super()</a>
+  <a class="toc-item sub" href="#ke-thua-hop-tac">Kế thừa hợp tác</a>
+  <a class="toc-item sub" href="#mixin">Mixin và MRO</a>
+  <a class="toc-item sub" href="#tong-ket-mro">Tổng kết MRO</a>
+  <a class="toc-item" href="#duck-typing">Tài liệu 6 · Kiểu vịt &amp; đa hình</a>
+  <a class="toc-item" href="#tom-tat">Tài liệu 7 · Tóm tắt</a>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ══════════════════════════════════════════════
+     TÀI LIỆU 1: MỞ ĐẦU
+══════════════════════════════════════════════ -->
+<div class="lesson-badge">Phụ lục · Tài liệu 1 / 7</div>
+<h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: OOP trong Python · Trần Ngọc Bảo Duy</div>
+
+<div class="article-section">
+  <p>Python là một ngôn ngữ hỗ trợ lập trình hướng đối tượng rất linh hoạt. Mọi giá trị trong Python đều là đối tượng (object): số nguyên, chuỗi, danh sách, hàm, lớp và cả module đều là đối tượng. Vì vậy, khi học OOP trong Python, ta không chỉ học cách viết class, mà còn cần hiểu cách Python biểu diễn đối tượng, cách phương thức nhận đối tượng hiện hành qua <code>self</code>, cách Python xử lý đóng gói bằng quy ước, cách kế thừa hoạt động, cách thứ tự phân giải phương thức (Method Resolution Order, MRO) được tính, và vì sao Python thường gắn với kiểu vịt (duck typing).</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     TÀI LIỆU 2: LỚP VÀ ĐỐI TƯỢNG
+══════════════════════════════════════════════ -->
+<div class="lesson-badge">Phụ lục · Tài liệu 2 / 7</div>
+<h1 class="lesson-title" id="lop-doi-tuong">Lớp và đối tượng trong Python</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: OOP trong Python · Trần Ngọc Bảo Duy</div>
+
+<div class="article-section">
+  <p>Trong Python, lớp (class) là khuôn mẫu mô tả cấu trúc và hành vi chung của các đối tượng. Đối tượng (object) là một thực thể cụ thể được tạo ra từ lớp tại thời điểm chạy. Ví dụ:</p>
+  <div class="code-block">
+    <div class="code-label">Python – lớp Employee</div>
+    <pre><code><span class="kw">class</span> <span class="type">Employee</span>:
+    emp_count = <span class="num">0</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, name, salary):
+        self.name = name
+        self.salary = salary
+        Employee.emp_count += <span class="num">1</span></code></pre>
+  </div>
+  <p>Tạo hai đối tượng:</p>
+  <div class="code-block">
+    <div class="code-label">Python</div>
+    <pre><code>e1 = <span class="fn">Employee</span>(<span class="str">"Nam"</span>, <span class="num">30</span>)
+e2 = <span class="fn">Employee</span>(<span class="str">"Lan"</span>, <span class="num">35</span>)</code></pre>
+  </div>
+  <p>Trong đoạn mã trên, <code>Employee</code> là lớp, còn <code>e1</code> và <code>e2</code> là hai đối tượng khác nhau. Mỗi đối tượng có định danh (identity) riêng và trạng thái (state) riêng.</p>
+  <div class="code-block">
+    <div class="code-label">Python – kết quả</div>
+    <pre><code><span class="fn">print</span>(e1.name, e1.salary)  <span class="cmt"># Nam 30</span>
+<span class="fn">print</span>(e2.name, e2.salary)  <span class="cmt"># Lan 35</span>
+<span class="fn">print</span>(e1 <span class="kw">is</span> e2)           <span class="cmt"># False</span></code></pre>
+  </div>
+  <p>Điểm quan trọng là hai đối tượng có thể có cùng dữ liệu nhưng vẫn là hai thực thể khác nhau:</p>
+  <div class="code-block">
+    <div class="code-label">Python – định danh độc lập với trạng thái</div>
+    <pre><code>a = <span class="fn">Employee</span>(<span class="str">"An"</span>, <span class="num">40</span>)
+b = <span class="fn">Employee</span>(<span class="str">"An"</span>, <span class="num">40</span>)
+<span class="fn">print</span>(a.name == b.name)    <span class="cmt"># True</span>
+<span class="fn">print</span>(a.salary == b.salary) <span class="cmt"># True</span>
+<span class="fn">print</span>(a <span class="kw">is</span> b)              <span class="cmt"># False</span></code></pre>
+  </div>
+  <p>Hai đối tượng <code>a</code> và <code>b</code> có cùng trạng thái nhưng không có cùng định danh. Điều này phản ánh một nguyên lý quan trọng của OOP: định danh của đối tượng độc lập với trạng thái của đối tượng.</p>
+</div>
+
+<div class="article-section" id="instance-vs-class-attr">
+  <h2 class="section-heading">Instance attribute và class attribute</h2>
+  <p>Trong Python, thuộc tính có thể nằm ở hai mức: thuộc tính đối tượng (instance attribute) và thuộc tính lớp (class attribute).</p>
+  <div class="code-block">
+    <div class="code-label">Python – class attribute vs instance attribute</div>
+    <pre><code><span class="kw">class</span> <span class="type">Employee</span>:
+    emp_count = <span class="num">0</span>          <span class="cmt"># class attribute – chia sẻ toàn lớp</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, name):
+        self.name = name   <span class="cmt"># instance attribute – riêng từng đối tượng</span>
+        Employee.emp_count += <span class="num">1</span>
+
+e1 = <span class="fn">Employee</span>(<span class="str">"Nam"</span>)
+e2 = <span class="fn">Employee</span>(<span class="str">"Lan"</span>)
+<span class="fn">print</span>(e1.name)          <span class="cmt"># Nam</span>
+<span class="fn">print</span>(e2.name)          <span class="cmt"># Lan</span>
+<span class="fn">print</span>(Employee.emp_count) <span class="cmt"># 2</span></code></pre>
+  </div>
+  <div class="callout">Cần cẩn thận khi dùng thuộc tính lớp với dữ liệu có thể thay đổi, chẳng hạn danh sách. Danh sách là class attribute sẽ được chia sẻ bởi mọi đối tượng — một thay đổi ảnh hưởng đến tất cả.</div>
+  <div class="code-block">
+    <div class="code-label">Python – lỗi phổ biến với class attribute là list</div>
+    <pre><code><span class="kw">class</span> <span class="type">Team</span>:
+    members = []                           <span class="cmt"># DÙNG CHUNG!</span>
+    <span class="kw">def</span> <span class="fn">add</span>(self, name): self.members.<span class="fn">append</span>(name)
+
+t1 = <span class="fn">Team</span>(); t2 = <span class="fn">Team</span>()
+t1.<span class="fn">add</span>(<span class="str">"An"</span>); t2.<span class="fn">add</span>(<span class="str">"Binh"</span>)
+<span class="fn">print</span>(t1.members)  <span class="cmt"># ['An', 'Binh'] ← không mong đợi!</span>
+<span class="fn">print</span>(t2.members)  <span class="cmt"># ['An', 'Binh']</span>
+
+<span class="cmt"># Sửa: tạo list riêng trong __init__</span>
+<span class="kw">class</span> <span class="type">Team</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self): self.members = []
+    <span class="kw">def</span> <span class="fn">add</span>(self, name): self.members.<span class="fn">append</span>(name)
+
+t1 = <span class="fn">Team</span>(); t2 = <span class="fn">Team</span>()
+t1.<span class="fn">add</span>(<span class="str">"An"</span>); t2.<span class="fn">add</span>(<span class="str">"Binh"</span>)
+<span class="fn">print</span>(t1.members)  <span class="cmt"># ['An']</span>
+<span class="fn">print</span>(t2.members)  <span class="cmt"># ['Binh']</span></code></pre>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     TÀI LIỆU 3: PHƯƠNG THỨC VÀ SELF
+══════════════════════════════════════════════ -->
+<div class="lesson-badge">Phụ lục · Tài liệu 3 / 7</div>
+<h1 class="lesson-title" id="phuong-thuc-self">Phương thức và self trong Python</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: OOP trong Python · Trần Ngọc Bảo Duy</div>
+
+<div class="article-section">
+  <p>Trong Python, phương thức (method) là hàm được định nghĩa bên trong lớp và thường thao tác trên đối tượng hiện hành. Tham số đầu tiên của phương thức thường được đặt tên là <code>self</code>.</p>
+  <div class="code-block">
+    <div class="code-label">Python – phương thức và self</div>
+    <pre><code><span class="kw">class</span> <span class="type">Employee</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, name, salary):
+        self.name = name
+        self.salary = salary
+    <span class="kw">def</span> <span class="fn">display</span>(self):
+        <span class="fn">print</span>(self.name, self.salary)
+
+e = <span class="fn">Employee</span>(<span class="str">"Nam"</span>, <span class="num">30</span>)
+e.<span class="fn">display</span>()  <span class="cmt"># Nam 30</span></code></pre>
+  </div>
+  <p>Lời gọi <code>e.display()</code> về bản chất tương đương với <code>Employee.display(e)</code>. Nói cách khác, đối tượng <code>e</code> được truyền vào tham số đầu tiên <code>self</code>. Python làm rõ đối tượng nhận lời gọi bằng <code>self</code>, trong khi nhiều ngôn ngữ khác dùng từ khóa ẩn như <code>this</code>.</p>
+  <div class="code-block">
+    <div class="code-label">Python – mỗi đối tượng có trạng thái riêng</div>
+    <pre><code><span class="kw">class</span> <span class="type">Counter</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self): self.value = <span class="num">0</span>
+    <span class="kw">def</span> <span class="fn">inc</span>(self): self.value += <span class="num">1</span>
+
+c1 = <span class="fn">Counter</span>(); c2 = <span class="fn">Counter</span>()
+c1.<span class="fn">inc</span>(); c1.<span class="fn">inc</span>(); c2.<span class="fn">inc</span>()
+<span class="fn">print</span>(c1.value)  <span class="cmt"># 2</span>
+<span class="fn">print</span>(c2.value)  <span class="cmt"># 1</span></code></pre>
+  </div>
+  <p>Nếu quên khai báo <code>self</code>, phương thức sẽ lỗi khi được gọi qua đối tượng, vì Python tự động truyền đối tượng vào tham số đầu tiên nhưng phương thức không khai báo tham số đó.</p>
+</div>
+
+<div class="article-section" id="ba-loai-phuong-thuc">
+  <h2 class="section-heading">Ba loại phương thức</h2>
+  <p>Trong Python, ngoài phương thức đối tượng thông thường, còn có phương thức lớp (class method) và phương thức tĩnh (static method).</p>
+  <div class="code-block">
+    <div class="code-label">Python – classmethod và staticmethod</div>
+    <pre><code><span class="kw">class</span> <span class="type">Employee</span>:
+    emp_count = <span class="num">0</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, name):
+        self.name = name
+        Employee.emp_count += <span class="num">1</span>
+
+    <span class="dec">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">count</span>(cls):
+        <span class="kw">return</span> cls.emp_count
+
+<span class="kw">class</span> <span class="type">Math</span>:
+    <span class="dec">@staticmethod</span>
+    <span class="kw">def</span> <span class="fn">square</span>(x):
+        <span class="kw">return</span> x * x
+
+<span class="fn">print</span>(Employee.<span class="fn">count</span>())  <span class="cmt"># số nhân viên đã tạo</span>
+<span class="fn">print</span>(Math.<span class="fn">square</span>(<span class="num">5</span>))     <span class="cmt"># 25</span></code></pre>
+  </div>
+  <table class="data-table">
+    <thead><tr><th>Loại phương thức</th><th>Tham số đầu tiên</th><th>Dùng khi nào</th></tr></thead>
+    <tbody>
+      <tr><td>Phương thức đối tượng</td><td><code>self</code></td><td>Cần truy cập trạng thái của đối tượng</td></tr>
+      <tr><td>Phương thức lớp</td><td><code>cls</code></td><td>Cần truy cập hoặc tạo đối tượng dựa trên lớp</td></tr>
+      <tr><td>Phương thức tĩnh</td><td>Không có tham số tự động</td><td>Hàm tiện ích đặt trong lớp cho có tổ chức</td></tr>
+    </tbody>
+  </table>
+  <p>Trong bối cảnh học OOP cơ bản, phương thức đối tượng với <code>self</code> là quan trọng nhất, vì nó thể hiện rõ ý tưởng: đối tượng nhận lời gọi và tự xử lý dữ liệu của chính nó.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     TÀI LIỆU 4: QUY ƯỚC ĐÓNG GÓI
+══════════════════════════════════════════════ -->
+<div class="lesson-badge">Phụ lục · Tài liệu 4 / 7</div>
+<h1 class="lesson-title" id="dong-goi">Quy ước đóng gói trong Python</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: OOP trong Python · Trần Ngọc Bảo Duy</div>
+
+<div class="article-section">
+  <p>Trong nhiều ngôn ngữ như Java hoặc C++, đóng gói (encapsulation) thường đi kèm các mức truy cập như <code>public</code>, <code>private</code>, <code>protected</code>. Python không thực thi kiểm soát truy cập chặt chẽ theo cách đó. Thay vào đó, Python dựa nhiều vào quy ước đặt tên và một cơ chế gọi là đổi tên nội bộ (name mangling).</p>
+  <table class="data-table">
+    <thead><tr><th>Dạng tên</th><th>Ý nghĩa</th></tr></thead>
+    <tbody>
+      <tr><td><code>name</code></td><td>Công khai theo quy ước</td></tr>
+      <tr><td><code>_name</code></td><td>Dành cho nội bộ, không nên truy cập trực tiếp từ bên ngoài</td></tr>
+      <tr><td><code>__name</code></td><td>Được đổi tên nội bộ, tạo hiệu ứng gần giống riêng tư</td></tr>
+      <tr><td><code>__name__</code></td><td>Tên đặc biệt của Python, không nên tự đặt tùy tiện</td></tr>
+    </tbody>
+  </table>
+  <p>Ví dụ thông thường với thuộc tính công khai:</p>
+  <div class="code-block">
+    <div class="code-label">Python – thuộc tính công khai (không an toàn)</div>
+    <pre><code><span class="kw">class</span> <span class="type">Account</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, balance):
+        self.balance = balance
+    <span class="kw">def</span> <span class="fn">deposit</span>(self, amount):
+        self.balance += amount
+
+acc = <span class="fn">Account</span>(<span class="num">100</span>)
+acc.balance = -<span class="num">1000</span>  <span class="cmt"># trạng thái không hợp lệ!</span></code></pre>
+  </div>
+  <p>Một thiết kế tốt hơn là dùng thuộc tính nội bộ và cung cấp phương thức kiểm soát:</p>
+  <div class="code-block">
+    <div class="code-label">Python – thuộc tính nội bộ _balance</div>
+    <pre><code><span class="kw">class</span> <span class="type">Account</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, balance):
+        <span class="kw">if</span> balance &lt; <span class="num">0</span>:
+            <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"balance must be non-negative"</span>)
+        self._balance = balance
+    <span class="kw">def</span> <span class="fn">deposit</span>(self, amount):
+        <span class="kw">if</span> amount &lt;= <span class="num">0</span>:
+            <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"amount must be positive"</span>)
+        self._balance += amount
+    <span class="kw">def</span> <span class="fn">get_balance</span>(self):
+        <span class="kw">return</span> self._balance
+
+acc = <span class="fn">Account</span>(<span class="num">100</span>)
+acc.<span class="fn">deposit</span>(<span class="num">50</span>)
+<span class="fn">print</span>(acc.<span class="fn">get_balance</span>())  <span class="cmt"># 150</span></code></pre>
+  </div>
+</div>
+
+<div class="article-section" id="name-mangling">
+  <h2 class="section-heading">Name mangling với __name</h2>
+  <p>Nếu dùng hai dấu gạch dưới, Python sẽ đổi tên thuộc tính. Ví dụ:</p>
+  <div class="code-block">
+    <div class="code-label">Python – name mangling</div>
+    <pre><code><span class="kw">class</span> <span class="type">Account</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, balance):
+        self.__balance = balance
+    <span class="kw">def</span> <span class="fn">get_balance</span>(self):
+        <span class="kw">return</span> self.__balance
+
+acc = <span class="fn">Account</span>(<span class="num">100</span>)
+<span class="cmt"># print(acc.__balance)  ← lỗi AttributeError</span>
+<span class="fn">print</span>(acc.__dict__)
+<span class="cmt"># {'_Account__balance': 100}</span>
+
+<span class="cmt"># Vẫn có thể truy cập nếu cố tình:</span>
+<span class="fn">print</span>(acc._Account__balance)  <span class="cmt"># 100</span></code></pre>
+  </div>
+  <div class="callout">Cơ chế <code>__name</code> không phải bảo mật tuyệt đối. Mục tiêu chính là tránh xung đột tên trong kế thừa và báo hiệu rằng thuộc tính không nên được truy cập trực tiếp.</div>
+</div>
+
+<div class="article-section" id="property">
+  <h2 class="section-heading">Property – cách Pythonic hơn</h2>
+  <p>Một cách Pythonic hơn để kiểm soát truy cập là dùng <code>property</code>:</p>
+  <div class="code-block">
+    <div class="code-label">Python – @property</div>
+    <pre><code><span class="kw">class</span> <span class="type">Account</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, balance):
+        self._balance = balance
+
+    <span class="dec">@property</span>
+    <span class="kw">def</span> <span class="fn">balance</span>(self):
+        <span class="kw">return</span> self._balance
+
+    <span class="kw">def</span> <span class="fn">deposit</span>(self, amount):
+        <span class="kw">if</span> amount &lt;= <span class="num">0</span>:
+            <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"amount must be positive"</span>)
+        self._balance += amount
+
+acc = <span class="fn">Account</span>(<span class="num">100</span>)
+<span class="fn">print</span>(acc.balance)  <span class="cmt"># 100 – đọc được</span>
+acc.<span class="fn">deposit</span>(<span class="num">50</span>)
+<span class="fn">print</span>(acc.balance)  <span class="cmt"># 150</span>
+<span class="cmt"># acc.balance = -100  ← lỗi nếu không có setter</span></code></pre>
+  </div>
+  <p>Python không ép đóng gói bằng rào cản cứng như Java, nhưng cung cấp quy ước và công cụ để người lập trình thiết kế giao diện ổn định, hạn chế phụ thuộc vào cài đặt bên trong.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     TÀI LIỆU 5: KẾ THỪA VÀ MRO
+══════════════════════════════════════════════ -->
+<div class="lesson-badge">Phụ lục · Tài liệu 5 / 7</div>
+<h1 class="lesson-title" id="ke-thua-mro">Kế thừa và MRO trong Python</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: OOP trong Python · Trần Ngọc Bảo Duy</div>
+
+<div class="article-section" id="ke-thua-don">
+  <h2 class="section-heading">Kế thừa đơn và ghi đè phương thức</h2>
+  <p>Python hỗ trợ kế thừa (inheritance) và cả đa kế thừa (multiple inheritance). Khi một lớp kế thừa từ lớp khác, nó có thể dùng lại thuộc tính và phương thức của lớp cha, đồng thời có thể định nghĩa thêm hoặc ghi đè phương thức. Ví dụ kế thừa đơn:</p>
+
+  <div class="fig-wrap">
+    <img src="OOP trong Python/Hình 1.png" alt="Kế thừa đơn: Lecturer kế thừa từ Employee">
+    <div class="fig-caption">Hình 1. Kế thừa đơn: Lecturer kế thừa từ Employee.</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">Python – kế thừa đơn</div>
+    <pre><code><span class="kw">class</span> <span class="type">Employee</span>:
+    <span class="kw">def</span> <span class="fn">get_info</span>(self):
+        <span class="kw">return</span> <span class="str">"Employee"</span>
+
+<span class="kw">class</span> <span class="type">Lecturer</span>(Employee):
+    <span class="kw">def</span> <span class="fn">teach</span>(self):
+        <span class="kw">return</span> <span class="str">"Teaching"</span>
+
+lec = <span class="fn">Lecturer</span>()
+<span class="fn">print</span>(lec.<span class="fn">get_info</span>())  <span class="cmt"># Employee – kế thừa từ cha</span>
+<span class="fn">print</span>(lec.<span class="fn">teach</span>())     <span class="cmt"># Teaching</span></code></pre>
+  </div>
+  <p>Nếu lớp con định nghĩa phương thức trùng tên với lớp cha, đó là ghi đè phương thức (method overriding):</p>
+  <div class="code-block">
+    <div class="code-label">Python – method overriding</div>
+    <pre><code><span class="kw">class</span> <span class="type">Employee</span>:
+    <span class="kw">def</span> <span class="fn">get_info</span>(self): <span class="kw">return</span> <span class="str">"Employee"</span>
+
+<span class="kw">class</span> <span class="type">Lecturer</span>(Employee):
+    <span class="kw">def</span> <span class="fn">get_info</span>(self): <span class="kw">return</span> <span class="str">"Lecturer"</span>
+
+<span class="fn">print</span>(<span class="fn">Lecturer</span>().<span class="fn">get_info</span>())  <span class="cmt"># Lecturer</span></code></pre>
+  </div>
+  <p>Câu hỏi quan trọng là: khi một phương thức được gọi, Python tìm phương thức đó ở đâu và theo thứ tự nào? Câu trả lời nằm ở thứ tự phân giải phương thức (Method Resolution Order, MRO). MRO là thứ tự các lớp mà Python sẽ lần lượt tìm kiếm khi cần phân giải một thuộc tính hoặc phương thức.</p>
+
+  <div class="fig-wrap">
+    <img src="OOP trong Python/Hình 2.png" alt="Mô phỏng tìm phương thức theo MRO">
+    <div class="fig-caption">Hình 2. Mô phỏng tìm phương thức: Python duyệt lần lượt các lớp trong MRO cho đến khi tìm thấy tên cần phân giải.</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">Python – xem MRO</div>
+    <pre><code><span class="kw">class</span> <span class="type">A</span>:
+    <span class="kw">def</span> <span class="fn">f</span>(self): <span class="kw">return</span> <span class="str">"A"</span>
+<span class="kw">class</span> <span class="type">B</span>(A): <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">C</span>(B): <span class="kw">pass</span>
+<span class="fn">print</span>(C.__mro__)
+<span class="cmt"># (&lt;class 'C'&gt;, &lt;class 'B'&gt;, &lt;class 'A'&gt;, &lt;class 'object'&gt;)</span>
+<span class="fn">print</span>(<span class="fn">C</span>().<span class="fn">f</span>())  <span class="cmt"># A – tìm thấy f trong A</span></code></pre>
+  </div>
+
+  <div class="fig-wrap">
+    <img src="OOP trong Python/Hình 3.png" alt="Thứ tự tìm kiếm MRO: C → B → A → object">
+    <div class="fig-caption">Hình 3. Thứ tự tìm kiếm MRO của C(B(A)): C → B → A → object. C không có f, B không có f, A có f.</div>
+  </div>
+</div>
+
+<div class="article-section" id="da-ke-thua">
+  <h2 class="section-heading">Đa kế thừa và bài toán kim cương</h2>
+  <p>Trong kế thừa đơn, thứ tự tìm kiếm thường dễ hiểu. Nhưng trong đa kế thừa, một lớp có thể có nhiều lớp cha.</p>
+
+  <div class="fig-wrap">
+    <img src="OOP trong Python/Hình 4.png" alt="Đa kế thừa đơn giản: C(A, B)">
+    <div class="fig-caption">Hình 4. Đa kế thừa đơn giản: C(A, B).</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">Python – đa kế thừa C(A, B)</div>
+    <pre><code><span class="kw">class</span> <span class="type">A</span>: <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">B</span>: <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">C</span>(A, B): <span class="kw">pass</span>
+<span class="fn">print</span>(<span class="str">" -&gt; "</span>.<span class="fn">join</span>(cls.__name__ <span class="kw">for</span> cls <span class="kw">in</span> C.__mro__))
+<span class="cmt"># C -&gt; A -&gt; B -&gt; object</span></code></pre>
+  </div>
+  <p>Vấn đề trở nên khó hơn khi các lớp cha lại có tổ tiên chung — đây là bài toán kim cương.</p>
+
+  <div class="fig-wrap">
+    <img src="OOP trong Python/Hình 5.png" alt="Bài toán kim cương: D(B, C) với B và C cùng kế thừa từ A">
+    <div class="fig-caption">Hình 5. Bài toán kim cương: D(B, C) với B và C cùng kế thừa từ A.</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">Python – bài toán kim cương</div>
+    <pre><code><span class="kw">class</span> <span class="type">A</span>:
+    <span class="kw">def</span> <span class="fn">f</span>(self): <span class="kw">return</span> <span class="str">"A"</span>
+<span class="kw">class</span> <span class="type">B</span>(A):
+    <span class="kw">def</span> <span class="fn">f</span>(self): <span class="kw">return</span> <span class="str">"B"</span>
+<span class="kw">class</span> <span class="type">C</span>(A):
+    <span class="kw">def</span> <span class="fn">f</span>(self): <span class="kw">return</span> <span class="str">"C"</span>
+<span class="kw">class</span> <span class="type">D</span>(B, C): <span class="kw">pass</span>
+
+<span class="fn">print</span>(<span class="str">" -&gt; "</span>.<span class="fn">join</span>(cls.__name__ <span class="kw">for</span> cls <span class="kw">in</span> D.__mro__))
+<span class="cmt"># D -&gt; B -&gt; C -&gt; A -&gt; object</span>
+<span class="fn">print</span>(<span class="fn">D</span>().<span class="fn">f</span>())  <span class="cmt"># B</span>
+
+<span class="cmt"># Đổi thứ tự kế thừa → kết quả thay đổi</span>
+<span class="kw">class</span> <span class="type">D2</span>(C, B): <span class="kw">pass</span>
+<span class="fn">print</span>(<span class="fn">D2</span>().<span class="fn">f</span>())  <span class="cmt"># C</span></code></pre>
+  </div>
+  <div class="callout">Thứ tự lớp cha trong khai báo ảnh hưởng đến MRO, và do đó ảnh hưởng đến phương thức nào được chọn khi có xung đột tên.</div>
+</div>
+
+<div class="article-section" id="giai-thuat-c3">
+  <h2 class="section-heading">Giải thuật C3</h2>
+  <p>Python hiện đại dùng tuyến tính hóa C3 (C3 linearization) để tính MRO. Mục tiêu của C3 là tạo ra một danh sách tuyến tính các lớp cần tìm kiếm, đồng thời bảo đảm ba tính chất quan trọng:</p>
+  <table class="data-table">
+    <thead><tr><th>Tính chất</th><th>Ý nghĩa</th></tr></thead>
+    <tbody>
+      <tr><td>Lớp con đứng trước lớp cha</td><td>Nếu B kế thừa từ A, thì B phải xuất hiện trước A</td></tr>
+      <tr><td>Giữ thứ tự khai báo lớp cha</td><td>Nếu D(B, C), thì B phải được ưu tiên trước C</td></tr>
+      <tr><td>Nhất quán đơn điệu</td><td>Thứ tự đã có trong lớp cha không bị đảo lộn tùy tiện ở lớp con</td></tr>
+    </tbody>
+  </table>
+  <p>Công thức MRO của một lớp C có các lớp cha B1, B2, ..., Bn là:</p>
+  <div class="code-block">
+    <div class="code-label">Công thức C3</div>
+    <pre><code>MRO(C) = [C] + merge(MRO(B1), MRO(B2), ..., MRO(Bn), [B1, B2, ..., Bn])</code></pre>
+  </div>
+  <p>Hàm <strong>merge</strong> hoạt động theo ý tưởng: lặp cho đến khi tất cả danh sách rỗng:</p>
+  <div class="algo-box">
+    <ol>
+      <li>Chọn phần tử đầu tiên của một danh sách nếu phần tử đó <em>không xuất hiện trong phần đuôi</em> của bất kỳ danh sách nào khác.</li>
+      <li>Đưa phần tử được chọn vào kết quả.</li>
+      <li>Xóa phần tử đó khỏi đầu các danh sách có chứa nó.</li>
+      <li>Nếu không chọn được phần tử nào → MRO không hợp lệ.</li>
+    </ol>
+    <p style="margin-top:8px; font-size:12px; color:#888;">Lưu ý: "phần đuôi" = các phần tử đứng sau phần tử đầu tiên của một danh sách.</p>
+  </div>
+  <p>Ví dụ với hình kim cương (Hình 5):</p>
+  <div class="code-block">
+    <div class="code-label">Tính MRO bằng C3 – bài toán kim cương</div>
+    <pre><code>MRO(A) = [A, object]
+MRO(B) = [B, A, object]
+MRO(C) = [C, A, object]
+MRO(D) = [D] + merge([B, A, object], [C, A, object], [B, C])</code></pre>
+  </div>
+  <table class="data-table">
+    <thead><tr><th>Bước</th><th>Các danh sách đang xét</th><th>Chọn</th><th>Lý do</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>[B, A, object], [C, A, object], [B, C]</td><td>B</td><td>B không nằm trong đuôi danh sách nào</td></tr>
+      <tr><td>2</td><td>[A, object], [C, A, object], [C]</td><td>C</td><td>A nằm trong đuôi [C, A, object], nên chưa chọn A; chọn C</td></tr>
+      <tr><td>3</td><td>[A, object], [A, object]</td><td>A</td><td>A không còn nằm trong đuôi danh sách nào</td></tr>
+      <tr><td>4</td><td>[object], [object]</td><td>object</td><td>Còn lại object</td></tr>
+    </tbody>
+  </table>
+  <div class="code-block">
+    <div class="code-label">Python – kiểm tra</div>
+    <pre><code><span class="fn">print</span>([cls.__name__ <span class="kw">for</span> cls <span class="kw">in</span> D.__mro__])
+<span class="cmt"># ['D', 'B', 'C', 'A', 'object']</span></code></pre>
+  </div>
+</div>
+
+<div class="article-section" id="mro-phuc-tap">
+  <h2 class="section-heading">Ví dụ MRO phức tạp hơn</h2>
+  <p>Xét phân cấp sau:</p>
+
+  <div class="fig-wrap">
+    <img src="OOP trong Python/Hình 6.png" alt="Phân cấp kế thừa phức tạp dùng minh họa giải thuật C3">
+    <div class="fig-caption">Hình 6. Phân cấp kế thừa phức tạp dùng minh họa giải thuật C3.</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">Python – F(D, E) với D(A,B) và E(B,C)</div>
+    <pre><code><span class="kw">class</span> <span class="type">O</span>: <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">A</span>(O): <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">B</span>(O): <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">C</span>(O): <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">D</span>(A, B): <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">E</span>(B, C): <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">F</span>(D, E): <span class="kw">pass</span></code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-label">Tính MRO</div>
+    <pre><code>MRO(D) = [D, A, B, O, object]
+MRO(E) = [E, B, C, O, object]
+MRO(F) = [F] + merge([D, A, B, O, object], [E, B, C, O, object], [D, E])</code></pre>
+  </div>
+  <table class="data-table">
+    <thead><tr><th>Bước</th><th>Các đầu danh sách</th><th>Chọn</th><th>Giải thích</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>D, E, D</td><td>D</td><td>D không nằm trong đuôi danh sách nào</td></tr>
+      <tr><td>2</td><td>A, E, E</td><td>A</td><td>A không nằm trong đuôi danh sách nào</td></tr>
+      <tr><td>3</td><td>B, E, E</td><td>E</td><td>B nằm trong đuôi MRO(E), nên chưa chọn B; chọn E</td></tr>
+      <tr><td>4</td><td>B, B</td><td>B</td><td>B hợp lệ</td></tr>
+      <tr><td>5</td><td>O, C</td><td>C</td><td>O nằm trong đuôi [C, O, object], nên chọn C</td></tr>
+      <tr><td>6</td><td>O, O</td><td>O</td><td>O hợp lệ</td></tr>
+      <tr><td>7</td><td>object, object</td><td>object</td><td>Còn lại object</td></tr>
+    </tbody>
+  </table>
+  <div class="code-block">
+    <div class="code-label">Python – kiểm tra</div>
+    <pre><code><span class="fn">print</span>([cls.__name__ <span class="kw">for</span> cls <span class="kw">in</span> F.__mro__])
+<span class="cmt"># ['F', 'D', 'A', 'E', 'B', 'C', 'O', 'object']</span></code></pre>
+  </div>
+  <p>Ví dụ này cho thấy MRO không đơn giản là duyệt theo chiều sâu từ trái sang phải. Python dùng C3 để bảo toàn thứ tự ưu tiên cục bộ và quan hệ kế thừa đã có trong các lớp cha.</p>
+</div>
+
+<div class="article-section" id="mro-khong-hop-le">
+  <h2 class="section-heading">Khi MRO không hợp lệ</h2>
+  <p>Không phải mọi phân cấp đa kế thừa đều hợp lệ. Nếu các lớp cha yêu cầu thứ tự mâu thuẫn nhau, Python không thể tạo MRO.</p>
+
+  <div class="fig-wrap">
+    <img src="OOP trong Python/Hình 7.png" alt="Phân cấp mâu thuẫn: X(A,B) và Y(B,A) không thể cùng thỏa mãn trong Z(X,Y)">
+    <div class="fig-caption">Hình 7. Phân cấp mâu thuẫn: X(A, B) và Y(B, A) không thể cùng được thỏa mãn trong Z(X, Y).</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">Python – MRO không hợp lệ</div>
+    <pre><code><span class="kw">class</span> <span class="type">A</span>: <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">B</span>: <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">X</span>(A, B): <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">Y</span>(B, A): <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">Z</span>(X, Y): <span class="kw">pass</span>  <span class="cmt"># TypeError!</span>
+<span class="cmt"># TypeError: Cannot create a consistent method resolution order</span></code></pre>
+  </div>
+  <table class="data-table">
+    <thead><tr><th>Lớp</th><th>Thứ tự yêu cầu</th></tr></thead>
+    <tbody>
+      <tr><td>X(A, B)</td><td>A trước B</td></tr>
+      <tr><td>Y(B, A)</td><td>B trước A</td></tr>
+      <tr><td>Z(X, Y)</td><td>Phải tôn trọng cả hai</td></tr>
+      <tr><td><strong>Kết quả</strong></td><td>Mâu thuẫn, MRO không tồn tại</td></tr>
+    </tbody>
+  </table>
+  <p>Đây là lý do Python không chỉ chọn đại một thứ tự, mà kiểm tra tính nhất quán của phân cấp kế thừa.</p>
+</div>
+
+<div class="article-section" id="super-mro">
+  <h2 class="section-heading">MRO và super()</h2>
+  <p>Trong Python, <code>super()</code> không đơn giản có nghĩa là "gọi lớp cha trực tiếp". Chính xác hơn, <code>super()</code> gọi phương thức tiếp theo trong MRO.</p>
+
+  <div class="fig-wrap">
+    <img src="OOP trong Python/Hình 8.png" alt="super() đi theo MRO: D → B → C → A → object">
+    <div class="fig-caption">Hình 8. super() đi theo MRO của đối tượng, không chỉ theo lớp cha trực tiếp.</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">Python – super() theo MRO</div>
+    <pre><code><span class="kw">class</span> <span class="type">A</span>:
+    <span class="kw">def</span> <span class="fn">f</span>(self): <span class="fn">print</span>(<span class="str">"A"</span>)
+<span class="kw">class</span> <span class="type">B</span>(A):
+    <span class="kw">def</span> <span class="fn">f</span>(self): <span class="fn">print</span>(<span class="str">"B"</span>); <span class="fn">super</span>().<span class="fn">f</span>()
+<span class="kw">class</span> <span class="type">C</span>(A):
+    <span class="kw">def</span> <span class="fn">f</span>(self): <span class="fn">print</span>(<span class="str">"C"</span>); <span class="fn">super</span>().<span class="fn">f</span>()
+<span class="kw">class</span> <span class="type">D</span>(B, C):
+    <span class="kw">def</span> <span class="fn">f</span>(self): <span class="fn">print</span>(<span class="str">"D"</span>); <span class="fn">super</span>().<span class="fn">f</span>()
+
+<span class="fn">D</span>().<span class="fn">f</span>()
+<span class="cmt"># D – B – C – A</span>
+<span class="cmt"># MRO: D → B → C → A → object</span>
+<span class="cmt"># Trong B.f, super().f() gọi C.f (không phải A.f trực tiếp!)</span></code></pre>
+  </div>
+  <div class="callout"><strong>Điểm quan trọng:</strong> <code>super()</code> đi theo MRO của <em>đối tượng hiện hành</em>, không chỉ theo lớp cha ghi trong định nghĩa lớp hiện tại.</div>
+</div>
+
+<div class="article-section" id="ke-thua-hop-tac">
+  <h2 class="section-heading">Kế thừa hợp tác</h2>
+  <p>Để đa kế thừa hoạt động tốt, các lớp nên được viết theo kiểu kế thừa hợp tác (cooperative inheritance). Nghĩa là mỗi lớp làm phần việc của mình rồi gọi <code>super()</code> để chuyển tiếp cho lớp tiếp theo trong MRO.</p>
+  <div class="code-block">
+    <div class="code-label">Python – kế thừa hợp tác C(A, B)</div>
+    <pre><code><span class="kw">class</span> <span class="type">Base</span>:
+    <span class="kw">def</span> <span class="fn">process</span>(self): <span class="fn">print</span>(<span class="str">"Base"</span>)
+<span class="kw">class</span> <span class="type">A</span>(Base):
+    <span class="kw">def</span> <span class="fn">process</span>(self): <span class="fn">print</span>(<span class="str">"A"</span>); <span class="fn">super</span>().<span class="fn">process</span>()
+<span class="kw">class</span> <span class="type">B</span>(Base):
+    <span class="kw">def</span> <span class="fn">process</span>(self): <span class="fn">print</span>(<span class="str">"B"</span>); <span class="fn">super</span>().<span class="fn">process</span>()
+<span class="kw">class</span> <span class="type">C</span>(A, B):
+    <span class="kw">def</span> <span class="fn">process</span>(self): <span class="fn">print</span>(<span class="str">"C"</span>); <span class="fn">super</span>().<span class="fn">process</span>()
+
+<span class="fn">C</span>().<span class="fn">process</span>()
+<span class="cmt"># C → A → B → Base</span>
+<span class="cmt"># MRO: C → A → B → Base → object</span></code></pre>
+  </div>
+  <p>Nếu một lớp không gọi <code>super()</code>, chuỗi xử lý sẽ bị ngắt. Vì vậy, khi thiết kế mixin hoặc đa kế thừa trong Python, nên thống nhất cách dùng <code>super()</code> để các lớp có thể phối hợp với nhau.</p>
+</div>
+
+<div class="article-section" id="mixin">
+  <h2 class="section-heading">Mixin và MRO</h2>
+  <p>Mixin là lớp nhỏ cung cấp một năng lực bổ sung, thường không được dùng độc lập. Mixin rất phổ biến trong Python vì Python hỗ trợ đa kế thừa và MRO rõ ràng.</p>
+  <div class="code-block">
+    <div class="code-label">Python – Mixin</div>
+    <pre><code><span class="kw">class</span> <span class="type">JsonMixin</span>:
+    <span class="kw">def</span> <span class="fn">to_json</span>(self): <span class="kw">return</span> self.__dict__
+<span class="kw">class</span> <span class="type">LogMixin</span>:
+    <span class="kw">def</span> <span class="fn">log</span>(self): <span class="fn">print</span>(<span class="str">"LOG:"</span>, self.__dict__)
+<span class="kw">class</span> <span class="type">Student</span>(JsonMixin, LogMixin):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, name, gpa):
+        self.name = name; self.gpa = gpa
+
+s = <span class="fn">Student</span>(<span class="str">"An"</span>, <span class="num">3.8</span>)
+<span class="fn">print</span>(s.<span class="fn">to_json</span>())  <span class="cmt"># {'name': 'An', 'gpa': 3.8}</span>
+s.<span class="fn">log</span>()            <span class="cmt"># LOG: {'name': 'An', 'gpa': 3.8}</span>
+<span class="fn">print</span>([cls.__name__ <span class="kw">for</span> cls <span class="kw">in</span> Student.__mro__])
+<span class="cmt"># ['Student', 'JsonMixin', 'LogMixin', 'object']</span></code></pre>
+  </div>
+  <p>Nếu hai mixin có cùng tên phương thức, MRO quyết định phương thức nào được chọn:</p>
+  <div class="code-block">
+    <div class="code-label">Python – thứ tự mixin ảnh hưởng đến kết quả</div>
+    <pre><code><span class="kw">class</span> <span class="type">A</span>:
+    <span class="kw">def</span> <span class="fn">show</span>(self): <span class="fn">print</span>(<span class="str">"A"</span>)
+<span class="kw">class</span> <span class="type">B</span>:
+    <span class="kw">def</span> <span class="fn">show</span>(self): <span class="fn">print</span>(<span class="str">"B"</span>)
+<span class="kw">class</span> <span class="type">C</span>(A, B): <span class="kw">pass</span>
+<span class="kw">class</span> <span class="type">D</span>(B, A): <span class="kw">pass</span>
+<span class="fn">C</span>().<span class="fn">show</span>()  <span class="cmt"># A – C(A,B) ưu tiên A</span>
+<span class="fn">D</span>().<span class="fn">show</span>()  <span class="cmt"># B – D(B,A) ưu tiên B</span></code></pre>
+  </div>
+  <div class="callout">Khi dùng nhiều mixin, thứ tự lớp cha trong khai báo là một phần của thiết kế, không phải chi tiết ngẫu nhiên.</div>
+</div>
+
+<div class="article-section" id="tong-ket-mro">
+  <h2 class="section-heading">Tổng kết về MRO</h2>
+  <p>MRO trong Python là cơ chế trung tâm để hiểu kế thừa, đặc biệt là đa kế thừa. Khi gọi <code>obj.method()</code>, Python tìm phương thức theo MRO của lớp động của <code>obj</code>.</p>
+  <table class="data-table">
+    <thead><tr><th>Nội dung</th><th>Ý nghĩa</th></tr></thead>
+    <tbody>
+      <tr><td>MRO là thứ tự tìm kiếm phương thức</td><td>Xem bằng <code>Class.__mro__</code> hoặc <code>Class.mro()</code></td></tr>
+      <tr><td>Python dùng giải thuật C3</td><td>Bảo toàn thứ tự lớp con trước lớp cha và thứ tự khai báo lớp cha</td></tr>
+      <tr><td>Đa kế thừa có thể mâu thuẫn</td><td>Python báo lỗi nếu không tạo được MRO nhất quán</td></tr>
+      <tr><td><code>super()</code> đi theo MRO</td><td>Không đơn giản là gọi lớp cha trực tiếp</td></tr>
+      <tr><td>Mixin phụ thuộc mạnh vào MRO</td><td>Thứ tự khai báo lớp cha ảnh hưởng đến hành vi</td></tr>
+    </tbody>
+  </table>
+  <p>Hiểu MRO giúp người lập trình Python tránh nhiều lỗi khó phát hiện trong các hệ thống dùng kế thừa phức tạp, mixin hoặc framework lớn.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     TÀI LIỆU 6: KIỂU VỊT VÀ ĐA HÌNH
+══════════════════════════════════════════════ -->
+<div class="lesson-badge">Phụ lục · Tài liệu 6 / 7</div>
+<h1 class="lesson-title" id="duck-typing">Kiểu vịt và đa hình trong Python</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: OOP trong Python · Trần Ngọc Bảo Duy</div>
+
+<div class="article-section">
+  <p>Python thường được mô tả là ngôn ngữ sử dụng kiểu vịt (duck typing). Ý tưởng là: nếu một đối tượng có hành vi cần thiết tại thời điểm chạy, ta có thể dùng nó, không nhất thiết phải kiểm tra nó thuộc lớp nào. Câu nói quen thuộc là: <em>nếu một thứ đi như vịt và kêu như vịt, ta có thể xem nó như vịt.</em></p>
+  <div class="code-block">
+    <div class="code-label">Python – duck typing</div>
+    <pre><code><span class="kw">class</span> <span class="type">Circle</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(self): <span class="fn">print</span>(<span class="str">"Draw circle"</span>)
+<span class="kw">class</span> <span class="type">Button</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(self): <span class="fn">print</span>(<span class="str">"Draw button"</span>)
+
+<span class="kw">def</span> <span class="fn">render</span>(x): x.<span class="fn">draw</span>()
+
+<span class="fn">render</span>(<span class="fn">Circle</span>())  <span class="cmt"># Draw circle</span>
+<span class="fn">render</span>(<span class="fn">Button</span>())  <span class="cmt"># Draw button</span></code></pre>
+  </div>
+  <p><code>Circle</code> và <code>Button</code> không cùng kế thừa từ lớp cha chung. Tuy nhiên, cả hai đều có phương thức <code>draw</code>, nên hàm <code>render</code> có thể làm việc với cả hai. Điều này khác với phong cách định kiểu theo tên trong Java.</p>
+  <p>Nếu truyền vào một đối tượng không có <code>draw</code>, lỗi sẽ xuất hiện khi chạy:</p>
+  <div class="code-block">
+    <div class="code-label">Python – AttributeError</div>
+    <pre><code><span class="kw">class</span> <span class="type">Student</span>: <span class="kw">pass</span>
+<span class="fn">render</span>(<span class="fn">Student</span>())
+<span class="cmt"># AttributeError: 'Student' object has no attribute 'draw'</span></code></pre>
+  </div>
+  <p>Kiểu vịt làm chương trình linh hoạt, nhưng cũng đòi hỏi người lập trình cẩn thận hơn. Phong cách thường được khuyến khích trong Python là EAFP (Easier to Ask Forgiveness than Permission):</p>
+  <div class="code-block">
+    <div class="code-label">Python – EAFP và hasattr</div>
+    <pre><code><span class="cmt"># Cách EAFP – thử và xử lý lỗi</span>
+<span class="kw">def</span> <span class="fn">render</span>(x):
+    <span class="kw">try</span>:
+        x.<span class="fn">draw</span>()
+    <span class="kw">except</span> AttributeError:
+        <span class="kw">raise</span> <span class="type">TypeError</span>(<span class="str">"object must provide draw()"</span>)
+
+<span class="cmt"># Cách LBYL – kiểm tra trước</span>
+<span class="kw">def</span> <span class="fn">render</span>(x):
+    <span class="kw">if</span> <span class="fn">hasattr</span>(x, <span class="str">"draw"</span>):
+        x.<span class="fn">draw</span>()
+    <span class="kw">else</span>:
+        <span class="kw">raise</span> <span class="type">TypeError</span>(<span class="str">"object must provide draw()"</span>)</code></pre>
+  </div>
+  <p>Python cũng có thể kết hợp duck typing với lớp cơ sở trừu tượng (abstract base class) hoặc giao thức (protocol) khi cần mô tả rõ năng lực mong đợi:</p>
+  <div class="code-block">
+    <div class="code-label">Python – Abstract Base Class và Protocol</div>
+    <pre><code><span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+<span class="kw">class</span> <span class="type">Drawable</span>(ABC):
+    <span class="dec">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">draw</span>(self): <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="type">Circle</span>(Drawable):
+    <span class="kw">def</span> <span class="fn">draw</span>(self): <span class="fn">print</span>(<span class="str">"Draw circle"</span>)
+
+<span class="cmt"># Dùng Protocol – kiểu duck typing có kiểm tra tĩnh</span>
+<span class="kw">from</span> typing <span class="kw">import</span> Protocol
+<span class="kw">class</span> <span class="type">Drawable</span>(Protocol):
+    <span class="kw">def</span> <span class="fn">draw</span>(self) -&gt; <span class="type">None</span>: ...
+
+<span class="kw">def</span> <span class="fn">render</span>(x: Drawable) -&gt; <span class="type">None</span>:
+    x.<span class="fn">draw</span>()
+
+<span class="kw">class</span> <span class="type">Button</span>:
+    <span class="kw">def</span> <span class="fn">draw</span>(self) -&gt; <span class="type">None</span>:
+        <span class="fn">print</span>(<span class="str">"Draw button"</span>)
+
+<span class="fn">render</span>(<span class="fn">Button</span>())  <span class="cmt"># hợp lệ – Button có phương thức draw</span></code></pre>
+  </div>
+  <p>Protocol giúp công cụ kiểm tra kiểu tĩnh hiểu rằng <code>render</code> cần một đối tượng có phương thức <code>draw</code>, nhưng vẫn giữ phong cách linh hoạt của Python. Một lớp không cần khai báo kế thừa từ <code>Drawable</code>; chỉ cần có phương thức <code>draw</code> phù hợp là đủ.</p>
+  <p>Python hỗ trợ đa hình theo cách rất linh hoạt. Trong các chương trình nhỏ, duck typing giúp mã ngắn gọn và tự nhiên. Trong các hệ thống lớn, có thể kết hợp duck typing với type hints, abstract base classes hoặc protocols để tăng khả năng kiểm tra và tài liệu hóa giao diện mong đợi.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     TÀI LIỆU 7: TÓM TẮT
+══════════════════════════════════════════════ -->
+<div class="lesson-badge">Phụ lục · Tài liệu 7 / 7</div>
+<h1 class="lesson-title" id="tom-tat">Tóm tắt phụ lục</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: OOP trong Python · Trần Ngọc Bảo Duy</div>
+
+<div class="article-section">
+  <p>Python hỗ trợ OOP bằng một mô hình linh hoạt và thực dụng. Lớp mô tả cấu trúc và hành vi chung, đối tượng là thực thể cụ thể tại thời điểm chạy, phương thức nhận đối tượng hiện hành qua <code>self</code>, và thuộc tính có thể nằm ở mức đối tượng hoặc mức lớp.</p>
+  <p>Python không áp đặt đóng gói bằng cơ chế truy cập cứng như Java hoặc C++, mà dựa vào quy ước đặt tên, name mangling và <code>property</code>. Điều này làm Python linh hoạt nhưng cũng đòi hỏi người lập trình tôn trọng giao diện của lớp.</p>
+  <p>Trong kế thừa, đặc biệt là đa kế thừa, MRO là cơ chế cốt lõi. Python dùng giải thuật C3 để xác định thứ tự tìm phương thức, bảo đảm lớp con đứng trước lớp cha, giữ thứ tự khai báo lớp cha và tránh các thứ tự kế thừa mâu thuẫn. <code>super()</code> trong Python đi theo MRO chứ không đơn giản là gọi lớp cha trực tiếp.</p>
+  <p>Cuối cùng, Python thường dùng duck typing: đối tượng được sử dụng dựa trên hành vi mà nó cung cấp tại thời điểm chạy. Cách tiếp cận này giúp Python rất linh hoạt trong thực hành OOP, đồng thời cho thấy rằng lập trình hướng đối tượng không chỉ là quan hệ lớp cha – lớp con, mà còn là cách các đối tượng cung cấp hành vi và tương tác với nhau.</p>
+</div>
+
+<div class="nav-footer">
+  <span>Phụ lục OOP trong Python · 7 tài liệu · CO3005</span>
+  <div style="display:flex; gap:10px;">
+    <a class="nav-btn sec" href="PL_Lap_trinh_ham_Python.html">← Phụ lục trước</a>
+    <a class="nav-btn sec" href="../CO3005.html">Trang chủ</a>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+  // TOC active highlight on scroll
+  const headings = document.querySelectorAll('[id]');
+  const tocLinks = document.querySelectorAll('.toc-item');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-15% 0px -70% 0px' });
+  headings.forEach(h => observer.observe(h));
+</script>
+</body>
+</html>
