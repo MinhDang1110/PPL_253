@@ -28,6 +28,7 @@
     --c6: #1290a8;
     --c7: #c08000;
     --c8: #218a5a;
+    --capp: #7c3a1a;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -466,6 +467,100 @@
     flex-shrink: 0;
   }
 
+  /* ── APPENDIX CARDS ── */
+  .app-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .app-card {
+    background: var(--surface);
+    padding: 28px 28px 24px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: background 0.15s;
+  }
+  .app-card:hover { background: #fdf6f1; }
+  .app-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--capp);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .app-card:hover::before { opacity: 1; }
+
+  .app-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--capp);
+    background: #fdeee6;
+    border: 1px solid #f0c4a8;
+    padding: 3px 8px;
+    border-radius: 3px;
+    width: fit-content;
+    margin-bottom: 10px;
+  }
+  .app-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+  .app-desc {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.65;
+    flex: 1;
+  }
+  .app-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .app-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: #fdeee6;
+    color: var(--capp);
+    border: 1px solid #f0c4a8;
+    letter-spacing: 0.04em;
+  }
+  .app-arrow {
+    font-size: 14px;
+    color: var(--muted);
+    transition: color 0.15s, transform 0.15s;
+  }
+  .app-card:hover .app-arrow {
+    color: var(--capp);
+    transform: translateX(3px);
+  }
+  .app-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    background: #fdeee6;
+    flex-shrink: 0;
+  }
+
   /* ── FOOTER ── */
   .footer {
     border-top: 1px solid var(--border);
@@ -545,6 +640,7 @@
   <div class="tab-row">
     <button class="tab-btn active" id="tabLecture" onclick="switchTab('lecture')">📖 &nbsp;Bài giảng</button>
     <button class="tab-btn" id="tabQuiz" onclick="switchTab('quiz')">📝 &nbsp;Ôn tập</button>
+    <button class="tab-btn" id="tabApp" onclick="switchTab('app')">📒 &nbsp;Phụ lục</button>
   </div>
 
   <!-- LECTURE PANEL -->
@@ -872,6 +968,60 @@
   </div>
   <!-- END QUIZ PANEL -->
 
+  <!-- APPENDIX PANEL -->
+  <div id="panelApp" style="display:none;">
+    <div class="section-label">Tài liệu phụ lục</div>
+    <div class="app-cards">
+
+      <!-- APP 01 -->
+      <a class="app-card" href="Phụ lục/PL_Gioi_thieu_Python.html">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+          <div>
+            <div class="app-badge">Phụ lục 01</div>
+            <div class="app-title">Giới thiệu về Ngôn ngữ Lập trình Python</div>
+          </div>
+          <div class="app-icon">🐍</div>
+        </div>
+        <div class="app-desc">Nền tảng Python dưới góc nhìn nguyên lý ngôn ngữ: biến, phạm vi tĩnh, kiểu động, ngăn xếp lời gọi, đệ quy, cấu trúc dữ liệu (list, tuple, dict) và vòng lặp.</div>
+        <div class="app-footer">
+          <div style="display:flex; gap:5px; flex-wrap:wrap;">
+            <span class="app-tag">7 tài liệu</span>
+            <span class="app-tag">Python</span>
+            <span class="app-tag">Cơ bản</span>
+          </div>
+          <div class="app-arrow">→</div>
+        </div>
+      </a>
+
+      <!-- APP 02 -->
+      <a class="app-card" href="Phụ lục/PL_Lap_trinh_ham_Python.html">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+          <div>
+            <div class="app-badge">Phụ lục 02</div>
+            <div class="app-title">Lập trình Hàm trong Python</div>
+          </div>
+          <div class="app-icon">λ</div>
+        </div>
+        <div class="app-desc">Hàm hạng nhất, lambda, map/filter/reduce, bao đóng (closure), decorator, iterator, generator và tính lười được minh họa qua Python.</div>
+        <div class="app-footer">
+          <div style="display:flex; gap:5px; flex-wrap:wrap;">
+            <span class="app-tag">9 tài liệu</span>
+            <span class="app-tag">FP</span>
+            <span class="app-tag">Closure</span>
+          </div>
+          <div class="app-arrow">→</div>
+        </div>
+      </a>
+
+    </div>
+
+    <div style="margin-top:20px; padding:16px 20px; background:var(--surface); border:1px solid var(--border); border-radius:8px; font-size:13.5px; color:var(--muted); line-height:1.6;">
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#7c3a1a;">📚 Về phụ lục</span><br>
+      Tài liệu phụ lục cung cấp nền tảng ngôn ngữ thực hành — hỗ trợ sinh viên đọc hiểu và viết mã Python liên quan trực tiếp đến các khái niệm nguyên lý ngôn ngữ lập trình.
+    </div>
+  </div>
+  <!-- END APPENDIX PANEL -->
+
   <!-- INFO BOX -->
   <div class="info-box">
     <div class="info-box-label">📌 Cách truy cập</div>
@@ -889,13 +1039,12 @@
 <script>
   /* ── TAB SWITCHING ── */
   function switchTab(tab) {
-    const isLecture = tab === 'lecture';
-    document.getElementById('panelLecture').style.display = isLecture ? '' : 'none';
-    document.getElementById('panelQuiz').style.display   = isLecture ? 'none' : '';
-    document.getElementById('tabLecture').classList.toggle('active', isLecture);
-    document.getElementById('tabQuiz').classList.toggle('active', !isLecture);
-    // hide search when on quiz tab
-    document.querySelector('.search-wrap').style.visibility = isLecture ? 'visible' : 'hidden';
+    const panels = ['lecture', 'quiz', 'app'];
+    panels.forEach(p => {
+      document.getElementById('panel' + p.charAt(0).toUpperCase() + p.slice(1)).style.display = (p === tab) ? '' : 'none';
+      document.getElementById('tab' + p.charAt(0).toUpperCase() + p.slice(1)).classList.toggle('active', p === tab);
+    });
+    document.querySelector('.search-wrap').style.visibility = (tab === 'lecture') ? 'visible' : 'hidden';
   }
 
   /* ── CHAPTER SEARCH ── */

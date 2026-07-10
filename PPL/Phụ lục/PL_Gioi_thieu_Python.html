@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phụ lục – Giới thiệu về Ngôn ngữ Lập trình Python</title>
+<meta name="description" content="Phụ lục CO3005: Giới thiệu về ngôn ngữ lập trình Python – biến, câu lệnh, cấu trúc dữ liệu, vòng lặp, hàm và mô hình thực thi.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd9d0;
+    --text: #1a1916;
+    --muted: #6b6760;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --kw: #569cd6;
+    --str: #ce9178;
+    --cmt: #6a9955;
+    --num: #b5cea8;
+    --fn: #dcdcaa;
+    --type: #4ec9b0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .toc-item {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .toc-item.sub { padding-left: 32px; font-size: 12px; }
+
+  .main {
+    padding: 48px 56px 80px;
+    max-width: 820px;
+  }
+
+  .lesson-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .lesson-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article-section {
+    margin-bottom: 52px;
+    scroll-margin-top: 24px;
+  }
+
+  .section-heading {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+  .section-heading::before {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 40px; height: 2px;
+    background: var(--accent);
+  }
+
+  p { margin-bottom: 14px; }
+  ul, ol { margin: 0 0 14px 24px; line-height: 2; }
+
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+    font-size: 13.5px;
+  }
+  .code-label {
+    background: #2d2d2d;
+    padding: 6px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #333;
+  }
+  pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1.6;
+    color: var(--code-text);
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #e8e5de;
+    color: #b5451b;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+
+  .kw   { color: var(--kw); }
+  .str  { color: var(--str); }
+  .cmt  { color: var(--cmt); font-style: italic; }
+  .num  { color: var(--num); }
+  .fn   { color: var(--fn); }
+  .type { color: var(--type); }
+
+  .callout {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  hr.divider {
+    border: none;
+    border-top: 2px dashed var(--border);
+    margin: 48px 0;
+  }
+
+  .nav-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 0 0; border-top: 1px solid var(--border);
+    margin-top: 48px; font-size: 14px; color: var(--muted);
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--accent); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 500;
+    text-decoration: none;
+  }
+  .nav-btn.secondary { background: var(--surface); color: var(--accent); border: 1px solid var(--accent); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-title">Phụ lục – Python</div>
+
+  <a class="toc-item active" href="#mo-dau">Tài liệu 1 · Mở đầu</a>
+  <a class="toc-item" href="#vi-sao-chon-python">Tài liệu 2 · Vì sao chọn Python?</a>
+  <a class="toc-item" href="#mo-hinh-thuc-thi">Tài liệu 3 · Mô hình thực thi</a>
+  <a class="toc-item sub" href="#de-quy">Đệ quy và call stack</a>
+  <a class="toc-item sub" href="#pham-vi">Phạm vi tĩnh</a>
+  <a class="toc-item" href="#bien-cau-lenh">Tài liệu 4 · Biến và câu lệnh</a>
+  <a class="toc-item sub" href="#dat-ten">Quy tắc đặt tên</a>
+  <a class="toc-item sub" href="#chu-thich">Chú thích</a>
+  <a class="toc-item sub" href="#phep-gan">Phép gán và câu lệnh rỗng</a>
+  <a class="toc-item sub" href="#dieu-kien">Câu lệnh điều kiện</a>
+  <a class="toc-item" href="#cau-truc-du-lieu">Tài liệu 5 · Cấu trúc dữ liệu</a>
+  <a class="toc-item sub" href="#list">List</a>
+  <a class="toc-item sub" href="#tuple">Tuple</a>
+  <a class="toc-item sub" href="#dictionary">Dictionary</a>
+  <a class="toc-item" href="#vong-lap-ham">Tài liệu 6 · Vòng lặp và hàm</a>
+  <a class="toc-item sub" href="#while">Vòng lặp while</a>
+  <a class="toc-item sub" href="#for">Vòng lặp for</a>
+  <a class="toc-item sub" href="#break-continue">break, continue và else</a>
+  <a class="toc-item sub" href="#ham">Hàm</a>
+  <a class="toc-item sub" href="#module">Sử dụng module</a>
+  <a class="toc-item" href="#tom-tat">Tài liệu 7 · Tóm tắt</a>
+</nav>
+
+<!-- MAIN -->
+<main class="main" id="mainContent">
+
+<!-- TÀI LIỆU 1: MỞ ĐẦU -->
+<div class="lesson-badge">Phụ lục · Tài liệu 1 / 7</div>
+<h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Giới thiệu về Ngôn ngữ Lập trình Python · Trần Ngọc Bảo Duy</div>
+
+<div class="article-section">
+  <p>Python là một trong những ngôn ngữ lập trình phổ biến nhất hiện nay, được sử dụng rộng rãi trong giảng dạy lập trình, phát triển phần mềm, phân tích dữ liệu, trí tuệ nhân tạo, tự động hóa và xây dựng hệ thống web. Trong bối cảnh môn học Nguyên lý ngôn ngữ lập trình, Python không chỉ là một ngôn ngữ thực hành thuận tiện, mà còn là một ví dụ tốt để quan sát nhiều khái niệm quan trọng như biến (variable), phạm vi tĩnh (static scoping), kiểu động (dynamic typing), ngăn xếp lời gọi (call stack), đệ quy (recursion), câu lệnh điều kiện (conditional statement), danh sách (list), bộ (tuple), từ điển (dictionary), vòng lặp (loop) và hàm (function).</p>
+  <p>Phụ lục này giới thiệu Python ở mức nền tảng, nhằm hỗ trợ người học đọc, hiểu và viết được các chương trình Python đơn giản. Trọng tâm không phải là trình bày toàn bộ ngôn ngữ Python, mà là nắm các đặc điểm cốt lõi có liên quan trực tiếp đến việc học nguyên lý ngôn ngữ lập trình.</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 2: VÌ SAO CHỌN PYTHON -->
+<div class="lesson-badge">Phụ lục · Tài liệu 2 / 7</div>
+<h1 class="lesson-title" id="vi-sao-chon-python">Vì sao chọn Python?</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Giới thiệu về Ngôn ngữ Lập trình Python</div>
+
+<div class="article-section">
+  <p>Python được tạo ra bởi Guido van Rossum và xuất hiện lần đầu vào năm 1991. Từ đó đến nay, Python phát triển thành một ngôn ngữ lập trình được sử dụng rộng rãi trong nhiều lĩnh vực khác nhau. Một lý do quan trọng khiến Python phổ biến là ngôn ngữ này được thiết kế với mục tiêu dễ đọc, dễ viết và gần với cách con người diễn đạt thuật toán.</p>
+  <div class="code-block">
+    <div class="code-label">Python</div>
+    <pre><code>message = <span class="str">"Hello, Python!"</span>
+<span class="fn">print</span>(message)</code></pre>
+  </div>
+  <p>So với nhiều ngôn ngữ khác, Python không yêu cầu khai báo kiểu dữ liệu trước, không cần dấu chấm phẩy ở cuối câu lệnh và không cần hàm main trong những chương trình nhỏ. Ví dụ, cùng một ý tưởng in ra màn hình, trong C ta thường viết:</p>
+  <div class="code-block">
+    <div class="code-label">C</div>
+    <pre><code><span class="kw">#include</span> &lt;stdio.h&gt;
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="fn">printf</span>(<span class="str">"Hello, C!\n"</span>);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+  </div>
+  <p>Trong khi đó, Python chỉ cần:</p>
+  <div class="code-block">
+    <div class="code-label">Python</div>
+    <pre><code><span class="fn">print</span>(<span class="str">"Hello, Python!"</span>)</code></pre>
+  </div>
+  <p>Điều này không có nghĩa Python luôn tốt hơn C. C phù hợp với các bài toán cần kiểm soát bộ nhớ, hiệu năng và phần cứng ở mức thấp. Python phù hợp hơn khi người lập trình cần viết nhanh, đọc dễ, thử nghiệm thuận tiện và tận dụng hệ sinh thái thư viện phong phú.</p>
+  <p>Python được sử dụng trong nhiều miền ứng dụng. Trong lập trình web, Python có các thư viện và framework như Django, Flask hoặc FastAPI. Trong khoa học dữ liệu, Python có NumPy, pandas, matplotlib và scikit-learn. Trong trí tuệ nhân tạo, Python có PyTorch, TensorFlow và nhiều công cụ học máy khác.</p>
+  <div class="code-block">
+    <div class="code-label">Python – Xử lý danh sách điểm</div>
+    <pre><code>scores = [<span class="num">8.0</span>, <span class="num">7.5</span>, <span class="num">9.0</span>, <span class="num">6.5</span>]
+average = <span class="fn">sum</span>(scores) / <span class="fn">len</span>(scores)
+<span class="fn">print</span>(<span class="str">"Average score:"</span>, average)
+
+<span class="cmt"># Lọc điểm đạt</span>
+passed_scores = []
+<span class="kw">for</span> score <span class="kw">in</span> scores:
+    <span class="kw">if</span> score &gt;= <span class="num">7.0</span>:
+        passed_scores.<span class="fn">append</span>(score)
+<span class="fn">print</span>(passed_scores)</code></pre>
+  </div>
+  <p>Một đặc điểm nổi bật của Python là khả năng đọc hiểu (readability). Python sử dụng xuống dòng để kết thúc câu lệnh thông thường và sử dụng thụt lề (indentation) để xác định phạm vi của khối lệnh. Python không dùng cặp dấu ngoặc nhọn <code>{ }</code> như C, C++ hoặc Java để đánh dấu khối lệnh:</p>
+  <div class="code-block">
+    <div class="code-label">Python – Thụt lề xác định khối lệnh</div>
+    <pre><code>x = <span class="num">10</span>
+<span class="kw">if</span> x &gt; <span class="num">0</span>:
+    <span class="fn">print</span>(<span class="str">"positive"</span>)
+    <span class="fn">print</span>(<span class="str">"done"</span>)</code></pre>
+  </div>
+  <p>Python sử dụng phạm vi tĩnh (<em>static scoping</em> hoặc <em>lexical scoping</em>). Python cũng là ngôn ngữ kiểu động (dynamically typed), nghĩa là kiểu của giá trị được kiểm tra trong quá trình chạy, còn tên biến không cần được khai báo kiểu trước:</p>
+  <div class="code-block">
+    <div class="code-label">Python – Kiểu động</div>
+    <pre><code>x = <span class="num">10</span>
+<span class="fn">print</span>(<span class="fn">type</span>(x))   <span class="cmt"># &lt;class 'int'&gt;</span>
+x = <span class="str">"hello"</span>
+<span class="fn">print</span>(<span class="fn">type</span>(x))   <span class="cmt"># &lt;class 'str'&gt;</span></code></pre>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 3: MÔ HÌNH THỰC THI -->
+<div class="lesson-badge">Phụ lục · Tài liệu 3 / 7</div>
+<h1 class="lesson-title" id="mo-hinh-thuc-thi">Mô hình thực thi</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Giới thiệu về Ngôn ngữ Lập trình Python</div>
+
+<div class="article-section">
+  <p>Để hiểu Python, ta cần hiểu chương trình Python được thực thi theo trình tự như thế nào. Ở mức đơn giản, chương trình Python được đọc từ trên xuống dưới, và các câu lệnh ở mức ngoài cùng được thực thi theo thứ tự xuất hiện. Khi gặp định nghĩa hàm, Python tạo ra một đối tượng hàm và gắn nó với tên hàm, nhưng phần thân hàm chưa được thực thi ngay.</p>
+  <div class="code-block">
+    <div class="code-label">Python – Thứ tự thực thi</div>
+    <pre><code>c = <span class="num">3</span>
+<span class="kw">def</span> <span class="fn">gt</span>(n):
+    <span class="kw">if</span> n == <span class="num">0</span> <span class="kw">or</span> n == <span class="num">1</span>:
+        <span class="kw">return</span> <span class="num">1</span>
+    <span class="kw">else</span>:
+        <span class="kw">return</span> n * <span class="fn">gt</span>(n - <span class="num">1</span>)
+<span class="fn">print</span>(<span class="fn">gt</span>(c))
+<span class="kw">def</span> <span class="fn">foo</span>(a):
+    <span class="kw">return</span> a * c
+<span class="fn">print</span>(<span class="fn">foo</span>(<span class="num">2</span>))</code></pre>
+  </div>
+
+  <h2 class="section-heading" id="de-quy">Đệ quy và call stack</h2>
+  <p>Hàm <code>gt</code> là một ví dụ của hàm đệ quy (recursive function), tức là hàm có lời gọi đến chính nó. Với <code>gt(3)</code>, quá trình tính toán có thể hiểu như sau:</p>
+  <div class="code-block">
+    <div class="code-label">Truy vết đệ quy</div>
+    <pre><code>gt(<span class="num">3</span>)
+= <span class="num">3</span> * gt(<span class="num">2</span>)
+= <span class="num">3</span> * <span class="num">2</span> * gt(<span class="num">1</span>)
+= <span class="num">3</span> * <span class="num">2</span> * <span class="num">1</span>
+= <span class="num">6</span></code></pre>
+  </div>
+  <p>Khi một hàm được gọi, Python tạo ra một khung lời gọi (stack frame) để lưu các thông tin của lần gọi đó. Các khung lời gọi được tổ chức trong ngăn xếp lời gọi (call stack):</p>
+  <div class="code-block">
+    <div class="code-label">Call stack – gt(3)</div>
+    <pre><code>gt(n = <span class="num">1</span>)  -&gt; <span class="kw">returns</span> <span class="num">1</span>
+gt(n = <span class="num">2</span>)  -&gt; waiting <span class="kw">for</span> result of gt(<span class="num">1</span>)
+gt(n = <span class="num">3</span>)  -&gt; waiting <span class="kw">for</span> result of gt(<span class="num">2</span>)
+main       -&gt; calls gt(c)</code></pre>
+  </div>
+  <div class="callout">Khi viết hàm đệ quy, luôn cần có điều kiện dừng (base case). Nếu không, Python sẽ gọi hàm liên tục và gây lỗi <em>RecursionError: maximum recursion depth exceeded</em>.</div>
+
+  <h2 class="section-heading" id="pham-vi">Phạm vi tĩnh</h2>
+  <p>Trong Python, biến ở phạm vi ngoài có thể được đọc bên trong hàm nếu không bị che khuất bởi biến cục bộ cùng tên:</p>
+  <div class="code-block">
+    <div class="code-label">Python – Phạm vi tĩnh</div>
+    <pre><code>c = <span class="num">3</span>
+<span class="kw">def</span> <span class="fn">foo</span>(a):
+    <span class="kw">return</span> a * c    <span class="cmt"># c được tìm ở phạm vi ngoài</span>
+<span class="fn">print</span>(<span class="fn">foo</span>(<span class="num">2</span>))  <span class="cmt"># 6</span>
+
+<span class="cmt"># Nếu có phép gán bên trong, Python xem là biến cục bộ</span>
+<span class="kw">def</span> <span class="fn">bar</span>():
+    c = <span class="num">10</span>       <span class="cmt"># biến cục bộ, khác c toàn cục</span>
+    <span class="kw">return</span> c
+<span class="fn">print</span>(<span class="fn">bar</span>())  <span class="cmt"># 10</span>
+<span class="fn">print</span>(c)       <span class="cmt"># 3 – c toàn cục không đổi</span></code></pre>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 4: BIẾN VÀ CÂU LỆNH -->
+<div class="lesson-badge">Phụ lục · Tài liệu 4 / 7</div>
+<h1 class="lesson-title" id="bien-cau-lenh">Biến và câu lệnh</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Giới thiệu về Ngôn ngữ Lập trình Python</div>
+
+<div class="article-section" id="dat-ten">
+  <h2 class="section-heading">Quy tắc đặt tên</h2>
+  <p>Trong Python, biến (variable) là một tên dùng để tham chiếu đến một đối tượng. Một tên biến trong Python được gắn (bind) với một đối tượng chứ không phải là một ô nhớ cố định.</p>
+  <div class="code-block">
+    <div class="code-label">Python – Kiểu động</div>
+    <pre><code>x = <span class="num">23</span>
+<span class="fn">print</span>(<span class="fn">type</span>(x))  <span class="cmt"># &lt;class 'int'&gt;</span>
+x = <span class="str">"Python"</span>
+<span class="fn">print</span>(<span class="fn">type</span>(x))  <span class="cmt"># &lt;class 'str'&gt;</span></code></pre>
+  </div>
+  <p>Một định danh có thể gồm chữ cái, chữ số và dấu gạch dưới <code>_</code>, nhưng không được bắt đầu bằng chữ số. Python phân biệt chữ hoa và chữ thường (case-sensitive):</p>
+  <div class="code-block">
+    <div class="code-label">Python – Tên hợp lệ và không hợp lệ</div>
+    <pre><code><span class="cmt"># Hợp lệ</span>
+count = <span class="num">10</span>
+student_name = <span class="str">"An"</span>
+_total = <span class="num">100</span>
+
+<span class="cmt"># Không hợp lệ</span>
+<span class="cmt"># 1x = 5        # bắt đầu bằng chữ số</span>
+<span class="cmt"># student-name  # dấu - bị coi là phép trừ</span>
+
+<span class="cmt"># Case-sensitive</span>
+count = <span class="num">1</span>; Count = <span class="num">2</span>; COUNT = <span class="num">3</span>
+<span class="fn">print</span>(count, Count, COUNT)  <span class="cmt"># 1 2 3</span></code></pre>
+  </div>
+</div>
+
+<div class="article-section" id="chu-thich">
+  <h2 class="section-heading">Chú thích</h2>
+  <p>Chú thích (comment) là phần văn bản trong mã nguồn dùng để giải thích chương trình cho con người. Trình thông dịch bỏ qua chú thích khi thực thi. Trong Python, chú thích một dòng bắt đầu bằng ký tự <code>#</code>:</p>
+  <div class="code-block">
+    <div class="code-label">Python – Chú thích và docstring</div>
+    <pre><code><span class="cmt"># This is a line comment</span>
+x = <span class="num">23</span>  <span class="cmt"># This is an inline comment</span>
+
+<span class="kw">def</span> <span class="fn">square</span>(x):
+    <span class="str">"""
+    Return the square of x.
+    """</span>
+    <span class="kw">return</span> x * x
+
+<span class="fn">help</span>(square)   <span class="cmt"># docstring được công cụ đọc tài liệu sử dụng</span></code></pre>
+  </div>
+</div>
+
+<div class="article-section" id="phep-gan">
+  <h2 class="section-heading">Phép gán và câu lệnh rỗng</h2>
+  <p>Phép gán (assignment) trong Python dùng để gắn một tên với một giá trị hoặc một đối tượng. Python hỗ trợ nhiều dạng phép gán tiện lợi:</p>
+  <div class="code-block">
+    <div class="code-label">Python – Các dạng phép gán</div>
+    <pre><code><span class="cmt"># Hoán đổi không cần biến tạm</span>
+a = <span class="num">10</span>; b = <span class="num">20</span>
+a, b = b, a
+<span class="fn">print</span>(a, b)   <span class="cmt"># 20 10</span>
+
+<span class="cmt"># Gán nhiều tên cùng một giá trị</span>
+a = b = c = <span class="num">23</span>
+
+<span class="cmt"># Câu lệnh rỗng – dùng khi cần khối lệnh hợp lệ</span>
+x = -<span class="num">1</span>
+<span class="kw">if</span> x &lt; <span class="num">0</span>:
+    <span class="kw">pass</span></code></pre>
+  </div>
+</div>
+
+<div class="article-section" id="dieu-kien">
+  <h2 class="section-heading">Câu lệnh điều kiện</h2>
+  <p>Câu lệnh điều kiện (<code>if</code> statement) cho phép chương trình lựa chọn nhánh thực thi dựa trên giá trị đúng hoặc sai của một điều kiện:</p>
+  <div class="code-block">
+    <div class="code-label">Python – if / elif / else</div>
+    <pre><code>score = <span class="num">8.5</span>
+<span class="kw">if</span> score &gt;= <span class="num">9.0</span>:
+    <span class="fn">print</span>(<span class="str">"excellent"</span>)
+<span class="kw">elif</span> score &gt;= <span class="num">7.0</span>:
+    <span class="fn">print</span>(<span class="str">"good"</span>)
+<span class="kw">elif</span> score &gt;= <span class="num">5.0</span>:
+    <span class="fn">print</span>(<span class="str">"average"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"failed"</span>)</code></pre>
+  </div>
+  <p>Một ưu điểm của cách dùng thụt lề là Python tránh được lỗi <em>else treo</em> (dangling else) thường được thảo luận trong các ngôn ngữ có cú pháp khối khác. Trong Python, <code>else</code> thuộc về <code>if</code> có cùng mức thụt lề gần nhất, nên cấu trúc rõ ràng hơn.</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 5: CẤU TRÚC DỮ LIỆU -->
+<div class="lesson-badge">Phụ lục · Tài liệu 5 / 7</div>
+<h1 class="lesson-title" id="cau-truc-du-lieu">Cấu trúc dữ liệu cơ bản</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Giới thiệu về Ngôn ngữ Lập trình Python</div>
+
+<div class="article-section" id="list">
+  <h2 class="section-heading">List</h2>
+  <p>Danh sách (list) là dãy các phần tử có thứ tự và có thể thay đổi. Danh sách thường được tạo bằng cặp ngoặc vuông <code>[]</code>.</p>
+  <div class="code-block">
+    <div class="code-label">Python – List</div>
+    <pre><code>numbers = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>]
+<span class="fn">print</span>(numbers[<span class="num">0</span>])   <span class="cmt"># 10 – phần tử đầu tiên</span>
+<span class="fn">print</span>(numbers[-<span class="num">1</span>])  <span class="cmt"># 30 – phần tử cuối cùng</span>
+<span class="fn">print</span>(<span class="fn">len</span>(numbers))  <span class="cmt"># 3</span>
+
+items = [<span class="str">"a"</span>, <span class="str">"b"</span>]
+items.<span class="fn">append</span>(<span class="str">"c"</span>)     <span class="cmt"># thêm phần tử vào cuối</span>
+<span class="fn">print</span>(items)          <span class="cmt"># ['a', 'b', 'c']</span>
+
+mixed = [<span class="num">1</span>, <span class="str">"Python"</span>, <span class="num">3.14</span>, <span class="kw">True</span>]  <span class="cmt"># kiểu hỗn hợp</span></code></pre>
+  </div>
+</div>
+
+<div class="article-section" id="tuple">
+  <h2 class="section-heading">Tuple</h2>
+  <p>Bộ (tuple) cũng là dãy có thứ tự, nhưng không thể thay đổi sau khi tạo. Tuple thường được tạo bằng cặp ngoặc tròn <code>()</code>.</p>
+  <div class="code-block">
+    <div class="code-label">Python – Tuple</div>
+    <pre><code>point = (<span class="num">3</span>, <span class="num">4</span>)
+<span class="fn">print</span>(point[<span class="num">0</span>], point[<span class="num">1</span>])
+
+<span class="cmt"># Tuple một phần tử – cần dấu phẩy</span>
+t = (<span class="num">42</span>,)
+<span class="fn">print</span>(<span class="fn">type</span>(t))   <span class="cmt"># &lt;class 'tuple'&gt;</span>
+
+<span class="cmt"># Unpacking</span>
+a, b = <span class="num">10</span>, <span class="num">20</span>
+a, b = b, a
+<span class="fn">print</span>(a, b)   <span class="cmt"># 20 10</span>
+
+<span class="cmt"># Hàm trả về nhiều giá trị qua tuple</span>
+<span class="kw">def</span> <span class="fn">divmod_pair</span>(a, b):
+    <span class="kw">return</span> a // b, a % b
+q, r = <span class="fn">divmod_pair</span>(<span class="num">17</span>, <span class="num">5</span>)
+<span class="fn">print</span>(q, r)   <span class="cmt"># 3 2</span>
+
+<span class="cmt"># Tuple có thể làm khóa dictionary (vì bất biến)</span>
+grid = {(<span class="num">0</span>, <span class="num">0</span>): <span class="str">"origin"</span>, (<span class="num">1</span>, <span class="num">2</span>): <span class="str">"point"</span>}
+<span class="fn">print</span>(grid[(<span class="num">1</span>, <span class="num">2</span>)])</code></pre>
+  </div>
+</div>
+
+<div class="article-section" id="dictionary">
+  <h2 class="section-heading">Dictionary</h2>
+  <p>Từ điển (dictionary) biểu diễn ánh xạ từ khóa (key) sang giá trị (value). Từ điển thường được tạo bằng cặp ngoặc nhọn <code>{}</code>.</p>
+  <div class="code-block">
+    <div class="code-label">Python – Dictionary</div>
+    <pre><code>student = {<span class="str">"id"</span>: <span class="str">"SV01"</span>, <span class="str">"name"</span>: <span class="str">"An"</span>, <span class="str">"score"</span>: <span class="num">8.0</span>}
+<span class="fn">print</span>(student[<span class="str">"name"</span>])    <span class="cmt"># An</span>
+
+<span class="cmt"># Cập nhật và thêm khóa</span>
+student[<span class="str">"score"</span>] = <span class="num">8.5</span>
+student[<span class="str">"passed"</span>] = <span class="kw">True</span>
+
+<span class="cmt"># Kiểm tra khóa và get an toàn</span>
+<span class="fn">print</span>(<span class="str">"score"</span> <span class="kw">in</span> student)            <span class="cmt"># True</span>
+<span class="fn">print</span>(student.<span class="fn">get</span>(<span class="str">"grade"</span>, <span class="str">"N/A"</span>))   <span class="cmt"># N/A</span>
+
+<span class="cmt"># Duyệt từ điển</span>
+<span class="kw">for</span> key, value <span class="kw">in</span> student.<span class="fn">items</span>():
+    <span class="fn">print</span>(key, <span class="str">"-&gt;"</span>, value)
+
+<span class="cmt"># Danh sách các dictionary</span>
+students = [
+    {<span class="str">"id"</span>: <span class="str">"SV01"</span>, <span class="str">"name"</span>: <span class="str">"An"</span>, <span class="str">"score"</span>: <span class="num">8.0</span>},
+    {<span class="str">"id"</span>: <span class="str">"SV02"</span>, <span class="str">"name"</span>: <span class="str">"Binh"</span>, <span class="str">"score"</span>: <span class="num">4.5</span>},
+]
+<span class="kw">for</span> s <span class="kw">in</span> students:
+    <span class="fn">print</span>(s[<span class="str">"id"</span>], s[<span class="str">"name"</span>], s[<span class="str">"score"</span>])</code></pre>
+  </div>
+  <div class="callout">Khóa trong dictionary phải là đối tượng hashable, chẳng hạn <code>str</code>, <code>int</code> hoặc <code>tuple</code>. List không thể làm khóa vì nó thay đổi được.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 6: VÒNG LẶP VÀ HÀM -->
+<div class="lesson-badge">Phụ lục · Tài liệu 6 / 7</div>
+<h1 class="lesson-title" id="vong-lap-ham">Vòng lặp và hàm</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Giới thiệu về Ngôn ngữ Lập trình Python</div>
+
+<div class="article-section" id="while">
+  <h2 class="section-heading">Vòng lặp while</h2>
+  <p>Vòng lặp <code>while</code> lặp lại một khối lệnh khi điều kiện còn đúng. Phần <code>else</code> (tùy chọn) được thực hiện khi vòng lặp kết thúc bình thường (không bị dừng bởi <code>break</code>):</p>
+  <div class="code-block">
+    <div class="code-label">Python – while với else</div>
+    <pre><code>i = <span class="num">1</span>
+<span class="kw">while</span> i &lt;= <span class="num">5</span>:
+    <span class="fn">print</span>(i)
+    i = i + <span class="num">1</span>
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"done"</span>)   <span class="cmt"># in ra vì điều kiện trở thành sai</span>
+
+<span class="cmt"># break ngăn else chạy</span>
+i = <span class="num">1</span>
+<span class="kw">while</span> i &lt;= <span class="num">5</span>:
+    <span class="kw">if</span> i == <span class="num">3</span>:
+        <span class="kw">break</span>
+    <span class="fn">print</span>(i)
+    i = i + <span class="num">1</span>
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"done"</span>)   <span class="cmt"># KHÔNG in ra</span></code></pre>
+  </div>
+</div>
+
+<div class="article-section" id="for">
+  <h2 class="section-heading">Vòng lặp for</h2>
+  <p>Vòng lặp <code>for</code> dùng để duyệt qua các phần tử của một dãy hoặc một đối tượng có thể lặp. Hàm <code>range</code> thường được dùng để tạo dãy số:</p>
+  <div class="code-block">
+    <div class="code-label">Python – for</div>
+    <pre><code><span class="kw">for</span> x <span class="kw">in</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]:
+    <span class="fn">print</span>(x)
+
+<span class="cmt"># range(1, 6) sinh 1..5 (không bao gồm 6)</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">6</span>):
+    <span class="fn">print</span>(i)
+
+<span class="cmt"># Duyệt chuỗi</span>
+<span class="kw">for</span> ch <span class="kw">in</span> <span class="str">"abc"</span>:
+    <span class="fn">print</span>(ch)
+
+<span class="cmt"># Duyệt danh sách</span>
+names = [<span class="str">"An"</span>, <span class="str">"Binh"</span>, <span class="str">"Cuong"</span>]
+<span class="kw">for</span> name <span class="kw">in</span> names:
+    <span class="fn">print</span>(<span class="str">"Hello"</span>, name)</code></pre>
+  </div>
+</div>
+
+<div class="article-section" id="break-continue">
+  <h2 class="section-heading">break, continue và else trong vòng lặp</h2>
+  <p>Câu lệnh <code>break</code> kết thúc vòng lặp ngay lập tức. Câu lệnh <code>continue</code> bỏ qua phần còn lại của thân vòng lặp và chuyển sang lần lặp tiếp theo. Một ứng dụng phổ biến của <code>for...else</code> là tìm kiếm:</p>
+  <div class="code-block">
+    <div class="code-label">Python – for...else tìm kiếm</div>
+    <pre><code>numbers = [<span class="num">2</span>, <span class="num">4</span>, <span class="num">6</span>, <span class="num">8</span>]
+target = <span class="num">5</span>
+<span class="kw">for</span> x <span class="kw">in</span> numbers:
+    <span class="kw">if</span> x == target:
+        <span class="fn">print</span>(<span class="str">"found"</span>)
+        <span class="kw">break</span>
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"not found"</span>)   <span class="cmt"># in ra vì không có break</span>
+
+<span class="cmt"># continue</span>
+<span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">6</span>):
+    <span class="kw">if</span> x == <span class="num">3</span>:
+        <span class="kw">continue</span>   <span class="cmt"># bỏ qua x = 3</span>
+    <span class="fn">print</span>(x)   <span class="cmt"># 1 2 4 5</span></code></pre>
+  </div>
+</div>
+
+<div class="article-section" id="ham">
+  <h2 class="section-heading">Hàm</h2>
+  <p>Hàm (function) là một đơn vị chương trình có tên, có thể nhận tham số, thực hiện một công việc và trả về kết quả. Trong Python, hàm được định nghĩa bằng từ khóa <code>def</code>:</p>
+  <div class="code-block">
+    <div class="code-label">Python – Hàm và đệ quy</div>
+    <pre><code><span class="kw">def</span> <span class="fn">square</span>(x):
+    <span class="kw">return</span> x * x
+<span class="fn">print</span>(<span class="fn">square</span>(<span class="num">5</span>))  <span class="cmt"># 25</span>
+
+<span class="kw">def</span> <span class="fn">is_even</span>(n):
+    <span class="kw">return</span> n % <span class="num">2</span> == <span class="num">0</span>
+
+<span class="cmt"># Hàm đệ quy – giải thừa</span>
+<span class="kw">def</span> <span class="fn">giaithua</span>(n):
+    <span class="kw">if</span> n == <span class="num">0</span> <span class="kw">or</span> n == <span class="num">1</span>:
+        <span class="kw">return</span> <span class="num">1</span>
+    <span class="kw">return</span> n * <span class="fn">giaithua</span>(n - <span class="num">1</span>)
+<span class="fn">print</span>(<span class="fn">giaithua</span>(<span class="num">5</span>))  <span class="cmt"># 120</span></code></pre>
+  </div>
+  <div class="callout">Khi viết hàm đệ quy, luôn cần có điều kiện dừng. Nếu không, chương trình sẽ gọi hàm liên tục và gây lỗi vượt quá giới hạn đệ quy.</div>
+</div>
+
+<div class="article-section" id="module">
+  <h2 class="section-heading">Sử dụng module</h2>
+  <p>Python cho phép sử dụng lại mã có sẵn thông qua module. Để sử dụng module, ta dùng câu lệnh <code>import</code>:</p>
+  <div class="code-block">
+    <div class="code-label">Python – import module</div>
+    <pre><code><span class="kw">import</span> math
+<span class="fn">print</span>(math.<span class="fn">sqrt</span>(<span class="num">16</span>))      <span class="cmt"># 4.0</span>
+<span class="fn">print</span>(math.<span class="fn">factorial</span>(<span class="num">5</span>)) <span class="cmt"># 120</span>
+
+<span class="kw">from</span> math <span class="kw">import</span> sqrt
+<span class="fn">print</span>(<span class="fn">sqrt</span>(<span class="num">25</span>))            <span class="cmt"># 5.0</span>
+
+<span class="kw">import</span> functools
+result = functools.<span class="fn">reduce</span>(<span class="kw">lambda</span> x, y: x + y, [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>])
+<span class="fn">print</span>(result)               <span class="cmt"># 6</span></code></pre>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 7: TÓM TẮT -->
+<div class="lesson-badge">Phụ lục · Tài liệu 7 / 7</div>
+<h1 class="lesson-title" id="tom-tat">Tóm tắt phụ lục</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Giới thiệu về Ngôn ngữ Lập trình Python</div>
+
+<div class="article-section">
+  <p>Phụ lục này đã giới thiệu những đặc điểm nền tảng của Python dưới góc nhìn của môn Nguyên lý ngôn ngữ lập trình.</p>
+  <ul>
+    <li>Python là ngôn ngữ phổ biến, dễ đọc, có cú pháp gọn và dùng thụt lề để xác định khối lệnh.</li>
+    <li>Python dùng phạm vi tĩnh và kiểm tra kiểu động trong quá trình chạy.</li>
+    <li>Biến trong Python là tên tham chiếu đến đối tượng, được tạo ra thông qua phép gán thay vì khai báo kiểu trước.</li>
+    <li>Các câu lệnh cơ bản như gán, điều kiện, vòng lặp và định nghĩa hàm tạo nên nền tảng để viết các chương trình Python đơn giản.</li>
+    <li>Python cung cấp các cấu trúc dữ liệu cơ bản như list, tuple và dictionary để biểu diễn dãy có thứ tự, nhóm giá trị bất biến và ánh xạ khóa–giá trị.</li>
+    <li>Python hỗ trợ đệ quy, tổ chức lời gọi hàm bằng ngăn xếp lời gọi, cung cấp vòng lặp while, vòng lặp for, cơ chế break, continue, else trong vòng lặp, và khả năng tái sử dụng mã thông qua module.</li>
+  </ul>
+  <p>Những đặc điểm này giúp Python trở thành một ngôn ngữ phù hợp để minh họa nhiều khái niệm quan trọng trong nguyên lý ngôn ngữ lập trình.</p>
+</div>
+
+<div class="nav-footer">
+  <span>Phụ lục 1 · 7 tài liệu · CO3005</span>
+  <div style="display:flex; gap:10px;">
+    <a class="nav-btn secondary" href="../CO3005.html">← Về trang chủ</a>
+    <a class="nav-btn" href="PL_Lap_trinh_ham_Python.html">Phụ lục tiếp →</a>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('[id]');
+  const tocItems = document.querySelectorAll('.toc-item');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocItems.forEach(item => {
+          item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
