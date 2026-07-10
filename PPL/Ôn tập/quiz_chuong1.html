@@ -8,24 +8,14 @@
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap');
 
   :root{
-    --ink:#12161f;
-    --ink2:#1b2130;
-    --paper:#0e1117;
-    --panel:#161b26;
-    --panel2:#1c2231;
-    --line:#2a3446;
-    --line2:#374357;
-    --text:#e6e9ef;
-    --muted:#98a2b6;
-    --dim:#6c7688;
-    --amber:#f2b134;
-    --amber-dim:#3a2f16;
-    --blue:#5aa2f0;
-    --blue-dim:#16233a;
-    --green:#4bd08b;
-    --green-dim:#123024;
-    --red:#f2685e;
-    --red-dim:#331714;
+    --paper:#0e1117; --panel:#161b26; --panel2:#1c2231;
+    --line:#2a3446; --line2:#374357;
+    --text:#e6e9ef; --muted:#98a2b6; --dim:#6c7688;
+    --amber:#f2b134; --amber-dim:#3a2f16;
+    --blue:#5aa2f0; --blue-dim:#16233a;
+    --green:#4bd08b; --green-dim:#123024;
+    --violet:#b18cf0; --violet-dim:#241a3a;
+    --red:#f2685e; --red-dim:#331714;
     --grid:rgba(255,255,255,0.022);
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -36,33 +26,21 @@
       linear-gradient(var(--grid) 1px,transparent 1px) 0 0/26px 26px,
       linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/26px 26px,
       var(--paper);
-    color:var(--text);
-    line-height:1.6;
-    font-size:15.5px;
-    -webkit-font-smoothing:antialiased;
+    color:var(--text);line-height:1.6;font-size:15.5px;-webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:860px;margin:0 auto;padding:0 20px 120px}
 
-  /* HEADER */
   header{padding:44px 0 26px;border-bottom:1px solid var(--line)}
-  .eyebrow{
-    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;
-    text-transform:uppercase;color:var(--amber);margin-bottom:14px;display:flex;gap:10px;align-items:center;
-  }
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--amber);margin-bottom:14px;display:flex;gap:10px;align-items:center}
   .eyebrow::before{content:"";width:22px;height:2px;background:var(--amber);display:inline-block}
-  h1{
-    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:33px;line-height:1.12;
-    letter-spacing:-.01em;margin-bottom:10px;
-  }
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:33px;line-height:1.12;letter-spacing:-.01em;margin-bottom:10px}
   h1 .n{color:var(--amber)}
-  .sub{color:var(--muted);font-size:14.5px;max-width:620px}
+  .sub{color:var(--muted);font-size:14.5px;max-width:640px}
   .sub code{font-family:'JetBrains Mono',monospace;font-size:.86em;background:var(--panel2);padding:1px 6px;border-radius:4px;color:var(--blue)}
 
-  /* SCOREBOARD */
-  .board{
-    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
-    border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:26px 0 8px;
-  }
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:26px 0 8px}
   .stat{background:var(--panel);padding:14px 16px}
   .stat .k{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
   .stat .v{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;margin-top:2px}
@@ -71,77 +49,56 @@
   .bar{height:6px;background:var(--panel2);border-radius:99px;overflow:hidden;margin-top:14px}
   .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--amber),#ffd873);transition:width .3s ease}
 
-  /* CONTROLS */
   .controls{margin:26px 0 8px;display:flex;flex-direction:column;gap:14px}
   .ctl-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   .ctl-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-right:4px;min-width:64px}
-  .chip{
-    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;
-    padding:6px 12px;border:1px solid var(--line2);background:var(--panel);color:var(--muted);
-    border-radius:99px;cursor:pointer;transition:all .12s;user-select:none;white-space:nowrap;
-  }
+  .chip{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;padding:6px 12px;
+    border:1px solid var(--line2);background:var(--panel);color:var(--muted);border-radius:99px;cursor:pointer;transition:all .12s;user-select:none;white-space:nowrap}
   .chip:hover{border-color:var(--amber);color:var(--text)}
   .chip.on{background:var(--amber);border-color:var(--amber);color:#1a1206;font-weight:600}
-  .btn{
-    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:7px 14px;
-    border-radius:8px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);cursor:pointer;transition:all .12s;
-  }
+  .btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:7px 14px;
+    border-radius:8px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);cursor:pointer;transition:all .12s}
   .btn:hover{border-color:var(--blue);color:var(--blue)}
-  .btn.primary{background:var(--amber);border-color:var(--amber);color:#1a1206}
-  .btn.primary:hover{filter:brightness(1.06);color:#1a1206}
   .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding-top:6px}
   .toolbar .grp{display:flex;gap:8px;flex-wrap:wrap}
   .count{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim)}
 
-  /* QUESTIONS */
   #list{margin-top:22px;display:flex;flex-direction:column;gap:16px}
-  .q{
-    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;
-    scroll-margin-top:16px;position:relative;
-  }
+  .q{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;scroll-margin-top:16px;position:relative}
   .q-top{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
   .qid{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);font-weight:600}
   .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;padding:3px 8px;border-radius:5px;text-transform:uppercase;font-weight:600}
   .tag.topic{background:var(--blue-dim);color:var(--blue)}
   .tag.hieu{background:var(--green-dim);color:var(--green)}
   .tag.vandung{background:var(--amber-dim);color:var(--amber)}
+  .tag.phantich{background:var(--blue-dim);color:#7ab8ff}
+  .tag.danhgia{background:var(--violet-dim);color:var(--violet)}
   .q-text{font-size:16px;font-weight:500;margin-bottom:16px;line-height:1.55}
-  .q-text code{font-family:'JetBrains Mono',monospace;font-size:.85em;background:var(--ink2);padding:1.5px 6px;border-radius:4px;color:#8fd0ff}
+  .q-text code,.opt code,.exp code{font-family:'JetBrains Mono',monospace;font-size:.85em;background:#0f1420;padding:1.5px 6px;border-radius:4px;color:#8fd0ff}
   .opts{display:flex;flex-direction:column;gap:8px}
-  .opt{
-    display:flex;gap:11px;align-items:flex-start;padding:11px 14px;border:1px solid var(--line2);
-    background:var(--ink2);border-radius:10px;cursor:pointer;transition:all .1s;font-size:14.5px;
-  }
+  .opt{display:flex;gap:11px;align-items:flex-start;padding:11px 14px;border:1px solid var(--line2);
+    background:#0f1420;border-radius:10px;cursor:pointer;transition:all .1s;font-size:14.5px}
   .opt:hover:not(.locked){border-color:var(--muted)}
-  .opt .mk{
-    font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12.5px;color:var(--muted);
-    border:1px solid var(--line2);border-radius:6px;width:24px;height:24px;display:flex;align-items:center;
-    justify-content:center;flex-shrink:0;margin-top:1px;
-  }
+  .opt .mk{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12.5px;color:var(--muted);
+    border:1px solid var(--line2);border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
   .opt.locked{cursor:default}
   .opt.correct{border-color:var(--green);background:var(--green-dim)}
   .opt.correct .mk{background:var(--green);color:#062015;border-color:var(--green)}
   .opt.wrong{border-color:var(--red);background:var(--red-dim)}
   .opt.wrong .mk{background:var(--red);color:#2a0a08;border-color:var(--red)}
   .opt.dim{opacity:.5}
-  .exp{
-    margin-top:14px;padding:13px 15px;border-radius:10px;background:var(--panel2);
-    border-left:3px solid var(--amber);font-size:14px;color:var(--muted);display:none;
-  }
+  .exp{margin-top:14px;padding:13px 15px;border-radius:10px;background:var(--panel2);
+    border-left:3px solid var(--amber);font-size:14px;color:var(--muted);display:none}
   .exp.show{display:block;animation:fade .2s ease}
   .exp b{color:var(--text);font-weight:600}
-  .exp code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:#8fd0ff}
   @keyframes fade{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
 
   .empty{text-align:center;color:var(--dim);padding:60px 0;font-family:'JetBrains Mono',monospace;font-size:13px}
   footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);color:var(--dim);font-size:12.5px;font-family:'JetBrains Mono',monospace;text-align:center}
 
   @media(max-width:640px){
-    h1{font-size:26px}
-    .board{grid-template-columns:repeat(2,1fr)}
-    .wrap{padding:0 14px 90px}
-    .q{padding:16px}
-    .ctl-label{min-width:100%}
+    h1{font-size:26px}.board{grid-template-columns:repeat(2,1fr)}
+    .wrap{padding:0 14px 90px}.q{padding:16px}.ctl-label{min-width:100%}
   }
 </style>
 </head>
@@ -151,7 +108,7 @@
   <header>
     <div class="eyebrow">CO3005 · Ôn tập giữa kỳ · Chương 1</div>
     <h1>Giới thiệu về Ngôn ngữ Lập trình <span class="n">— Bộ câu hỏi ôn tập</span></h1>
-    <p class="sub">Tự kiểm tra trước, chọn đáp án, rồi mới lộ lời giải. Mỗi câu gắn nhãn <b>chủ đề</b> và <b>mức Bloom</b> (Hiểu / Vận dụng) — đúng với cấu trúc 3 Hiểu + 2 Vận dụng của Chương 1 trong đề. Câu ví dụ dùng <code>a = b + c * 60;</code> xuyên suốt như trong bài giảng.</p>
+    <p class="sub">Ma trận đề: <b>5 câu (3 hiểu, 2 vận dụng)</b>. Bộ <b>118 câu</b> này ra ở độ khó bằng hoặc cao hơn đề: 46 hiểu · 45 vận dụng · 19 phân tích · 8 đánh giá (<b>23%</b> ở mức phân tích/đánh giá). Mã ANTLR dùng dạng tách <b>Lexer / Parser</b> của <code>lab.antlr.org</code>. Chọn đáp án trước, lời giải hiện sau.</p>
 
     <div class="board">
       <div class="stat"><div class="k">Đã làm</div><div class="v"><span id="mDone">0</span><small>/<span id="mTotal">0</span></small></div></div>
@@ -175,404 +132,31 @@
   </div>
 
   <div id="list"></div>
-
   <footer>Bộ câu hỏi tự luyện — không phải đề chính thức · CO3005 Principles of Programming Languages</footer>
 </div>
 
 <script>
-/* ===== DỮ LIỆU CÂU HỎI ===== */
-const T = {
-  t1:"Hệ ký hiệu & thành phần", t2:"Miền ứng dụng", t3:"Đặc trưng ngôn ngữ",
-  t4:"Tiêu chí đánh giá", t5:"Kiến trúc von Neumann", t6:"Phương pháp luận",
-  t7:"Tiến hóa phương pháp luận", t8:"Đánh đổi thiết kế", t9:"Cài đặt ngôn ngữ",
-  t10:"Cấu trúc trình biên dịch", t11:"Ứng dụng & công cụ"
-};
-const H="Hiểu", V="Vận dụng";
+const T = {"t1":"Hệ ký hiệu & thành phần","t2":"Miền ứng dụng","t3":"Đặc trưng ngôn ngữ","t4":"Tiêu chí đánh giá","t5":"Kiến trúc von Neumann","t6":"Phương pháp luận","t7":"Tiến hóa phương pháp luận","t8":"Đánh đổi thiết kế","t9":"Cài đặt ngôn ngữ","t10":"Cấu trúc trình biên dịch","t11":"Ứng dụng & công cụ"};
+const H="Hiểu", V="Vận dụng", A="Phân tích", E="Đánh giá";
 
-const QUESTIONS = [
-/* ---- t1: Hệ ký hiệu & thành phần ---- */
-{t:"t1",b:H,q:"Ở mức cơ bản nhất, ngôn ngữ lập trình được mô tả là gì?",
- o:["Một tập lệnh máy dành riêng cho CPU","Một hệ thống ký hiệu để mô tả phép tính, thao tác dữ liệu và hành vi chương trình","Một chuẩn định dạng tệp tin","Một giao thức truyền dữ liệu"],a:1,
- e:"Ngôn ngữ lập trình là một <b>hệ ký hiệu (notation)</b> để mô tả tính toán cho cả con người và máy."},
-{t:"t1",b:H,q:"Một chương trình được viết vừa để máy thực thi, vừa để con người làm gì?",
- o:["Chỉ để lưu trữ lâu dài","Đọc, hiểu, sửa đổi và phát triển tiếp","Mã hóa dữ liệu bí mật","Đo hiệu năng phần cứng"],a:1,
- e:"Ngôn ngữ đóng vai trò cầu nối: đủ hình thức cho máy, đủ gần tư duy con người để đọc/hiểu/bảo trì."},
-{t:"t1",b:H,q:"Bốn thành phần cấu thành một ngôn ngữ lập trình như một hệ thống gồm:",
- o:["Biến, hàm, lớp, module","Từ vựng, cú pháp, ngữ nghĩa, mô hình thực thi","Compiler, linker, loader, debugger","Token, AST, IR, mã máy"],a:1,
- e:"Hệ thống gồm <b>lexicon</b> (từ vựng), <b>syntax</b> (cú pháp), <b>semantics</b> (ngữ nghĩa) và <b>execution model</b> (mô hình thực thi)."},
-{t:"t1",b:H,q:"Thành phần nào chỉ 'các đơn vị nhỏ nhất' như từ khóa, tên biến, toán tử, hằng số?",
- o:["Cú pháp (syntax)","Ngữ nghĩa (semantics)","Từ vựng (lexicon)","Mô hình thực thi"],a:2,
- e:"<b>Từ vựng (lexicon)</b> là các đơn vị nhỏ nhất; cú pháp là quy tắc kết hợp chúng."},
-{t:"t1",b:H,q:"Quy tắc kết hợp các đơn vị từ vựng thành biểu thức, câu lệnh và chương trình gọi là:",
- o:["Ngữ nghĩa","Cú pháp","Từ vựng","Mô hình thực thi"],a:1,
- e:"<b>Cú pháp (syntax)</b> quy định cách ghép các lexeme thành cấu trúc hợp lệ."},
-{t:"t1",b:H,q:"'Ý nghĩa của các cấu trúc trong chương trình' thuộc về thành phần nào?",
- o:["Từ vựng","Cú pháp","Ngữ nghĩa","Preprocessor"],a:2,
- e:"<b>Ngữ nghĩa (semantics)</b> gán ý nghĩa cho các cấu trúc; cú pháp chỉ lo về hình thức."},
-{t:"t1",b:V,q:"Đoạn <code>x = y + 1;</code> chỉ hợp lệ về mặt ngữ nghĩa khi nào?",
- o:["Khi các ký hiệu đều nhận diện được","Khi nó nằm đúng ngữ cảnh cú pháp","Khi x, y đã khai báo, có kiểu phù hợp và phép cộng hợp lệ","Khi chương trình được biên dịch thành mã máy"],a:2,
- e:"Hợp lệ từ vựng ≠ hợp lệ cú pháp ≠ hợp lệ <b>ngữ nghĩa</b>; ngữ nghĩa cần khai báo + kiểu phù hợp."},
-{t:"t1",b:V,q:"Với <code>f(x) = x² + 1</code> trong toán và <code>def f(x): return x*x+1</code> trong Python, điểm chung là gì?",
- o:["Cả hai đều là mã máy","Cả hai biểu diễn cùng một hàm bằng hai hệ ký hiệu khác nhau","Python nhanh hơn nên đúng hơn","Toán học không phải là hệ ký hiệu"],a:1,
- e:"Cùng một ý tưởng tính toán, biểu diễn bằng hai <b>hệ ký hiệu</b> khác nhau (toán học vs Python)."},
-{t:"t1",b:V,q:"Vì sao câu lệnh <code>a = b + c * 60;</code> tiện cho người lập trình hơn mã mức thấp?",
- o:["Vì nó chạy nhanh hơn trên CPU","Vì nó diễn đạt rõ ý định: nhân c với 60, cộng b, gán cho a","Vì nó không cần biên dịch","Vì nó là mã máy trực tiếp"],a:1,
- e:"Ngôn ngữ bậc cao gần tư duy con người: biểu thức nêu rõ ý định thay vì chuỗi lệnh nạp/ghi bộ nhớ."},
-{t:"t1",b:H,q:"So sánh nào đúng về vai trò của ngôn ngữ lập trình?",
- o:["Chỉ phục vụ máy tính","Chỉ phục vụ con người","Là cầu nối giữa tư duy con người và thực thi của máy","Thay thế hoàn toàn phần cứng"],a:2,
- e:"Ngôn ngữ là <b>cầu nối</b> hai thế giới: hình thức cho máy, dễ hiểu cho người."},
-
-/* ---- t2: Miền ứng dụng ---- */
-{t:"t2",b:H,q:"Nhận định nào đúng về việc chọn ngôn ngữ theo miền ứng dụng?",
- o:["Có một ngôn ngữ tốt nhất cho mọi bài toán","Không có ngôn ngữ duy nhất phù hợp nhất cho mọi bài toán","Chỉ C mới đáng dùng","Ngôn ngữ nào cũng như nhau"],a:1,
- e:"Mỗi ngôn ngữ ra đời trong một bối cảnh lịch sử/phần cứng/ứng dụng; không có 'ngôn ngữ tốt nhất' tuyệt đối."},
-{t:"t2",b:H,q:"Ngôn ngữ cổ điển nào gắn với tính toán khoa học?",
- o:["COBOL và SQL","Fortran và ALGOL 60","HTML và CSS","Prolog và Lisp"],a:1,
- e:"<b>Fortran</b> và <b>ALGOL 60</b> là các ngôn ngữ cổ điển cho tính toán khoa học."},
-{t:"t2",b:V,q:"Câu lệnh SQL <code>SELECT department, COUNT(*) FROM employees GROUP BY department;</code> thể hiện phong cách nào?",
- o:["Mệnh lệnh — mô tả từng bước","Khai báo — mô tả 'muốn lấy gì' thay vì từng bước","Hướng đối tượng","Hợp ngữ"],a:1,
- e:"SQL là ngôn ngữ <b>khai báo</b>: mô tả kết quả mong muốn, không mô tả quy trình từng bước."},
-{t:"t2",b:H,q:"Hai ngôn ngữ nào từng có vai trò lịch sử quan trọng trong AI?",
- o:["Java và C#","Lisp và Prolog","Go và Rust","MATLAB và R"],a:1,
- e:"<b>Lisp</b> và <b>Prolog</b> có vai trò lịch sử trong AI; ngày nay Python và R chiếm ưu thế nhờ thư viện."},
-{t:"t2",b:V,q:"Ngôn ngữ như C, C++, Go, Rust thường được ưu tiên cho miền nào?",
- o:["Truy vấn cơ sở dữ liệu","Hệ thống và backend gần bộ nhớ/hiệu năng","Trình bày trang web tĩnh","Bảng tính"],a:1,
- e:"Nhóm này dùng cho <b>hệ thống/backend</b>; C cho thao tác gần bộ nhớ nhưng dễ lỗi con trỏ."},
-{t:"t2",b:H,q:"JavaScript ban đầu được thiết kế cho môi trường nào, sau đó mở rộng nhờ Node.js?",
- o:["Máy chủ cơ sở dữ liệu","Trình duyệt web","Hệ điều hành nhúng","Siêu máy tính"],a:1,
- e:"JS sinh ra cho <b>trình duyệt</b>, sau mở rộng sang backend qua <b>Node.js</b>."},
-{t:"t2",b:V,q:"Thư viện NumPy, PyTorch, TensorFlow gắn với ngôn ngữ nào chiếm ưu thế hiện nay trong khoa học dữ liệu?",
- o:["C","Python","SQL","Prolog"],a:1,
- e:"Python thống trị khoa học dữ liệu ngày nay nhờ hệ sinh thái thư viện (NumPy, PyTorch, TensorFlow)."},
-{t:"t2",b:H,q:"Kết luận rút ra từ các ví dụ về miền ứng dụng là gì?",
- o:["Mọi ngôn ngữ đều ưu tiên hiệu năng","Mỗi ngôn ngữ phản ánh một tập ưu tiên thiết kế khác nhau","Ngôn ngữ mới luôn tốt hơn","Chỉ nên học một ngôn ngữ"],a:1,
- e:"Mỗi ngôn ngữ phản ánh một <b>tập ưu tiên thiết kế</b>: hiệu năng, an toàn, năng suất, biểu diễn dữ liệu…"},
-{t:"t2",b:V,q:"Với bài toán truy vấn/tổng hợp dữ liệu nghiệp vụ, lựa chọn tự nhiên nhất là:",
- o:["Assembly","SQL","Fortran","Prolog"],a:1,
- e:"SQL được thiết kế cho <b>truy vấn dữ liệu</b> theo cách khai báo — hợp với nghiệp vụ/quản lý dữ liệu."},
-
-/* ---- t3: Đặc trưng ngôn ngữ ---- */
-{t:"t3",b:H,q:"Đặc trưng thứ nhất khi đánh giá ngôn ngữ là gì?",
- o:["Tốc độ biên dịch","Sự rõ ràng, đơn giản và thống nhất","Số lượng thư viện","Kích thước tệp thực thi"],a:1,
- e:"Đặc trưng đầu tiên là <b>clarity, simplicity, and unity</b> (rõ ràng, đơn giản, thống nhất)."},
-{t:"t3",b:H,q:"Tính trực giao (orthogonality) nghĩa là gì?",
- o:["Ngôn ngữ chạy nhanh trên nhiều CPU","Các đặc trưng kết hợp độc lập, nhất quán, ít ngoại lệ","Cú pháp giống ngôn ngữ tự nhiên","Không cho phép hàm bậc cao"],a:1,
- e:"<b>Orthogonality</b>: các đặc trưng ghép với nhau độc lập, nhất quán và ít trường hợp ngoại lệ."},
-{t:"t3",b:V,q:"Ví dụ <code>apply_twice(increment, 10)</code> — truyền hàm như một giá trị — minh họa đặc trưng nào?",
- o:["Tính an toàn","Tính trực giao","Chi phí thấp","Kiểm tra kiểu tĩnh"],a:1,
- e:"Đối xử hàm như giá trị (first-class) là biểu hiện của <b>tính trực giao</b>."},
-{t:"t3",b:H,q:"'Che giấu chi tiết không cần thiết' là mô tả của đặc trưng nào?",
- o:["Hỗ trợ trừu tượng hóa (abstraction)","Tính an toàn","Sự đơn giản","Tính trực giao"],a:0,
- e:"<b>Support for abstraction</b> cho phép ẩn chi tiết; ví dụ dùng lớp <code>Student</code> để mô hình khái niệm."},
-{t:"t3",b:V,q:"Trong Java, <code>a[5]</code> với mảng 3 phần tử gây lỗi lúc chạy (ArrayIndexOutOfBounds). Điều này minh họa đặc trưng nào?",
- o:["Tính trực giao","Tính an toàn (safety)","Khả năng viết","Trừu tượng hóa"],a:1,
- e:"Kiểm tra biên mảng lúc chạy là biểu hiện của <b>tính an toàn</b>; C thì cho hành vi không xác định."},
-{t:"t3",b:V,q:"Trong C, <code>printf(\"%d\", a[5]);</code> với mảng 3 phần tử dẫn đến điều gì?",
- o:["Luôn báo lỗi biên dịch","Hành vi không xác định (undefined behavior)","Trả về 0 an toàn","Tự động mở rộng mảng"],a:1,
- e:"C không kiểm tra biên → đọc vùng nhớ không hợp lệ → <b>undefined behavior</b>."},
-{t:"t3",b:V,q:"So sánh <code>total += value</code> (Python) và <code>$total += $_ for @values;</code> (Perl) cho thấy điều gì?",
- o:["Perl luôn dễ đọc hơn","Viết quá ngắn/nhiều ký hiệu có thể làm giảm khả năng đọc hiểu","Python không có vòng lặp","Perl không phải ngôn ngữ thật"],a:1,
- e:"Cùng ý tưởng nhưng bản Perl quá cô đọng làm giảm <b>khả năng đọc hiểu</b> — minh họa clarity."},
-{t:"t3",b:H,q:"Đặc trưng nào KHÔNG nằm trong bốn đặc trưng ngôn ngữ được nêu (rõ ràng, trực giao, trừu tượng hóa, an toàn)?",
- o:["Tính trực giao","Hỗ trợ trừu tượng hóa","Tính di động nhị phân","Tính an toàn"],a:2,
- e:"Bốn đặc trưng là: rõ ràng/đơn giản/thống nhất, trực giao, trừu tượng hóa, an toàn."},
-{t:"t3",b:V,q:"Một ngôn ngữ có nhiều 'trường hợp ngoại lệ' khi kết hợp các đặc trưng thì được coi là:",
- o:["Trực giao cao","Trực giao thấp","An toàn cao","Đơn giản cao"],a:1,
- e:"Nhiều ngoại lệ khi kết hợp đặc trưng → <b>trực giao thấp</b>."},
-{t:"t3",b:H,q:"Dùng lớp để biểu diễn khái niệm 'sinh viên' rõ ràng hơn là ví dụ của:",
- o:["Tính an toàn","Trừu tượng hóa","Tính trực giao","Chi phí"],a:1,
- e:"Đóng gói dữ liệu + hành vi vào lớp là <b>trừu tượng hóa</b>."},
-
-/* ---- t4: Tiêu chí đánh giá ---- */
-{t:"t4",b:H,q:"Bốn tiêu chí cơ bản để đánh giá ngôn ngữ lập trình là:",
- o:["Tốc độ, bộ nhớ, năng lượng, giá","Khả năng đọc, khả năng viết, độ tin cậy, chi phí","Cú pháp, ngữ nghĩa, từ vựng, thực thi","Biên dịch, thông dịch, lai, JIT"],a:1,
- e:"Bốn tiêu chí: <b>readability, writability, reliability, cost</b>."},
-{t:"t4",b:H,q:"Khả năng đọc hiểu (readability) đặc biệt quan trọng trong hoàn cảnh nào?",
- o:["Chương trình dùng một lần","Hệ thống lớn được nhiều người bảo trì","Chương trình chỉ chạy trên siêu máy tính","Mã máy sinh tự động"],a:1,
- e:"Readability quan trọng nhất khi <b>bảo trì hệ thống lớn nhiều người</b>."},
-{t:"t4",b:H,q:"Khả năng viết (writability) liên quan chặt tới các yếu tố nào?",
- o:["Thư viện, cú pháp và cơ chế trừu tượng","Số thanh ghi CPU","Kích thước ổ cứng","Tốc độ mạng"],a:0,
- e:"Writability = mức dễ diễn đạt tính toán, liên quan <b>thư viện, cú pháp, trừu tượng hóa</b>."},
-{t:"t4",b:H,q:"Độ tin cậy (reliability) đo lường điều gì?",
- o:["Chương trình chạy nhanh cỡ nào","Mức chương trình thực hiện đúng theo đặc tả","Chi phí đào tạo nhân lực","Số dòng mã"],a:1,
- e:"Reliability = mức chương trình <b>hoạt động đúng đặc tả</b>; hỗ trợ bởi hệ thống kiểu, kiểm tra biên, GC."},
-{t:"t4",b:H,q:"Yếu tố nào KHÔNG được kể trong chi phí (cost) của một ngôn ngữ?",
- o:["Chi phí học và đào tạo","Chi phí biên dịch và thực thi","Chi phí bảo trì","Giá bán phần cứng máy chủ"],a:3,
- e:"Cost gồm học, viết, biên dịch, thực thi, kiểm thử, bảo trì, đào tạo — không phải giá phần cứng."},
-{t:"t4",b:V,q:"<code>squares = [x*x for x in numbers if x>0]</code> so với vòng lặp C tương đương cho thấy Python có ưu thế về:",
- o:["Độ tin cậy","Khả năng viết (ngắn gọn hơn)","Hiệu năng thô","Kiểm soát bộ nhớ"],a:1,
- e:"List comprehension biểu diễn thao tác mức cao ngắn gọn → <b>khả năng viết</b> cao."},
-{t:"t4",b:V,q:"Nói 'Python luôn tốt hơn C' dựa trên ví dụ list comprehension là:",
- o:["Đúng, Python luôn thắng","Sai — ví dụ chỉ cho thấy Python ngắn gọn hơn ở thao tác mức cao, còn C kiểm soát chi tiết hơn","Đúng vì C không có mảng","Sai vì Python không chạy được"],a:1,
- e:"Bài giảng nhấn mạnh: đây không phải 'Python luôn tốt hơn'; C cho kiểm soát bộ nhớ/hiệu năng chi tiết hơn."},
-{t:"t4",b:H,q:"Hệ thống kiểu, kiểm tra biên mảng và quản lý bộ nhớ tự động hỗ trợ chủ yếu cho tiêu chí nào?",
- o:["Khả năng viết","Độ tin cậy","Chi phí","Khả năng đọc"],a:1,
- e:"Các cơ chế này giảm lỗi → nâng <b>độ tin cậy</b>."},
-{t:"t4",b:V,q:"Một cú pháp giúp viết rất nhanh nhưng khiến người khác khó đọc thể hiện căng thẳng giữa hai tiêu chí nào?",
- o:["Chi phí vs độ tin cậy","Khả năng viết vs khả năng đọc","Độ tin cậy vs hiệu năng","Khả năng đọc vs chi phí"],a:1,
- e:"Đây là đánh đổi kinh điển <b>writability vs readability</b>."},
-{t:"t4",b:H,q:"Trong bốn tiêu chí, tiêu chí nào được mô tả là 'ít liên quan tới các tiêu chí khác' nên đôi khi để riêng?",
- o:["Khả năng đọc","Khả năng viết","Độ tin cậy","Chi phí"],a:3,
- e:"Chi phí (cost) tương đối tách biệt với ba tiêu chí còn lại nên thường được xét riêng."},
-{t:"t4",b:V,q:"Một dự án ưu tiên bảo trì lâu dài bởi nhóm lớn nên đề cao tiêu chí nào nhất?",
- o:["Khả năng đọc hiểu","Tốc độ khởi động","Kích thước nhị phân","Độ ngắn của cú pháp"],a:0,
- e:"Bảo trì dài hạn nhiều người → ưu tiên <b>readability</b>."},
-
-/* ---- t5: Kiến trúc von Neumann ---- */
-{t:"t5",b:H,q:"Trong kiến trúc von Neumann, điều gì được lưu chung trong bộ nhớ?",
- o:["Chỉ dữ liệu","Chỉ chương trình","Cả chương trình và dữ liệu","Chỉ thanh ghi"],a:2,
- e:"Đặc trưng von Neumann: <b>chương trình và dữ liệu cùng nằm trong bộ nhớ</b>."},
-{t:"t5",b:H,q:"Chu kỳ hoạt động của CPU trong mô hình von Neumann là:",
- o:["read – write – erase","fetch – decode – execute","load – link – run","scan – parse – emit"],a:1,
- e:"Chu kỳ <b>fetch – decode – execute</b>: lấy lệnh, giải mã, thực thi."},
-{t:"t5",b:H,q:"Mô hình von Neumann ảnh hưởng mạnh nhất tới loại ngôn ngữ nào?",
- o:["Ngôn ngữ hàm","Ngôn ngữ logic","Ngôn ngữ mệnh lệnh","Ngôn ngữ đánh dấu"],a:2,
- e:"Von Neumann định hình mạnh các <b>ngôn ngữ mệnh lệnh</b> qua biến, phép gán, vòng lặp."},
-{t:"t5",b:V,q:"Khai báo <code>int x = 10;</code> mô hình hóa khái niệm phần cứng nào?",
- o:["Thanh ghi cờ","Ô nhớ (memory cell)","Bus dữ liệu","Ngắt (interrupt)"],a:1,
- e:"<b>Biến</b> mô hình hóa <b>ô nhớ</b>; gán = ghi giá trị vào ô nhớ đó."},
-{t:"t5",b:V,q:"<code>x = x + 1;</code> phản ánh thao tác phần cứng nào của mô hình von Neumann?",
- o:["Đọc lệnh từ đĩa","Ghi giá trị vào ô nhớ (assignment)","Chuyển ngữ cảnh tiến trình","Khởi động lại CPU"],a:1,
- e:"Phép gán mô hình hóa thao tác <b>ghi giá trị vào ô nhớ</b>."},
-{t:"t5",b:V,q:"Vì sao vòng lặp <code>for</code> ánh xạ hiệu quả xuống phần cứng von Neumann?",
- o:["Vì CPU không hỗ trợ rẽ nhánh","Vì cơ chế lặp khớp với chu kỳ tuần tự lấy–thực thi lệnh","Vì vòng lặp là mã khai báo","Vì vòng lặp bỏ qua bộ nhớ"],a:1,
- e:"Iteration ánh xạ tự nhiên xuống cơ chế lặp/tuần tự ở mức phần cứng."},
-{t:"t5",b:H,q:"Ba khái niệm cơ bản mà von Neumann in dấu lên ngôn ngữ mệnh lệnh là:",
- o:["Lớp, kế thừa, đa hình","Biến, phép gán, vòng lặp","Hàm, closure, đệ quy","Sự kiện, callback, promise"],a:1,
- e:"Ba khái niệm: <b>biến</b>, <b>phép gán</b>, <b>vòng lặp (iteration)</b>."},
-{t:"t5",b:H,q:"Thiết kế ngôn ngữ chịu ảnh hưởng của các yếu tố nào (theo bài giảng)?",
- o:["Chỉ sở thích cá nhân người thiết kế","Phần cứng, mô hình tính toán, phương pháp lập trình, yêu cầu ứng dụng, đánh đổi tiêu chí","Chỉ tốc độ Internet","Chỉ giá phần mềm"],a:1,
- e:"Thiết kế không ngẫu nhiên: chịu ảnh hưởng phần cứng, mô hình tính toán, phương pháp luận, ứng dụng, đánh đổi."},
-
-/* ---- t6: Phương pháp luận ---- */
-{t:"t6",b:H,q:"Lập trình mệnh lệnh mô tả điều gì?",
- o:["Cái gì cần tính","Cách thực hiện từng bước","Các sự kiện và quy tắc","Quan hệ toán học thuần túy"],a:1,
- e:"Mệnh lệnh (imperative) mô tả <b>cách</b> làm — chuỗi thao tác thay đổi trạng thái."},
-{t:"t6",b:H,q:"Lập trình khai báo tập trung mô tả điều gì?",
- o:["Cách thực hiện từng bước","Cái gì cần được tính","Cách cấp phát thanh ghi","Thứ tự nạp lệnh CPU"],a:1,
- e:"Khai báo (declarative) mô tả <b>cái gì</b> cần đạt, không mô tả từng bước."},
-{t:"t6",b:V,q:"<code>total = sum(filter(lambda x: x>0, numbers))</code> thuộc phong cách nào?",
- o:["Mệnh lệnh","Hàm (một dạng khai báo)","Logic","Hợp ngữ"],a:1,
- e:"Biểu diễn qua các phép biến đổi dữ liệu (filter/sum) là <b>lập trình hàm</b>, một dạng khai báo."},
-{t:"t6",b:V,q:"Đoạn Prolog <code>grandparent(X,Z) :- parent(X,Y), parent(Y,Z).</code> minh họa mô hình nào?",
- o:["Lập trình hàm","Lập trình logic (mô tả sự kiện + quy tắc suy luận)","Lập trình mệnh lệnh","Lập trình hướng đối tượng"],a:1,
- e:"Prolog: mô tả <b>sự kiện</b> và <b>quy tắc suy luận</b> → lập trình logic."},
-{t:"t6",b:V,q:"Vòng <code>for x in numbers: if x>0: total += x</code> đại diện cho phong cách nào?",
- o:["Khai báo","Mệnh lệnh (mô tả từng bước, thay đổi trạng thái)","Logic","Hàm thuần"],a:1,
- e:"Duyệt và cập nhật biến trạng thái từng bước là <b>mệnh lệnh</b>."},
-{t:"t6",b:H,q:"Lập trình hàm được xếp là một dạng của phong cách nào?",
- o:["Mệnh lệnh","Khai báo","Hợp ngữ","Hướng phần cứng"],a:1,
- e:"Lập trình hàm được coi là <b>một dạng khai báo</b> — biểu diễn qua biến đổi dữ liệu."},
-{t:"t6",b:H,q:"Sự khác biệt cốt lõi giữa mệnh lệnh và khai báo phản ánh điều gì?",
- o:["Hai loại phần cứng khác nhau","Hai cách tư duy: chuỗi thao tác đổi trạng thái vs mô tả quan hệ/ràng buộc cần thỏa","Hai tốc độ biên dịch","Hai định dạng tệp"],a:1,
- e:"Một bên xem chương trình là <b>chuỗi thao tác đổi trạng thái</b>, bên kia là <b>mô tả quan hệ/ràng buộc</b>."},
-{t:"t6",b:V,q:"<code>SELECT SUM(amount) FROM transactions WHERE amount>0;</code> là ví dụ của:",
- o:["Mệnh lệnh","Khai báo","Logic thuần","Hướng đối tượng"],a:1,
- e:"SQL nêu kết quả mong muốn, không nêu từng bước → <b>khai báo</b>."},
-{t:"t6",b:H,q:"Ngoài kiến trúc máy, yếu tố nào cũng định hình thiết kế ngôn ngữ, đặt câu hỏi 'nên tổ chức chương trình thế nào'?",
- o:["Tốc độ mạng","Phương pháp luận lập trình","Giá phần cứng","Ngôn ngữ tự nhiên của lập trình viên"],a:1,
- e:"<b>Phương pháp luận lập trình</b> trả lời cách tổ chức suy nghĩ/cấu trúc chương trình."},
-
-/* ---- t7: Tiến hóa phương pháp luận ---- */
-{t:"t7",b:H,q:"Giai đoạn 1950 – đầu 1960, phương pháp lập trình tập trung vào điều gì?",
- o:["Lập trình có cấu trúc","Tối ưu hiệu suất máy (chạy nhanh, ít bộ nhớ)","Hướng đối tượng","Thiết kế hướng dữ liệu"],a:1,
- e:"Thập niên 1950 – đầu 1960: <b>tối ưu hiệu suất máy</b> — chạy nhanh, ít bộ nhớ, tận dụng phần cứng."},
-{t:"t7",b:H,q:"Lập trình có cấu trúc (cuối 1960) đặc trưng bởi điều gì?",
- o:["Đóng gói và kế thừa","Cấu trúc điều khiển rõ ràng, hạn chế goto","Truy vấn khai báo","Suy luận logic"],a:1,
- e:"Lập trình có cấu trúc: tuần tự/rẽ nhánh/lặp rõ ràng, <b>hạn chế goto</b>."},
-{t:"t7",b:H,q:"Cuối thập niên 1970 gắn với phương pháp nào?",
- o:["Tối ưu hiệu suất máy","Thiết kế hướng dữ liệu (mô hình hóa bằng kiểu, module, giao diện)","Hướng đối tượng","Lập trình logic"],a:1,
- e:"Cuối 1970: <b>thiết kế hướng dữ liệu</b> — kiểu dữ liệu, module, giao diện."},
-{t:"t7",b:H,q:"Giữa thập niên 1980 đánh dấu sự nổi lên của phương pháp nào?",
- o:["Lập trình có cấu trúc","Lập trình hướng đối tượng (đóng gói, kế thừa, đa hình)","Tối ưu hiệu suất máy","Thiết kế hướng dữ liệu"],a:1,
- e:"Giữa 1980: <b>OOP</b> — đóng gói, kế thừa, đa hình; đối tượng biết xử lý chính mình."},
-{t:"t7",b:V,q:"Việc thay đoạn dùng <code>goto</code> bằng vòng <code>for</code> có cấu trúc thể hiện bước tiến hóa nào?",
- o:["Từ OOP sang hàm","Từ mệnh lệnh sang khai báo","Từ tối ưu hiệu suất máy sang lập trình có cấu trúc","Từ logic sang mệnh lệnh"],a:2,
- e:"Thay goto bằng cấu trúc lặp rõ ràng là biểu hiện của <b>lập trình có cấu trúc</b>."},
-{t:"t7",b:V,q:"Ví dụ đa hình với <code>Shape/Rectangle/Circle</code> và vòng <code>for shape in shapes: print(shape.area())</code> minh họa giai đoạn nào?",
- o:["Lập trình có cấu trúc","Hướng đối tượng (đa hình)","Thiết kế hướng dữ liệu","Tối ưu hiệu suất máy"],a:1,
- e:"Gọi <code>area()</code> đa hình trên nhiều lớp con là biểu hiện của <b>OOP</b>."},
-{t:"t7",b:H,q:"Thứ tự đúng theo thời gian của các phương pháp luận là:",
- o:["OOP → hướng dữ liệu → có cấu trúc → hiệu suất máy","Hiệu suất máy → có cấu trúc → hướng dữ liệu → OOP","Có cấu trúc → OOP → hiệu suất máy → hướng dữ liệu","Hướng dữ liệu → hiệu suất máy → OOP → có cấu trúc"],a:1,
- e:"Trình tự: hiệu suất máy (1950s) → có cấu trúc (cuối 1960s) → hướng dữ liệu (cuối 1970s) → OOP (giữa 1980s)."},
-{t:"t7",b:H,q:"'Đối tượng biết cách xử lý chính mình' là ý tưởng gắn với phương pháp nào?",
- o:["Lập trình có cấu trúc","Hướng đối tượng","Tối ưu hiệu suất máy","Lập trình logic"],a:1,
- e:"Ý tưởng đối tượng tự xử lý (encapsulation + hành vi) thuộc <b>OOP</b>."},
-
-/* ---- t8: Đánh đổi thiết kế ---- */
-{t:"t8",b:H,q:"Vì sao thiết kế ngôn ngữ luôn chứa các đánh đổi?",
- o:["Vì lập trình viên lười","Vì một quyết định cải thiện mục tiêu này có thể làm xấu mục tiêu khác","Vì phần cứng luôn chậm","Vì không có tiêu chí đánh giá"],a:1,
- e:"Ví dụ: an toàn hơn có thể chậm hơn; viết nhanh hơn có thể khó đọc hơn."},
-{t:"t8",b:V,q:"Java kiểm tra chỉ số mảng lúc chạy còn C thì không. Đây là đánh đổi giữa:",
- o:["Khả năng đọc vs khả năng viết","Độ tin cậy vs hiệu năng","Chi phí vs tính di động","Trực giao vs an toàn"],a:1,
- e:"Kiểm tra biên (an toàn hơn) đổi lấy tốc độ → <b>độ tin cậy vs hiệu năng</b>."},
-{t:"t8",b:V,q:"List comprehension ngắn nhưng khi quá phức tạp lại khó đọc hơn vòng lặp tường minh — đây là đánh đổi:",
- o:["Độ tin cậy vs hiệu năng","Khả năng đọc vs khả năng viết","Linh hoạt vs độ tin cậy","Chi phí vs an toàn"],a:1,
- e:"Cô đọng (viết nhanh) đổi lấy khó đọc khi phức tạp → <b>readability vs writability</b>."},
-{t:"t8",b:V,q:"C++ cho con trỏ và cấp phát động, còn Java/C# dùng GC. Đây là đánh đổi giữa:",
- o:["Tính linh hoạt vs độ tin cậy","Khả năng đọc vs chi phí","Hiệu năng vs khả năng viết","An toàn vs trực giao"],a:0,
- e:"Con trỏ/cấp phát thủ công (linh hoạt) vs GC (ít lỗi bộ nhớ hơn) → <b>linh hoạt vs độ tin cậy</b>."},
-{t:"t8",b:V,q:"<code>int* p = new int(10); delete p; std::cout << *p;</code> minh họa lỗi gì mà GC giúp giảm?",
- o:["Tràn số nguyên","Use-after-free (dùng vùng nhớ đã giải phóng)","Chia cho 0","Lỗi cú pháp"],a:1,
- e:"Đây là <b>use-after-free</b>; ngôn ngữ có GC quản lý vòng đời tự động nên giảm loại lỗi này."},
-{t:"t8",b:H,q:"Cái giá phải trả của ngôn ngữ dùng bộ thu gom rác (GC) là gì?",
- o:["Không thể chạy trên von Neumann","Có thể phát sinh chi phí thực thi và độ phức tạp runtime","Mất khả năng khai báo biến","Không hỗ trợ vòng lặp"],a:1,
- e:"GC giảm lỗi bộ nhớ nhưng đổi lại <b>chi phí runtime và độ phức tạp</b>."},
-{t:"t8",b:V,q:"Một hệ thống thời gian thực khắt khe về tốc độ, chấp nhận rủi ro cao hơn — thường nghiêng về:",
- o:["Ngôn ngữ có GC nặng","Ngôn ngữ ưu tiên hiệu năng, kiểm soát bộ nhớ thủ công (vd C/C++)","Ngôn ngữ khai báo thuần","Ngôn ngữ logic"],a:1,
- e:"Ưu tiên hiệu năng/kiểm soát → nghiêng về C/C++, chấp nhận đánh đổi độ tin cậy."},
-{t:"t8",b:H,q:"Phát biểu nào đúng về đánh đổi 'độ tin cậy vs hiệu năng'?",
- o:["Luôn có thể tối đa cả hai cùng lúc","Tăng kiểm tra an toàn thường làm giảm tốc độ, và ngược lại","Hiệu năng không liên quan độ tin cậy","Chỉ tồn tại trong ngôn ngữ hàm"],a:1,
- e:"Thêm kiểm tra (biên mảng, kiểu…) tăng an toàn nhưng thường tốn thời gian chạy."},
-
-/* ---- t9: Cài đặt ngôn ngữ ---- */
-{t:"t9",b:H,q:"Hệ thống phần mềm thực hiện chuyển đổi/thực thi chương trình bậc cao được gọi chung là:",
- o:["Editor","Bộ dịch (translator)","Loader","Profiler"],a:1,
- e:"Gọi chung là <b>translator</b> (bộ dịch), gồm compiler/interpreter/hybrid/JIT."},
-{t:"t9",b:H,q:"Bốn phương pháp cài đặt quan trọng là:",
- o:["Compile, link, load, run","Biên dịch, thông dịch thuần túy, hệ thống lai, JIT","Lexer, parser, semantic, codegen","Front-end, back-end, runtime, GC"],a:1,
- e:"Bốn phương pháp: <b>biên dịch, thông dịch thuần túy, hệ thống lai, biên dịch tức thời (JIT)</b>."},
-{t:"t9",b:H,q:"Trong biên dịch (compilation), điều gì xảy ra trước khi chạy?",
- o:["Từng dòng được thực thi ngay","Toàn bộ chương trình nguồn được dịch thành chương trình đích","Máy ảo đọc bytecode","Không có bước dịch nào"],a:1,
- e:"Biên dịch: <b>toàn bộ</b> nguồn được dịch thành đích trước; nếu là mã máy thì chạy trực tiếp."},
-{t:"t9",b:H,q:"Ưu điểm chính của biên dịch là gì, kèm nhược điểm nào?",
- o:["Chạy nhanh; nhưng đích thường phụ thuộc nền tảng","Linh hoạt; nhưng chạy chậm","Dễ debug tương tác; nhưng khó viết","Di động cao; nhưng không tối ưu"],a:0,
- e:"Biên dịch cho chương trình đích <b>chạy nhanh</b> nhưng <b>phụ thuộc nền tảng đích</b>."},
-{t:"t9",b:H,q:"Trong thông dịch thuần túy (pure interpretation), điều gì KHÔNG được tạo ra?",
- o:["Kết quả (output)","Một chương trình đích độc lập trước khi chạy","Thông báo lỗi","Giá trị biến"],a:1,
- e:"Thông dịch thuần túy thực thi trực tiếp nguồn, <b>không tạo chương trình đích độc lập</b>."},
-{t:"t9",b:H,q:"Ưu điểm nổi bật của thông dịch thuần túy là:",
- o:["Chạy nhanh nhất","Linh hoạt, dễ môi trường tương tác, báo lỗi gần vị trí thực thi","Sinh mã máy tối ưu","Không cần phân tích cú pháp"],a:1,
- e:"Thông dịch: linh hoạt + tương tác + báo lỗi gần chỗ chạy, nhưng thường <b>chậm hơn</b> biên dịch."},
-{t:"t9",b:H,q:"Vì sao thông dịch thuần túy thường chậm hơn biên dịch?",
- o:["Vì không có bộ nhớ","Vì phải lặp lại việc phân tích/xử lý cấu trúc lệnh mỗi lần","Vì luôn chạy trên máy ảo","Vì thiếu thư viện"],a:1,
- e:"Không dịch trước thành đích → interpreter <b>lặp lại phân tích</b> khi thực thi → chậm hơn."},
-{t:"t9",b:V,q:"Hệ thống lai (hybrid) hoạt động theo trình tự nào?",
- o:["Nguồn → mã máy → chạy trực tiếp","Nguồn → dạng trung gian → máy ảo thực thi","Nguồn → interpreter dòng-lệnh → output","Nguồn → linker → loader"],a:1,
- e:"Hybrid: dịch nguồn thành <b>dạng trung gian</b>, rồi <b>máy ảo (VM)</b> thực thi trung gian đó."},
-{t:"t9",b:V,q:"Java là ví dụ điển hình của hệ thống lai vì:",
- o:["javac dịch trực tiếp ra mã máy x86","Nguồn Java → bytecode → chạy trên JVM","Java được thông dịch từng dòng thuần túy","Java không cần biên dịch"],a:1,
- e:"Java: <code>javac</code> sinh <b>bytecode</b>, JVM thực thi → mô hình lai; 'viết một lần, chạy nhiều nơi'."},
-{t:"t9",b:V,q:"Vì sao bài giảng nói Python phù hợp mô hình 'hệ thống lai' hơn là 'thông dịch thuần túy'?",
- o:["Vì Python chạy trên mã máy trực tiếp","Vì mã nguồn Python được dịch sang bytecode rồi thực thi bởi máy ảo","Vì Python không có interpreter","Vì Python biên dịch AOT toàn bộ ra x86"],a:1,
- e:"Cài đặt phổ biến: Python source → <b>bytecode</b> → Python VM, nên hợp mô hình <b>lai</b>."},
-{t:"t9",b:H,q:"Biên dịch tức thời (JIT) là phương pháp trong đó:",
- o:["Toàn bộ chương trình biên dịch trước khi chạy","Một trình biên dịch nằm trong máy ảo/runtime, dịch phần chạy thường xuyên thành mã máy","Không bao giờ sinh mã máy","Chỉ thông dịch, không biên dịch"],a:1,
- e:"JIT: compiler nằm trong VM/runtime, biên dịch <b>hot paths/hot methods</b> sang mã máy gốc khi chạy."},
-{t:"t9",b:H,q:"Phần mã được chạy rất nhiều lần trong JIT thường được gọi là:",
- o:["Cold code","Đường nóng / phương thức nóng (hot paths/hot methods)","Dead code","Boot code"],a:1,
- e:"JIT ưu tiên biên dịch <b>hot paths / hot methods</b>."},
-{t:"t9",b:V,q:"Đặc điểm nào KHÔNG phải là ưu điểm của JIT (theo bài giảng)?",
- o:["Bắt đầu chạy tương đối nhanh (không cần biên dịch toàn bộ trước)","Runtime quan sát hành vi thực để tối ưu chính xác hơn","Đoạn đã biên dịch chạy nhanh hơn thông dịch","Không cần máy ảo hay runtime nào"],a:3,
- e:"JIT vốn nằm <b>trong</b> máy ảo/runtime; ba mục còn lại là ưu điểm thật của JIT."},
-{t:"t9",b:H,q:"Điều gì JIT cho thấy về ranh giới biên dịch – thông dịch?",
- o:["Chúng loại trừ nhau tuyệt đối","Ranh giới không phải lúc nào cũng tuyệt đối; nhiều hệ hiện đại kết hợp cả hai","Thông dịch luôn tốt hơn","Biên dịch đã lỗi thời"],a:1,
- e:"JIT chứng minh ranh giới không tuyệt đối — hệ hiện đại kết hợp để cân bằng khởi động/di động/hiệu năng."},
-
-/* ---- t10: Cấu trúc trình biên dịch ---- */
-{t:"t10",b:H,q:"Trình biên dịch được chia thành nhiều giai đoạn nhằm mục đích gì?",
- o:["Tăng dung lượng tệp","Cấu trúc rõ ràng, dễ thiết kế, kiểm tra, mở rộng","Bỏ qua phân tích ngữ nghĩa","Chạy nhanh hơn khi thực thi"],a:1,
- e:"Chia giai đoạn (mỗi giai đoạn nhận đầu vào từ giai đoạn trước) giúp <b>cấu trúc rõ ràng, dễ bảo trì/mở rộng</b>."},
-{t:"t10",b:H,q:"Giai đoạn đầu tiên của trình biên dịch là gì?",
- o:["Phân tích cú pháp","Phân tích từ vựng (lexical analysis / scanning)","Sinh mã đích","Phân tích ngữ nghĩa"],a:1,
- e:"Giai đoạn đầu: <b>phân tích từ vựng</b> — đọc chuỗi ký tự, nhóm thành token."},
-{t:"t10",b:V,q:"Với <code>a = b + c * 60;</code>, đầu ra của phân tích từ vựng là gì?",
- o:["Một cây cú pháp trừu tượng","Một chuỗi token: (ID,a)(EQUAL,=)(ID,b)(PLUS,+)…","Mã ba địa chỉ","Mã assembly"],a:1,
- e:"Scanner sinh <b>chuỗi token</b> như (ID,\"a\"),(EQUAL,\"=\"),(ID,\"b\"),(PLUS,\"+\"),(ID,\"c\"),(MUL,\"*\"),(INT,\"60\"),(SEMI,\";\")."},
-{t:"t10",b:H,q:"Nhiệm vụ nào KHÔNG thuộc phân tích từ vựng?",
- o:["Nhóm ký tự thành lexeme","Loại bỏ khoảng trắng và chú thích không cần thiết","Kiểm tra kiểu của biểu thức","Gắn thông tin dòng/cột phục vụ báo lỗi"],a:2,
- e:"Kiểm tra kiểu thuộc <b>phân tích ngữ nghĩa</b>, không phải scanner."},
-{t:"t10",b:H,q:"Phân tích cú pháp (parsing) làm gì với chuỗi token?",
- o:["Sinh mã máy","Kiểm tra token có tạo thành chương trình hợp lệ theo văn phạm không","Cấp phát thanh ghi","Tối ưu hằng số"],a:1,
- e:"Parser nhận token và kiểm tra tính hợp lệ theo <b>văn phạm</b>, dựng cấu trúc (parse tree)."},
-{t:"t10",b:V,q:"Trong parse tree của <code>a = b + c * 60;</code>, vì sao <code>c * 60</code> được nhóm trước?",
- o:["Vì c đứng trước b","Vì phép nhân có độ ưu tiên cao hơn phép cộng","Vì 60 là hằng số","Vì parser đọc từ phải sang trái"],a:1,
- e:"Cây phản ánh <b>độ ưu tiên toán tử</b>: <code>*</code> ưu tiên cao hơn <code>+</code> nên nhóm trước."},
-{t:"t10",b:V,q:"Phân tích cú pháp CHƯA nhất thiết biết điều gì?",
- o:["Cấu trúc ngữ pháp của câu lệnh","Câu lệnh là phép gán","a, b, c đã khai báo chưa và kiểu có phù hợp không","Vế trái là định danh"],a:2,
- e:"Parsing lo <b>cấu trúc hình thức</b>; khai báo/kiểu là việc của phân tích ngữ nghĩa."},
-{t:"t10",b:H,q:"AST khác parse tree ở điểm nào?",
- o:["AST chứa nhiều chi tiết suy dẫn hơn","AST gọn hơn, bỏ node nhân tạo, giữ thành phần có ý nghĩa ngữ nghĩa","AST là mã máy","AST không biểu diễn được biểu thức"],a:1,
- e:"AST <b>trừu tượng hơn</b> parse tree: bỏ node nhân tạo, giữ bản chất ngữ nghĩa."},
-{t:"t10",b:V,q:"Một chương trình đúng cú pháp nhưng <code>n = n + s;</code> với <code>int n</code> và <code>char* s</code> sẽ bị bắt lỗi ở giai đoạn nào?",
- o:["Phân tích từ vựng","Phân tích cú pháp","Phân tích ngữ nghĩa (kiểm tra kiểu)","Sinh mã đích"],a:2,
- e:"Lỗi kiểu (int + char*) là lỗi <b>ngữ nghĩa</b>, do phân tích ngữ nghĩa/kiểm tra tĩnh phát hiện."},
-{t:"t10",b:V,q:"<code>break;</code> đặt ngoài mọi vòng lặp bị phát hiện bởi:",
- o:["Scanner","Parser","Phân tích ngữ nghĩa (kiểm tra quy tắc ngữ nghĩa)","Loader"],a:2,
- e:"Quy tắc 'break chỉ hợp lệ trong vòng lặp/switch' là kiểm tra <b>ngữ nghĩa</b>."},
-{t:"t10",b:H,q:"Kết quả của phân tích ngữ nghĩa thường là gì?",
- o:["Chuỗi token","AST đã bổ sung thông tin (kiểu, liên kết dùng–khai báo, phạm vi)","Mã máy tối ưu","Tệp thực thi"],a:1,
- e:"Đầu ra: <b>AST được bổ sung</b> thông tin kiểu, liên kết biến–khai báo, phạm vi."},
-{t:"t10",b:V,q:"Với <code>a = b + c * 60;</code>, mã ba địa chỉ phổ biến là:",
- o:["a = b + c * 60","t1 = c*60; t2 = b+t1; a = t2","LOAD/STORE trực tiếp","(ID,a)(PLUS,+)…"],a:1,
- e:"Mã ba địa chỉ: <code>t1 = c*60</code>; <code>t2 = b+t1</code>; <code>a = t2</code>."},
-{t:"t10",b:V,q:"Biến đổi <code>t1 = 10*60; x = t1</code> thành <code>x = 600</code> là kỹ thuật tối ưu nào?",
- o:["Cấp phát thanh ghi","Tính toán hằng (constant folding)","Nội tuyến hàm","Loại bỏ vòng lặp"],a:1,
- e:"Tính sẵn biểu thức hằng lúc dịch là <b>constant folding</b>."},
-{t:"t10",b:H,q:"Trong nhiều trình biên dịch, front-end tập trung vào phần nào?",
- o:["Mã trung gian, tối ưu, sinh mã đích","Ngôn ngữ nguồn: từ vựng, cú pháp, ngữ nghĩa","Chỉ cấp phát thanh ghi","Chỉ liên kết thư viện"],a:1,
- e:"<b>Front-end</b>: từ vựng/cú pháp/ngữ nghĩa (ngôn ngữ nguồn); <b>back-end</b>: IR/tối ưu/sinh mã đích."},
-{t:"t10",b:H,q:"Tối ưu độc lập máy khác tối ưu phụ thuộc máy ở chỗ nào?",
- o:["Độc lập máy làm trên mã đích cụ thể","Phụ thuộc máy quan tâm thanh ghi, tập lệnh, pipeline của máy đích","Cả hai đều không cần mã trung gian","Độc lập máy chỉ đổi tên biến"],a:1,
- e:"Tối ưu <b>phụ thuộc máy</b> lo chi tiết máy đích (thanh ghi, tập lệnh, pipeline); độc lập máy làm trên IR."},
-{t:"t10",b:V,q:"Ví dụ IR được dùng như định dạng thực thi bởi máy ảo gồm:",
- o:["x86 và ARM","Java bytecode và .NET CIL","JSON và XML","HTML và CSS"],a:1,
- e:"Java dùng <b>bytecode</b>, .NET dùng <b>CIL</b> — IR chạy trên máy ảo, giúp di động."},
-
-/* ---- t11: Ứng dụng & công cụ ---- */
-{t:"t11",b:H,q:"Nguyên lý ngôn ngữ và kỹ thuật biên dịch KHÔNG dùng cho việc nào sau đây?",
- o:["Cài đặt ngôn ngữ bậc cao","Tối ưu cho kiến trúc máy","Thiết kế giao thức mạng vật lý tầng 1","Dịch TypeScript sang JavaScript"],a:2,
- e:"Ứng dụng gồm: cài đặt ngôn ngữ, tối ưu kiến trúc, thiết kế kiến trúc mới, dịch chương trình, công cụ năng suất — không phải thiết kế tầng vật lý mạng."},
-{t:"t11",b:V,q:"Chuyển đổi từ TypeScript sang JavaScript là ví dụ của ứng dụng nào?",
- o:["Tối ưu thanh ghi","Dịch chương trình (source-to-source translation)","Thu gom rác","Liên kết thư viện"],a:1,
- e:"TS → JS là <b>dịch chương trình</b> (source-to-source), một ứng dụng của kỹ thuật biên dịch."},
-{t:"t11",b:H,q:"Công cụ nào chuẩn bị mã nguồn trước khi biên dịch, xử lý <code>#define</code>, <code>#include</code> trong C?",
- o:["Assembler","Preprocessor (bộ tiền xử lý)","Linker","Loader"],a:1,
- e:"<b>Preprocessor</b> xử lý các chỉ thị như <code>#define</code>, <code>#include</code> trước khi biên dịch."},
-{t:"t11",b:H,q:"Assembler làm nhiệm vụ gì?",
- o:["Dịch mã assembly thành mã máy (object file)","Kết hợp nhiều object file","Nạp chương trình vào bộ nhớ","Tô màu cú pháp"],a:0,
- e:"<b>Assembler</b> dịch mã assembly → mã máy (object file)."},
-{t:"t11",b:H,q:"Linker có vai trò gì?",
- o:["Chuẩn bị mã nguồn","Kết hợp nhiều object file và thư viện thành chương trình hoàn chỉnh","Chạy từng dòng nguồn","Gỡ lỗi breakpoint"],a:1,
- e:"<b>Linker</b> kết hợp các object file + thư viện thành một chương trình hoàn chỉnh."},
-{t:"t11",b:H,q:"Loader làm gì?",
- o:["Dịch assembly ra mã máy","Nạp chương trình và thư viện cần thiết vào bộ nhớ để thực thi","Xử lý #include","Kiểm tra kiểu"],a:1,
- e:"<b>Loader</b> nạp chương trình + thư viện vào bộ nhớ để chạy."},
-{t:"t11",b:V,q:"Lệnh <code>gcc main.c -lm</code> minh họa vai trò của công cụ nào?",
- o:["Preprocessor","Linker (liên kết thư viện toán học)","Debugger","Loader"],a:1,
- e:"Cờ <code>-lm</code> yêu cầu <b>linker</b> liên kết thêm thư viện toán (math library)."},
-{t:"t11",b:H,q:"Công cụ hỗ trợ breakpoint, chạy từng bước, xem biến, kiểm tra stack là:",
- o:["Assembler","Debugger","Linker","Preprocessor"],a:1,
- e:"<b>Debugger</b> hỗ trợ breakpoint, step, xem biến, kiểm tra stack."},
-{t:"t11",b:V,q:"Formatter, linter, type checker, code completion, refactoring, static analyzer được xếp vào nhóm ứng dụng nào?",
- o:["Thiết kế kiến trúc máy mới","Công cụ nâng cao năng suất lập trình","Cài đặt ngôn ngữ bậc cao","Dịch chương trình"],a:1,
- e:"Đây là nhóm <b>công cụ nâng cao năng suất</b> — đều dựa trên phân tích chương trình/AST."},
-{t:"t11",b:H,q:"IDE/Editor cung cấp các tính năng nào?",
- o:["Chỉ nạp chương trình vào bộ nhớ","Tô màu cú pháp, gợi ý mã, kiểm tra lỗi, định dạng, kết nối compiler","Chỉ liên kết thư viện","Chỉ dịch assembly"],a:1,
- e:"IDE/Editor: syntax highlight, gợi ý mã, kiểm tra lỗi, format, kết nối trình biên dịch."},
-{t:"t11",b:V,q:"AST được nhấn mạnh là 'cấu trúc trung tâm' vì công cụ nào cũng thường dựa trên nó?",
- o:["Chỉ trình biên dịch","Trình thông dịch, formatter, linter, refactoring, phân tích tĩnh","Chỉ loader","Chỉ preprocessor"],a:1,
- e:"AST là cấu trúc trung tâm: interpreter, formatter, checker, refactoring, static analyzer đều dựa trên nó."}
-];
-
-/* ===== TRẠNG THÁI & RENDER ===== */
+const QUESTIONS = [{"t":"t1","b":"Hiểu","q":"Ở mức cơ bản nhất, ngôn ngữ lập trình được mô tả là gì?","o":["Hệ ký hiệu mô tả phép tính và hành vi chương trình","Chuẩn định dạng để lưu trữ mã nguồn trên đĩa","Giao thức trao đổi dữ liệu giữa các tiến trình","Tập lệnh máy gắn với một kiến trúc CPU cụ thể"],"a":0,"e":"Ngôn ngữ lập trình là một <b>hệ ký hiệu (notation)</b> để mô tả tính toán cho cả con người và máy."},{"t":"t1","b":"Hiểu","q":"Một chương trình được viết vừa để máy thực thi, vừa để con người làm gì?","o":["Đo hiệu năng phần cứng","Mã hóa dữ liệu bí mật","Đọc, hiểu, sửa đổi và phát triển tiếp","Chỉ để lưu trữ lâu dài"],"a":2,"e":"Ngôn ngữ đóng vai trò cầu nối: đủ hình thức cho máy, đủ gần tư duy con người để đọc/hiểu/bảo trì."},{"t":"t1","b":"Hiểu","q":"Bốn thành phần cấu thành một ngôn ngữ lập trình như một hệ thống gồm:","o":["Token, AST, IR, mã máy","Biến, hàm, lớp, module","Compiler, linker, loader, debugger","Từ vựng, cú pháp, ngữ nghĩa, mô hình thực thi"],"a":3,"e":"Hệ thống gồm <b>lexicon</b> (từ vựng), <b>syntax</b> (cú pháp), <b>semantics</b> (ngữ nghĩa) và <b>execution model</b> (mô hình thực thi)."},{"t":"t1","b":"Hiểu","q":"Thành phần nào chỉ 'các đơn vị nhỏ nhất' như từ khóa, tên biến, toán tử, hằng số?","o":["Từ vựng","Ngữ nghĩa","Cú pháp","Mô hình thực thi"],"a":0,"e":"<b>Từ vựng (lexicon)</b> là các đơn vị nhỏ nhất; cú pháp là quy tắc kết hợp chúng."},{"t":"t1","b":"Hiểu","q":"Quy tắc kết hợp các đơn vị từ vựng thành biểu thức, câu lệnh và chương trình gọi là:","o":["Từ vựng","Mô hình thực thi","Cú pháp","Ngữ nghĩa"],"a":2,"e":"<b>Cú pháp (syntax)</b> quy định cách ghép các lexeme thành cấu trúc hợp lệ."},{"t":"t1","b":"Phân tích","q":"Trong Java, <code>int n = &quot;42&quot;;</code> đúng cú pháp nhưng bị từ chối. Điều này chứng tỏ gì?","o":["Parser đã hỏng vì nó chấp nhận một phép gán không hợp lệ","Đây là lỗi lúc chạy, chỉ lộ ra khi câu lệnh được thực thi","Chuỗi ký tự sai từ vựng nên scanner từ chối ngay từ đầu","Hợp lệ cú pháp không kéo theo hợp lệ ngữ nghĩa"],"a":3,"e":"Ba tầng độc lập: <b>từ vựng → cú pháp → ngữ nghĩa</b>. Câu này qua được hai tầng đầu, chết ở kiểm tra kiểu. Kiểu không tương thích."},{"t":"t1","b":"Vận dụng","q":"Với <code>f(x) = x² + 1</code> trong toán và <code>def f(x): return x*x+1</code> trong Python, điểm chung là gì?","o":["Cùng một hàm, biểu diễn bằng hai hệ ký hiệu khác nhau","Python đúng hơn, vì nó chạy được còn ký hiệu toán học thì không","Hai hàm khác nhau, vì Python tính bằng số học dấu chấm động","Cả hai đều là mã máy, chỉ khác nhau ở cách trình bày cho người"],"a":0,"e":"Cùng một ý tưởng tính toán, biểu diễn bằng hai <b>hệ ký hiệu</b> khác nhau (toán học vs Python)."},{"t":"t1","b":"Phân tích","q":"Hai đoạn <code>x = x + 1;</code> (C) và <code>ADD R1, R1, #1</code> (assembly) làm cùng một việc. Ưu thế cốt lõi của dạng thứ nhất là gì?","o":["Nó cho phép kiểm soát thanh ghi chi tiết hơn assembly","Nó diễn đạt ý định, độc lập với thanh ghi và tập lệnh","Nó được CPU nạp và thực thi trực tiếp, không cần dịch","Nó dùng ít ô nhớ hơn nên chạy nhanh hơn trên mọi máy"],"a":1,"e":"Ngôn ngữ bậc cao trừu tượng hóa khỏi thanh ghi và tập lệnh: cùng một câu chạy được trên x86 lẫn ARM."},{"t":"t2","b":"Hiểu","q":"Nhận định nào đúng về việc chọn ngôn ngữ theo miền ứng dụng?","o":["Chỉ C mới đáng dùng","Không có ngôn ngữ duy nhất phù hợp nhất cho mọi bài toán","Ngôn ngữ nào cũng như nhau","Có một ngôn ngữ tốt nhất cho mọi bài toán"],"a":1,"e":"Mỗi ngôn ngữ ra đời trong một bối cảnh lịch sử/phần cứng/ứng dụng; không có 'ngôn ngữ tốt nhất' tuyệt đối."},{"t":"t2","b":"Hiểu","q":"Ngôn ngữ cổ điển nào gắn với tính toán khoa học?","o":["HTML và CSS","Fortran và ALGOL 60","COBOL và SQL","Prolog và Lisp"],"a":1,"e":"<b>Fortran</b> và <b>ALGOL 60</b> là các ngôn ngữ cổ điển cho tính toán khoa học."},{"t":"t2","b":"Vận dụng","q":"Câu lệnh SQL <code>SELECT department, COUNT(*) FROM employees GROUP BY department;</code> thể hiện phong cách nào?","o":["Mệnh lệnh: mô tả từng bước duyệt bảng và cộng dồn kết quả","Khai báo: mô tả kết quả muốn lấy, không mô tả từng bước","Hợp ngữ: mỗi mệnh đề ánh xạ thẳng xuống một lệnh của CPU","Hướng đối tượng: bảng là đối tượng, truy vấn là phương thức"],"a":1,"e":"SQL là ngôn ngữ <b>khai báo</b>: mô tả kết quả mong muốn, không mô tả quy trình từng bước."},{"t":"t2","b":"Hiểu","q":"Hai ngôn ngữ nào từng có vai trò lịch sử quan trọng trong AI?","o":["Java và C#","MATLAB và R","Go và Rust","Lisp và Prolog"],"a":3,"e":"<b>Lisp</b> và <b>Prolog</b> có vai trò lịch sử trong AI; ngày nay Python và R chiếm ưu thế nhờ thư viện."},{"t":"t2","b":"Vận dụng","q":"Ngôn ngữ như C, C++, Go, Rust thường được ưu tiên cho miền nào?","o":["Truy vấn cơ sở dữ liệu","Bảng tính","Trình bày trang web tĩnh","Hệ thống và backend gần bộ nhớ/hiệu năng"],"a":3,"e":"Nhóm này dùng cho <b>hệ thống/backend</b>; C cho thao tác gần bộ nhớ nhưng dễ lỗi con trỏ."},{"t":"t2","b":"Hiểu","q":"JavaScript ban đầu được thiết kế cho môi trường nào, sau đó mở rộng nhờ Node.js?","o":["Hệ điều hành nhúng","Siêu máy tính","Trình duyệt web","Máy chủ cơ sở dữ liệu"],"a":2,"e":"JS sinh ra cho <b>trình duyệt</b>, sau mở rộng sang backend qua <b>Node.js</b>."},{"t":"t2","b":"Vận dụng","q":"Thư viện NumPy, PyTorch, TensorFlow gắn với ngôn ngữ nào chiếm ưu thế hiện nay trong khoa học dữ liệu?","o":["Prolog","Python","C","SQL"],"a":1,"e":"Python thống trị khoa học dữ liệu ngày nay nhờ hệ sinh thái thư viện (NumPy, PyTorch, TensorFlow)."},{"t":"t2","b":"Vận dụng","q":"Với bài toán truy vấn/tổng hợp dữ liệu nghiệp vụ, lựa chọn tự nhiên nhất là:","o":["Assembly","SQL","Fortran","Prolog"],"a":1,"e":"SQL được thiết kế cho <b>truy vấn dữ liệu</b> theo cách khai báo — hợp với nghiệp vụ/quản lý dữ liệu."},{"t":"t3","b":"Hiểu","q":"Đặc trưng thứ nhất khi đánh giá ngôn ngữ là gì?","o":["Số lượng thư viện","Tốc độ biên dịch","Sự rõ ràng, đơn giản và thống nhất","Kích thước tệp thực thi"],"a":2,"e":"Đặc trưng đầu tiên là <b>clarity, simplicity, and unity</b> (rõ ràng, đơn giản, thống nhất)."},{"t":"t3","b":"Hiểu","q":"Tính trực giao (orthogonality) nghĩa là gì?","o":["Cú pháp giống ngôn ngữ tự nhiên","Không cho phép hàm bậc cao","Các đặc trưng kết hợp độc lập, nhất quán, ít ngoại lệ","Ngôn ngữ chạy nhanh trên nhiều CPU"],"a":2,"e":"<b>Orthogonality</b>: các đặc trưng ghép với nhau độc lập, nhất quán và ít trường hợp ngoại lệ."},{"t":"t3","b":"Vận dụng","q":"Ví dụ <code>apply_twice(increment, 10)</code> — truyền hàm như một giá trị — minh họa đặc trưng nào?","o":["Chi phí thấp","Kiểm tra kiểu tĩnh","Tính trực giao","Tính an toàn"],"a":2,"e":"Đối xử hàm như giá trị (first-class) là biểu hiện của <b>tính trực giao</b>."},{"t":"t3","b":"Hiểu","q":"'Che giấu chi tiết không cần thiết' là mô tả của đặc trưng nào?","o":["Tính trực giao","Hỗ trợ trừu tượng hóa","Tính an toàn","Sự đơn giản"],"a":1,"e":"<b>Support for abstraction</b> cho phép ẩn chi tiết; ví dụ dùng lớp <code>Student</code> để mô hình khái niệm."},{"t":"t3","b":"Vận dụng","q":"Trong Java, <code>a[5]</code> với mảng 3 phần tử gây lỗi lúc chạy (ArrayIndexOutOfBounds). Điều này minh họa đặc trưng nào?","o":["Khả năng viết","Tính trực giao","Trừu tượng hóa","Tính an toàn"],"a":3,"e":"Kiểm tra biên mảng lúc chạy là biểu hiện của <b>tính an toàn</b>; C thì cho hành vi không xác định."},{"t":"t3","b":"Vận dụng","q":"Trong C, <code>printf(\"%d\", a[5]);</code> với mảng 3 phần tử dẫn đến điều gì?","o":["Trả về 0 an toàn","Tự động mở rộng mảng","Luôn báo lỗi biên dịch","Hành vi không xác định"],"a":3,"e":"C không kiểm tra biên → đọc vùng nhớ không hợp lệ → <b>undefined behavior</b>."},{"t":"t3","b":"Vận dụng","q":"So sánh <code>total += value</code> (Python) và <code>$total += $_ for @values;</code> (Perl) cho thấy điều gì?","o":["Perl không phải ngôn ngữ thật nên không dùng để so sánh được","Viết quá ngắn, nhiều ký hiệu có thể làm giảm khả năng đọc hiểu","Perl luôn dễ đọc hơn vì nó diễn đạt ý định trong một dòng duy nhất","Python không có vòng lặp nên buộc phải cộng dồn theo cách khác"],"a":1,"e":"Cùng ý tưởng nhưng bản Perl quá cô đọng làm giảm <b>khả năng đọc hiểu</b> — minh họa clarity."},{"t":"t3","b":"Hiểu","q":"Đặc trưng nào KHÔNG nằm trong bốn đặc trưng ngôn ngữ được nêu (rõ ràng, trực giao, trừu tượng hóa, an toàn)?","o":["Tính an toàn","Tính di động nhị phân","Hỗ trợ trừu tượng hóa","Tính trực giao"],"a":1,"e":"Bốn đặc trưng là: rõ ràng/đơn giản/thống nhất, trực giao, trừu tượng hóa, an toàn."},{"t":"t3","b":"Vận dụng","q":"Một ngôn ngữ có nhiều 'trường hợp ngoại lệ' khi kết hợp các đặc trưng thì được coi là:","o":["Trực giao cao","Trực giao thấp","An toàn cao","Đơn giản cao"],"a":1,"e":"Nhiều ngoại lệ khi kết hợp đặc trưng → <b>trực giao thấp</b>."},{"t":"t4","b":"Hiểu","q":"Bốn tiêu chí cơ bản để đánh giá ngôn ngữ lập trình là:","o":["Tốc độ, bộ nhớ, năng lượng, giá","Biên dịch, thông dịch, lai, JIT","Cú pháp, ngữ nghĩa, từ vựng, thực thi","Khả năng đọc, khả năng viết, độ tin cậy, chi phí"],"a":3,"e":"Bốn tiêu chí: <b>readability, writability, reliability, cost</b>."},{"t":"t4","b":"Hiểu","q":"Khả năng đọc hiểu (readability) đặc biệt quan trọng trong hoàn cảnh nào?","o":["Mã máy sinh tự động","Chương trình chỉ chạy trên siêu máy tính","Chương trình dùng một lần","Hệ thống lớn được nhiều người bảo trì"],"a":3,"e":"Readability quan trọng nhất khi <b>bảo trì hệ thống lớn nhiều người</b>."},{"t":"t4","b":"Hiểu","q":"Khả năng viết (writability) liên quan chặt tới các yếu tố nào?","o":["Dung lượng ổ cứng dùng để lưu mã nguồn và tệp thực thi","Số thanh ghi của CPU và độ rộng của bus dữ liệu bộ nhớ","Thư viện, cú pháp và cơ chế trừu tượng hóa của ngôn ngữ","Tốc độ mạng khi tải các gói phụ thuộc về máy lập trình viên"],"a":2,"e":"Writability = mức dễ diễn đạt tính toán, liên quan <b>thư viện, cú pháp, trừu tượng hóa</b>."},{"t":"t4","b":"Hiểu","q":"Độ tin cậy (reliability) đo lường điều gì?","o":["Mức chương trình thực hiện đúng theo đặc tả","Số dòng mã","Chương trình chạy nhanh cỡ nào","Chi phí đào tạo nhân lực"],"a":0,"e":"Reliability = mức chương trình <b>hoạt động đúng đặc tả</b>; hỗ trợ bởi hệ thống kiểu, kiểm tra biên, GC."},{"t":"t4","b":"Vận dụng","q":"<code>squares = [x*x for x in numbers if x>0]</code> so với vòng lặp C tương đương cho thấy Python có ưu thế về:","o":["Khả năng viết (ngắn gọn hơn)","Hiệu năng thô","Kiểm soát bộ nhớ","Độ tin cậy"],"a":0,"e":"List comprehension biểu diễn thao tác mức cao ngắn gọn → <b>khả năng viết</b> cao."},{"t":"t4","b":"Vận dụng","q":"Nói 'Python luôn tốt hơn C' dựa trên ví dụ list comprehension là:","o":["Đúng; list comprehension chứng minh Python vượt trội mọi mặt","Sai; ví dụ chỉ cho thấy Python gọn hơn ở thao tác mức cao","Đúng; C không thể biểu diễn phép lọc và phép biến đổi","Sai; C không có cấu trúc dữ liệu tương đương danh sách"],"a":1,"e":"Bài giảng nhấn mạnh: đây không phải 'Python luôn tốt hơn'; C cho kiểm soát bộ nhớ/hiệu năng chi tiết hơn."},{"t":"t4","b":"Vận dụng","q":"Một cú pháp giúp viết rất nhanh nhưng khiến người khác khó đọc thể hiện căng thẳng giữa hai tiêu chí nào?","o":["Độ tin cậy vs hiệu năng","Chi phí vs độ tin cậy","Khả năng viết vs khả năng đọc","Khả năng đọc vs chi phí"],"a":2,"e":"Đây là đánh đổi kinh điển <b>writability vs readability</b>."},{"t":"t4","b":"Vận dụng","q":"Một dự án ưu tiên bảo trì lâu dài bởi nhóm lớn nên đề cao tiêu chí nào nhất?","o":["Kích thước nhị phân","Tốc độ khởi động","Khả năng đọc hiểu","Độ ngắn của cú pháp"],"a":2,"e":"Bảo trì dài hạn nhiều người → ưu tiên <b>readability</b>."},{"t":"t5","b":"Hiểu","q":"Trong kiến trúc von Neumann, điều gì được lưu chung trong bộ nhớ?","o":["Cả chương trình và dữ liệu","Chỉ thanh ghi","Chỉ chương trình","Chỉ dữ liệu"],"a":0,"e":"Đặc trưng von Neumann: <b>chương trình và dữ liệu cùng nằm trong bộ nhớ</b>."},{"t":"t5","b":"Hiểu","q":"Chu kỳ hoạt động của CPU trong mô hình von Neumann là:","o":["fetch – decode – execute","scan – parse – emit","load – link – run","read – write – erase"],"a":0,"e":"Chu kỳ <b>fetch – decode – execute</b>: lấy lệnh, giải mã, thực thi."},{"t":"t5","b":"Hiểu","q":"Mô hình von Neumann ảnh hưởng mạnh nhất tới loại ngôn ngữ nào?","o":["Ngôn ngữ hàm","Ngôn ngữ logic","Ngôn ngữ mệnh lệnh","Ngôn ngữ đánh dấu"],"a":2,"e":"Von Neumann định hình mạnh các <b>ngôn ngữ mệnh lệnh</b> qua biến, phép gán, vòng lặp."},{"t":"t5","b":"Vận dụng","q":"Khai báo <code>int x = 10;</code> mô hình hóa khái niệm phần cứng nào?","o":["Ngắt","Ô nhớ","Bus dữ liệu","Thanh ghi cờ"],"a":1,"e":"<b>Biến</b> mô hình hóa <b>ô nhớ</b>; gán = ghi giá trị vào ô nhớ đó."},{"t":"t5","b":"Vận dụng","q":"<code>x = x + 1;</code> phản ánh thao tác phần cứng nào của mô hình von Neumann?","o":["Đọc lệnh từ đĩa","Chuyển ngữ cảnh tiến trình","Khởi động lại CPU","Ghi giá trị vào ô nhớ"],"a":3,"e":"Phép gán mô hình hóa thao tác <b>ghi giá trị vào ô nhớ</b>."},{"t":"t5","b":"Vận dụng","q":"Vì sao vòng lặp <code>for</code> ánh xạ hiệu quả xuống phần cứng von Neumann?","o":["Vì vòng lặp là mã khai báo nên phần cứng tự tối ưu được","Vì cơ chế lặp khớp chu kỳ tuần tự lấy lệnh rồi thực thi","Vì vòng lặp không đụng tới bộ nhớ, chỉ dùng các thanh ghi","Vì CPU không hỗ trợ rẽ nhánh nên chỉ chạy được vòng lặp"],"a":1,"e":"Iteration ánh xạ tự nhiên xuống cơ chế lặp/tuần tự ở mức phần cứng."},{"t":"t5","b":"Hiểu","q":"Ba khái niệm cơ bản mà von Neumann in dấu lên ngôn ngữ mệnh lệnh là:","o":["Lớp, kế thừa, đa hình","Sự kiện, callback, promise","Hàm, closure, đệ quy","Biến, phép gán, vòng lặp"],"a":3,"e":"Ba khái niệm: <b>biến</b>, <b>phép gán</b>, <b>vòng lặp (iteration)</b>."},{"t":"t6","b":"Hiểu","q":"Lập trình mệnh lệnh mô tả điều gì?","o":["Quan hệ toán học thuần túy","Cái gì cần tính","Các sự kiện và quy tắc","Cách thực hiện từng bước"],"a":3,"e":"Mệnh lệnh (imperative) mô tả <b>cách</b> làm — chuỗi thao tác thay đổi trạng thái."},{"t":"t6","b":"Hiểu","q":"Lập trình khai báo tập trung mô tả điều gì?","o":["Thứ tự nạp lệnh CPU","Cái gì cần được tính","Cách thực hiện từng bước","Cách cấp phát thanh ghi"],"a":1,"e":"Khai báo (declarative) mô tả <b>cái gì</b> cần đạt, không mô tả từng bước."},{"t":"t6","b":"Vận dụng","q":"<code>total = sum(filter(lambda x: x>0, numbers))</code> thuộc phong cách nào?","o":["Hợp ngữ","Hàm (một dạng khai báo)","Logic","Mệnh lệnh"],"a":1,"e":"Biểu diễn qua các phép biến đổi dữ liệu (filter/sum) là <b>lập trình hàm</b>, một dạng khai báo."},{"t":"t6","b":"Vận dụng","q":"Đoạn Prolog <code>grandparent(X,Z) :- parent(X,Y), parent(Y,Z).</code> minh họa mô hình nào?","o":["Lập trình mệnh lệnh: mô tả từng bước tra cứu quan hệ cha con","Lập trình hướng đối tượng: mỗi người là một đối tượng có hành vi","Lập trình logic: mô tả sự kiện và quy tắc suy luận","Lập trình hàm: mô tả phép biến đổi từ đầu vào sang đầu ra"],"a":2,"e":"Prolog: mô tả <b>sự kiện</b> và <b>quy tắc suy luận</b> → lập trình logic."},{"t":"t6","b":"Vận dụng","q":"Vòng <code>for x in numbers: if x>0: total += x</code> đại diện cho phong cách nào?","o":["Hàm thuần: không sửa biến nào bên ngoài phạm vi của vòng lặp","Logic: suy ra tổng từ tập sự kiện gồm các phần tử dương","Mệnh lệnh: mô tả từng bước và thay đổi biến trạng thái","Khai báo: nêu kết quả mong muốn mà không nêu cách tính ra nó"],"a":2,"e":"Duyệt và cập nhật biến trạng thái từng bước là <b>mệnh lệnh</b>."},{"t":"t6","b":"Hiểu","q":"Lập trình hàm được xếp là một dạng của phong cách nào?","o":["Khai báo","Hợp ngữ","Mệnh lệnh","Hướng phần cứng"],"a":0,"e":"Lập trình hàm được coi là <b>một dạng khai báo</b> — biểu diễn qua biến đổi dữ liệu."},{"t":"t6","b":"Hiểu","q":"Sự khác biệt cốt lõi giữa mệnh lệnh và khai báo phản ánh điều gì?","o":["Dùng biến cục bộ vs dùng biến toàn cục để giữ trạng thái","Chuỗi thao tác đổi trạng thái vs mô tả quan hệ cần thỏa","Chạy trên phần cứng von Neumann vs chạy trên máy ảo","Biên dịch trước khi chạy vs thông dịch từng dòng lệnh"],"a":1,"e":"Một bên xem chương trình là <b>chuỗi thao tác đổi trạng thái</b>, bên kia là <b>mô tả quan hệ/ràng buộc</b>."},{"t":"t6","b":"Vận dụng","q":"<code>SELECT SUM(amount) FROM transactions WHERE amount>0;</code> là ví dụ của:","o":["Logic thuần","Hướng đối tượng","Mệnh lệnh","Khai báo"],"a":3,"e":"SQL nêu kết quả mong muốn, không nêu từng bước → <b>khai báo</b>."},{"t":"t7","b":"Hiểu","q":"Giai đoạn 1950 – đầu 1960, phương pháp lập trình tập trung vào điều gì?","o":["Thiết kế hướng dữ liệu: mô hình hóa bằng kiểu và module","Tối ưu hiệu suất máy: chạy nhanh, tốn ít bộ nhớ","Lập trình có cấu trúc: hạn chế goto, dùng vòng lặp rõ ràng","Hướng đối tượng: đóng gói dữ liệu cùng hành vi vào một lớp"],"a":1,"e":"Thập niên 1950 – đầu 1960: <b>tối ưu hiệu suất máy</b> — chạy nhanh, ít bộ nhớ, tận dụng phần cứng."},{"t":"t7","b":"Hiểu","q":"Lập trình có cấu trúc (cuối 1960) đặc trưng bởi điều gì?","o":["Cấu trúc điều khiển rõ ràng, hạn chế dùng <code>goto</code>","Suy luận logic từ tập sự kiện và các quy tắc đã khai báo","Đóng gói dữ liệu với hành vi, kèm kế thừa và đa hình","Truy vấn khai báo: nêu kết quả cần lấy thay vì từng bước"],"a":0,"e":"Lập trình có cấu trúc: tuần tự/rẽ nhánh/lặp rõ ràng, <b>hạn chế goto</b>."},{"t":"t7","b":"Hiểu","q":"Cuối thập niên 1970 gắn với phương pháp nào?","o":["Lập trình logic: mô tả sự kiện và quy tắc suy luận","Thiết kế hướng dữ liệu: kiểu, module và giao diện","Tối ưu hiệu suất máy: tận dụng tối đa từng ô nhớ","Hướng đối tượng: đóng gói, kế thừa và đa hình"],"a":1,"e":"Cuối 1970: <b>thiết kế hướng dữ liệu</b> — kiểu dữ liệu, module, giao diện."},{"t":"t7","b":"Hiểu","q":"Giữa thập niên 1980 đánh dấu sự nổi lên của phương pháp nào?","o":["Tối ưu hiệu suất máy: chạy nhanh và tốn ít bộ nhớ","Hướng đối tượng: đóng gói, kế thừa, đa hình","Thiết kế hướng dữ liệu: kiểu, module và giao diện","Lập trình có cấu trúc: hạn chế goto, dùng vòng lặp"],"a":1,"e":"Giữa 1980: <b>OOP</b> — đóng gói, kế thừa, đa hình; đối tượng biết xử lý chính mình."},{"t":"t7","b":"Vận dụng","q":"Việc thay đoạn dùng <code>goto</code> bằng vòng <code>for</code> có cấu trúc thể hiện bước tiến hóa nào?","o":["Từ lập trình logic sang lập trình mệnh lệnh cổ điển","Từ tối ưu hiệu suất máy sang lập trình có cấu trúc","Từ lập trình mệnh lệnh sang lập trình khai báo","Từ hướng đối tượng sang lập trình hàm thuần túy"],"a":1,"e":"Thay goto bằng cấu trúc lặp rõ ràng là biểu hiện của <b>lập trình có cấu trúc</b>."},{"t":"t7","b":"Vận dụng","q":"Ví dụ đa hình với <code>Shape/Rectangle/Circle</code> và vòng <code>for shape in shapes: print(shape.area())</code> minh họa giai đoạn nào?","o":["Thiết kế hướng dữ liệu","Hướng đối tượng (đa hình)","Lập trình có cấu trúc","Tối ưu hiệu suất máy"],"a":1,"e":"Gọi <code>area()</code> đa hình trên nhiều lớp con là biểu hiện của <b>OOP</b>."},{"t":"t8","b":"Hiểu","q":"Vì sao thiết kế ngôn ngữ luôn chứa các đánh đổi?","o":["Vì cải thiện một mục tiêu có thể làm xấu đi mục tiêu khác","Vì lập trình viên lười nên ngôn ngữ phải chiều theo thói quen","Vì phần cứng luôn chậm nên phải hy sinh tính năng để bù lại","Vì chưa có bộ tiêu chí đánh giá nào được cộng đồng chấp nhận"],"a":0,"e":"Ví dụ: an toàn hơn có thể chậm hơn; viết nhanh hơn có thể khó đọc hơn."},{"t":"t8","b":"Vận dụng","q":"Java kiểm tra chỉ số mảng lúc chạy còn C thì không. Đây là đánh đổi giữa:","o":["Chi phí vs tính di động","Khả năng đọc vs khả năng viết","Trực giao vs an toàn","Độ tin cậy vs hiệu năng"],"a":3,"e":"Kiểm tra biên (an toàn hơn) đổi lấy tốc độ → <b>độ tin cậy vs hiệu năng</b>."},{"t":"t8","b":"Vận dụng","q":"List comprehension ngắn nhưng khi quá phức tạp lại khó đọc hơn vòng lặp tường minh — đây là đánh đổi:","o":["Độ tin cậy vs hiệu năng","Chi phí vs an toàn","Khả năng đọc vs khả năng viết","Linh hoạt vs độ tin cậy"],"a":2,"e":"Cô đọng (viết nhanh) đổi lấy khó đọc khi phức tạp → <b>readability vs writability</b>."},{"t":"t8","b":"Vận dụng","q":"C++ cho con trỏ và cấp phát động, còn Java/C# dùng GC. Đây là đánh đổi giữa:","o":["Khả năng đọc vs chi phí","An toàn vs trực giao","Tính linh hoạt vs độ tin cậy","Hiệu năng vs khả năng viết"],"a":2,"e":"Con trỏ/cấp phát thủ công (linh hoạt) vs GC (ít lỗi bộ nhớ hơn) → <b>linh hoạt vs độ tin cậy</b>."},{"t":"t8","b":"Vận dụng","q":"<code>int* p = new int(10); delete p; std::cout << *p;</code> minh họa lỗi gì mà GC giúp giảm?","o":["Lỗi cú pháp: không được in giá trị của một con trỏ ra màn hình","Use-after-free: dùng vùng nhớ đã được giải phóng","Tràn số nguyên: giá trị vượt quá phạm vi của kiểu <code>int</code>","Chia cho không: mẫu số bằng không tại thời điểm thực thi"],"a":1,"e":"Đây là <b>use-after-free</b>; ngôn ngữ có GC quản lý vòng đời tự động nên giảm loại lỗi này."},{"t":"t8","b":"Hiểu","q":"Cái giá phải trả của ngôn ngữ dùng bộ thu gom rác (GC) là gì?","o":["Phát sinh chi phí thực thi và độ phức tạp ở tầng runtime","Mất khả năng khai báo biến cục bộ bên trong thân hàm","Không chạy được trên kiến trúc von Neumann do thiếu ô nhớ","Không hỗ trợ vòng lặp vì bộ đếm có thể bị thu gom giữa chừng"],"a":0,"e":"GC giảm lỗi bộ nhớ nhưng đổi lại <b>chi phí runtime và độ phức tạp</b>."},{"t":"t8","b":"Vận dụng","q":"Một hệ thống thời gian thực khắt khe về tốc độ, chấp nhận rủi ro cao hơn — thường nghiêng về:","o":["Ngôn ngữ khai báo thuần, mô tả kết quả thay vì từng bước","Ngôn ngữ logic, suy diễn kết quả từ tập sự kiện và luật","Ngôn ngữ ưu tiên hiệu năng, kiểm soát bộ nhớ thủ công","Ngôn ngữ có bộ thu gom rác nặng, dừng thế giới định kỳ"],"a":2,"e":"Ưu tiên hiệu năng/kiểm soát → nghiêng về C/C++, chấp nhận đánh đổi độ tin cậy."},{"t":"t8","b":"Hiểu","q":"Phát biểu nào đúng về đánh đổi 'độ tin cậy vs hiệu năng'?","o":["Hiệu năng không liên quan gì tới độ tin cậy của chương trình","Đánh đổi này chỉ tồn tại trong các ngôn ngữ lập trình hàm","Tăng kiểm tra an toàn thường làm giảm tốc độ, và ngược lại","Có thể tối đa cả hai cùng lúc nếu trình biên dịch đủ thông minh"],"a":2,"e":"Thêm kiểm tra (biên mảng, kiểu…) tăng an toàn nhưng thường tốn thời gian chạy."},{"t":"t9","b":"Hiểu","q":"Hệ thống phần mềm thực hiện chuyển đổi/thực thi chương trình bậc cao được gọi chung là:","o":["Loader","Editor","Bộ dịch","Profiler"],"a":2,"e":"Gọi chung là <b>translator</b> (bộ dịch), gồm compiler/interpreter/hybrid/JIT."},{"t":"t9","b":"Hiểu","q":"Bốn phương pháp cài đặt quan trọng là:","o":["Lexer, parser, semantic, codegen","Front-end, back-end, runtime, GC","Compile, link, load, run","Biên dịch, thông dịch thuần túy, hệ thống lai, JIT"],"a":3,"e":"Bốn phương pháp: <b>biên dịch, thông dịch thuần túy, hệ thống lai, biên dịch tức thời (JIT)</b>."},{"t":"t9","b":"Hiểu","q":"Trong biên dịch (compilation), điều gì xảy ra trước khi chạy?","o":["Toàn bộ chương trình nguồn được dịch thành chương trình đích","Không có bước dịch nào; CPU đọc thẳng mã nguồn bậc cao","Từng dòng nguồn được đọc và thực thi ngay, không sinh mã đích","Máy ảo nạp bytecode rồi diễn giải từng lệnh trung gian một"],"a":0,"e":"Biên dịch: <b>toàn bộ</b> nguồn được dịch thành đích trước; nếu là mã máy thì chạy trực tiếp."},{"t":"t9","b":"Hiểu","q":"Ưu điểm chính của biên dịch là gì, kèm nhược điểm nào?","o":["Di động cao; nhưng không tối ưu","Linh hoạt; nhưng chạy chậm","Chạy nhanh; nhưng đích thường phụ thuộc nền tảng","Dễ debug tương tác"],"a":2,"e":"Biên dịch cho chương trình đích <b>chạy nhanh</b> nhưng <b>phụ thuộc nền tảng đích</b>."},{"t":"t9","b":"Vận dụng","q":"Hệ thống lai (hybrid) hoạt động theo trình tự nào?","o":["Nguồn → dạng trung gian → máy ảo thực thi","Nguồn → mã máy → chạy trực tiếp","Nguồn → interpreter dòng-lệnh → output","Nguồn → linker → loader"],"a":0,"e":"Hybrid: dịch nguồn thành <b>dạng trung gian</b>, rồi <b>máy ảo (VM)</b> thực thi trung gian đó."},{"t":"t9","b":"Vận dụng","q":"Java là ví dụ điển hình của hệ thống lai vì:","o":["javac dịch trực tiếp ra mã máy x86","Nguồn Java → bytecode → chạy trên JVM","Java được thông dịch từng dòng thuần túy","Java không cần biên dịch"],"a":1,"e":"Java: <code>javac</code> sinh <b>bytecode</b>, JVM thực thi → mô hình lai; 'viết một lần, chạy nhiều nơi'."},{"t":"t9","b":"Vận dụng","q":"Vì sao bài giảng nói Python phù hợp mô hình 'hệ thống lai' hơn là 'thông dịch thuần túy'?","o":["Vì Python không có trình thông dịch, chỉ có trình biên dịch","Vì Python biên dịch trước toàn bộ chương trình ra mã máy x86","Vì nguồn được dịch sang bytecode rồi máy ảo thực thi bytecode","Vì CPU thực thi trực tiếp mã nguồn Python mà không cần dịch"],"a":2,"e":"Cài đặt phổ biến: Python source → <b>bytecode</b> → Python VM, nên hợp mô hình <b>lai</b>."},{"t":"t9","b":"Vận dụng","q":"Đặc điểm nào KHÔNG phải là ưu điểm của JIT (theo bài giảng)?","o":["Bắt đầu chạy tương đối nhanh (không cần biên dịch toàn bộ trước)","Đoạn đã biên dịch chạy nhanh hơn thông dịch","Không cần máy ảo hay runtime nào","Runtime quan sát hành vi thực để tối ưu chính xác hơn"],"a":2,"e":"JIT vốn nằm <b>trong</b> máy ảo/runtime; ba mục còn lại là ưu điểm thật của JIT."},{"t":"t10","b":"Hiểu","q":"Trình biên dịch được chia thành nhiều giai đoạn nhằm mục đích gì?","o":["Chương trình đích chạy nhanh hơn khi được thực thi về sau","Có thể bỏ qua hẳn pha phân tích ngữ nghĩa để tiết kiệm thời gian","Tệp thực thi sinh ra có dung lượng lớn hơn nên chứa nhiều mã","Cấu trúc rõ ràng, dễ thiết kế, dễ kiểm tra và dễ mở rộng"],"a":3,"e":"Chia giai đoạn (mỗi giai đoạn nhận đầu vào từ giai đoạn trước) giúp <b>cấu trúc rõ ràng, dễ bảo trì/mở rộng</b>."},{"t":"t10","b":"Hiểu","q":"Giai đoạn đầu tiên của trình biên dịch là gì?","o":["Phân tích từ vựng","Sinh mã đích","Phân tích cú pháp","Phân tích ngữ nghĩa"],"a":0,"e":"Giai đoạn đầu: <b>phân tích từ vựng</b> — đọc chuỗi ký tự, nhóm thành token."},{"t":"t10","b":"Vận dụng","q":"Với <code>a = b + c * 60;</code>, đầu ra của phân tích từ vựng là gì?","o":["Chuỗi token: <code>(ID,a)(EQUAL,=)(ID,b)(PLUS,+)…</code>","Mã ba địa chỉ: <code>t1 = c*60; t2 = b+t1; a = t2</code>","Một cây cú pháp trừu tượng với gốc là phép gán","Mã assembly của kiến trúc đích, đã cấp phát thanh ghi"],"a":0,"e":"Scanner sinh <b>chuỗi token</b> như (ID,\"a\"),(EQUAL,\"=\"),(ID,\"b\"),(PLUS,\"+\"),(ID,\"c\"),(MUL,\"*\"),(INT,\"60\"),(SEMI,\";\")."},{"t":"t10","b":"Hiểu","q":"Nhiệm vụ nào KHÔNG thuộc phân tích từ vựng?","o":["Kiểm tra kiểu của biểu thức","Loại bỏ khoảng trắng và chú thích không cần thiết","Gắn thông tin dòng/cột phục vụ báo lỗi","Nhóm ký tự thành lexeme"],"a":0,"e":"Kiểm tra kiểu thuộc <b>phân tích ngữ nghĩa</b>, không phải scanner."},{"t":"t10","b":"Hiểu","q":"Phân tích cú pháp (parsing) làm gì với chuỗi token?","o":["Kiểm tra token có hợp lệ theo văn phạm và dựng cây","Gom các ký tự liền nhau thành lexeme rồi gắn loại token","Kiểm tra kiểu của toán hạng và liên kết biến với khai báo","Chọn thanh ghi và sinh lệnh máy cho từng biểu thức con"],"a":0,"e":"Parser nhận token và kiểm tra tính hợp lệ theo <b>văn phạm</b>, dựng cấu trúc (parse tree)."},{"t":"t10","b":"Vận dụng","q":"Trong parse tree của <code>a = b + c * 60;</code>, vì sao <code>c * 60</code> được nhóm trước?","o":["Vì 60 là hằng số","Vì c đứng trước b","Vì phép nhân có độ ưu tiên cao hơn phép cộng","Vì parser đọc từ phải sang trái"],"a":2,"e":"Cây phản ánh <b>độ ưu tiên toán tử</b>: <code>*</code> ưu tiên cao hơn <code>+</code> nên nhóm trước."},{"t":"t10","b":"Vận dụng","q":"Phân tích cú pháp CHƯA nhất thiết biết điều gì?","o":["Vế trái là định danh","Cấu trúc ngữ pháp của câu lệnh","Câu lệnh là phép gán","a, b, c đã khai báo chưa và kiểu có phù hợp không"],"a":3,"e":"Parsing lo <b>cấu trúc hình thức</b>; khai báo/kiểu là việc của phân tích ngữ nghĩa."},{"t":"t10","b":"Hiểu","q":"AST khác parse tree ở điểm nào?","o":["AST không biểu diễn được biểu thức, chỉ biểu diễn câu lệnh","AST chứa nhiều chi tiết suy dẫn hơn nên phản ánh đủ mọi luật","AST là mã máy đã sinh, còn parse tree vẫn ở mức mã nguồn","AST gọn hơn: bỏ node nhân tạo, giữ phần có ý nghĩa ngữ nghĩa"],"a":3,"e":"AST <b>trừu tượng hơn</b> parse tree: bỏ node nhân tạo, giữ bản chất ngữ nghĩa."},{"t":"t10","b":"Vận dụng","q":"Một chương trình đúng cú pháp nhưng <code>n = n + s;</code> với <code>int n</code> và <code>char* s</code> sẽ bị bắt lỗi ở giai đoạn nào?","o":["Phân tích ngữ nghĩa (kiểm tra kiểu)","Phân tích từ vựng","Sinh mã đích","Phân tích cú pháp"],"a":0,"e":"Lỗi kiểu (int + char*) là lỗi <b>ngữ nghĩa</b>, do phân tích ngữ nghĩa/kiểm tra tĩnh phát hiện."},{"t":"t10","b":"Vận dụng","q":"<code>break;</code> đặt ngoài mọi vòng lặp bị phát hiện bởi:","o":["Phân tích ngữ nghĩa, khi kiểm tra các quy tắc ngữ cảnh","Bộ nạp, khi chương trình được đưa vào bộ nhớ để thực thi","Bộ phân tích cú pháp, vì cấu trúc câu lệnh bị sai văn phạm","Bộ quét, vì <code>break</code> là một từ khóa của ngôn ngữ"],"a":0,"e":"Quy tắc 'break chỉ hợp lệ trong vòng lặp/switch' là kiểm tra <b>ngữ nghĩa</b>."},{"t":"t10","b":"Vận dụng","q":"Với <code>a = b + c * 60;</code>, mã ba địa chỉ phổ biến là:","o":["t1 = c*60; t2 = b+t1; a = t2","LOAD/STORE trực tiếp","a = b + c * 60","(ID,a)(PLUS,+)…"],"a":0,"e":"Mã ba địa chỉ: <code>t1 = c*60</code>; <code>t2 = b+t1</code>; <code>a = t2</code>."},{"t":"t10","b":"Vận dụng","q":"Biến đổi <code>t1 = 10*60; x = t1</code> thành <code>x = 600</code> là kỹ thuật tối ưu nào?","o":["Nội tuyến hàm","Cấp phát thanh ghi","Loại bỏ vòng lặp","Tính toán hằng"],"a":3,"e":"Tính sẵn biểu thức hằng lúc dịch là <b>constant folding</b>."},{"t":"t10","b":"Vận dụng","q":"Ví dụ IR được dùng như định dạng thực thi bởi máy ảo gồm:","o":["x86 và ARM","JSON và XML","HTML và CSS","Java bytecode và .NET CIL"],"a":3,"e":"Java dùng <b>bytecode</b>, .NET dùng <b>CIL</b> — IR chạy trên máy ảo, giúp di động."},{"t":"t11","b":"Hiểu","q":"Nguyên lý ngôn ngữ và kỹ thuật biên dịch KHÔNG dùng cho việc nào sau đây?","o":["Cài đặt ngôn ngữ bậc cao","Thiết kế giao thức mạng vật lý tầng 1","Tối ưu cho kiến trúc máy","Dịch TypeScript sang JavaScript"],"a":1,"e":"Ứng dụng gồm: cài đặt ngôn ngữ, tối ưu kiến trúc, thiết kế kiến trúc mới, dịch chương trình, công cụ năng suất — không phải thiết kế tầng vật lý mạng."},{"t":"t11","b":"Vận dụng","q":"Chuyển đổi từ TypeScript sang JavaScript là ví dụ của ứng dụng nào?","o":["Tối ưu thanh ghi","Dịch chương trình","Thu gom rác","Liên kết thư viện"],"a":1,"e":"TS → JS là <b>dịch chương trình</b> (source-to-source), một ứng dụng của kỹ thuật biên dịch."},{"t":"t11","b":"Hiểu","q":"Công cụ nào chuẩn bị mã nguồn trước khi biên dịch, xử lý <code>#define</code>, <code>#include</code> trong C?","o":["Linker","Loader","Assembler","Preprocessor (bộ tiền xử lý)"],"a":3,"e":"<b>Preprocessor</b> xử lý các chỉ thị như <code>#define</code>, <code>#include</code> trước khi biên dịch."},{"t":"t11","b":"Hiểu","q":"Assembler làm nhiệm vụ gì?","o":["Kết hợp nhiều object file","Nạp chương trình vào bộ nhớ","Dịch mã assembly thành mã máy","Tô màu cú pháp"],"a":2,"e":"<b>Assembler</b> dịch mã assembly → mã máy (object file)."},{"t":"t11","b":"Hiểu","q":"Linker có vai trò gì?","o":["Nạp chương trình và thư viện vào bộ nhớ để thực thi","Dịch mã assembly thành mã máy trong một object file","Kết hợp nhiều object file và thư viện thành chương trình","Xử lý <code>#include</code>, <code>#define</code> trước khi biên dịch"],"a":2,"e":"<b>Linker</b> kết hợp các object file + thư viện thành một chương trình hoàn chỉnh."},{"t":"t11","b":"Hiểu","q":"Loader làm gì?","o":["Nạp chương trình và thư viện cần thiết vào bộ nhớ để chạy","Xử lý các chỉ thị <code>#include</code> trước khi biên dịch","Dịch mã assembly thành mã máy rồi ghi vào một object file","Kết hợp nhiều object file và thư viện thành một chương trình"],"a":0,"e":"<b>Loader</b> nạp chương trình + thư viện vào bộ nhớ để chạy."},{"t":"t11","b":"Vận dụng","q":"Lệnh <code>gcc main.c -lm</code> minh họa vai trò của công cụ nào?","o":["Bộ nạp, khi đưa thư viện toán học vào bộ nhớ lúc chạy","Trình gỡ lỗi, khi đặt breakpoint bên trong hàm <code>sqrt</code>","Bộ tiền xử lý, khi mở rộng các macro trong thư viện toán học","Bộ liên kết, khi ghép thêm thư viện toán học vào chương trình"],"a":3,"e":"Cờ <code>-lm</code> yêu cầu <b>linker</b> liên kết thêm thư viện toán (math library)."},{"t":"t11","b":"Vận dụng","q":"Formatter, linter, type checker, code completion, refactoring, static analyzer được xếp vào nhóm ứng dụng nào?","o":["Cài đặt ngôn ngữ bậc cao","Thiết kế kiến trúc máy mới","Công cụ nâng cao năng suất lập trình","Dịch chương trình"],"a":2,"e":"Đây là nhóm <b>công cụ nâng cao năng suất</b> — đều dựa trên phân tích chương trình/AST."},{"t":"t11","b":"Vận dụng","q":"AST được nhấn mạnh là 'cấu trúc trung tâm' vì công cụ nào cũng thường dựa trên nó?","o":["Chỉ trình biên dịch; các công cụ khác làm việc trên chuỗi token","Chỉ bộ tiền xử lý, vì nó phải mở rộng macro trước mọi pha khác","Chỉ bộ nạp, vì nó cần biết cấu trúc chương trình để cấp bộ nhớ","Trình thông dịch, formatter, linter, refactoring, phân tích tĩnh"],"a":3,"e":"AST là cấu trúc trung tâm: interpreter, formatter, checker, refactoring, static analyzer đều dựa trên nó."},{"t":"t10","b":"Phân tích","q":"Cho đoạn mã <code>x = -a[i++] * 3.0e-2 / (b - -c);</code>. Biết dấu trừ đơn nguyên là token riêng, <code>++</code> là một token, <code>3.0e-2</code> là một token số thực. Đoạn mã có bao nhiêu token?","o":["19","18","16","17"],"a":1,"e":"Đếm: <code>x = - a [ i ++ ] * 3.0e-2 / ( b - - c ) ;</code> → <b>18</b> token. Bẫy: <code>- -c</code> là hai token trừ riêng biệt."},{"t":"t10","b":"Phân tích","q":"<code>int n = 1@;</code> — lỗi này bị bắt ở pha nào?","o":["Phân tích cú pháp","Phân tích ngữ nghĩa","Sinh mã đích","Phân tích từ vựng"],"a":3,"e":"<code>@</code> không khớp luật token nào → <b>lỗi từ vựng</b>, bắt ngay ở scanner."},{"t":"t10","b":"Phân tích","q":"<code>int n = ;</code> — lỗi này bị bắt ở pha nào?","o":["Phân tích cú pháp","Liên kết","Phân tích ngữ nghĩa","Phân tích từ vựng"],"a":0,"e":"Mọi token đều hợp lệ, nhưng cấu trúc sai văn phạm (thiếu biểu thức khởi tạo) → <b>lỗi cú pháp</b>."},{"t":"t10","b":"Phân tích","q":"<code>int n = m + 1;</code> với <code>m</code> chưa khai báo — lỗi bị bắt ở pha nào?","o":["Phân tích từ vựng","Phân tích cú pháp","Phân tích ngữ nghĩa","Không phải lỗi"],"a":2,"e":"Từ vựng và cú pháp đều hợp lệ; 'dùng biến chưa khai báo' là quy tắc <b>ngữ nghĩa</b>."},{"t":"t10","b":"Phân tích","q":"Sinh mã ba địa chỉ cho <code>a = b * c + d * e;</code>. Cần TỐI THIỂU bao nhiêu biến tạm?","o":["3","4","1","2"],"a":3,"e":"<code>t1 = b*c; t2 = d*e; a = t1 + t2;</code> → chỉ <b>2</b> biến tạm, vì <code>a</code> nhận trực tiếp kết quả cuối."},{"t":"t10","b":"Phân tích","q":"Biến đổi <code>x = y * 8</code> thành <code>x = y &lt;&lt; 3</code> là kỹ thuật tối ưu nào?","o":["Loại bỏ mã chết","Nội tuyến hàm","Rút gọn cường độ","Tính toán hằng"],"a":2,"e":"Thay phép toán đắt (nhân) bằng phép rẻ hơn (dịch bit) = <b>strength reduction</b>. Constant folding là tính sẵn <code>3*4 → 12</code>."},{"t":"t10","b":"Đánh giá","q":"Một trình biên dịch hỗ trợ <i>m</i> ngôn ngữ nguồn và <i>n</i> máy đích. Nhờ kiến trúc front-end/back-end tách qua mã trung gian, cần viết bao nhiêu thành phần thay vì <i>m×n</i>?","o":["m × n vẫn vậy","2 × m × n","m − n","m + n"],"a":3,"e":"Mỗi ngôn ngữ một front-end, mỗi máy một back-end, nối qua IR chung → <b>m + n</b>. Đây là lý do IR tồn tại."},{"t":"t9","b":"Phân tích","q":"Vì sao JIT đôi khi sinh mã NHANH HƠN trình biên dịch AOT (biên dịch trước)?","o":["Vì nó dịch toàn bộ chương trình trước, không tốn khởi động","Vì nó thấy được hành vi thực lúc chạy nên tối ưu sát hơn","Vì máy ảo luôn thực thi nhanh hơn mã máy gốc của CPU","Vì nó bỏ qua kiểm tra kiểu và kiểm tra biên để tiết kiệm"],"a":1,"e":"JIT có <b>thông tin lúc chạy</b> mà AOT không có (profile). Đổi lại, JIT tốn thời gian khởi động."},{"t":"t9","b":"Phân tích","q":"Việc Python tạo thư mục <code>__pycache__</code> chứa tệp <code>.pyc</code> là bằng chứng cho điều gì?","o":["Python là thông dịch thuần túy","Python theo mô hình lai: nguồn","Python không cần máy ảo","Python là ngôn ngữ biên dịch thuần túy ra mã máy"],"a":1,"e":"<code>.pyc</code> chính là <b>bytecode</b> trung gian, do máy ảo Python thực thi → mô hình <b>lai</b>, không phải thông dịch thuần túy. Bytecode → máy ảo thực thi."},{"t":"t9","b":"Đánh giá","q":"Bạn phát hành phần mềm cho Windows/x86, macOS/ARM và Linux/x86. So sánh số bản phải phân phối:","o":["Cả hai đều 3 bản","Cả hai đều 1 bản","Biên dịch thuần: 3 bản mã máy","Biên dịch thuần: 1 bản"],"a":2,"e":"Mã máy phụ thuộc <b>tập lệnh CPU + định dạng thực thi + syscall</b>. Bytecode nhắm máy ảo trừu tượng → một bản, nhiều JVM. Hybrid: 1 bản bytecode (gánh nặng chuyển sang người viết máy ảo)."},{"t":"t5","b":"Phân tích","q":"'Nút thắt cổ chai von Neumann' (von Neumann bottleneck) chỉ điều gì?","o":["Băng thông giữa CPU và bộ nhớ giới hạn tốc độ toàn hệ thống","Bộ nhớ quá nhỏ nên chương trình lớn phải tráo đổi ra đĩa liên tục","CPU quá chậm so với tốc độ mà bộ nhớ có thể cung cấp dữ liệu","Đệ quy quá sâu làm ngăn xếp tràn và chương trình dừng đột ngột"],"a":0,"e":"Chương trình và dữ liệu cùng nằm trong bộ nhớ → mọi thứ chen qua <b>một bus chung</b>. Lệnh lẫn dữ liệu đều phải đi qua đó."},{"t":"t5","b":"Đánh giá","q":"<code>sum_to(1000000)</code> viết bằng đệ quy gây stack overflow; vòng <code>for</code> tương đương thì không. Cái giá này thuộc tiêu chí nào?","o":["Khả năng đọc: người đọc khó lần theo chuỗi lời gọi lồng nhau","Độ tin cậy: chương trình không chạy đúng với input hợp lệ","Khả năng viết: đệ quy khó diễn đạt hơn vòng lặp tương đương","Chi phí: chương trình vẫn đúng nhưng tốn nhiều bộ nhớ hơn"],"a":1,"e":"Phân biệt then chốt: 'chạy đúng nhưng tốn hơn' = <b>chi phí</b>; 'không chạy được nữa' = <b>độ tin cậy</b>."},{"t":"t5","b":"Đánh giá","q":"Scheme đảm bảo tối ưu gọi đuôi (TCO), biến đệ quy đuôi thành vòng lặp. Điều này bác bỏ phát biểu nào?","o":["Vòng lặp nhanh hơn đệ quy","Đệ quy dùng ngăn xếp","Von Neumann ảnh hưởng ngôn ngữ mệnh lệnh","'Đệ quy vốn kém tin cậy hơn vòng lặp'"],"a":3,"e":"Độ tin cậy phụ thuộc <b>đặc trưng cụ thể của từng ngôn ngữ</b>, không phải bản chất của phong cách lập trình. Thực ra đó là hệ quả của việc C/Python không đảm bảo TCO, không phải bản chất của đệ quy."},{"t":"t3","b":"Phân tích","q":"Trong C, ký hiệu <code>*</code> mang ba nghĩa: khai báo con trỏ, lấy giá trị trỏ tới, và phép nhân. Đây trước hết là vi phạm đặc trưng nào?","o":["Hỗ trợ trừu tượng hóa","Sự rõ ràng / đơn giản","Tính trực giao","Tính an toàn"],"a":1,"e":"Trực giao nói về <b>kết hợp đặc trưng không ngoại lệ</b>; một ký hiệu quá tải nghĩa là vấn đề <b>rõ ràng</b>. (Con trỏ C còn vi phạm an toàn — đó là chuyện khác.) Một ký hiệu nhiều nghĩa tùy ngữ cảnh."},{"t":"t3","b":"Phân tích","q":"Rust cho phép <code>let x = if a &gt; b { a } else { b };</code>, còn C buộc dùng toán tử riêng <code>a &gt; b ? a : b</code>. Nhận xét đúng?","o":["Hai cách tương đương: cùng số phép toán, chỉ khác cú pháp","Đây là vấn đề an toàn: Rust chặn nhánh thiếu giá trị trả về","C trực giao cao hơn: nó cung cấp thêm một toán tử chuyên biệt","Rust trực giao cao hơn: <code>if</code> dùng được ở nơi cần giá trị"],"a":3,"e":"Phải <b>thêm cơ chế song song</b> chỉ để làm việc mà <code>if</code> đáng lẽ làm được → trực giao thấp."},{"t":"t3","b":"Đánh giá","q":"Trong C, <code>int x = (y = 5) + 1;</code> hợp lệ vì phép gán là <i>expression</i>. Nhưng <code>x = if (a) 1; else 2;</code> thì không. Kết luận đúng nhất?","o":["Hệ quả tất yếu: không ngôn ngữ nào cho <code>if</code> trả giá trị","Một ngoại lệ không nhất quán trong nội bộ thiết kế của C","Bằng chứng cho thấy C trực giao hoàn toàn ở mức biểu thức","Một vấn đề độ tin cậy: gán lồng dễ gây lỗi khó phát hiện"],"a":1,"e":"Trực giao luôn được đánh giá <b>tương đối với chính tập đặc trưng ngôn ngữ đó chọn</b>, không so với chuẩn ngoài."},{"t":"t4","b":"Phân tích","q":"Phân loại: (i) chương trình chạy tốn 2GB RAM thay vì 200MB; (ii) chương trình crash khi input đủ lớn. Hai điều này lần lượt thuộc tiêu chí nào?","o":["(i) độ tin cậy, (ii) chi phí","(i) chi phí, (ii) độ tin cậy","Cả hai đều là độ tin cậy","Cả hai đều là chi phí"],"a":1,"e":"'Đúng nhưng tốn hơn' = chi phí. 'Không đảm bảo chạy đúng với input hợp lệ' = <b>độ tin cậy</b>."},{"t":"t4","b":"Đánh giá","q":"Lạm dụng <code>goto</code> làm giảm mạnh nhất tiêu chí nào, và vì sao?","o":["Không giảm tiêu chí nào: goto ánh xạ thẳng xuống lệnh nhảy","Khả năng đọc: luồng điều khiển không suy luận cục bộ được","Chi phí biên dịch: trình dịch phải dò nhãn khắp hàm","Khả năng viết: goto dài dòng hơn vòng lặp có cấu trúc"],"a":1,"e":"Không thể đọc một khối và biết nó đến từ đâu → khó đọc, khó suy luận, dễ sai."},{"t":"t8","b":"Đánh giá","q":"Trình kiểm tra mượn (borrow checker) của Rust từ chối biên dịch nhiều chương trình mà C chấp nhận. Đánh đổi ở đây là gì?","o":["Không có đánh đổi: chương trình hợp lệ luôn được chấp nhận","Độ tin cậy tăng, đổi lấy khả năng viết và chi phí học","Khả năng đọc tăng, đồng thời chi phí bảo trì cũng giảm","Hiệu năng tăng, đổi lấy độ tin cậy khi chạy giảm rõ rệt"],"a":1,"e":"An toàn bộ nhớ được kiểm tra <b>tĩnh</b> → bắt lỗi sớm, nhưng lập trình viên phải thỏa mãn checker (writability ↓, learning cost ↑)."},{"t":"t6","b":"Phân tích","q":"Phân loại đúng: <code>SELECT ...</code> (SQL), <code>parent(X,Y).</code> (Prolog), <code>for(i=0;...)</code> (C), <code>map f xs</code> (Haskell).","o":["Mệnh lệnh, hàm, logic, khai báo","Khai báo, logic, mệnh lệnh, hàm","Hàm, khai báo, mệnh lệnh, logic","Logic, mệnh lệnh, hàm, khai báo"],"a":1,"e":"SQL = khai báo; Prolog = logic; C for = mệnh lệnh; Haskell map = hàm (một dạng khai báo)."},{"t":"t6","b":"Phân tích","q":"Biểu thức chính quy <code>[0-9]+</code> mô tả 'chuỗi trông như thế nào', không mô tả 'quét từng ký tự ra sao'. Nó gần với phong cách nào?","o":["Hợp ngữ","Hướng đối tượng","Mệnh lệnh","Khai báo"],"a":3,"e":"Regex nêu <b>cái gì</b> cần khớp, không nêu thuật toán duyệt → tư duy khai báo."},{"t":"t11","b":"Vận dụng","q":"Trong GCC, cờ nào dừng lại NGAY SAU bước tiền xử lý (chưa biên dịch)?","o":["<code>gcc -o</code>","<code>gcc -E</code>","<code>gcc -S</code>","<code>gcc -c</code>"],"a":1,"e":"<code>-E</code> chỉ chạy preprocessor; <code>-S</code> dừng ở assembly; <code>-c</code> dừng ở object file (chưa liên kết)."},{"t":"t11","b":"Phân tích","q":"Chương trình biên dịch xong nhưng báo <code>undefined reference to 'sqrt'</code>. Công cụ nào phát ra lỗi này?","o":["Compiler","Linker","Preprocessor","Loader"],"a":1,"e":"Ký hiệu chưa được phân giải khi ghép các object file/thư viện → lỗi của <b>linker</b> (thiếu <code>-lm</code>)."},{"t":"t1","b":"Phân tích","q":"Trong C, <code>a = b = c;</code> hợp lệ vì gán là biểu thức kết hợp phải. Trong Python, <code>a = b = c</code> cũng hợp lệ, nhưng <code>x = (b = c) + 1</code> thì KHÔNG. Vì sao?","o":["C không cho phép gán lồng; <code>a = b = c</code> thực ra là lỗi","Python hoàn toàn không có phép gán, chỉ có phép ràng buộc tên","Trong Python, phép gán là câu lệnh nên không tạo ra giá trị","Trong Python, phép gán được đánh giá từ phải sang trái"],"a":2,"e":"Cùng một cú pháp bề mặt nhưng <b>ngữ nghĩa khác hẳn</b>: expression (C) vs statement (Python). <code>a = b = c</code> chỉ là cú pháp gán chuỗi riêng."},{"t":"t2","b":"Đánh giá","q":"Một hệ thống điều khiển phanh ô tô cần thời gian phản hồi xác định (deterministic), không chấp nhận dừng ngẫu nhiên. Ngôn ngữ nào ÍT phù hợp nhất và vì sao?","o":["Rust, vì có borrow checker","Java với GC dừng-thế-giới","C, vì quá gần phần cứng","Ada, vì được thiết kế cho hệ thống nhúng"],"a":1,"e":"GC đổi độ tin cậy bộ nhớ lấy <b>độ trễ khó dự đoán</b> — không chấp nhận được trong hệ thời gian thực cứng. Độ trễ thu gom rác không dự đoán được."},{"t":"t7","b":"Phân tích","q":"Đoạn <code>for shape in shapes: print(shape.area())</code> với Shape/Circle/Rectangle thuộc giai đoạn phương pháp luận nào, và vì sao?","o":["Thiết kế hướng dữ liệu","Hướng đối tượng (giữa 1980)","Tối ưu hiệu suất máy","Lập trình có cấu trúc"],"a":1,"e":"Đa hình + đối tượng tự chịu trách nhiệm hành vi = dấu hiệu của <b>OOP</b>. Dựa trên đa hình — đối tượng tự biết cách tính diện tích của mình."}];
 let state = {topic:"all", bloom:"all", answered:{}, order:QUESTIONS.map((_,i)=>i)};
-try{const s=localStorage.getItem("ppl_ch1");if(s){const p=JSON.parse(s);if(p.answered)state.answered=p.answered;}}catch(e){}
+try{const s=localStorage.getItem("ppl_ch1_v5");if(s){const p=JSON.parse(s);if(p.answered)state.answered=p.answered;}}catch(e){}
 
 const listEl=document.getElementById("list");
 const topicChips=document.getElementById("topicChips");
 const bloomChips=document.getElementById("bloomChips");
+const bloomCls={[H]:"hieu",[V]:"vandung",[A]:"phantich",[E]:"danhgia"};
 
-function save(){try{localStorage.setItem("ppl_ch1",JSON.stringify({answered:state.answered}));}catch(e){}}
+function save(){try{localStorage.setItem("ppl_ch1_v5",JSON.stringify({answered:state.answered}));}catch(e){}}
 
-/* build filter chips */
 (function(){
   const all=document.createElement("span");all.className="chip on";all.textContent="Tất cả";all.dataset.v="all";topicChips.appendChild(all);
   Object.keys(T).forEach(k=>{const c=document.createElement("span");c.className="chip";c.textContent=T[k];c.dataset.v=k;topicChips.appendChild(c);});
   topicChips.addEventListener("click",e=>{if(!e.target.dataset.v)return;state.topic=e.target.dataset.v;
     [...topicChips.querySelectorAll(".chip")].forEach(c=>c.classList.toggle("on",c.dataset.v===state.topic));render();});
 
-  [["all","Tất cả"],["Hiểu","Hiểu"],["Vận dụng","Vận dụng"]].forEach((p,i)=>{
+  [["all","Tất cả"],[H,"Hiểu"],[V,"Vận dụng"],[A,"Phân tích"],[E,"Đánh giá"]].forEach((p,i)=>{
     const c=document.createElement("span");c.className="chip"+(i===0?" on":"");c.textContent=p[1];c.dataset.v=p[0];bloomChips.appendChild(c);});
   bloomChips.addEventListener("click",e=>{if(!e.target.dataset.v)return;state.bloom=e.target.dataset.v;
     [...bloomChips.querySelectorAll(".chip")].forEach(c=>c.classList.toggle("on",c.dataset.v===state.bloom));render();});
@@ -589,14 +173,13 @@ function render(){
   if(vis.length===0){listEl.innerHTML='<div class="empty">Không có câu hỏi khớp bộ lọc.</div>';}
   vis.forEach((idx,pos)=>{
     const q=QUESTIONS[idx];
-    const ans=state.answered[idx]; // {picked:index} or undefined
+    const ans=state.answered[idx];
     const card=document.createElement("div");card.className="q";card.id="q"+idx;
-    const bloomCls=q.b===H?"hieu":"vandung";
     card.innerHTML=
       '<div class="q-top">'+
         '<span class="qid">#'+String(pos+1).padStart(2,"0")+'</span>'+
         '<span class="tag topic">'+T[q.t]+'</span>'+
-        '<span class="tag '+bloomCls+'">'+q.b+'</span>'+
+        '<span class="tag '+bloomCls[q.b]+'">'+q.b+'</span>'+
       '</div>'+
       '<div class="q-text">'+q.q+'</div>';
     const opts=document.createElement("div");opts.className="opts";
