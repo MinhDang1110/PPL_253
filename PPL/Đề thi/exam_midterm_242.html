@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thi Giữa Kỳ · Midterm 242 · CO3005</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap');
+
+  :root{
+    --paper:#0e1117; --panel:#161b26; --panel2:#1c2231;
+    --line:#2a3446; --line2:#374357;
+    --text:#e6e9ef; --muted:#98a2b6; --dim:#6c7688;
+    --amber:#f2b134; --amber-dim:#3a2f16;
+    --blue:#5aa2f0; --blue-dim:#16233a;
+    --green:#4bd08b; --green-dim:#123024;
+    --violet:#b18cf0; --violet-dim:#241a3a;
+    --red:#f2685e; --red-dim:#331714;
+    --grid:rgba(255,255,255,0.022);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:
+      linear-gradient(var(--grid) 1px,transparent 1px) 0 0/26px 26px,
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/26px 26px,
+      var(--paper);
+    color:var(--text);line-height:1.6;font-size:15.5px;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px 120px}
+
+  /* NAV */
+  .topnav{
+    background:#0e1117cc;backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    padding:0 20px;height:48px;
+    display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:100;
+  }
+  .nav-brand{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);text-decoration:none;}
+  .nav-meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.08em;}
+
+  header{padding:44px 0 26px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--amber);margin-bottom:14px;display:flex;gap:10px;align-items:center}
+  .eyebrow::before{content:"";width:22px;height:2px;background:var(--amber);display:inline-block}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:33px;line-height:1.12;letter-spacing:-.01em;margin-bottom:10px}
+  h1 .n{color:var(--amber)}
+  .sub{color:var(--muted);font-size:14.5px;max-width:660px}
+  .sub code{font-family:'JetBrains Mono',monospace;font-size:.86em;background:var(--panel2);padding:1px 6px;border-radius:4px;color:var(--blue)}
+
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:26px 0 8px}
+  .stat{background:var(--panel);padding:14px 16px}
+  .stat .k{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  .stat .v{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;margin-top:2px}
+  .stat .v small{font-size:14px;color:var(--muted);font-weight:500}
+  #vScore .v{color:var(--amber)}
+  .bar{height:6px;background:var(--panel2);border-radius:99px;overflow:hidden;margin-top:14px}
+  .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--amber),#ffd873);transition:width .3s ease}
+
+  /* CONTROLS */
+  .controls{margin:26px 0 8px;display:flex;flex-direction:column;gap:14px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding-top:6px}
+  .toolbar .grp{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:7px 14px;
+    border-radius:8px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);cursor:pointer;transition:all .12s}
+  .btn:hover{border-color:var(--amber);color:var(--amber)}
+  .btn.submit{background:var(--amber);color:#1a1206;border-color:var(--amber);}
+  .btn.submit:hover{opacity:.88}
+  .count{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim)}
+
+  /* GROUP CTX */
+  .ctx-block{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--blue);
+    border-radius:12px;padding:18px 20px;margin:32px 0 10px}
+  .ctx-title{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--blue);margin-bottom:10px}
+  .ctx-text{color:var(--muted);font-size:14px;line-height:1.65;margin-bottom:8px}
+  pre{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:#0a0e16;
+    border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;
+    color:#8fd0ff;line-height:1.65;margin-top:8px;white-space:pre}
+
+  /* QUESTION */
+  #list{margin-top:22px;display:flex;flex-direction:column;gap:16px}
+  .q{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;scroll-margin-top:16px;position:relative}
+  .q-top{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .qid{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);font-weight:600}
+  .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;padding:3px 8px;border-radius:5px;text-transform:uppercase;font-weight:600}
+  .tag.a1{background:var(--blue-dim);color:var(--blue)}
+  .tag.a2{background:var(--violet-dim);color:var(--violet)}
+  .tag.lo{background:var(--amber-dim);color:var(--amber)}
+  .q-status{margin-left:auto;font-size:16px}
+  .q-text{font-size:15.5px;font-weight:500;margin-bottom:16px;line-height:1.55}
+  .q-code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:#0a0e16;
+    border:1px solid var(--line);border-radius:8px;padding:12px 16px;overflow-x:auto;
+    color:#8fd0ff;line-height:1.65;margin:8px 0 14px;white-space:pre}
+  .q-text code,.opt code{font-family:'JetBrains Mono',monospace;font-size:.85em;background:#0f1420;padding:1.5px 6px;border-radius:4px;color:#8fd0ff}
+
+  /* OPTIONS */
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;gap:11px;align-items:flex-start;padding:11px 14px;border:1px solid var(--line2);
+    background:#0f1420;border-radius:10px;cursor:pointer;transition:all .1s;font-size:14.5px}
+  .opt:hover:not(.locked){border-color:var(--muted)}
+  .opt .mk{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12.5px;color:var(--muted);
+    border:1px solid var(--line2);border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .opt.locked{cursor:default}
+  .opt.selected:not(.correct):not(.wrong){border-color:var(--amber);background:var(--amber-dim)}
+  .opt.selected:not(.correct):not(.wrong) .mk{background:var(--amber);color:#1a1206;border-color:var(--amber)}
+  .opt.correct{border-color:var(--green);background:var(--green-dim)}
+  .opt.correct .mk{background:var(--green);color:#062015;border-color:var(--green)}
+  .opt.wrong{border-color:var(--red);background:var(--red-dim)}
+  .opt.wrong .mk{background:var(--red);color:#2a0a08;border-color:var(--red)}
+  .opt.show-correct{border-color:var(--green);background:var(--green-dim)}
+  .opt.show-correct .mk{background:var(--green);color:#062015;border-color:var(--green)}
+  .opt.dim{opacity:.45}
+
+  /* RESULT */
+  .result-banner{
+    display:none;margin:24px 0;padding:20px 24px;border-radius:14px;
+    background:var(--panel);border:2px solid var(--amber);text-align:center;
+  }
+  .result-banner.show{display:block;animation:fade .25s ease}
+  .result-big{font-family:'Space Grotesk',sans-serif;font-size:44px;font-weight:700;color:var(--amber)}
+  .result-sub{color:var(--muted);font-size:14px;margin-top:4px}
+  .result-grade{font-size:20px;font-weight:600;margin-top:8px;color:var(--text)}
+
+  @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+  .empty{text-align:center;color:var(--dim);padding:60px 0;font-family:'JetBrains Mono',monospace;font-size:13px}
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);color:var(--dim);font-size:12.5px;font-family:'JetBrains Mono',monospace;text-align:center}
+
+  @media(max-width:640px){
+    h1{font-size:26px}.board{grid-template-columns:repeat(2,1fr)}
+    .wrap{padding:0 14px 90px}.q{padding:16px}
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a class="nav-brand" href="../CO3005.html">← CO3005</a>
+  <span class="nav-meta">Midterm 242 · Mã đề 2420</span>
+</nav>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">CO3005 · Thi thử · Giữa kỳ 242</div>
+    <h1>Midterm – Mã đề 2420 <span class="n">— Đề thi giữa kỳ</span></h1>
+    <p class="sub">45 câu trắc nghiệm về phân tích từ vựng, cú pháp, sinh AST, OOP và lập trình hàm. Chọn đáp án rồi nhấn <strong>Nộp bài</strong> để chấm điểm.</p>
+    <div class="board">
+      <div class="stat"><div class="k">Đã trả lời</div><div class="v"><span id="mDone">0</span><small>/<span id="mTotal">45</span></small></div></div>
+      <div class="stat" id="vScore"><div class="k">Đúng</div><div class="v" id="mRight">—</div></div>
+      <div class="stat"><div class="k">Chính xác</div><div class="v"><span id="mPct">—</span><small id="mPctSign"></small></div></div>
+      <div class="stat"><div class="k">Câu hỏi</div><div class="v">45</div></div>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+  </header>
+
+  <div class="controls">
+    <div class="toolbar">
+      <div class="grp">
+        <button class="btn submit" onclick="submitExam()">🎯 Nộp bài &amp; chấm điểm</button>
+        <button class="btn" onclick="showAnswers()">💡 Xem đáp án</button>
+        <button class="btn" onclick="resetExam()">↻ Làm lại</button>
+      </div>
+      <span class="count" id="cShown">45 câu</span>
+    </div>
+  </div>
+
+  <div class="result-banner" id="resultBanner">
+    <div class="result-big" id="rScore">0/45</div>
+    <div class="result-sub">câu đúng</div>
+    <div class="result-grade" id="rGrade"></div>
+  </div>
+
+  <div id="list"></div>
+  <footer>Đề thi giữa kỳ CO3005 – Mã đề 2420 · Học kỳ 242 · ĐH Bách Khoa TP.HCM</footer>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const GROUPS = {
+  g6to9: {
+    title:"Ngữ cảnh · Câu 6–9",
+    text:"Cho ngôn ngữ X được mô tả trong ANTLR4 như sau:",
+    code:`grammar X;
+program : stat EOF | defi EOF ;
+stat    : ID '=' expr ';' | expr ';' ;
+defi    : ID '(' ID (',' ID)* ')' '{' stat* '}' ;
+expr    : ID | INT | func | 'not' expr | expr 'and' expr | expr 'or' expr ;
+func    : ID '(' expr (',' expr)* ')' ;
+INT     : [0-9]+ ;
+ID      : [a-zA-Z_][a-zA-Z_0-9]* ;
+WS      : [ \\t\\n\\r\\f]+ -> skip ;`
+  },
+  g10to13: {
+    title:"Ngữ cảnh · Câu 10–13",
+    text:"Cho văn phạm phát biểu điều kiện MiniGo, lớp If trên AST và đoạn mã sinh AST:",
+    code:`ifstmt    : ifclause elifclause* elseclause? SEMI ;
+ifclause  : IF expr block ;
+elifclause: ELSE ifclause ;
+elseclause: ELSE block ;
+
+@dataclass
+class If(Stmt):
+    cond    : Expr
+    thenStmt: Stmt
+    elseStmt: Stmt   # None nếu không có else
+
+def visitIfstmt(self, ctx):
+    ifast   = self.visit(ctx.ifclause)           # <-- lỗi chung
+    elifast = list(map(lambda x: self.visit(x), ctx.elifclause))
+    elseast = self.visit(ctx.elseclause)
+    return functools.reduce(lambda x,y: __(1)__, __(2)__, elseast)
+def visitIfclause(self, ctx):
+    return (self.visit(ctx.expr), self.visit(ctx.block))
+def visitElseclause(self, ctx):
+    return self.visit(ctx.block)`
+  },
+  g14to18: {
+    title:"Ngữ cảnh · Câu 14–18",
+    text:"Cho văn phạm khai báo thông số hàm MiniGo, lớp ParamDecl và đoạn mã sinh AST:",
+    code:`params : param (CM param)* ;
+param  : ids mtype ;
+ids    : ID CM ids | ID ;
+
+@dataclass
+class ParamDecl(Decl):
+    parName: str
+    parType: Type
+
+def visitParams(self, ctx: MiniGoParser.ParamsContext):
+    return __(1)__
+
+def visitParam(self, ctx: MiniGoParser.ParamContext):
+    a = ctx.getChild(0).accept(self)
+    b = ctx.getChild(1).accept(self)
+    return __(2)__
+
+def visitIds(self, ctx: MiniGoParser.IdsContext):
+    id = ctx.ID().getText()
+    if __(3)__ == 3: return [id] + __(4)__
+    return __(5)__`
+  },
+  g29to30: {
+    title:"Ngữ cảnh · Câu 29–30",
+    text:"Cho văn phạm phi ngữ cảnh:",
+    code:`S -> aSb | A
+A -> ε`
+  }
+};
+
+const QS = [
+  {id:1,tag:"A1-1",q:"Để sửa đổi chuỗi lexeme trong token do bộ phân tích từ vựng sinh ra bởi ANTLR4 trả về, cần thay đổi thuộc tính nào? Cụ thể, để khi phân tích chuỗi \"123\", chuỗi lexeme sẽ là \"DIGITAL_TOKEN\" thay vì \"123\"?",code:"NUMBER: [0-9]+ {<action>};",o:["text","lexeme","type","token"],a:0},
+  {id:2,tag:"A1-1",q:"Để thay đổi loại token do ANTLR4 trả về, cần thay đổi thuộc tính nào? Cụ thể, để token trả về sẽ là DIGITAL_TOKEN thay vì NUMBER khi phân tích chuỗi \"123\"?",code:"NUMBER: [0-9]+ {<action>};",o:["text","lexeme","type","token"],a:2},
+  {id:3,tag:"A1-1",q:"Tên của lớp phân tích từ vựng cho ngôn ngữ MiniGo sinh ra bởi ANTLR4 là:",o:["Lexer.","MiniGoLexer.","MiniGoToken.","MiniGo.tokens."],a:1},
+  {id:4,tag:"A1-1",q:'Cho các luật từ vựng ANTLR4 bên dưới. Hãy cho biết các token được trả về khi phân tích chuỗi: "1 23"',code:"DIGIT: [0-9];\nINT: DIGIT+;\nWS: [ ] -> skip;",o:["INT INT.","DIGIT DIGIT DIGIT.","DIGIT INT.","INT DIGIT."],a:2},
+  {id:5,tag:"A1-2",q:"Một danh sách đặc biệt là: một danh sách rỗng chỉ gồm LP và RP, hoặc một danh sách gồm nhiều danh sách đặc biệt đặt giữa LP và RP. Ví dụ: LP RP, LP LP RP RP, LP LP RP LP LP RP RP RP. Gọi lst là ký hiệu văn phạm mô tả danh sách đặc biệt. Hãy chọn luật sinh phù hợp:",o:["lst -> LP RP | LP (LP RP)+ RP","lst -> LP lst* RP","lts -> LP RP | LP lst RP","lst -> LP RP | LP lst lst RP"],a:1},
+  {id:6,tag:"A1-2",group:"g6to9",q:"Cho các đoạn mã: (a) x and y; (b) foo() { a = not f; x and y; } (c) b = 1 or foo(1, 2); (d) f(x, y) { a = not 3 and foo(x and y); 1;} (e) f(x, y) { a = 3 and foo(); x or y}. Số đoạn mã thỏa ngôn ngữ X là:",o:["1","3","4","2"],a:1},
+  {id:7,tag:"A1-2",group:"g6to9",q:'Với chuỗi nhập: x = not (y and f(1));, bộ phân tích ngữ pháp sẽ tạo ra kết quả nào?',o:["Error on line 1 col 8: (","Error on line 1 col 15: f","Error on line 1 col 4: not","successful"],a:0},
+  {id:8,tag:"A1-2",group:"g6to9",q:"Luật sinh nào sau đây có thể thay thế func?",o:["func: ID '(' args ')'; args: args ',' expr | expr;","func: ID '(' (expr ',' expr | expr)* ')';","func: ID '(' args ')'; args: ((expr ',')* expr)+;","func: ID '(' (func ',' | expr)* ')';"],a:0},
+  {id:9,tag:"A1-2",group:"g6to9",q:"Với chuỗi nhập: f(x, y) { a = foo(x and y) or b; }, cây phân tích cú pháp sinh ra bởi văn phạm trên có bao nhiêu nút ứng với ký hiệu không kết thúc?",o:["8","9","8","7"],a:0},
+  {id:10,tag:"A2",group:"g10to13",q:"Có một lỗi chung xảy ra trên tất cả phương thức visit đã cho. Lỗi đó là:",o:["thiếu khai báo kiểu cho ctx, phải viết ctx.MiniGoParser.IfclauseContext","nhầm lẫn khi sử dụng self và ctx, phải viết ctx.visit(self.ifclause)","phải dùng accept thay vì visit, phải viết ctx.ifclause.accept(self)","phải gọi phương thức của ctx, phải viết self.visit(ctx.ifclause())"],a:3},
+  {id:11,tag:"A2",group:"g10to13",q:'Sau khi sửa lỗi chung, lỗi AttributeError: "\'NoneType\' object has no attribute \'accept\'" xảy ra khi sinh AST cho một phát biểu if đúng. Lỗi này xảy ra ở dòng nào (chọn dòng đầu tiên có thể gây ra lỗi)?',o:["4","2","3","7"],a:0},
+  {id:12,tag:"A2",group:"g10to13",q:"Hãy chọn mã thích hợp cho chỗ trống (2):",o:["elifast + [ifast]","elifast[::-1] + [ifast]","[ifast] + elifast","[ifast] + elifast[::-1]"],a:1},
+  {id:13,tag:"A2",group:"g10to13",q:"Hãy chọn mã thích hợp cho chỗ trống (1):",o:["If(y[0],x,y[1])","If(y[0],y[1],x)","If(x[0],y,x[1])","If(x[0],x[1],y)"],a:1},
+  {id:14,tag:"A2",group:"g14to18",q:"Hãy chọn mã thích hợp cho chỗ trống (4):",o:["ctx.ids.accept(self)","self.visit(ctx.ids())","ctx.visit(self.ids())","self.visit(ctx.ids)"],a:1},
+  {id:15,tag:"A2",group:"g14to18",q:"Hãy chọn mã thích hợp cho chỗ trống (5):",o:["id","self.visit(ctx.ID())","ctx.visit(self.ID())","[id]"],a:3},
+  {id:16,tag:"A2",group:"g14to18",q:"Hãy chọn mã thích hợp cho chỗ trống (3):",o:["self.getChildCount()","ctx.getChildCount()","ctx.getChild()","ctx.getChildren()"],a:1},
+  {id:17,tag:"A2",group:"g14to18",q:"Hãy chọn mã thích hợp cho chỗ trống (2):",o:["ParamDecl(i,b) for i in a","ParamDecl(b,i) for i in a","ParamDecl(a,i) for i in b","ParamDecl(i,a) for i in b"],a:0},
+  {id:18,tag:"A2",group:"g14to18",q:"Hãy chọn mã thích hợp cho chỗ trống (1):",o:["functools.reduce(lambda x,y: x+y.accept(self), ctx.param(), [])","functools.reduce(lambda x,y: x.accept(self)+y, ctx.param(), [])","list(map(lambda x: self.visit(x), ctx.param))","list(map(lambda x: self.visit(x), ctx.param()))"],a:0},
+  {id:19,q:"Một lập trình viên nhận thấy một số đoạn mã chạy nhanh hơn đáng kể sau một số lần lặp. Đây là dấu hiệu cho thấy hiện thực của ngôn ngữ có sử dụng:",o:["Biên dịch (Compiler)","Thông dịch thuần túy (Pure Interpretation)","Trình dịch tức thời (Just-In-Time Compiler)","Trình dịch lai (Hybrid System)"],a:2},
+  {id:20,q:"Một trình dịch lai biên dịch mã nguồn bytecode trong 2 giây, sau đó thực thi với tốc độ 1,2 giây mỗi dòng lệnh. Trình thông dịch thuần túy mất 3 giây mỗi dòng. Phải thực thi tối thiểu bao nhiêu dòng lệnh thì trình dịch lai có tổng thời gian nhỏ hơn?",o:["1","2","3","4"],a:1},
+  {id:21,q:"Lỗi nào dưới đây sẽ KHÔNG được phát hiện bởi bộ phân tích từ vựng (lexical analyzer)?",o:["Một tên định danh không hợp lệ","Thiếu dấu ngoặc đóng","Một ký tự không xác định trong mã nguồn","Một số thực bị thiếu phần thập phân"],a:1},
+  {id:22,q:"Cho đoạn định nghĩa từ vựng ANTLR4 bên dưới. Vấn đề nào sau đây sẽ xảy ra?",code:"ID: [a-zA-Z_][a-zA-Z0-9_]*; // for identifiers\nKW: 'if' | 'else' | 'for' | 'while'; // for keywords",o:["Các từ khóa bị nhận diện sai thành định danh","Các định danh bị nhận diện sai thành từ khóa","ANTLR4 báo lỗi tại 1 trong 2 dòng trên","Không có vấn đề gì xảy ra"],a:0},
+  {id:23,q:"[Nội dung câu hỏi không có trong tài liệu gốc — đáp án ghi nhận là D]",o:["A","B","C","D"],a:3},
+  {id:24,tag:"A1-1",q:"Biểu thức chính quy nào nhận diện đúng một số thập lục phân trong ngôn ngữ MiniGo (ví dụ: 0x1A3F)?",o:["0x[0-9A-F]+","0[xX][0-9a-fA-F]+","[0-9A-F]*","0x[0-9]*"],a:1},
+  {id:25,q:"Ngôn ngữ nào sau đây có thể mô tả bằng một biểu thức chính quy?",o:["L = {0ⁿ1ⁿ | n ≥ 0}","L = {x | x chứa số lượng 0 bằng số lượng 1}","L = {x | x chứa số lượng 0 chẵn}","L = {x | x là một chuỗi đối xứng (palindrome) trên {0,1}}"],a:2},
+  {id:26,q:"Số lượng trạng thái tối thiểu trong một DFA để nhận diện biểu thức chính quy (01)*110 là bao nhiêu?",o:["4","5","6","7"],a:0},
+  {id:27,q:"Lỗi nào sau đây được coi là lỗi cú pháp?",o:["Sử dụng một biến chưa được khai báo","Gọi một hàm với số lượng tham số sai","Thiếu dấu chấm phẩy ở cuối câu lệnh","Chia một số cho 0"],a:2},
+  {id:28,tag:"A1-2",q:"Một ngữ pháp tạo ra ngôn ngữ có chứa: abc, aabcbc, aaabcbcbc. Văn phạm phi ngữ cảnh nào dưới đây có thể sinh ra ngôn ngữ này?",o:["S -> aSbc | abc","S -> abSc | ε","S -> aSb | cS","S -> abcS | ε"],a:0},
+  {id:29,group:"g29to30",q:"Cho các chuỗi nhập: aaabbb, ba, a, aabbba, ε, abb, aaaabbbbb, b, aabb, bbb, ab, aaabb. Số chuỗi nhập có thể thỏa văn phạm S → aSb | A; A → ε là:",o:["6","5","7","8"],a:1},
+  {id:30,group:"g29to30",q:"Số lượng chuỗi có độ dài 2n (với n là số tự nhiên bất kỳ) có thể được sinh ra bởi văn phạm S → aSb | A; A → ε là:",o:["2ⁿ","∏(n+k)/k, k=2..n","1ⁿ","n+1"],a:2},
+  {id:31,tag:"A1-2",q:"Cho văn phạm bị nhập nhằng: S -> aS | Sa | ε. Cách nào sau đây sẽ giúp loại bỏ tính nhập nhằng mà giữ nguyên ngôn ngữ?",o:["Giới hạn số lần có thể áp dụng luật sinh","Loại bỏ luật sinh sử dụng đệ quy phải","Giữ nguyên văn phạm nhưng thêm ràng buộc bổ sung bên ngoài","Thêm một ký tự không kết thúc và thêm một luật phát sinh mới"],a:1},
+  {id:32,q:"Cây cú pháp trừu tượng (AST) khác với cây phân tích cú pháp (Parse tree) ở điểm nào?",o:["AST chứa nhiều thông tin cú pháp hơn Parse tree","AST không được sử dụng trong quá trình biên dịch","AST loại bỏ các ký hiệu không cần thiết như dấu ngoặc, từ khóa phụ trợ","Parse tree và AST hoàn toàn giống nhau"],a:2},
+  {id:33,tag:"A2",q:"Thành phần nào sau đây KHÔNG có trong một cây cú pháp trừu tượng (AST) cho ngôn ngữ MiniGo?",o:["Toán tử (Operators)","Biến (Variables)","Cấu trúc điều khiển (Control Structures)","Kí tự dấu ngoặc (Parenthesis)"],a:3},
+  {id:34,q:"Trên cây AST biểu diễn cho vòng lặp for bên dưới, nút thể hiện vòng lặp for sẽ có mấy nhánh con trực tiếp?",code:"for (int i = 0; i < 10; i++) {\n    total += i;\n    prod *= (i == 0 ? 1 : i);\n}",o:["5","2","3","4"],a:3},
+  {id:35,q:"Cho đoạn mã C++ bên dưới. Cấu trúc AST sẽ có thứ tự nào khi duyệt tiền thứ tự (preorder traversal)?",code:"if (a > b)\n    while (b < c) b++;",o:["if while > a b < b c ++ b","if > a b while < b c ++ b","if > a b while < b c > a b ++ b","if while < b c > a b ++ b"],a:2},
+  {id:36,q:"Cho văn phạm Expr bên dưới và biểu thức 3 + 4 * (5 - 2), cây AST sẽ có dạng nào trong Python?",code:"grammar Expr;\nexpr: expr ('+'|'-') term | expr ('*'|'/') term | term;\nterm: '(' expr ')' | INT;\nINT: [0-9]+;",o:["BinaryOp(BinaryOp(Number(3),'+',Number(4)),'*',BinaryOp(Number(5),'-',Number(2)))","BinaryOp(Number(4),'*',BinaryOp(Number(3),'+',BinaryOp(Number(5),'-',Number(2))))","BinaryOp(Number(3),'+',BinaryOp(Number(4),'*',BinaryOp(Number(5),'-',Number(2))))","BinaryOp(Number(3),'*',BinaryOp(Number(4),'+',BinaryOp(Number(5),'-',Number(2))))"],a:0},
+  {id:37,tag:"L.O.1.1",q:"Điền vào chỗ trống trong biểu thức chính quy: a___b để chấp nhận ab, aab nhưng không chấp nhận bb, abb, aabb:",o:["(b|a)?",".?","a?","(a|.)?"],a:2},
+  {id:38,tag:"A1-1",q:"Cho biểu thức chính quy: ((68)+|6+)+. Chuỗi nào dưới đây được chấp nhận?",o:["68886","686688","66886","68686"],a:3},
+  {id:39,tag:"A1-2",q:"Viết luật sinh BNF mô tả danh sách các số nguyên, cách nhau bằng dấu phẩy, ít nhất một số. (intlist = danh sách, INT = số nguyên, COMMA = dấu phẩy):",o:["intlist -> INT (COMMA INT)*","intlist -> INT COMMA INT | INT","intlist -> INT intlist | INT","intlist -> intlist COMMA INT | INT"],a:3},
+  {id:40,tag:"L.O.1.2",q:"Cho văn phạm G: S → XY; X → xX | ε; Y → y | ε. Chuỗi nào được chấp nhận?",o:["xxzy","xyy","xyz","xz"],a:3},
+  {id:41,tag:"L.O.3.1",q:"Kết quả của E().show() dựa vào đoạn mã Python sau là gì?",code:'class A:\n    def show(self): print("A", end="")\n\nclass B(A):\n    def show(self): super().show(); print("B", end="")\n\nclass C(A):\n    def show(self): print("C", end=""); super().show()\n\nclass E(B, C):\n    def show(self): print("E", end=""); super().show()',o:["EABCA","EBCA","EAB","ECAB"],a:3},
+  {id:42,tag:"L.O.2.1",q:"Nếu một ngôn ngữ OOP không hỗ trợ ràng buộc động (Dynamic Binding) thì ngôn ngữ đó có hỗ trợ tính đa hình không?",o:["Có, vì ràng buộc động không liên quan đến tính đa hình.","Có, chỉ trong trường hợp ngôn ngữ này hỗ trợ đơn thừa kế.","Không, vì tính đa hình cần ràng buộc động để gọi đúng phương thức tại thời điểm thực thi.","Không, vì tính đa hình có thể được thực hiện bằng cách sử dụng chỉ thị tiền xử lý."],a:2},
+  {id:43,tag:"L.O.2.1",q:"Trong OOP, tại sao cơ chế giấu thông tin (Information Hiding) được coi là nguyên tắc nền tảng trong thiết kế hệ thống phần mềm có khả năng bảo trì và mở rộng?",o:["Vì nó ngăn không cho client truy cập toàn bộ mã nguồn của một lớp.","Vì nó đảm bảo rằng client không thể thấy cách hiện thực bên trong của các phương thức.","Vì nó hạn chế quyền truy cập trực tiếp vào các trường dữ liệu trong một lớp.","Vì nó cho phép client tương tác với một lớp thông qua giao diện, mà không phụ thuộc vào chi tiết hiện thực."],a:3},
+  {id:44,tag:"L.O.2.1",q:"Cho biết kết quả đoạn chương trình sau:",code:'def repeat(n):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            for _ in range(n):\n                func(*args, **kwargs)\n        return wrapper\n    return decorator\n\n@repeat(3)\ndef say_hello():\n    print("Hello!", end="")\n\nsay_hello()',o:["Lỗi ở dòng lệnh @repeat(3)","Hello!3","Hello!Hello!Hello!","3Hello!"],a:2},
+  {id:45,tag:"L.O.2.1",q:"Cho các phát biểu sau về Python: 1. Đối tượng 10 là immutable. 2. Đối tượng [1,2] là immutable. 3. Đối tượng (1,2,[3,4]) là immutable. 4. Đối tượng [3,4] trong (1,2,[3,4]) là immutable. Có bao nhiêu phát biểu đúng?",o:["1","3","4","2"],a:3}
+];
+
+// ═══════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════
+const LETTERS = ["A","B","C","D"];
+let answered = {};
+let submitted = false;
+
+function tagClass(t){
+  if(!t) return "";
+  if(t.startsWith("A1")) return "a1";
+  if(t.startsWith("A2")) return "a2";
+  return "lo";
+}
+
+function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+function render(){
+  const list = document.getElementById("list");
+  list.innerHTML="";
+  let lastGroup = null;
+
+  QS.forEach(q => {
+    // Group context block
+    if(q.group && q.group !== lastGroup){
+      lastGroup = q.group;
+      const g = GROUPS[q.group];
+      const div = document.createElement("div");
+      div.className="ctx-block";
+      div.innerHTML=`<div class="ctx-title">${g.title}</div><div class="ctx-text">${escHtml(g.text)}</div>${g.code?`<pre>${escHtml(g.code)}</pre>`:""}`;
+      list.appendChild(div);
+    }
+
+    const tagHtml = q.tag ? `<span class="tag ${tagClass(q.tag)}">${q.tag}</span>` : "";
+
+    const optsHtml = q.o.map((o,i)=>{
+      const l=LETTERS[i];
+      return `<div class="opt" id="q${q.id}o${l}" onclick="choose(${q.id},'${l}')">
+        <div class="mk">${l}</div><span>${escHtml(o)}</span>
+      </div>`;
+    }).join("");
+
+    const codeHtml = q.code ? `<div class="q-code">${escHtml(q.code)}</div>` : "";
+
+    const card = document.createElement("div");
+    card.className="q";
+    card.id="q"+q.id;
+    card.innerHTML=`
+      <div class="q-top">
+        <span class="qid">Câu ${q.id}</span>
+        ${tagHtml}
+        <span class="q-status" id="qs${q.id}">○</span>
+      </div>
+      <div class="q-text">${escHtml(q.q)}</div>
+      ${codeHtml}
+      <div class="opts">${optsHtml}</div>`;
+    list.appendChild(card);
+  });
+}
+
+function choose(qid, letter){
+  if(submitted) return;
+  // Remove previous selection
+  LETTERS.forEach(l => {
+    const el=document.getElementById(`q${qid}o${l}`);
+    if(el) el.classList.remove("selected");
+  });
+  const el=document.getElementById(`q${qid}o${letter}`);
+  if(el) el.classList.add("selected");
+  answered[qid]=letter;
+  document.getElementById(`qs${qid}`).textContent="●";
+  updateStats();
+}
+
+function updateStats(){
+  const done=Object.keys(answered).length;
+  document.getElementById("mDone").textContent=done;
+  document.getElementById("barFill").style.width=(done/QS.length*100)+"%";
+}
+
+function submitExam(){
+  submitted=true;
+  let correct=0;
+  QS.forEach(q=>{
+    const chosen=answered[q.id];
+    const correctLetter=LETTERS[q.a];
+    const status=document.getElementById("qs"+q.id);
+    LETTERS.forEach(l=>{
+      const el=document.getElementById(`q${q.id}o${l}`);
+      if(el){el.classList.remove("selected","correct","wrong","show-correct","dim");el.classList.add("locked");}
+    });
+    // Mark correct answer
+    const cEl=document.getElementById(`q${q.id}o${correctLetter}`);
+    if(cEl) cEl.classList.add("correct");
+    if(chosen){
+      if(chosen===correctLetter){correct++;status.textContent="✓";status.style.color="var(--green)";}
+      else{
+        const wEl=document.getElementById(`q${q.id}o${chosen}`);
+        if(wEl) wEl.classList.add("wrong");
+        status.textContent="✗";status.style.color="var(--red)";
+      }
+    } else {status.textContent="–";status.style.color="var(--amber)";}
+  });
+  const pct=Math.round(correct/QS.length*100);
+  const grade=pct>=90?"🏆 Xuất sắc!":pct>=70?"🎉 Tốt!":pct>=50?"📚 Cần ôn thêm":"💪 Cố gắng thêm nhé";
+  document.getElementById("mRight").textContent=correct;
+  document.getElementById("mPct").textContent=pct;
+  document.getElementById("mPctSign").textContent="%";
+  document.getElementById("rScore").textContent=`${correct}/${QS.length}`;
+  document.getElementById("rGrade").textContent=`${pct}% · ${grade}`;
+  document.getElementById("resultBanner").classList.add("show");
+  document.getElementById("resultBanner").scrollIntoView({behavior:"smooth"});
+}
+
+function showAnswers(){
+  QS.forEach(q=>{
+    const correctLetter=LETTERS[q.a];
+    LETTERS.forEach(l=>{
+      const el=document.getElementById(`q${q.id}o${l}`);
+      if(el) el.classList.remove("selected","correct","wrong","show-correct","dim");
+    });
+    const cEl=document.getElementById(`q${q.id}o${correctLetter}`);
+    if(cEl) cEl.classList.add("show-correct");
+  });
+}
+
+function resetExam(){
+  answered={};submitted=false;
+  document.querySelectorAll(".opt").forEach(o=>o.classList.remove("selected","correct","wrong","show-correct","dim","locked"));
+  document.querySelectorAll("[id^=qs]").forEach(s=>{s.textContent="○";s.style.color="";});
+  document.getElementById("resultBanner").classList.remove("show");
+  document.getElementById("mRight").textContent="—";
+  document.getElementById("mPct").textContent="—";
+  document.getElementById("mPctSign").textContent="";
+  updateStats();
+}
+
+render();
+updateStats();
+</script>
+</body>
+</html>

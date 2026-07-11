@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thi Giữa Kỳ · Midterm 251 · CO3005</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap');
+
+  :root{
+    --paper:#0e1117; --panel:#161b26; --panel2:#1c2231;
+    --line:#2a3446; --line2:#374357;
+    --text:#e6e9ef; --muted:#98a2b6; --dim:#6c7688;
+    --amber:#f2b134; --amber-dim:#3a2f16;
+    --blue:#5aa2f0; --blue-dim:#16233a;
+    --green:#4bd08b; --green-dim:#123024;
+    --violet:#b18cf0; --violet-dim:#241a3a;
+    --red:#f2685e; --red-dim:#331714;
+    --grid:rgba(255,255,255,0.022);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:
+      linear-gradient(var(--grid) 1px,transparent 1px) 0 0/26px 26px,
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/26px 26px,
+      var(--paper);
+    color:var(--text);line-height:1.6;font-size:15.5px;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px 120px}
+
+  .topnav{
+    background:#0e1117cc;backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    padding:0 20px;height:48px;
+    display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:100;
+  }
+  .nav-brand{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--amber);text-decoration:none;}
+  .nav-meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.08em;}
+
+  header{padding:44px 0 26px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--amber);margin-bottom:14px;display:flex;gap:10px;align-items:center}
+  .eyebrow::before{content:"";width:22px;height:2px;background:var(--amber);display:inline-block}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:33px;line-height:1.12;letter-spacing:-.01em;margin-bottom:10px}
+  h1 .n{color:var(--amber)}
+  .sub{color:var(--muted);font-size:14.5px;max-width:660px}
+  .sub code{font-family:'JetBrains Mono',monospace;font-size:.86em;background:var(--panel2);padding:1px 6px;border-radius:4px;color:var(--blue)}
+
+  .note{margin-top:16px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);
+    border-left:3px solid var(--amber);border-radius:0 8px 8px 0;
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);line-height:1.6;}
+  .note b{color:var(--amber)}
+
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:26px 0 8px}
+  .stat{background:var(--panel);padding:14px 16px}
+  .stat .k{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  .stat .v{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;margin-top:2px}
+  .stat .v small{font-size:14px;color:var(--muted);font-weight:500}
+  #vScore .v{color:var(--amber)}
+  .bar{height:6px;background:var(--panel2);border-radius:99px;overflow:hidden;margin-top:14px}
+  .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--amber),#ffd873);transition:width .3s ease}
+
+  .controls{margin:26px 0 8px;display:flex;flex-direction:column;gap:14px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding-top:6px}
+  .toolbar .grp{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:7px 14px;
+    border-radius:8px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);cursor:pointer;transition:all .12s}
+  .btn:hover{border-color:var(--amber);color:var(--amber)}
+  .btn.submit{background:var(--amber);color:#1a1206;border-color:var(--amber);}
+  .btn.submit:hover{opacity:.88}
+  .count{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim)}
+
+  /* GROUP CTX */
+  .ctx-block{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--blue);
+    border-radius:12px;padding:18px 20px;margin:32px 0 10px}
+  .ctx-title{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--blue);margin-bottom:10px}
+  .ctx-text{color:var(--muted);font-size:14px;line-height:1.65;margin-bottom:8px}
+  pre{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:#0a0e16;
+    border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;
+    color:#8fd0ff;line-height:1.65;margin-top:8px;white-space:pre}
+
+  #list{margin-top:22px;display:flex;flex-direction:column;gap:16px}
+  .q{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;scroll-margin-top:16px;position:relative}
+  .q-top{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .qid{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);font-weight:600}
+  .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;padding:3px 8px;border-radius:5px;text-transform:uppercase;font-weight:600}
+  .tag.lo{background:var(--amber-dim);color:var(--amber)}
+  .tag.lo3{background:var(--violet-dim);color:var(--violet)}
+  .q-status{margin-left:auto;font-size:16px}
+  .q-text{font-size:15.5px;font-weight:500;margin-bottom:16px;line-height:1.55}
+  .q-code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:#0a0e16;
+    border:1px solid var(--line);border-radius:8px;padding:12px 16px;overflow-x:auto;
+    color:#8fd0ff;line-height:1.65;margin:8px 0 14px;white-space:pre}
+  .q-text code,.opt code{font-family:'JetBrains Mono',monospace;font-size:.85em;background:#0f1420;padding:1.5px 6px;border-radius:4px;color:#8fd0ff}
+
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;gap:11px;align-items:flex-start;padding:11px 14px;border:1px solid var(--line2);
+    background:#0f1420;border-radius:10px;cursor:pointer;transition:all .1s;font-size:14.5px}
+  .opt:hover:not(.locked){border-color:var(--muted)}
+  .opt .mk{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12.5px;color:var(--muted);
+    border:1px solid var(--line2);border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .opt.locked{cursor:default}
+  .opt.selected:not(.correct):not(.wrong){border-color:var(--amber);background:var(--amber-dim)}
+  .opt.selected:not(.correct):not(.wrong) .mk{background:var(--amber);color:#1a1206;border-color:var(--amber)}
+  .opt.correct{border-color:var(--green);background:var(--green-dim)}
+  .opt.correct .mk{background:var(--green);color:#062015;border-color:var(--green)}
+  .opt.wrong{border-color:var(--red);background:var(--red-dim)}
+  .opt.wrong .mk{background:var(--red);color:#2a0a08;border-color:var(--red)}
+  .opt.show-correct{border-color:var(--green);background:var(--green-dim)}
+  .opt.show-correct .mk{background:var(--green);color:#062015;border-color:var(--green)}
+
+  .result-banner{
+    display:none;margin:24px 0;padding:20px 24px;border-radius:14px;
+    background:var(--panel);border:2px solid var(--amber);text-align:center;
+  }
+  .result-banner.show{display:block;animation:fade .25s ease}
+  .result-big{font-family:'Space Grotesk',sans-serif;font-size:44px;font-weight:700;color:var(--amber)}
+  .result-sub{color:var(--muted);font-size:14px;margin-top:4px}
+  .result-grade{font-size:20px;font-weight:600;margin-top:8px;color:var(--text)}
+
+  @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);color:var(--dim);font-size:12.5px;font-family:'JetBrains Mono',monospace;text-align:center}
+
+  @media(max-width:640px){
+    h1{font-size:26px}.board{grid-template-columns:repeat(2,1fr)}
+    .wrap{padding:0 14px 90px}.q{padding:16px}
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a class="nav-brand" href="../CO3005.html">← CO3005</a>
+  <span class="nav-meta">Midterm 251 · Mã đề 2510 (đã lọc)</span>
+</nav>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">CO3005 · Thi thử · Giữa kỳ 251</div>
+    <h1>Midterm – Mã đề 2510 <span class="n">— Đề thi giữa kỳ</span></h1>
+    <p class="sub">22 câu trắc nghiệm về văn phạm nhập nhằng, từ vựng, tầm vực Pascal, OOP Python (ABC, MRO, super), lập trình hàm, JIT và trình dịch lai.</p>
+    <div class="note">ℹ️ <b>Lưu ý:</b> Đề đã lọc — loại bỏ câu 1–7 và các câu mã [A1-1], [A1-2], [A2] theo tài liệu gốc. Số thứ tự câu giữ nguyên theo đề gốc.</div>
+    <div class="board">
+      <div class="stat"><div class="k">Đã trả lời</div><div class="v"><span id="mDone">0</span><small>/<span id="mTotal">22</span></small></div></div>
+      <div class="stat" id="vScore"><div class="k">Đúng</div><div class="v" id="mRight">—</div></div>
+      <div class="stat"><div class="k">Chính xác</div><div class="v"><span id="mPct">—</span><small id="mPctSign"></small></div></div>
+      <div class="stat"><div class="k">Câu hỏi</div><div class="v">22</div></div>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+  </header>
+
+  <div class="controls">
+    <div class="toolbar">
+      <div class="grp">
+        <button class="btn submit" onclick="submitExam()">🎯 Nộp bài &amp; chấm điểm</button>
+        <button class="btn" onclick="showAnswers()">💡 Xem đáp án</button>
+        <button class="btn" onclick="resetExam()">↻ Làm lại</button>
+      </div>
+      <span class="count" id="cShown">22 câu</span>
+    </div>
+  </div>
+
+  <div class="result-banner" id="resultBanner">
+    <div class="result-big" id="rScore">0/22</div>
+    <div class="result-sub">câu đúng</div>
+    <div class="result-grade" id="rGrade"></div>
+  </div>
+
+  <div id="list"></div>
+  <footer>Đề thi giữa kỳ CO3005 – Mã đề 2510 · Học kỳ 251 · ĐH Bách Khoa TP.HCM</footer>
+</div>
+
+<script>
+const GROUPS = {
+  pascal:{
+    title:"Ngữ cảnh · Câu 23–26",
+    text:"Cho một đoạn chương trình trong ngôn ngữ có cấu trúc khối tựa Pascal:",
+    code:`1  var x, y, z: integer;
+2  procedure foo1(y: real);
+3  var z: char;
+4  begin (* ... body of foo1 ... *) end;
+5  procedure foo2(x: integer);
+6  var z: integer;
+7  procedure foo3(y: char);
+8  begin (* ... body of foo3 ... *) end;
+9  procedure foo4()
+10 begin (* ... body of foo4 ... *) end;
+11 begin (* ... body of foo2 ... *) end;
+12 begin (* ... body of main ... *) end.`
+  },
+  funcs:{
+    title:"Ngữ cảnh · Câu 29–30",
+    text:"Cho đoạn mã Python sau:",
+    code:`from functools import reduce
+value = 5
+funcs = [lambda x: x + 1, lambda x: x * 2, lambda x: x - 3]`
+  },
+  dClass:{
+    title:"Ngữ cảnh · Câu 44–45",
+    text:"Xét đoạn chương trình Python sau:",
+    code:`class A:
+    def __init__(self):
+        self.x = 1
+
+class B(A):
+    def __init__(self):
+        super().__init__()
+        self.x = 2
+
+class C(A):
+    def __init__(self):
+        super().__init__()
+        self.x = 3
+
+class D(B, C):
+    pass
+
+d = D()`
+  }
+};
+
+const QS = [
+  {id:8,q:"Cho các văn phạm được định nghĩa như sau:\na. A → AcA | b\nb. S → aS | bS | a | b\nc. S → SS | a | b\nd. A → AcB | B, B → yBz | t | xB\nSố văn phạm nhập nhằng là:",o:["1","3","4","2"],a:3},
+  {id:9,tag:"L.O.3.1",q:"Cho đoạn mã Python sau. Hãy chọn câu đúng:",code:`1  class Demo:
+2      value = 10
+3      @classmethod
+4      def f(cls, x):
+5          print(cls.value, x)
+6      @staticmethod
+7      def g(cls, x):
+8          print(cls.value, x)
+9  Demo.f(5, 20)
+10 Demo.g(5, 20)`,o:["Kết quả in ra của dòng 9 là 5 20.","Kết quả in ra của dòng 10 là 10 20.","Dòng 9 báo lỗi vì bị thừa tham số.","Dòng 10 báo lỗi vì bị thiếu tham số."],a:2},
+  {id:10,q:"Trong số các vai trò dưới đây, những vai trò nào do bộ phân tích từ vựng đảm nhiệm?\n(a) Xác định một danh hiệu phải được khai báo trước khi sử dụng\n(b) Xác định trật tự của một chuỗi token phù hợp\n(c) Loại bỏ các ký tự, chuỗi không cần thiết như khoảng trắng, chú thích\n(d) Tách chuỗi nhập thành các token\n(e) Ghi nhận vị trí hàng cột của các token",o:["(c), (d) và (e)","(b), (c), (d) và (e)","(b) và (c)","Cả năm"],a:0},
+  {id:11,tag:"L.O.2.1",q:"Khi một dữ liệu bất biến (immutable data) được \"cập nhật\", điều gì thực sự xảy ra?",o:["Dữ liệu ban đầu sẽ được sao chép sang một bản mới với giá trị đã thay đổi.","Một bản mới được tạo ra, có thể chia sẻ phần không thay đổi với bản gốc để tiết kiệm bộ nhớ.","Dữ liệu ban đầu sẽ được chỉnh sửa trực tiếp nhưng có thêm bản ghi lại trạng thái cũ.","Dữ liệu cũ được giữ nguyên, nhưng trình biên dịch sẽ ngầm chuyển nó thành dạng mutable."],a:1},
+  {id:12,q:"Xét văn phạm: term → L term_tail | ε; term_tail → M term | N L. Văn phạm tương đương với term là:",o:["(LM)* (LNL)?","(LM)* LNL","L(ML)*N?","(LNL)* (LM)*"],a:0},
+  {id:13,tag:"L.O.2.1",q:"Chức năng chính của linker trong quá trình biên dịch và thực thi chương trình là gì?",o:["Dùng để tải chương trình từ bộ nhớ phụ vào bộ nhớ chính để thực thi","Dùng để kiểm tra mã nguồn và dịch nó sang dạng mã trung gian","Dùng để liên kết các module đối tượng thành một chương trình có thể thực thi","Dùng để quản lý việc cấp phát và thu hồi bộ nhớ trong khi chương trình chạy"],a:2},
+  {id:15,q:"Gọi PW là ngôn ngữ trên tập các ký tự chữ thường, chữ hoa và ký tự số, trong đó mỗi chuỗi thuộc PW phải có ít nhất một ký tự chữ và một ký tự số. Hãy chọn biểu thức chính quy NGẮN NHẤT mô tả PW với các định nghĩa chính quy:",code:"fragment L: [a-zA-Z];\nfragment D: [0-9];\nfragment C: L | D;",o:["(LD)+C*","(L | D)C*(L | D)C*","(LD | DL)C*","L+DC* | D+LC*"],a:3},
+  {id:19,q:"Cho văn phạm G: S → MN, M → aM | bM | ε, N → dN | e. Dẫn xuất trái nhất để G sinh ra chuỗi abbdde là:",o:["S ⇒ MN ⇒ aMN ⇒ abMN ⇒ abbMN ⇒ abbdN ⇒ abbddN ⇒ abbdde","S ⇒ MN ⇒ aMN ⇒ abMN ⇒ abbMN ⇒ abbεN ⇒ abbdN ⇒ abbddN ⇒ abbdde","S ⇒ MN ⇒ aMN ⇒ abMN ⇒ abbMN ⇒ abbdNe ⇒ abbddN ⇒ abbdde","S ⇒ MN ⇒ aMN ⇒ abMN ⇒ abbMN ⇒ abbN ⇒ abbdN ⇒ abbddN ⇒ abbdde"],a:3},
+  {id:20,tag:"L.O.2.1",q:"Cho đoạn mã Python sau. Kết quả in ra là gì?",code:`s = "hello"\ns.upper()\nprint(s)`,o:["HELLO","hello","Lỗi vì không thể thay đổi chuỗi bất biến","Một chuỗi rỗng \"\""],a:1},
+  {id:21,tag:"L.O.2.1",q:"Trong lập trình hàm, closure thường được dùng để làm gì?",o:["Dùng để tạo ra hàm có thể sử dụng biến cục bộ từ hàm bao quanh như một cách thay thế biến toàn cục","Dùng để mô phỏng trạng thái và tạo ra các hàm được \"cá nhân hóa\" theo dữ liệu ban đầu","Dùng để đảm bảo mọi hàm đều chạy độc lập mà không phụ thuộc vào ngữ cảnh bên ngoài","Dùng để cung cấp một cách đóng gói mã nguồn giúp tránh việc lộ biến ra phạm vi toàn cục"],a:1},
+  {id:23,tag:"L.O.2.1",group:"pascal",q:"Khai báo nào sau đây có hiệu lực trong thân thủ tục foo3?",o:["Khai báo y ở dòng số 1","Khai báo x ở dòng số 5","Khai báo z ở dòng số 1","Khai báo y ở dòng số 2"],a:1},
+  {id:24,tag:"L.O.2.1",group:"pascal",q:"Danh sách tất cả các tên có thể truy cập trong thân foo2 là (nếu trùng tên thì ghi kèm dòng khai báo, ví dụ x//1):",o:["x//5, y//1, z//6, foo1, foo2, foo3, foo4","x//5, y//2, z//6, foo1, foo2, foo3, foo4","x//1, y//1, z//6, foo1, foo2, foo3, foo4","x//1, y//2, z//6, foo2, foo3, foo4"],a:0},
+  {id:25,tag:"L.O.2.1",group:"pascal",q:"Giả sử chương trình chạy: main gọi foo1, foo1 gọi đệ qui, foo1 gọi foo2. Các đối tượng được cấp phát: 1. main: x(o1),y(o2),z(o3); 2. foo1(1): y(o4),z(o5); 3. foo1(2): y(o6),z(o7); 4. foo2: x(o8),z(o9). Môi trường tham khảo động của foo2 chứa các đối tượng nào?",o:["o2, o6, o7","o6, o8, o9","o2, o8, o9","o1, o7, o8"],a:2},
+  {id:26,tag:"L.O.2.1",group:"pascal",q:"Giả sử chương trình chạy: main gọi foo2, foo2 gọi đệ qui, foo2 gọi foo3, foo3 gọi foo4. Các đối tượng: 1. main: x(o1),y(o2),z(o3); 2. foo2(1): x(o4),z(o5); 3. foo2(2): x(o6),z(o7); 4. foo3: y(o8); 5. foo4: (không cấp phát thêm). Môi trường tham khảo động của foo4 chứa:",o:["o6, o7, o8","o4, o5, o8","o2, o4, o5","o2, o6, o7"],a:3},
+  {id:29,group:"funcs",q:"Hãy điền vào chỗ trống đoạn mã thích hợp để h = reduce(___, funcs) tạo ra hàm h sao cho h(value) = ((value - 3) * 2) + 1 = 5 khi value = 5:",o:["lambda f, g: f(g)","lambda f, g: g(f)","lambda f, g: lambda x: g(f(x))","lambda f, g: lambda x: f(g(x))"],a:3},
+  {id:30,group:"funcs",q:"Hãy điền vào chỗ trống đoạn mã thích hợp để result = list(___) chứa các giá trị f(value) của các hàm f trong funcs thỏa f(value) > value, tức [6, 10] khi value = 5:",o:["filter(lambda f: f(value) > value, map(lambda f: f(value), funcs))","map(lambda f: f(value) > value, filter(lambda f: f(value), funcs))","map(lambda f: f(value), filter(lambda f: f(value) > value, funcs))","map(lambda f: f(value), filter(lambda f: f(value) < value, funcs))"],a:2},
+  {id:31,tag:"L.O.2.1",q:"Tại sao khi kết hợp với JIT Compiler, hiệu suất của trình thông dịch sẽ được cải thiện đáng kể?",o:["Vì JIT giúp dịch nhanh từng lệnh sang mã máy và thực thi ngay khi lệnh đó chạy.","Vì JIT giúp dịch toàn bộ chương trình sang mã máy trước khi chương trình bắt đầu thực thi.","Vì JIT giúp dịch sang mã máy những đoạn mã được sử dụng nhiều lần.","Vì JIT giúp khởi động nhanh bằng thông dịch rồi dần dần dịch toàn bộ chương trình trong khi chạy."],a:2},
+  {id:32,tag:"L.O.3.1",q:"Kết quả của F().show() dựa vào đoạn mã Python sau là gì?",code:`class A:
+    def show(self): print("A", end="")
+
+class B(A):
+    def show(self): super().show(); print("B", end="")
+
+class C(A):
+    def show(self): super().show(); print("C", end="")
+
+class D(B, C):
+    def show(self): super().show(); print("D", end="")
+
+class E(C, B):
+    def show(self): super().show(); print("E", end="")
+
+class F(A, B, C, D, E):
+    def show(self): super().show(); print("F", end="")`,o:["ABCDEF","ACBDEF","AFEBDC","Báo lỗi"],a:3},
+  {id:33,tag:"L.O.2.1",q:"Xét các hàm sau trong Python, hàm nào là higher-order function?",code:`def f1(x):
+    return map(lambda y: y * y, x)
+
+def f2(func, x):
+    return func(x)
+
+def f3(n):
+    def g(y):
+        return y + n
+    return g
+
+def f4(x, y):
+    return (lambda z: z + x)(y)`,o:["f2 và f3","f1 và f4","f1, f2 và f3","f2, f3 và f4"],a:0},
+  {id:40,tag:"L.O.2.1",q:"Để các ứng dụng viết bằng một ngôn ngữ lập trình có thể chạy trên nhiều nền tảng khác nhau và được đảm bảo kiểm soát lỗi chặt chẽ, cách hiện thực ngôn ngữ đó nên là:",o:["Trình dịch lai (hybrid implementation)","Trình thông dịch thuần tuý (pure interpreter)","Trình biên dịch (compiler)","Biên dịch lúc chạy (just-in-time compiler)"],a:0},
+  {id:43,tag:"L.O.3.1",q:"Cho đoạn mã Python sau:",code:`from abc import ABC, abstractmethod
+
+class Processor(ABC):
+    @abstractmethod
+    def compute(self, x): pass
+
+    @abstractmethod
+    def preprocess(self, x): return x * 2
+
+class Algo(Processor):
+    def compute(self, x): return self.preprocess(x) + 1
+    def preprocess(self, x): return super().preprocess(x) * 3
+
+a = Algo()
+print(a.preprocess(3), end=" ")
+print(a.compute(4), end=" ")
+b = Processor()
+print(b.preprocess(3), end=" ")
+print(b.compute(4), end=" ")`,o:["Đoạn mã lỗi tại định nghĩa hàm preprocess của class Processor.","Đoạn mã bị lỗi vì không thể tạo đối tượng b = Processor().","Kết quả của đoạn mã là: 18 25 6 4.","Kết quả của đoạn mã là: 18 25 6 None."],a:1},
+  {id:44,group:"dClass",q:"Đối tượng d thuộc lớp D có bao nhiêu thuộc tính x?",o:["1.","2.","3.","0."],a:0},
+  {id:45,group:"dClass",q:"Cho các phát biểu sau về đoạn chương trình trên:\na) Kết quả print(d::A.x) là 1.\nb) Kết quả print(d.x) là 2.\nc) Kết quả print(A.d.x) là 1.\nd) Kết quả print(d.x) là 3.\nHãy chọn các phát biểu đúng.",o:["chỉ b)","a) và b)","chỉ d)","c) và d)"],a:0}
+];
+
+const LETTERS = ["A","B","C","D"];
+let answered = {}, submitted = false;
+
+function tagClass(t){
+  if(!t) return "";
+  if(t==="L.O.3.1") return "lo3";
+  return "lo";
+}
+
+function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+function render(){
+  const list=document.getElementById("list");
+  list.innerHTML="";
+  let lastGroup=null;
+
+  QS.forEach(q=>{
+    if(q.group && q.group!==lastGroup){
+      lastGroup=q.group;
+      const g=GROUPS[q.group];
+      const div=document.createElement("div");
+      div.className="ctx-block";
+      div.innerHTML=`<div class="ctx-title">${g.title}</div><div class="ctx-text">${escHtml(g.text)}</div>${g.code?`<pre>${escHtml(g.code)}</pre>`:""}`;
+      list.appendChild(div);
+    }
+
+    const tagHtml=q.tag?`<span class="tag ${tagClass(q.tag)}">${q.tag}</span>`:"";
+    const optsHtml=q.o.map((o,i)=>{
+      const l=LETTERS[i];
+      return `<div class="opt" id="q${q.id}o${l}" onclick="choose(${q.id},'${l}')"><div class="mk">${l}</div><span>${escHtml(o)}</span></div>`;
+    }).join("");
+    const codeHtml=q.code?`<div class="q-code">${escHtml(q.code)}</div>`:"";
+
+    const card=document.createElement("div");
+    card.className="q";card.id="q"+q.id;
+    card.innerHTML=`
+      <div class="q-top"><span class="qid">Câu ${q.id}</span>${tagHtml}<span class="q-status" id="qs${q.id}">○</span></div>
+      <div class="q-text">${escHtml(q.q)}</div>${codeHtml}
+      <div class="opts">${optsHtml}</div>`;
+    list.appendChild(card);
+  });
+}
+
+function choose(qid,letter){
+  if(submitted) return;
+  LETTERS.forEach(l=>{const el=document.getElementById(`q${qid}o${l}`);if(el)el.classList.remove("selected");});
+  const el=document.getElementById(`q${qid}o${letter}`);
+  if(el)el.classList.add("selected");
+  answered[qid]=letter;
+  document.getElementById(`qs${qid}`).textContent="●";
+  updateStats();
+}
+
+function updateStats(){
+  const done=Object.keys(answered).length;
+  document.getElementById("mDone").textContent=done;
+  document.getElementById("barFill").style.width=(done/QS.length*100)+"%";
+}
+
+function submitExam(){
+  submitted=true;
+  let correct=0;
+  QS.forEach(q=>{
+    const chosen=answered[q.id];
+    const correctLetter=LETTERS[q.a];
+    const status=document.getElementById("qs"+q.id);
+    LETTERS.forEach(l=>{const el=document.getElementById(`q${q.id}o${l}`);if(el){el.classList.remove("selected","correct","wrong","show-correct");el.classList.add("locked");}});
+    const cEl=document.getElementById(`q${q.id}o${correctLetter}`);
+    if(cEl)cEl.classList.add("correct");
+    if(chosen){
+      if(chosen===correctLetter){correct++;status.textContent="✓";status.style.color="var(--green)";}
+      else{const wEl=document.getElementById(`q${q.id}o${chosen}`);if(wEl)wEl.classList.add("wrong");status.textContent="✗";status.style.color="var(--red)";}
+    }else{status.textContent="–";status.style.color="var(--amber)";}
+  });
+  const pct=Math.round(correct/QS.length*100);
+  const grade=pct>=90?"🏆 Xuất sắc!":pct>=70?"🎉 Tốt!":pct>=50?"📚 Cần ôn thêm":"💪 Cố gắng thêm nhé";
+  document.getElementById("mRight").textContent=correct;
+  document.getElementById("mPct").textContent=pct;
+  document.getElementById("mPctSign").textContent="%";
+  document.getElementById("rScore").textContent=`${correct}/${QS.length}`;
+  document.getElementById("rGrade").textContent=`${pct}% · ${grade}`;
+  document.getElementById("resultBanner").classList.add("show");
+  document.getElementById("resultBanner").scrollIntoView({behavior:"smooth"});
+}
+
+function showAnswers(){
+  QS.forEach(q=>{
+    const correctLetter=LETTERS[q.a];
+    LETTERS.forEach(l=>{const el=document.getElementById(`q${q.id}o${l}`);if(el)el.classList.remove("selected","correct","wrong","show-correct");});
+    const cEl=document.getElementById(`q${q.id}o${correctLetter}`);
+    if(cEl)cEl.classList.add("show-correct");
+  });
+}
+
+function resetExam(){
+  answered={};submitted=false;
+  document.querySelectorAll(".opt").forEach(o=>o.classList.remove("selected","correct","wrong","show-correct","locked"));
+  document.querySelectorAll("[id^=qs]").forEach(s=>{s.textContent="○";s.style.color="";});
+  document.getElementById("resultBanner").classList.remove("show");
+  document.getElementById("mRight").textContent="—";
+  document.getElementById("mPct").textContent="—";
+  document.getElementById("mPctSign").textContent="";
+  updateStats();
+}
+
+render();updateStats();
+</script>
+</body>
+</html>
