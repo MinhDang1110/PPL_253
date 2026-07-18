@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CO3005 – JVM và Jasmin</title>
+<meta name="description" content="Bài giảng CO3005: JVM và Jasmin – Máy ảo ngăn xếp, kiến trúc JVM, tập lệnh Jasmin, sinh mã cho các cấu trúc nguồn – Nguyên lý Ngôn ngữ Lập trình, ĐH Bách Khoa TP.HCM.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd9d0;
+    --text: #1a1916;
+    --muted: #6b6760;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --kw: #569cd6;
+    --str: #ce9178;
+    --cmt: #6a9955;
+    --num: #b5cea8;
+    --fn: #dcdcaa;
+    --type: #4ec9b0;
+    --op: #d4d4d4;
+    --label: #c8c8a9;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar-logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    padding: 0 20px 10px;
+    letter-spacing: .06em;
+    display: block;
+    text-decoration: none;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .toc-item {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .toc-item.sub { padding-left: 32px; font-size: 12px; }
+
+  /* ── MAIN ── */
+  .main {
+    padding: 48px 56px 80px;
+    max-width: 820px;
+  }
+
+  .lesson-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .lesson-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article-section {
+    margin-bottom: 52px;
+    scroll-margin-top: 24px;
+  }
+
+  .section-heading {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+  .section-heading::before {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 40px; height: 2px;
+    background: var(--accent);
+  }
+
+  p { margin-bottom: 14px; }
+
+  /* ── CODE BLOCKS ── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+    font-size: 13.5px;
+  }
+  .code-label {
+    background: #2d2d2d;
+    padding: 6px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #333;
+  }
+  pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1.65;
+    color: var(--code-text);
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #e8e5de;
+    color: #b5451b;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+
+  /* syntax colours */
+  .kw   { color: var(--kw); }
+  .str  { color: var(--str); }
+  .cmt  { color: var(--cmt); font-style: italic; }
+  .num  { color: var(--num); }
+  .fn   { color: var(--fn); }
+  .type { color: var(--type); }
+  .lbl  { color: var(--label); }
+  .dir  { color: #c586c0; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .callout strong { color: var(--accent); }
+  .callout-warn {
+    background: #fff8e1;
+    border-left-color: #f59e0b;
+  }
+  .callout-warn strong { color: #b45309; }
+  .callout-tip {
+    background: #f0fdf4;
+    border-left-color: #16a34a;
+  }
+  .callout-tip strong { color: #15803d; }
+
+  /* ── TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  /* ── FIGURE ── */
+  .fig { text-align: center; margin: 28px 0; }
+  .fig img {
+    max-width: 620px; width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+    cursor: zoom-in;
+    transition: opacity .15s;
+  }
+  .fig img:hover { opacity: .9; }
+  .fig figcaption {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .fig-wide img { max-width: 720px; }
+  .fig-narrow img { max-width: 400px; }
+
+  /* ── SECTION DIVIDER ── */
+  .lesson-divider {
+    border: none;
+    border-top: 2px dashed var(--border);
+    margin: 52px 0;
+  }
+
+  /* ── NAV FOOTER ── */
+  .nav-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 0 0; border-top: 1px solid var(--border);
+    margin-top: 48px; font-size: 14px; color: var(--muted);
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--accent); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 500;
+    text-decoration: none;
+  }
+  .nav-btn.secondary {
+    background: var(--surface); color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+
+  /* ── LIGHTBOX ── */
+  .lb-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,.82);
+    align-items: center; justify-content: center; cursor: zoom-out;
+  }
+  .lb-overlay.open { display: flex; }
+  .lb-overlay img {
+    max-width: 92vw; max-height: 90vh;
+    border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,.6);
+  }
+  .lb-close {
+    position: fixed; top: 18px; right: 24px;
+    font-size: 30px; color: #fff; cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace; opacity: .8;
+  }
+  .lb-close:hover { opacity: 1; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LIGHTBOX -->
+<div class="lb-overlay" id="lb" onclick="closeLb()">
+  <span class="lb-close" onclick="closeLb()">✕</span>
+  <img id="lbImg" src="" alt="">
+</div>
+
+<div class="layout">
+
+  <!-- ══════════════════════ SIDEBAR ══════════════════════ -->
+  <nav class="sidebar">
+    <a class="sidebar-logo" href="CO3005.html">← CO3005</a>
+    <div class="sidebar-title">Mục lục bài học</div>
+
+    <a class="toc-item active" href="#mo-dau">Bài 1 · Mở đầu</a>
+
+    <a class="toc-item" href="#vi-sao-may-ao">Bài 2 · Vì sao sinh mã cho máy ảo?</a>
+
+    <a class="toc-item" href="#may-ngan-xep">Bài 3 · Máy ngăn xếp và máy thanh ghi</a>
+
+    <a class="toc-item" href="#kien-truc-jvm">Bài 4 · Kiến trúc trong của JVM</a>
+
+    <a class="toc-item" href="#kieu-du-lieu">Bài 5 · Kiểu dữ liệu và bộ mô tả</a>
+    <a class="toc-item sub" href="#kieu-du-lieu">Bộ mô tả kiểu nguyên thủy</a>
+    <a class="toc-item sub" href="#chu-ky-phuong-thuc">Chữ ký phương thức</a>
+
+    <a class="toc-item" href="#ngan-xep-toan-hang">Bài 6 · Ngăn xếp toán hạng &amp; biến cục bộ</a>
+    <a class="toc-item sub" href="#cap-chi-so-slot">Cấp chỉ số slot</a>
+    <a class="toc-item sub" href="#long-double-slot">Long &amp; double chiếm 2 slot</a>
+
+    <a class="toc-item" href="#cac-ho-lenh">Bài 7 · Các họ lệnh Jasmin</a>
+    <a class="toc-item sub" href="#lenh-so-hoc">Lệnh số học</a>
+    <a class="toc-item sub" href="#lenh-nap-luu">Lệnh nạp và lưu</a>
+    <a class="toc-item sub" href="#lenh-nhanh">Lệnh chuyển điều khiển</a>
+    <a class="toc-item sub" href="#lenh-ep-kieu">Lệnh ép kiểu</a>
+    <a class="toc-item sub" href="#lenh-ngan-xep">Lệnh quản lý ngăn xếp</a>
+    <a class="toc-item sub" href="#lenh-doi-tuong">Tạo đối tượng &amp; mảng</a>
+    <a class="toc-item sub" href="#lenh-truong">Lệnh truy cập trường</a>
+    <a class="toc-item sub" href="#lenh-goi">Lệnh gọi phương thức</a>
+    <a class="toc-item sub" href="#lenh-tra-ve">Lệnh trả về</a>
+
+    <a class="toc-item" href="#cau-truc-jasmin">Bài 8 · Cấu trúc một tệp Jasmin</a>
+    <a class="toc-item sub" href="#chi-thi">Các chỉ thị Jasmin</a>
+    <a class="toc-item sub" href="#stack-map">Bảng bản đồ ngăn xếp</a>
+
+    <a class="toc-item" href="#sinh-ma">Bài 9 · Sinh mã cho các cấu trúc nguồn</a>
+    <a class="toc-item sub" href="#bieu-thuc">Biểu thức</a>
+    <a class="toc-item sub" href="#re-nhanh">Rẽ nhánh if/else</a>
+    <a class="toc-item sub" href="#mang-doi-tuong">Mảng &amp; đối tượng</a>
+
+    <a class="toc-item" href="#tong-ket">Bài 10 · Tổng kết chương</a>
+  </nav>
+
+  <!-- ══════════════════════ MAIN ══════════════════════ -->
+  <main class="main" id="mainContent">
+
+    <!-- ════════════════════ BÀI 1: MỞ ĐẦU ════════════════════ -->
+    <div class="lesson-badge">Bài 1 / 10</div>
+    <h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+    <div class="lesson-meta">CO3005 · JVM và Jasmin · Trần Ngọc Bảo Duy · HK253</div>
+
+    <div class="article-section">
+      <p>Ở chương trước, ta đã đi qua hệ thống kiểu và quá trình kiểm tra kiểu: khi bộ phân tích ngữ nghĩa kết thúc mà không báo lỗi, ta có trong tay một cây cú pháp trừu tượng đã "sạch" về mặt kiểu — mọi định danh đều có ràng buộc, mọi biểu thức đều có kiểu xác định. Nhưng một cây cú pháp, dù đúng đến đâu, cũng chưa chạy được. Bước cuối cùng của bộ dịch là biến cây đó thành một dạng mà máy tính thực thi được.</p>
+
+      <p>Câu hỏi đầu tiên của khâu sinh mã không phải là "sinh như thế nào" mà là "sinh ra cái gì". Ta có thể sinh thẳng mã máy cho một bộ vi xử lý cụ thể, đổi lấy tốc độ nhưng mất khả năng chạy trên máy khác; hoặc sinh mã cho một <strong>máy đích trừu tượng</strong> (abstract target machine) — một cỗ máy không tồn tại bằng phần cứng mà được mô phỏng bằng phần mềm. Con đường thứ hai đã trở thành lựa chọn phổ biến của các ngôn ngữ hiện đại, và cỗ máy trừu tượng nổi tiếng nhất theo hướng này là <strong>Máy ảo Java</strong> (Java Virtual Machine, JVM).</p>
+
+      <p>Trong môn học, bộ dịch của ta cũng đi theo con đường đó: khâu sinh mã không phát ra mã máy mà phát ra <strong>mã Jasmin</strong> (Jasmin code) — một dạng hợp ngữ dễ đọc của mã byte JVM — rồi để một bộ hợp dịch chuyển nó thành tệp <code>.class</code> cho JVM thực thi. Cách này giúp ta tách bạch phần khó (dịch cấu trúc nguồn thành lệnh ngăn xếp) khỏi phần cơ khí (đóng gói thành định dạng nhị phân), và tận dụng được toàn bộ hạ tầng thực thi sẵn có của JVM.</p>
+
+      <div class="callout">
+        <strong>📌 Mục tiêu chương này:</strong> Làm rõ máy ảo ngăn xếp là gì và vì sao nó thuận tiện cho việc sinh mã; JVM tổ chức bộ nhớ và thực thi mã byte như thế nào; các họ lệnh cùng bộ mô tả kiểu của nó ra sao; và cuối cùng là sinh mã Jasmin cho các cấu trúc nguồn quen thuộc — biểu thức, rẽ nhánh, mảng, đối tượng và lời gọi phương thức.
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 2: VÌ SAO MÁY ẢO? ════════════════════ -->
+    <div class="lesson-badge">Bài 2 / 10</div>
+    <h1 class="lesson-title" id="vi-sao-may-ao">Vì sao sinh mã cho một máy ảo?</h1>
+    <div class="lesson-meta">CO3005 · JVM và Jasmin</div>
+
+    <div class="article-section">
+      <p>Một bộ dịch cổ điển phát ra mã máy: chuỗi lệnh nhị phân mà một họ vi xử lý cụ thể hiểu trực tiếp. Cách này cho tốc độ tối đa, nhưng mã sinh ra gắn chặt với một kiến trúc phần cứng — muốn chạy trên kiến trúc khác phải dịch lại. Với các ngôn ngữ hướng tới chạy ở mọi nơi, ràng buộc đó là quá đắt.</p>
+
+      <p>Giải pháp là chèn thêm một tầng trung gian: bộ dịch phát ra <strong>mã byte</strong> (bytecode) cho một <strong>máy ảo</strong> (virtual machine) — một chương trình mô phỏng một cỗ máy tính lý tưởng. Mã byte không phải mã máy thật, nên nó độc lập với phần cứng; ai muốn chạy nó chỉ cần cài đặt máy ảo tương ứng cho nền tảng của mình. Đây chính là ý tưởng đằng sau khẩu hiệu <em>"viết một lần, chạy mọi nơi"</em> của Java.</p>
+
+      <p>Ta có thể hình dung sự khác biệt giữa hai con đường như sau: chương trình nguồn ở trên, mã byte khả chuyển nằm ở tầng giữa, và nhiều máy ảo khác nhau ở dưới cùng thực thi cùng một mã byte đó.</p>
+
+      <figure class="fig fig-wide">
+        <img src="JVM và Jasmin/h1.png" alt="Hình 1 — Kiến trúc hai tầng: mã byte trung gian và nhiều máy ảo" onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 1 — Kiến trúc hai tầng: bộ dịch phát mã byte khả chuyển, máy ảo thực thi trên từng nền tảng</figcaption>
+      </figure>
+
+      <p>Cái được và cái mất của tầng trung gian này rất rõ. Cái được là <strong>khả chuyển</strong>: một tệp <code>.class</code> chạy được trên bất kỳ nền tảng nào có JVM. Cái mất là tốc độ: mã byte phải qua một tầng diễn giải, chậm hơn mã máy chạy thẳng. Để bù lại, các JVM hiện đại dùng <strong>biên dịch tức thời</strong> (Just-in-Time compilation, JIT): những đoạn mã được gọi nhiều lần sẽ được dịch nóng sang mã máy ngay lúc chạy, nên trên thực tế khoảng cách tốc độ với mã máy tĩnh thu hẹp đáng kể.</p>
+
+      <p>JVM không phải máy ảo duy nhất theo mô hình này, và điều đáng chú ý về mặt nguyên lý là hầu hết chúng đều là <strong>máy ngăn xếp</strong>:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Nền tảng</th><th>Mã trung gian</th><th>Máy ảo</th><th>Mô hình</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Java, Kotlin, Scala</td><td>Java bytecode (<code>.class</code>)</td><td>JVM</td><td>Ngăn xếp</td></tr>
+          <tr><td>Python</td><td>Python bytecode (<code>.pyc</code>)</td><td>CPython</td><td>Ngăn xếp</td></tr>
+          <tr><td>C#, F#, VB.NET</td><td>CIL (<code>.dll</code>, <code>.exe</code>)</td><td>CLR (.NET)</td><td>Ngăn xếp</td></tr>
+          <tr><td>C, Rust, nhiều ngôn ngữ</td><td>WebAssembly (<code>.wasm</code>)</td><td>Trình duyệt / runtime</td><td>Ngăn xếp</td></tr>
+        </tbody>
+      </table>
+
+      <p>Vì mô hình ngăn xếp lặp đi lặp lại như vậy, hiểu sâu một máy ảo ngăn xếp — ở đây là JVM — cho ta chiếc chìa khóa để hiểu phần còn lại.</p>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 3: MÁY NGĂN XẾP ════════════════════ -->
+    <div class="lesson-badge">Bài 3 / 10</div>
+    <h1 class="lesson-title" id="may-ngan-xep">Máy ngăn xếp và máy thanh ghi</h1>
+    <div class="lesson-meta">CO3005 · JVM và Jasmin</div>
+
+    <div class="article-section">
+      <p>Có hai kiểu tổ chức máy tính trừu tượng để tính biểu thức. <strong>Máy thanh ghi</strong> (register-based machine) lưu các giá trị trung gian trong một số hữu hạn ô nhớ nhanh gọi là thanh ghi, và mỗi lệnh nêu rõ thanh ghi nguồn và thanh ghi đích. <strong>Máy ngăn xếp</strong> (stack-based machine) không có thanh ghi cho phép tính; thay vào đó mọi toán hạng được đẩy lên một ngăn xếp toán hạng (operand stack), và mỗi lệnh số học lấy toán hạng từ đỉnh ngăn xếp rồi đặt kết quả trở lại đỉnh.</p>
+
+      <p>Sự khác biệt lộ rõ khi ta sinh mã cho cùng một câu lệnh. Lấy ví dụ xuyên suốt của môn: <code>a = b + c * 60;</code> với a, b, c là biến nguyên. Trên máy ngăn xếp (mã JVM):</p>
+
+      <div class="code-block">
+        <div class="code-label">JVM bytecode (Jasmin)</div>
+        <pre><code><span class="kw">iload_1</span>        <span class="cmt">; đẩy b lên ngăn xếp</span>
+<span class="kw">iload_2</span>        <span class="cmt">; đẩy c lên ngăn xếp</span>
+<span class="kw">bipush</span> <span class="num">60</span>      <span class="cmt">; đẩy hằng 60</span>
+<span class="kw">imul</span>           <span class="cmt">; lấy c và 60, đẩy c*60</span>
+<span class="kw">iadd</span>           <span class="cmt">; lấy b và c*60, đẩy tổng</span>
+<span class="kw">istore_0</span>       <span class="cmt">; lấy tổng, lưu vào a</span></code></pre>
+      </div>
+
+      <p>Trên một máy thanh ghi (viết bằng hợp ngữ giả), cùng phép tính đó cần chỉ định thanh ghi ở từng bước:</p>
+
+      <div class="code-block">
+        <div class="code-label">Hợp ngữ máy thanh ghi (giả)</div>
+        <pre><code><span class="kw">LOAD</span>  R1, b
+<span class="kw">LOAD</span>  R2, c
+<span class="kw">MUL</span>   R2, R2, <span class="num">60</span>    <span class="cmt">; R2 = c * 60</span>
+<span class="kw">ADD</span>   R1, R1, R2    <span class="cmt">; R1 = b + c*60</span>
+<span class="kw">STORE</span> a, R1</code></pre>
+      </div>
+
+      <div class="callout">
+        <strong>💡 Điểm mấu chốt cho người viết bộ dịch:</strong> Mã ngăn xếp không cần nhắc tới thanh ghi. Một biểu thức là một cây, và việc sinh mã ngăn xếp cho nó chỉ là <strong>duyệt cây theo hậu thứ tự</strong> — sinh mã cho cây con trái, sinh mã cho cây con phải, rồi phát lệnh phép toán. Kết quả của mỗi cây con tự động nằm sẵn trên đỉnh ngăn xếp, đúng nơi lệnh cha cần. Ngược lại, sinh mã cho máy thanh ghi buộc ta phải giải bài toán <strong>cấp phát thanh ghi</strong> (register allocation) — một bài toán khó.
+      </div>
+
+      <p>Tất nhiên có đánh đổi. Máy thanh ghi thường cần ít lệnh hơn cho cùng một phép tính và ánh xạ gần với phần cứng thật hơn, nên chạy nhanh hơn — đó là lý do máy ảo Dalvik của Android và máy ảo Lua chọn mô hình thanh ghi:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Tiêu chí</th><th>Máy ngăn xếp</th><th>Máy thanh ghi</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Toán hạng</td><td>Ngầm định ở đỉnh ngăn xếp</td><td>Nêu tường minh trong lệnh</td></tr>
+          <tr><td>Số lệnh cho một biểu thức</td><td>Nhiều hơn</td><td>Ít hơn</td></tr>
+          <tr><td>Sinh mã</td><td>Dễ (duyệt cây hậu thứ tự)</td><td>Khó (phải cấp phát thanh ghi)</td></tr>
+          <tr><td>Tốc độ thực thi</td><td>Chậm hơn</td><td>Nhanh hơn</td></tr>
+          <tr><td>Ví dụ</td><td>JVM, CPython, CLR</td><td>Dalvik, Lua VM</td></tr>
+        </tbody>
+      </table>
+
+      <p>Vì môn học ưu tiên một khâu sinh mã trong sáng và dễ hiện thực, JVM — một máy ngăn xếp — là đích rất phù hợp.</p>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 4: KIẾN TRÚC JVM ════════════════════ -->
+    <div class="lesson-badge">Bài 4 / 10</div>
+    <h1 class="lesson-title" id="kien-truc-jvm">Kiến trúc trong của JVM</h1>
+    <div class="lesson-meta">CO3005 · JVM và Jasmin</div>
+
+    <div class="article-section">
+      <p>JVM nhận vào các tệp <code>.class</code> và thực thi mã byte trong đó. Để làm được điều này, nó chia trách nhiệm cho vài bộ phận. <strong>Bộ nạp lớp</strong> (class loader) đọc tệp <code>.class</code>, kiểm tra tính hợp lệ và nạp thông tin lớp vào bộ nhớ. <strong>Vùng dữ liệu thời gian chạy</strong> (runtime data areas) là nơi lưu trữ toàn bộ trạng thái khi chương trình chạy. <strong>Bộ máy thực thi</strong> (execution engine) diễn giải hoặc biên dịch tức thời từng lệnh mã byte.</p>
+
+      <p>Vùng dữ liệu thời gian chạy lại gồm nhiều khu vực với vai trò khác nhau:</p>
+
+      <figure class="fig fig-wide">
+        <img src="JVM và Jasmin/h2.png" alt="Hình 2 — Sơ đồ vùng dữ liệu thời gian chạy của JVM" onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 2 — Vùng dữ liệu thời gian chạy của JVM: Method Area, Heap, JVM Stacks, PC Register, Native Method Stack</figcaption>
+      </figure>
+
+      <ul style="margin: 16px 0 16px 24px; line-height: 2;">
+        <li><strong>Vùng phương thức</strong> (method area): lưu dữ liệu cấp lớp — mã byte của các phương thức, hằng số, thông tin về trường và phương thức. Dùng chung cho mọi luồng.</li>
+        <li><strong>Heap</strong>: nơi cấp phát mọi đối tượng và mảng khi chương trình dùng lệnh tạo mới; dùng chung và là địa bàn hoạt động của bộ thu gom rác.</li>
+        <li><strong>Các ngăn xếp JVM</strong> (JVM stacks): mỗi luồng có một ngăn xếp riêng.</li>
+        <li><strong>Thanh ghi pc</strong> (pc register): của mỗi luồng, giữ địa chỉ lệnh đang thực thi.</li>
+        <li><strong>Ngăn xếp phương thức bản địa</strong> (native method stack): phục vụ các phương thức viết bằng ngôn ngữ khác (như C).</li>
+      </ul>
+
+      <p>Trong toàn bộ các vùng này, phần liên quan trực tiếp nhất tới sinh mã là ngăn xếp JVM. Mỗi khi một phương thức được gọi, JVM đẩy lên ngăn xếp của luồng một <strong>khung lời gọi</strong> (stack frame) mới; khi phương thức trả về, khung đó bị gỡ bỏ. Mỗi khung chứa hai cấu trúc mà ta sẽ làm việc suốt chương: một <strong>ngăn xếp toán hạng</strong> để tính biểu thức, và một <strong>mảng biến cục bộ</strong> (local variable array) để lưu tham số và biến cục bộ của lời gọi đó.</p>
+
+      <figure class="fig">
+        <img src="JVM và Jasmin/h3.png" alt="Hình 3 — Khung lời gọi JVM: ngăn xếp toán hạng và mảng biến cục bộ" onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 3 — Khung lời gọi (stack frame): ngăn xếp toán hạng (trái) và mảng biến cục bộ (phải)</figcaption>
+      </figure>
+
+      <p>Vì mỗi lời gọi có khung riêng, biến cục bộ của các lời gọi khác nhau không giẫm lên nhau, và đệ quy hoạt động tự nhiên: mỗi lần gọi đệ quy là một khung mới với mảng biến cục bộ độc lập.</p>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 5: KIỂU DỮ LIỆU ════════════════════ -->
+    <div class="lesson-badge">Bài 5 / 10</div>
+    <h1 class="lesson-title" id="kieu-du-lieu">Kiểu dữ liệu và bộ mô tả</h1>
+    <div class="lesson-meta">CO3005 · JVM và Jasmin</div>
+
+    <div class="article-section">
+      <p>JVM làm việc với một tập kiểu nguyên thủy cố định, và mỗi kiểu được đặt tên bằng một ký tự viết tắt gọi là <strong>bộ mô tả kiểu</strong> (type descriptor). Bộ mô tả xuất hiện khắp nơi trong mã Jasmin — trong khai báo trường, trong chữ ký phương thức, trong tên kiểu mảng — nên nắm chắc bảng này là điều kiện cần để đọc và viết mã byte.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Kiểu</th><th>Miền giá trị</th><th>Bộ mô tả</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>boolean</code></td><td>{0, 1}</td><td><code>Z</code></td></tr>
+          <tr><td><code>byte</code></td><td>−2<sup>7</sup> đến 2<sup>7</sup>−1</td><td><code>B</code></td></tr>
+          <tr><td><code>short</code></td><td>−2<sup>15</sup> đến 2<sup>15</sup>−1</td><td><code>S</code></td></tr>
+          <tr><td><code>int</code></td><td>−2<sup>31</sup> đến 2<sup>31</sup>−1</td><td><code>I</code></td></tr>
+          <tr><td><code>long</code></td><td>−2<sup>63</sup> đến 2<sup>63</sup>−1</td><td><code>J</code></td></tr>
+          <tr><td><code>char</code></td><td>Unicode 16 bit không dấu (0 đến 2<sup>16</sup>−1)</td><td><code>C</code></td></tr>
+          <tr><td><code>float</code></td><td>IEEE 754 32 bit</td><td><code>F</code></td></tr>
+          <tr><td><code>double</code></td><td>IEEE 754 64 bit</td><td><code>D</code></td></tr>
+          <tr><td><code>void</code></td><td>(không có giá trị)</td><td><code>V</code></td></tr>
+          <tr><td>tham chiếu lớp</td><td>(một đối tượng)</td><td><code>L<em>tên-lớp</em>;</code></td></tr>
+          <tr><td>tham chiếu mảng</td><td>(một mảng)</td><td><code>[<em>mô-tả-thành-phần</em></code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-warn">
+        <strong>⚠️ Chi tiết hay nhầm:</strong> Bộ mô tả của <code>long</code> là <code>J</code>, <strong>không phải</strong> <code>L</code>. Ký tự <code>L</code> đã được dành riêng để mở đầu bộ mô tả của một tham chiếu lớp, ví dụ <code>Ljava/lang/String;</code>. Tương tự, dấu <code>;</code> chỉ xuất hiện ở bộ mô tả tham chiếu lớp; mảng nguyên <code>int[]</code> có bộ mô tả <code>[I</code> không kèm dấu <code>;</code>.
+      </div>
+
+      <p>Bộ mô tả tham chiếu lớp ghép từ chữ <code>L</code>, tên lớp đầy đủ dùng dấu <code>/</code> thay cho dấu chấm, rồi dấu <code>;</code>. Bộ mô tả mảng ghép từ một hay nhiều dấu <code>[</code> (mỗi dấu là một chiều) đứng trước bộ mô tả thành phần:</p>
+
+      <table class="data-table" id="chu-ky-phuong-thuc">
+        <thead>
+          <tr><th>Kiểu trong Java</th><th>Bộ mô tả JVM</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>Object</code></td><td><code>Ljava/lang/Object;</code></td></tr>
+          <tr><td><code>String</code></td><td><code>Ljava/lang/String;</code></td></tr>
+          <tr><td><code>String[]</code></td><td><code>[Ljava/lang/String;</code></td></tr>
+          <tr><td><code>int[]</code></td><td><code>[I</code></td></tr>
+          <tr><td><code>float[][]</code></td><td><code>[[F</code></td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Chữ ký phương thức</strong> viết bằng bộ mô tả: danh sách kiểu tham số đặt trong ngoặc đơn, theo sau là bộ mô tả kiểu trả về. Ví dụ:</p>
+      <ul style="margin: 12px 0 16px 24px; line-height: 2.2; font-size: 15px;">
+        <li><code>void main(String[] args)</code> → chữ ký <code>([Ljava/lang/String;)V</code></li>
+        <li><code>int gcd(int a, int b)</code> → chữ ký <code>(II)I</code></li>
+        <li><code>char foo(float a, Object b)</code> → chữ ký <code>(FLjava/lang/Object;)C</code></li>
+      </ul>
+
+      <p>Một điểm cần nhớ về mặt hiện thực: trong JVM, các kiểu <code>boolean</code>, <code>byte</code>, <code>char</code> và <code>short</code> không có tập lệnh riêng mà đều được xử lý bằng lệnh của kiểu <code>int</code>. Ví dụ, đoạn Java sau:</p>
+
+      <div class="code-block">
+        <div class="code-label">Java</div>
+        <pre><code><span class="type">boolean</span> z = <span class="kw">true</span>;
+<span class="type">byte</span>    b = <span class="num">1</span>;
+<span class="type">short</span>   s = <span class="num">2</span>;
+<span class="type">char</span>    c = <span class="str">'a'</span>;</code></pre>
+      </div>
+
+      <p>sinh mã byte hoàn toàn bằng lệnh nguyên (<code>true</code> thành <code>iconst_1</code>, hằng <code>'a'</code> (mã Unicode 97) thành <code>bipush 97</code>):</p>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin</div>
+        <pre><code><span class="kw">iconst_1</span>
+<span class="kw">istore_1</span>        <span class="cmt">; z</span>
+<span class="kw">iconst_1</span>
+<span class="kw">istore_2</span>        <span class="cmt">; b</span>
+<span class="kw">iconst_2</span>
+<span class="kw">istore_3</span>        <span class="cmt">; s</span>
+<span class="kw">bipush</span> <span class="num">97</span>
+<span class="kw">istore</span> <span class="num">4</span>        <span class="cmt">; c = 'a'</span></code></pre>
+      </div>
+
+      <p>Sự thống nhất về int này làm nhỏ đáng kể tập lệnh của JVM, đổi lại là ta phải nhớ rằng bộ mô tả kiểu vẫn phân biệt bốn kiểu đó dù lệnh thao tác giống nhau.</p>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 6: NGĂN XẾP + BIẾN CỤC BỘ ════════════════════ -->
+    <div class="lesson-badge">Bài 6 / 10</div>
+    <h1 class="lesson-title" id="ngan-xep-toan-hang">Ngăn xếp toán hạng và mảng biến cục bộ</h1>
+    <div class="lesson-meta">CO3005 · JVM và Jasmin</div>
+
+    <div class="article-section">
+      <p>Hai cấu trúc trong khung lời gọi phối hợp với nhau: ngăn xếp toán hạng là nơi tính, còn mảng biến cục bộ là nơi lưu. Ta đã thấy ngăn xếp toán hạng hoạt động ở bài trước — mọi phép tính đẩy toán hạng lên rồi lấy kết quả xuống. Giờ ta xét mảng biến cục bộ.</p>
+
+      <div class="article-section" id="cap-chi-so-slot">
+        <h2 class="section-heading">Cấp chỉ số slot</h2>
+        <p>Mảng biến cục bộ được đánh chỉ số từ 0, và cách cấp chỉ số phụ thuộc phương thức là thực thể hay tĩnh. Với <strong>phương thức thực thể</strong> (instance method), slot 0 luôn dành cho tham chiếu <code>this</code>. Với <strong>phương thức tĩnh</strong> (static method), không có <code>this</code>, nên các tham số bắt đầu ngay từ slot 0.</p>
+
+        <table class="data-table">
+          <thead>
+            <tr><th>Loại phương thức</th><th>Slot 0</th><th>Tham số</th><th>Biến cục bộ</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Thực thể</td><td><code>this</code></td><td>Từ slot 1 trở đi</td><td>Các slot còn lại</td></tr>
+            <tr><td>Tĩnh</td><td>Tham số đầu tiên</td><td>Từ slot 0 trở đi</td><td>Các slot còn lại</td></tr>
+          </tbody>
+        </table>
+
+        <p>Để thấy rõ, xét một phương thức tĩnh với ba biến nguyên — a, b, c nhận các slot 0, 1, 2:</p>
+
+        <div class="code-block">
+          <div class="code-label">Java → Jasmin (phương thức tĩnh)</div>
+          <pre><code><span class="kw">public</span> <span class="kw">static</span> <span class="type">void</span> <span class="fn">foo</span>() {
+    <span class="type">int</span> a, b, c;
+    a = <span class="num">1</span>;
+    b = <span class="num">2</span>;
+    c = (a + b) * <span class="num">3</span>;
+}</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-label">Jasmin</div>
+          <pre><code><span class="kw">iconst_1</span>
+<span class="kw">istore_0</span>        <span class="cmt">; a → slot 0</span>
+<span class="kw">iconst_2</span>
+<span class="kw">istore_1</span>        <span class="cmt">; b → slot 1</span>
+<span class="kw">iload_0</span>
+<span class="kw">iload_1</span>
+<span class="kw">iadd</span>
+<span class="kw">iconst_3</span>
+<span class="kw">imul</span>
+<span class="kw">istore_2</span>        <span class="cmt">; c → slot 2</span></code></pre>
+        </div>
+
+        <p>Nếu cùng thân phương thức đó nhưng khai báo là <em>phương thức thực thể</em>, slot 0 bị <code>this</code> chiếm, nên a, b, c dịch sang các slot 1, 2, 3 và mọi lệnh <code>iload/istore</code> đổi chỉ số theo. Đây là lý do cùng một đoạn nguồn cho ra chỉ số slot khác nhau tùy ngữ cảnh.</p>
+      </div>
+
+      <div class="article-section" id="long-double-slot">
+        <h2 class="section-heading">Long và double chiếm cặp slot</h2>
+        <p>Mỗi slot giữ được một giá trị 32 bit (<code>int</code>, <code>float</code>, tham chiếu...), nhưng <code>long</code> và <code>double</code> là 64 bit nên <strong>chiếm một cặp slot liền nhau</strong>. Việc này ảnh hưởng tới cách đánh chỉ số các biến sau nó. Xét ví dụ trộn <code>int</code> và <code>long</code>, trong đó ta còn thấy cả lệnh ép kiểu <code>i2l</code> khi cộng một <code>int</code> với một <code>long</code>:</p>
+
+        <div class="code-block">
+          <div class="code-label">Java → Jasmin (long chiếm 2 slot)</div>
+          <pre><code><span class="kw">public</span> <span class="type">void</span> <span class="fn">foo</span>() {    <span class="cmt">// phương thức thực thể: this ở slot 0</span>
+    <span class="type">int</span>  a = <span class="num">1</span>;       <span class="cmt">// slot 1</span>
+    <span class="type">long</span> b = <span class="num">2</span>;       <span class="cmt">// slot 2 và 3</span>
+    <span class="type">int</span>  c = <span class="num">3</span>;       <span class="cmt">// slot 4</span>
+    <span class="type">long</span> d = (a + b) * c;  <span class="cmt">// slot 5 và 6</span>
+}</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-label">Jasmin</div>
+          <pre><code><span class="kw">iconst_1</span>
+<span class="kw">istore_1</span>        <span class="cmt">; a → slot 1</span>
+<span class="kw">ldc2_w</span> <span class="num">2</span>
+<span class="kw">lstore_2</span>        <span class="cmt">; b → chiếm slot 2 và 3</span>
+<span class="kw">iconst_3</span>
+<span class="kw">istore</span> <span class="num">4</span>        <span class="cmt">; c → slot 4</span>
+<span class="kw">iload_1</span>
+<span class="kw">i2l</span>             <span class="cmt">; nâng a từ int lên long</span>
+<span class="kw">lload_2</span>
+<span class="kw">ladd</span>
+<span class="kw">iload</span> <span class="num">4</span>
+<span class="kw">i2l</span>             <span class="cmt">; nâng c từ int lên long</span>
+<span class="kw">lmul</span>
+<span class="kw">lstore</span> <span class="num">5</span>        <span class="cmt">; d → chiếm slot 5 và 6</span></code></pre>
+        </div>
+
+        <p>Chú ý cách <code>b</code> chiếm slot 2 và 3 khiến <code>c</code> phải nhảy tới slot 4, và <code>d</code> chiếm slot 5 và 6. Phép cộng <code>a + b</code> trộn <code>int</code> với <code>long</code>: JVM không có lệnh cộng lai kiểu, nên bộ dịch phải chèn <code>i2l</code> để nâng <code>int</code> thành <code>long</code> trước khi dùng <code>ladd</code>.</p>
+
+        <p>Ta có thể theo dõi ngăn xếp toán hạng biến đổi khi tính <code>c = (a + b) * 3</code> (với a = 1, b = 2) qua các trạng thái trước và sau mỗi lệnh:</p>
+
+        <figure class="fig">
+          <img src="JVM và Jasmin/h4.png" alt="Hình 4 — Trạng thái ngăn xếp toán hạng qua các bước tính c = (a+b)*3" onclick="openLb(this.src,this.alt)">
+          <figcaption>Hình 4 — Ngăn xếp toán hạng biến đổi qua từng lệnh khi tính (a + b) * 3</figcaption>
+        </figure>
+
+        <p>Sau <code>imul</code>, đỉnh ngăn xếp giữ giá trị 9, và lệnh <code>istore_2</code> kế tiếp lấy nó xuống lưu vào <code>c</code>. Nhịp "đẩy toán hạng, phát phép toán, lưu kết quả" này lặp lại cho mọi biểu thức; nắm được nó là nắm được xương sống của sinh mã trên máy ngăn xếp.</p>
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 7: CÁC HỌ LỆNH ════════════════════ -->
+    <div class="lesson-badge">Bài 7 / 10</div>
+    <h1 class="lesson-title" id="cac-ho-lenh">Các họ lệnh Jasmin</h1>
+    <div class="lesson-meta">CO3005 · JVM và Jasmin</div>
+
+    <div class="article-section" id="lenh-so-hoc">
+      <h2 class="section-heading">Lệnh số học</h2>
+      <p>Tập lệnh JVM khá lớn, nhưng gom lại thành vài họ theo chức năng thì dễ nhớ. Mỗi phép toán có một biến thể cho từng kiểu, phân biệt bằng ký tự đầu: <code>i</code> cho int, <code>l</code> cho long, <code>f</code> cho float, <code>d</code> cho double.</p>
+      <ul style="margin: 12px 0 16px 24px; line-height: 2; font-size: 15px;">
+        <li>Cộng: <code>iadd</code>, <code>ladd</code>, <code>fadd</code>, <code>dadd</code></li>
+        <li>Trừ: <code>isub</code>, <code>lsub</code>, <code>fsub</code>, <code>dsub</code></li>
+        <li>Nhân: <code>imul</code>, <code>lmul</code>, <code>fmul</code>, <code>dmul</code></li>
+        <li>Chia: <code>idiv</code>, <code>ldiv</code>, <code>fdiv</code>, <code>ddiv</code></li>
+        <li>Lấy dư: <code>irem</code>, <code>lrem</code>, <code>frem</code>, <code>drem</code></li>
+        <li>Đổi dấu: <code>ineg</code>, <code>lneg</code>, <code>fneg</code>, <code>dneg</code></li>
+        <li>Dịch bit: <code>ishl</code>, <code>ishr</code>, <code>iushr</code> (và bản <code>l</code>)</li>
+        <li>Phép bit: <code>ior/lor</code>, <code>iand/land</code>, <code>ixor/lxor</code></li>
+        <li>Tăng tại chỗ: <code>iinc</code></li>
+        <li>So sánh: <code>dcmpg</code>, <code>dcmpl</code>, <code>fcmpg</code>, <code>fcmpl</code>, <code>lcmp</code> → sinh giá trị -1, 0, 1</li>
+      </ul>
+      <p>Mọi lệnh số học đều lấy toán hạng từ đỉnh ngăn xếp và đẩy kết quả trở lại đỉnh.</p>
+    </div>
+
+    <div class="article-section" id="lenh-nap-luu">
+      <h2 class="section-heading">Lệnh nạp và lưu</h2>
+      <p>Để đưa một biến cục bộ lên ngăn xếp, ta dùng họ <strong>load</strong>: <code>iload</code> cho int (và boolean, byte, char, short), <code>lload</code> cho long, <code>fload</code> cho float, <code>dload</code> cho double, <code>aload</code> cho tham chiếu. Với các slot 0–3 có dạng viết gọn: <code>iload_0</code>, <code>aload_1</code>. Chiều ngược lại là họ <strong>store</strong>: <code>istore</code>, <code>lstore</code>, <code>fstore</code>, <code>dstore</code>, <code>astore</code>.</p>
+      <p>Để nạp một <strong>hằng số</strong>, tùy độ lớn mà chọn lệnh:</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Phạm vi hằng</th><th>Lệnh</th><th>Ví dụ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>int -1 đến 5</td><td><code>iconst_m1</code> đến <code>iconst_5</code></td><td><code>iconst_1</code></td></tr>
+          <tr><td>byte có dấu (−128..127)</td><td><code>bipush</code></td><td><code>bipush 100</code></td></tr>
+          <tr><td>short có dấu (−32768..32767)</td><td><code>sipush</code></td><td><code>sipush 1000</code></td></tr>
+          <tr><td>int lớn, float, String</td><td><code>ldc</code></td><td><code>ldc 40000</code></td></tr>
+          <tr><td>long, double</td><td><code>ldc2_w</code></td><td><code>ldc2_w 2</code></td></tr>
+          <tr><td>null</td><td><code>aconst_null</code></td><td>—</td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block">
+        <div class="code-label">Java → Jasmin (chọn lệnh nạp hằng tùy độ lớn)</div>
+        <pre><code><span class="type">int</span> a = <span class="num">1</span>;       <span class="type">int</span> b = <span class="num">100</span>;
+<span class="type">int</span> c = <span class="num">1000</span>;    <span class="type">int</span> d = <span class="num">40000</span>;
+<span class="type">int</span> e = a * b + c - d;</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Jasmin</div>
+        <pre><code><span class="kw">iconst_1</span>
+<span class="kw">istore_1</span>        <span class="cmt">; a: hằng 1 → iconst_1</span>
+<span class="kw">bipush</span> <span class="num">100</span>
+<span class="kw">istore_2</span>        <span class="cmt">; b: 100 vừa một byte → bipush</span>
+<span class="kw">sipush</span> <span class="num">1000</span>
+<span class="kw">istore_3</span>        <span class="cmt">; c: 1000 cần hai byte → sipush</span>
+<span class="kw">ldc</span> <span class="num">40000</span>
+<span class="kw">istore</span> <span class="num">4</span>        <span class="cmt">; d: 40000 vượt short → ldc</span>
+<span class="kw">iload_1</span>
+<span class="kw">iload_2</span>
+<span class="kw">imul</span>
+<span class="kw">iload_3</span>
+<span class="kw">iadd</span>
+<span class="kw">iload</span> <span class="num">4</span>
+<span class="kw">isub</span>
+<span class="kw">istore</span> <span class="num">5</span>        <span class="cmt">; e</span></code></pre>
+      </div>
+    </div>
+
+    <div class="article-section" id="lenh-nhanh">
+      <h2 class="section-heading">Lệnh chuyển điều khiển</h2>
+      <p>Nhánh không điều kiện dùng <code>goto</code> (và <code>goto_w</code> cho khoảng nhảy xa). Nhánh có điều kiện gồm:</p>
+      <ul style="margin: 12px 0 16px 24px; line-height: 2; font-size: 15px;">
+        <li>So sánh một số nguyên với 0: <code>ifeq</code>, <code>ifne</code>, <code>iflt</code>, <code>ifle</code>, <code>ifgt</code>, <code>ifge</code></li>
+        <li>So sánh tham chiếu với null: <code>ifnull</code>, <code>ifnonnull</code></li>
+        <li>So sánh hai số nguyên: <code>if_icmpeq</code>, <code>if_icmpne</code>, <code>if_icmplt</code>, <code>if_icmple</code>, <code>if_icmpgt</code>, <code>if_icmpge</code></li>
+        <li>So sánh hai tham chiếu: <code>if_acmpeq</code>, <code>if_acmpne</code></li>
+        <li>Rẽ nhiều đường: <code>tableswitch</code>, <code>lookupswitch</code></li>
+      </ul>
+      <div class="callout callout-warn">
+        <strong>⚠️ Lưu ý lịch sử:</strong> Các lệnh <code>jsr</code>, <code>jsr_w</code> và <code>ret</code> từng dùng để hiện thực khối <code>finally</code> đã bị loại khỏi định dạng tệp <code>.class</code> kể từ Java 7. Trình biên dịch hiện đại không còn sinh chúng. Ta nhắc tới đây chỉ để nhận mặt trong tài liệu cũ.
+      </div>
+    </div>
+
+    <div class="article-section" id="lenh-ep-kieu">
+      <h2 class="section-heading">Lệnh ép kiểu</h2>
+      <p>JVM không tự động chuyển kiểu số; mọi chuyển đổi phải tường minh bằng một lệnh riêng: <code>i2l</code>, <code>i2f</code>, <code>i2d</code>, <code>l2f</code>, <code>l2d</code>, <code>f2d</code> (nâng kiểu), cùng các lệnh hạ kiểu như <code>l2i</code>, <code>f2i</code>, <code>d2i</code>. Ví dụ đơn giản nhất — gán <code>int</code> cho <code>float</code>:</p>
+      <div class="code-block">
+        <div class="code-label">Java → Jasmin (ép kiểu)</div>
+        <pre><code><span class="type">int</span>   b = <span class="num">1</span>;
+<span class="type">float</span> a = b;</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Jasmin</div>
+        <pre><code><span class="kw">iconst_1</span>
+<span class="kw">istore_0</span>        <span class="cmt">; b</span>
+<span class="kw">iload_0</span>
+<span class="kw">i2f</span>             <span class="cmt">; chuyển int thành float</span>
+<span class="kw">fstore_1</span>        <span class="cmt">; a</span></code></pre>
+      </div>
+      <p>Trách nhiệm chèn các lệnh ép kiểu đúng chỗ thuộc về khâu sinh mã, dựa trên kiểu tĩnh mà khâu kiểm tra kiểu đã suy ra.</p>
+    </div>
+
+    <div class="article-section" id="lenh-ngan-xep">
+      <h2 class="section-heading">Lệnh quản lý ngăn xếp</h2>
+      <p>Hai lệnh hay dùng nhất là <code>dup</code> (nhân đôi giá trị đỉnh) và <code>pop</code> (bỏ giá trị đỉnh):</p>
+
+      <figure class="fig fig-narrow">
+        <img src="JVM và Jasmin/h5.png" alt="Hình 5 — Tác dụng của dup và pop lên ngăn xếp" onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 5 — Tác dụng của lệnh <code>dup</code> (nhân đôi đỉnh) và <code>pop</code> (loại bỏ đỉnh)</figcaption>
+      </figure>
+
+      <p><code>dup</code> hữu ích khi dịch phép gán chuỗi <code>a = b = 1</code>, nơi giá trị 1 vừa phải lưu vào <code>b</code> vừa phải còn lại để lưu tiếp vào <code>a</code>. <code>pop</code> hữu ích khi một biểu thức được tính chỉ vì hiệu ứng phụ, còn giá trị của nó bị bỏ đi. Ngoài ra còn <code>pop2</code>, <code>dup2</code>, <code>swap</code>.</p>
+
+      <div class="code-block">
+        <div class="code-label">Java → Jasmin (phép gán chuỗi)</div>
+        <pre><code><span class="type">int</span> a, b, c;
+a = b = c = <span class="num">1</span>;</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Jasmin</div>
+        <pre><code><span class="kw">iconst_1</span>
+<span class="kw">dup</span>
+<span class="kw">istore_2</span>        <span class="cmt">; c</span>
+<span class="kw">dup</span>
+<span class="kw">istore_1</span>        <span class="cmt">; b</span>
+<span class="kw">istore_0</span>        <span class="cmt">; a</span></code></pre>
+      </div>
+      <p>Mỗi <code>dup</code> giữ lại một bản sao của 1 để lệnh <code>istore</code> kế tiếp có cái để lưu, đúng theo ngữ nghĩa "gán từ phải sang trái".</p>
+    </div>
+
+    <div class="article-section" id="lenh-doi-tuong">
+      <h2 class="section-heading">Tạo và thao tác đối tượng, mảng</h2>
+      <p>Tạo thể hiện lớp dùng <code>new</code>; tạo mảng dùng <code>newarray</code> (kiểu nguyên thủy), <code>anewarray</code> (tham chiếu) hoặc <code>multianewarray</code> (nhiều chiều). Nạp phần tử mảng lên ngăn xếp dùng họ <code>iaload</code>, <code>faload</code>, <code>aaload</code>...; lưu một phần tử dùng họ <code>iastore</code>, <code>fastore</code>, <code>aastore</code>...</p>
+
+      <div class="code-block">
+        <div class="code-label">Java → Jasmin (thao tác mảng int)</div>
+        <pre><code><span class="type">int</span>[] a = <span class="kw">new</span> <span class="type">int</span>[<span class="num">10</span>];
+a[<span class="num">0</span>] = a[<span class="num">1</span>] + <span class="num">2</span>;</code></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-label">Jasmin</div>
+        <pre><code><span class="kw">bipush</span> <span class="num">10</span>
+<span class="kw">newarray</span> <span class="type">int</span>
+<span class="kw">astore_0</span>        <span class="cmt">; a</span>
+<span class="kw">aload_0</span>         <span class="cmt">; đẩy tham chiếu a (cho iastore)</span>
+<span class="kw">iconst_0</span>        <span class="cmt">; chỉ số 0</span>
+<span class="kw">aload_0</span>         <span class="cmt">; đẩy tham chiếu a (cho iaload)</span>
+<span class="kw">iconst_1</span>        <span class="cmt">; chỉ số 1</span>
+<span class="kw">iaload</span>          <span class="cmt">; lấy a[1]</span>
+<span class="kw">iconst_2</span>
+<span class="kw">iadd</span>            <span class="cmt">; a[1] + 2</span>
+<span class="kw">iastore</span>         <span class="cmt">; a[0] = ...</span></code></pre>
+      </div>
+      <div class="callout">
+        <strong>📌 Thứ tự toán hạng cho iastore:</strong> tham chiếu mảng, rồi chỉ số, rồi giá trị — đúng thứ tự mà lệnh lưu phần tử mong đợi.
+      </div>
+    </div>
+
+    <div class="article-section" id="lenh-truong">
+      <h2 class="section-heading">Lệnh truy cập trường</h2>
+      <p>Bốn lệnh trường: <code>getstatic</code>, <code>putstatic</code> (trường tĩnh — biến lớp) và <code>getfield</code>, <code>putfield</code> (trường thực thể — biến đối tượng). Mỗi lệnh cần đặc tả trường dạng <code>tên_lớp/tên_trường bộ_mô_tả</code>:</p>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin — ví dụ getstatic</div>
+        <pre><code><span class="kw">getstatic</span> java/lang/System/out Ljava/io/PrintStream;</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-label">Java — lớp VD12</div>
+        <pre><code><span class="kw">public</span> <span class="kw">class</span> <span class="type">VD12</span> {
+    <span class="kw">static</span> <span class="type">int</span> a;
+    <span class="type">int</span> b;
+    <span class="kw">static</span> <span class="type">VD12</span> c;
+    <span class="type">VD12</span> d;
+    <span class="kw">public</span> <span class="kw">static</span> <span class="type">void</span> <span class="fn">main</span>(<span class="type">String</span>[] arg) {
+        <span class="type">VD12</span> e;
+        e = <span class="kw">new</span> <span class="type">VD12</span>();
+        a = <span class="num">1</span>;
+        e.b = a + <span class="num">1</span>;
+        e.d = <span class="kw">new</span> <span class="type">VD12</span>();
+        c = e.d;
+    }
+}</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin — phương thức main của VD12</div>
+        <pre><code><span class="kw">new</span> VD12
+<span class="kw">dup</span>
+<span class="kw">invokespecial</span> VD12/&lt;init&gt;()V
+<span class="kw">astore_1</span>                        <span class="cmt">; e = new VD12()</span>
+<span class="kw">iconst_1</span>
+<span class="kw">putstatic</span> VD12/a I              <span class="cmt">; a = 1</span>
+<span class="kw">aload_1</span>
+<span class="kw">getstatic</span> VD12/a I
+<span class="kw">iconst_1</span>
+<span class="kw">iadd</span>
+<span class="kw">putfield</span> VD12/b I               <span class="cmt">; e.b = a + 1</span>
+<span class="kw">aload_1</span>
+<span class="kw">new</span> VD12
+<span class="kw">dup</span>
+<span class="kw">invokespecial</span> VD12/&lt;init&gt;()V
+<span class="kw">putfield</span> VD12/d LVD12;          <span class="cmt">; e.d = new VD12()</span>
+<span class="kw">aload_1</span>
+<span class="kw">getfield</span> VD12/d LVD12;
+<span class="kw">putstatic</span> VD12/c LVD12;         <span class="cmt">; c = e.d</span></code></pre>
+      </div>
+      <p>Phân biệt bốn lệnh theo hai trục: <em>static hay không</em> (trường lớp hay đối tượng), và <em>get hay put</em> (đọc hay ghi). Trường tĩnh không cần tham chiếu đối tượng trên ngăn xếp; trường thực thể cần một tham chiếu đối tượng đẩy lên trước.</p>
+    </div>
+
+    <div class="article-section" id="lenh-goi">
+      <h2 class="section-heading">Lệnh gọi phương thức</h2>
+      <p>Có bốn lệnh gọi:</p>
+      <ul style="margin: 12px 0 16px 24px; line-height: 2.2; font-size: 15px;">
+        <li><code>invokestatic</code> — gọi phương thức tĩnh</li>
+        <li><code>invokevirtual</code> — gọi phương thức thực thể thông thường; chọn bản cài đặt theo kiểu thực của đối tượng lúc chạy (liên kết động)</li>
+        <li><code>invokespecial</code> — hàm dựng <code>&lt;init&gt;</code>, phương thức riêng tư, hoặc phương thức của lớp cha (không điều phối động)</li>
+        <li><code>invokeinterface</code> — gọi qua một giao diện</li>
+      </ul>
+
+      <p>Sự khác nhau giữa gọi tĩnh và gọi thực thể: gọi thực thể cần một tham chiếu đối tượng nằm <em>dưới</em> các đối số trên ngăn xếp:</p>
+
+      <figure class="fig">
+        <img src="JVM và Jasmin/h6.png" alt="Hình 6 — Ngăn xếp trước lệnh invokestatic và invokevirtual" onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 6 — Bố trí ngăn xếp trước lệnh <code>invokestatic</code> (trái) và <code>invokevirtual</code> (phải, có thêm objectref)</figcaption>
+      </figure>
+
+      <div class="code-block">
+        <div class="code-label">Java — lớp VD13</div>
+        <pre><code><span class="kw">public</span> <span class="kw">class</span> <span class="type">VD13</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="type">void</span> <span class="fn">main</span>(<span class="type">String</span>[] arg) {
+        <span class="fn">goo</span>(<span class="kw">new</span> <span class="type">VD13</span>());
+    }
+    <span class="type">float</span> <span class="fn">foo</span>(<span class="type">int</span> a, <span class="type">float</span> b) {
+        <span class="kw">return</span> a + b;
+    }
+    <span class="kw">static</span> <span class="type">void</span> <span class="fn">goo</span>(<span class="type">VD13</span> x) {
+        x.<span class="fn">foo</span>(<span class="num">1</span>, <span class="num">2.3F</span>);
+    }
+}</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin — phương thức main</div>
+        <pre><code><span class="dir">.method</span> <span class="kw">public static</span> main([Ljava/lang/String;)V
+  <span class="dir">.limit</span> stack <span class="num">2</span>
+  <span class="dir">.limit</span> locals <span class="num">1</span>
+  <span class="kw">new</span> VD13
+  <span class="kw">dup</span>
+  <span class="kw">invokespecial</span> VD13/&lt;init&gt;()V
+  <span class="kw">invokestatic</span> VD13/goo(LVD13;)V
+  <span class="kw">return</span>
+<span class="dir">.end</span> method</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin — phương thức goo</div>
+        <pre><code><span class="dir">.method</span> <span class="kw">static</span> goo(LVD13;)V
+  <span class="dir">.limit</span> stack <span class="num">3</span>
+  <span class="dir">.limit</span> locals <span class="num">1</span>
+  <span class="kw">aload_0</span>
+  <span class="kw">iconst_1</span>
+  <span class="kw">ldc</span> <span class="num">2.3</span>
+  <span class="kw">invokevirtual</span> VD13/foo(IF)F
+  <span class="kw">pop</span>
+  <span class="kw">return</span>
+<span class="dir">.end</span> method</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin — phương thức foo</div>
+        <pre><code><span class="dir">.method</span> foo(IF)F
+  <span class="dir">.limit</span> stack <span class="num">2</span>
+  <span class="dir">.limit</span> locals <span class="num">3</span>
+  <span class="kw">iload_1</span>
+  <span class="kw">i2f</span>
+  <span class="kw">fload_2</span>
+  <span class="kw">fadd</span>
+  <span class="kw">freturn</span>
+<span class="dir">.end</span> method</code></pre>
+      </div>
+    </div>
+
+    <div class="article-section" id="lenh-tra-ve">
+      <h2 class="section-heading">Lệnh trả về</h2>
+      <p>Mọi phương thức kết thúc bằng một lệnh trả về, chọn theo kiểu trả về: <code>return</code> cho <code>void</code>, <code>ireturn</code> cho <code>int</code> (và short, char, boolean, byte), <code>lreturn</code> cho <code>long</code>, <code>freturn</code> cho <code>float</code>, <code>dreturn</code> cho <code>double</code>, <code>areturn</code> cho tham chiếu. Giá trị trả về, nếu có, phải nằm ở đỉnh ngăn xếp ngay trước lệnh trả về.</p>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 8: CẤU TRÚC TỆP JASMIN ════════════════════ -->
+    <div class="lesson-badge">Bài 8 / 10</div>
+    <h1 class="lesson-title" id="cau-truc-jasmin">Cấu trúc một tệp Jasmin</h1>
+    <div class="lesson-meta">CO3005 · JVM và Jasmin</div>
+
+    <div class="article-section" id="chi-thi">
+      <h2 class="section-heading">Các chỉ thị Jasmin</h2>
+      <p>Ngoài các lệnh, một tệp Jasmin dùng các <strong>chỉ thị</strong> (directive) — dòng bắt đầu bằng dấu chấm — để khai báo cấu trúc lớp:</p>
+      <ul style="margin: 12px 0 16px 24px; line-height: 2; font-size: 15px;">
+        <li><code>.source</code> — tên tệp nguồn</li>
+        <li><code>.class</code> — lớp hiện tại</li>
+        <li><code>.super</code> — lớp cha</li>
+        <li><code>.field</code> — khai báo trường</li>
+        <li><code>.method</code> / <code>.end method</code> — mở và đóng một phương thức</li>
+        <li><code>.limit stack</code> / <code>.limit locals</code> — giới hạn ngăn xếp và biến cục bộ</li>
+        <li><code>.var</code> — mô tả biến cục bộ</li>
+        <li><code>.line</code> — số dòng nguồn để gỡ lỗi</li>
+      </ul>
+
+      <p>Ghép lại, một lớp Jasmin hoàn chỉnh và chạy được — tính <code>a = b + c * 60</code> rồi in kết quả:</p>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin — lớp Vidu hoàn chỉnh</div>
+        <pre><code><span class="dir">.source</span> Vidu.j
+<span class="dir">.class</span> <span class="kw">public</span> Vidu
+<span class="dir">.super</span> java/lang/Object
+
+<span class="dir">.method</span> <span class="kw">public</span> &lt;init&gt;()V
+  <span class="dir">.limit</span> stack <span class="num">1</span>
+  <span class="dir">.limit</span> locals <span class="num">1</span>
+  <span class="kw">aload_0</span>
+  <span class="kw">invokespecial</span> java/lang/Object/&lt;init&gt;()V
+  <span class="kw">return</span>
+<span class="dir">.end</span> method
+
+<span class="dir">.method</span> <span class="kw">public static</span> main([Ljava/lang/String;)V
+  <span class="dir">.limit</span> stack <span class="num">3</span>
+  <span class="dir">.limit</span> locals <span class="num">4</span>
+  <span class="cmt">; args ở slot 0; a,b,c ở slot 1,2,3</span>
+  <span class="kw">iconst_5</span>
+  <span class="kw">istore_2</span>        <span class="cmt">; b = 5</span>
+  <span class="kw">bipush</span> <span class="num">7</span>
+  <span class="kw">istore_3</span>        <span class="cmt">; c = 7</span>
+  <span class="kw">iload_2</span>
+  <span class="kw">iload_3</span>
+  <span class="kw">bipush</span> <span class="num">60</span>
+  <span class="kw">imul</span>
+  <span class="kw">iadd</span>
+  <span class="kw">istore_1</span>        <span class="cmt">; a = b + c*60</span>
+  <span class="kw">getstatic</span> java/lang/System/out Ljava/io/PrintStream;
+  <span class="kw">iload_1</span>
+  <span class="kw">invokevirtual</span> java/io/PrintStream/println(I)V
+  <span class="kw">return</span>
+<span class="dir">.end</span> method</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-label">Shell — hợp dịch và chạy</div>
+        <pre><code>java -jar jasmin.jar Vidu.j     <span class="cmt"># sinh Vidu.class</span>
+java Vidu                       <span class="cmt"># in ra 425</span></code></pre>
+      </div>
+
+      <p>Mọi lớp đều cần một hàm dựng; ở đây hàm dựng chỉ gọi hàm dựng của <code>java/lang/Object</code>.</p>
+      <p>Hai chỉ thị <code>.limit stack</code> và <code>.limit locals</code> khai báo kích thước tối đa của ngăn xếp toán hạng và số slot biến cục bộ mà phương thức cần. JVM dùng chúng để cấp phát khung lời gọi đúng cỡ. Nếu khai quá nhỏ, mã sẽ bị từ chối khi kiểm chứng; nếu khai quá lớn, chỉ lãng phí đôi chút bộ nhớ. Khâu sinh mã thường tính giá trị <code>stack</code> bằng cách mô phỏng độ sâu ngăn xếp lớn nhất trong quá trình phát lệnh, và <code>locals</code> bằng số slot đã cấp.</p>
+    </div>
+
+    <div class="article-section" id="stack-map">
+      <h2 class="section-heading">Giới hạn ngăn xếp và bảng bản đồ ngăn xếp</h2>
+      <div class="callout callout-warn">
+        <strong>⚠️ Điểm hiện đại quan trọng:</strong> Từ Java 6–7, để tăng tốc và bảo đảm an toàn cho khâu kiểm chứng mã byte, mỗi phương thức trong tệp <code>.class</code> (phiên bản định dạng đủ mới) phải kèm một <strong>bảng bản đồ ngăn xếp</strong> (StackMapTable) — bảng ghi lại kiểu của các slot và của ngăn xếp toán hạng tại các điểm nhảy. Các phiên bản Jasmin đời cũ không tự sinh bảng này, nên một tệp <code>.class</code> hợp dịch từ Jasmin có thể bị JVM mới từ chối với lỗi kiểm chứng.
+      </div>
+      <p>Có ba cách xử lý thường gặp:</p>
+      <ol style="margin: 12px 0 16px 24px; line-height: 2.2; font-size: 15px;">
+        <li>Dùng bản Jasmin đủ mới có hỗ trợ sinh bản đồ ngăn xếp.</li>
+        <li>Khai báo tường minh các khung <code>.stack</code> tại điểm nhảy.</li>
+        <li>Khi chạy thử, tắt kiểm chứng bằng cờ <code>-noverify</code> (chỉ nên dùng lúc học, không dùng cho mã thật).</li>
+      </ol>
+      <p>Khi làm bài tập compiler của môn, đây là điểm hay vấp, nên cần biết trước.</p>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 9: SINH MÃ ════════════════════ -->
+    <div class="lesson-badge">Bài 9 / 10</div>
+    <h1 class="lesson-title" id="sinh-ma">Sinh mã cho các cấu trúc nguồn</h1>
+    <div class="lesson-meta">CO3005 · JVM và Jasmin</div>
+
+    <div class="article-section">
+      <p>Đến đây ta đã có đủ nguyên liệu để nhìn khâu sinh mã như một tổng thể. Ý tưởng nền tảng là: sinh mã <strong>đi theo cấu trúc của cây cú pháp trừu tượng</strong>, phát lệnh một cách đệ quy. Mỗi loại nút — biểu thức, câu lệnh, khai báo — có một quy tắc phát mã riêng, và quy tắc của nút cha gọi lại quy tắc của các nút con. Trong thực hành, cách tổ chức tự nhiên nhất là dùng <strong>mẫu thiết kế Visitor</strong>: mỗi phương thức thăm một loại nút phát ra đoạn mã tương ứng.</p>
+    </div>
+
+    <div class="article-section" id="bieu-thuc">
+      <h2 class="section-heading">Biểu thức</h2>
+      <p>Với biểu thức, quy tắc là <strong>hậu thứ tự</strong>: sinh mã cây con, rồi phát lệnh phép toán, để kết quả luôn ở đỉnh ngăn xếp. Ta đã thấy điều này với <code>a = b + c * 60</code> và với các phép trộn kiểu cần chèn <code>i2f</code>, <code>i2l</code>.</p>
+      <div class="callout callout-tip">
+        <strong>✅ Bất biến cốt lõi:</strong> Sau khi sinh mã cho một biểu thức, giá trị của nó luôn nằm ở đỉnh ngăn xếp. Bảo đảm bất biến này ở mỗi nút là đủ để toàn bộ khâu sinh mã hoạt động đúng.
+      </div>
+    </div>
+
+    <div class="article-section" id="re-nhanh">
+      <h2 class="section-heading">Rẽ nhánh if/else</h2>
+      <p>Với rẽ nhánh if/else, ta so sánh rồi nhảy tới nhãn của nhánh sai, đặt <code>goto</code> cuối nhánh đúng để bỏ qua nhánh sai:</p>
+
+      <div class="code-block">
+        <div class="code-label">Java</div>
+        <pre><code><span class="type">int</span> a, b, c;
+<span class="kw">if</span> (a &gt; b) c = <span class="num">1</span>;
+<span class="kw">else</span>       c = <span class="num">2</span>;</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin</div>
+        <pre><code><span class="kw">iload_0</span>
+<span class="kw">iload_1</span>
+<span class="kw">if_icmple</span> <span class="lbl">Label0</span>    <span class="cmt">; nếu a &lt;= b thì sang nhánh else</span>
+<span class="kw">iconst_1</span>
+<span class="kw">istore_2</span>            <span class="cmt">; c = 1</span>
+<span class="kw">goto</span> <span class="lbl">Label1</span>
+<span class="lbl">Label0:</span>
+<span class="kw">iconst_2</span>
+<span class="kw">istore_2</span>            <span class="cmt">; c = 2</span>
+<span class="lbl">Label1:</span></code></pre>
+      </div>
+
+      <div class="callout">
+        <strong>💡 Điều kiện bị đảo:</strong> Nguồn viết <code>a &gt; b</code> nhưng ta nhảy khi <code>a &lt;= b</code>, vì nhãn đích là nhánh <em>không</em> thỏa điều kiện.
+      </div>
+
+      <p>Khi điều kiện là số thực, không có lệnh so sánh-và-nhảy trực tiếp; ta phải dùng <code>fcmpl</code> (hoặc <code>fcmpg</code>) để đẩy một trong ba giá trị -1, 0, 1 lên ngăn xếp, rồi so giá trị đó với 0 bằng một lệnh <code>if...</code>. Hai biến thể <code>fcmpg</code> và <code>fcmpl</code> chỉ khác nhau khi có toán hạng là NaN: <code>fcmpg</code> đẩy 1, còn <code>fcmpl</code> đẩy -1, cho phép bộ dịch chọn biến thể sao cho nhánh NaN đi đúng hướng mong muốn.</p>
+    </div>
+
+    <div class="article-section" id="mang-doi-tuong">
+      <h2 class="section-heading">Mảng, đối tượng và lời gọi phương thức</h2>
+      <p>Với mảng, đối tượng và truy cập trường, ta đã thấy đủ ở bài 7: đẩy tham chiếu, rồi chỉ số hoặc đối số, rồi phát lệnh <code>iaload/iastore/getfield/putfield</code> tương ứng.</p>
+      <p>Với lời gọi phương thức có trả về, ta đẩy tham chiếu đối tượng (nếu là gọi thực thể) và các đối số theo đúng thứ tự, phát lệnh <code>invoke...</code>, rồi để giá trị trả về ở đỉnh ngăn xếp cho biểu thức bao ngoài dùng — hoặc <code>pop</code> đi nếu không dùng, như trong ví dụ <code>goo</code> gọi <code>foo</code>.</p>
+
+      <div class="callout callout-tip">
+        <strong>✅ Điểm chung của mọi mẫu:</strong> Chúng đều nhỏ, cục bộ, và ghép lại được. Chính vì máy đích là máy ngăn xếp, mỗi mẫu chỉ cần bảo đảm một bất biến đơn giản — "sau khi sinh mã cho một biểu thức, giá trị của nó nằm ở đỉnh ngăn xếp" — và mọi thứ tự khớp với nhau. Đó là lý do sâu xa khiến sinh mã cho JVM vừa gọn vừa dễ kiểm chứng.
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 10: TỔNG KẾT ════════════════════ -->
+    <div class="lesson-badge">Bài 10 / 10 · Bài cuối chương</div>
+    <h1 class="lesson-title" id="tong-ket">Tổng kết chương</h1>
+    <div class="lesson-meta">CO3005 · JVM và Jasmin</div>
+
+    <div class="article-section">
+      <p>Khâu sinh mã biến cây cú pháp trừu tượng đã kiểm tra kiểu thành mã thực thi được. Thay vì phát mã máy gắn với một kiến trúc phần cứng, ta phát mã byte cho một máy ảo, đổi khả chuyển lấy một chút tốc độ mà biên dịch tức thời phần nào bù lại. JVM là hiện thân tiêu biểu của hướng này, và cũng như CPython, CLR hay WebAssembly, nó là một <strong>máy ngăn xếp</strong> — mô hình khiến việc sinh mã cho biểu thức chỉ còn là duyệt cây hậu thứ tự, không phải giải bài toán cấp phát thanh ghi.</p>
+
+      <p>Bên trong, JVM tổ chức bộ nhớ thành vùng phương thức, heap dùng chung và các ngăn xếp riêng cho từng luồng; mỗi lời gọi tạo một khung chứa ngăn xếp toán hạng và mảng biến cục bộ. Ta đã đi qua bộ mô tả kiểu — nhớ rằng <code>long</code> mang bộ mô tả <code>J</code> chứ không phải <code>L</code>, và rằng <code>boolean</code>, <code>byte</code>, <code>char</code>, <code>short</code> đều tính bằng lệnh của <code>int</code> — cùng quy tắc cấp chỉ số slot khác nhau cho phương thức thực thể và phương thức tĩnh, trong đó <code>long</code> và <code>double</code> chiếm một cặp slot.</p>
+
+      <p>Các họ lệnh Jasmin — số học, nạp/lưu, chuyển điều khiển, ép kiểu, quản lý ngăn xếp, tạo và thao tác đối tượng, truy cập trường, gọi phương thức và trả về — hợp thành bộ công cụ để dịch mọi cấu trúc nguồn, còn các chỉ thị và bảng bản đồ ngăn xếp lo phần đóng gói và kiểm chứng.</p>
+
+      <p>Cuối cùng, ta thấy rằng mọi mẫu sinh mã đều là ứng dụng của một nguyên tắc đệ quy duy nhất theo cấu trúc cây, thường hiện thực bằng mẫu Visitor, với bất biến <em>"giá trị của một biểu thức luôn ở đỉnh ngăn xếp sau khi sinh mã"</em>. Nắm được bất biến đó là nắm được toàn bộ khâu sinh mã cho máy ngăn xếp.</p>
+
+      <div class="callout">
+        <strong>🔗 Tiếp theo:</strong> Ở chương tiếp theo, ta sẽ bàn tới những gì xảy ra sau khi mã đã sinh — các kỹ thuật tối ưu mã và những vấn đề của môi trường thực thi.
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a class="nav-btn secondary" href="CO3005.html">← Trang chủ</a>
+      <span>Bài 10 / 10 · JVM và Jasmin</span>
+    </div>
+
+  </main><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+/* ── LIGHTBOX ── */
+function openLb(src, alt) {
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lbImg').alt = alt;
+  document.getElementById('lb').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLb() {
+  document.getElementById('lb').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+/* ── ACTIVE TOC ── */
+const tocLinks = document.querySelectorAll('.toc-item');
+const headings = document.querySelectorAll('[id]');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      tocLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin: '-60px 0px -70% 0px', threshold: 0 });
+headings.forEach(h => obs.observe(h));
+</script>
+
+</body>
+</html>
