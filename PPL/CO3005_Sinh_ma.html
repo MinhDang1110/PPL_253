@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CO3005 – Sinh mã</title>
+<meta name="description" content="Bài giảng CO3005: Sinh mã – Toàn cảnh trình biên dịch, mô hình máy ngăn xếp JVM, lớp Frame và Emitter, sinh mã biểu thức và câu lệnh, mẫu Visitor – Nguyên lý Ngôn ngữ Lập trình, ĐH Bách Khoa TP.HCM.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd9d0;
+    --text: #1a1916;
+    --muted: #6b6760;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --kw: #569cd6;
+    --str: #ce9178;
+    --cmt: #6a9955;
+    --num: #b5cea8;
+    --fn: #dcdcaa;
+    --type: #4ec9b0;
+    --dir: #c586c0;
+    --lbl: #c8c8a9;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar-logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    padding: 0 20px 10px;
+    letter-spacing: .06em;
+    display: block;
+    text-decoration: none;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .toc-item {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .toc-item.sub { padding-left: 32px; font-size: 12px; }
+
+  /* ── MAIN ── */
+  .main {
+    padding: 48px 56px 80px;
+    max-width: 820px;
+  }
+
+  .lesson-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .lesson-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article-section {
+    margin-bottom: 52px;
+    scroll-margin-top: 24px;
+  }
+
+  .section-heading {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+  .section-heading::before {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 40px; height: 2px;
+    background: var(--accent);
+  }
+
+  p { margin-bottom: 14px; }
+
+  /* ── CODE ── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+    font-size: 13.5px;
+  }
+  .code-label {
+    background: #2d2d2d;
+    padding: 6px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #333;
+  }
+  pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1.65;
+    color: var(--code-text);
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #e8e5de;
+    color: #b5451b;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+
+  .kw  { color: var(--kw); }
+  .str { color: var(--str); }
+  .cmt { color: var(--cmt); font-style: italic; }
+  .num { color: var(--num); }
+  .fn  { color: var(--fn); }
+  .typ { color: var(--type); }
+  .dir { color: var(--dir); }
+  .lbl { color: var(--lbl); }
+  .op  { color: #d4d4d4; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .callout strong { color: var(--accent); }
+  .callout-warn {
+    background: #fff8e1;
+    border-left-color: #f59e0b;
+  }
+  .callout-warn strong { color: #b45309; }
+  .callout-tip {
+    background: #f0fdf4;
+    border-left-color: #16a34a;
+  }
+  .callout-tip strong { color: #15803d; }
+
+  /* ── TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  /* ── FIGURE ── */
+  .fig { text-align: center; margin: 28px 0; }
+  .fig img {
+    max-width: 640px; width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+    cursor: zoom-in;
+    transition: opacity .15s;
+  }
+  .fig img:hover { opacity: .9; }
+  .fig figcaption {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .fig-wide img { max-width: 740px; }
+  .fig-narrow img { max-width: 440px; }
+
+  /* ── DIVIDER ── */
+  .lesson-divider {
+    border: none;
+    border-top: 2px dashed var(--border);
+    margin: 52px 0;
+  }
+
+  /* ── NAV FOOTER ── */
+  .nav-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 0 0; border-top: 1px solid var(--border);
+    margin-top: 48px; font-size: 14px; color: var(--muted);
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--accent); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 500;
+    text-decoration: none;
+  }
+  .nav-btn.secondary {
+    background: var(--surface); color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+
+  /* ── LIGHTBOX ── */
+  .lb-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,.82);
+    align-items: center; justify-content: center; cursor: zoom-out;
+  }
+  .lb-overlay.open { display: flex; }
+  .lb-overlay img {
+    max-width: 92vw; max-height: 90vh;
+    border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,.6);
+  }
+  .lb-close {
+    position: fixed; top: 18px; right: 24px;
+    font-size: 30px; color: #fff; cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace; opacity: .8;
+  }
+  .lb-close:hover { opacity: 1; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LIGHTBOX -->
+<div class="lb-overlay" id="lb" onclick="closeLb()">
+  <span class="lb-close" onclick="closeLb()">✕</span>
+  <img id="lbImg" src="" alt="">
+</div>
+
+<div class="layout">
+
+  <!-- ══════════════════════ SIDEBAR ══════════════════════ -->
+  <nav class="sidebar">
+    <a class="sidebar-logo" href="CO3005.html">← CO3005</a>
+    <div class="sidebar-title">Mục lục bài học</div>
+
+    <a class="toc-item active" href="#mo-dau">Bài 1 · Mở đầu</a>
+
+    <a class="toc-item" href="#toan-canh">Bài 2 · Sinh mã trong toàn cảnh</a>
+    <a class="toc-item sub" href="#ba-lua-chon">Ba lựa chọn máy đích</a>
+    <a class="toc-item sub" href="#ba-tang">Ba tầng sinh mã</a>
+
+    <a class="toc-item" href="#may-dich">Bài 3 · Mô hình máy ngăn xếp &amp; JVM</a>
+    <a class="toc-item sub" href="#khung-lenh">Khung lời gọi</a>
+    <a class="toc-item sub" href="#mo-ta-kieu">Mô tả kiểu Jasmin</a>
+
+    <a class="toc-item" href="#frame-emitter">Bài 4 · Lớp Frame và Emitter</a>
+    <a class="toc-item sub" href="#lop-frame">Lớp <code>Frame</code></a>
+    <a class="toc-item sub" href="#lop-emitter">Lớp <code>Emitter</code></a>
+
+    <a class="toc-item" href="#bieu-thuc">Bài 5 · Sinh mã cho biểu thức</a>
+    <a class="toc-item sub" href="#hau-thu-tu">Duyệt hậu thứ tự</a>
+    <a class="toc-item sub" href="#so-sanh-luan-ly">So sánh &amp; luận lý</a>
+
+    <a class="toc-item" href="#cau-lenh">Bài 6 · Sinh mã cho câu lệnh</a>
+    <a class="toc-item sub" href="#phep-gan">Phép gán</a>
+    <a class="toc-item sub" href="#re-nhanh">Rẽ nhánh if</a>
+    <a class="toc-item sub" href="#vong-lap">Vòng lặp while</a>
+    <a class="toc-item sub" href="#tra-ve">Trả về &amp; tầm vực</a>
+
+    <a class="toc-item" href="#ghep-noi">Bài 7 · Ghép nối: Visitor</a>
+    <a class="toc-item sub" href="#vi-du-day-du">Ví dụ đầy đủ</a>
+
+    <a class="toc-item" href="#tong-ket">Bài 8 · Tổng kết chương</a>
+  </nav>
+
+  <!-- ══════════════════════ MAIN ══════════════════════ -->
+  <main class="main" id="mainContent">
+
+    <!-- ════════════════════ BÀI 1: MỞ ĐẦU ════════════════════ -->
+    <div class="lesson-badge">Bài 1 / 8</div>
+    <h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+    <div class="lesson-meta">CO3005 · Sinh mã · Trần Ngọc Bảo Duy · HK253</div>
+
+    <div class="article-section">
+      <p>Sau khi một chương trình đã vượt qua phân tích từ vựng, phân tích cú pháp và phân tích ngữ nghĩa, ta có trong tay một cây cú pháp trừu tượng đã được kiểm tra kiểu và một bảng ký hiệu mô tả mọi định danh. Đến đây trình biên dịch đã hiểu chương trình: nó biết mỗi biểu thức có kiểu gì, mỗi tên trỏ đến khai báo nào, mỗi lời gọi có hợp lệ hay không. Nhưng hiểu một chương trình chưa phải là chạy được nó. Việc còn lại — và cũng là việc chương này bàn tới — là biến cái cây trừu tượng ấy thành một dãy chỉ thị mà một cỗ máy thực có thể thực thi.</p>
+
+      <p>Công đoạn này gọi là <strong>sinh mã</strong> (code generation). Nếu các pha phía trước hợp thành <strong>tiền tuyến</strong> (front-end) — phần phụ thuộc ngôn ngữ nguồn và lo việc phân tích — thì sinh mã là trái tim của <strong>hậu tuyến</strong> (back-end), phần hướng về cỗ máy đích và lo việc tổng hợp. Ranh giới ấy không chỉ là cách chia chương mục cho gọn: nó phản ánh một nguyên lý thiết kế. Cùng một tiền tuyến có thể ghép với nhiều hậu tuyến để dịch một ngôn ngữ ra nhiều máy khác nhau; ngược lại, nhiều tiền tuyến có thể dùng chung một hậu tuyến để đưa nhiều ngôn ngữ về cùng một máy đích. Chính lằn ranh giữa "hiểu" và "sinh" khiến trình biên dịch trở thành một hệ thống lắp ghép được.</p>
+
+      <p>Ta sẽ tiếp cận sinh mã dưới góc độ nguyên lý, nhưng để mọi thứ cụ thể thay vì trừu tượng suông, cả chương lấy một máy đích làm chỗ dựa: <strong>Máy ảo Java</strong> (Java Virtual Machine, JVM), với mã đích được viết dưới dạng hợp ngữ Jasmin cho dễ đọc. JVM là một ví dụ tiêu biểu của lớp máy ngăn xếp, và cách nó vận hành làm lộ ra gần như mọi vấn đề cốt lõi của sinh mã: chọn lệnh nào, đặt dữ liệu ở đâu, và làm sao mô phỏng được sự thực thi để phát ra đúng mã. Sợi chỉ đỏ xuyên suốt là một câu lệnh gán quen thuộc: <code>a = b + c * 60;</code>.</p>
+
+      <div class="callout">
+        <strong>📌 Mục tiêu chương này:</strong> Làm rõ mã đích trông ra sao trên một máy ngăn xếp; các lớp <code>Frame</code> và <code>Emitter</code> cung cấp công cụ gì để phát mã; và ta sinh mã cho biểu thức rồi cho câu lệnh như thế nào.
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 2 ════════════════════ -->
+    <div class="lesson-badge">Bài 2 / 8</div>
+    <h1 class="lesson-title" id="toan-canh">12.1. Sinh mã trong toàn cảnh trình biên dịch</h1>
+    <div class="lesson-meta">CO3005 · Sinh mã</div>
+
+    <div class="article-section" id="ba-lua-chon">
+      <h2 class="section-heading">Ba lựa chọn máy đích</h2>
+      <p>Đầu vào của pha sinh mã là cây cú pháp trừu tượng đã qua kiểm tra kiểu, kèm thông tin từ bảng ký hiệu. Đầu ra là <strong>mã đích</strong> (target code): một dãy chỉ thị của cỗ máy ta nhắm tới. Câu hỏi đầu tiên, và cũng là câu hỏi định hình mọi thứ về sau, là máy đích ấy là máy nào.</p>
+
+      <p>Có ba lựa chọn kinh điển. Thứ nhất, <strong>sinh thẳng mã máy</strong> (machine code) của một bộ xử lý cụ thể — nhanh khi chạy, nhưng mã dính chặt vào một kiến trúc và phải viết lại cho mỗi loại chip. Thứ hai, sinh ra một <strong>biểu diễn trung gian</strong> (Intermediate Representation, IR) độc lập máy rồi để một tầng sau dịch tiếp — linh hoạt nhưng thêm một lớp phức tạp. Thứ ba, sinh <strong>mã byte</strong> (bytecode) cho một máy ảo: mã gọn, khả chuyển, và chỉ cần một máy ảo cho mỗi nền tảng là chạy được ở mọi nơi.</p>
+
+      <p>Đây chính là con đường của Java với JVM, của C# với CIL, và của nhiều ngôn ngữ hiện đại khác. Cái được là tính khả chuyển và một mô hình máy đơn giản để nhắm tới; cái mất là một lớp thông dịch mỏng chen giữa mã byte và phần cứng, phải trả bằng một ít tốc độ (mà biên dịch tức thời sau này sẽ bù lại phần lớn).</p>
+    </div>
+
+    <div class="article-section" id="ba-tang">
+      <h2 class="section-heading">Ba tầng sinh mã</h2>
+      <p>Chọn xong máy đích, bản thân bộ sinh mã lại được chia thành <strong>ba tầng</strong>, mỗi tầng chịu trách nhiệm một mức trừu tượng. Sự phân tầng này quan trọng vì nó tách phần phụ thuộc ngôn ngữ nguồn khỏi phần phụ thuộc máy đích, để mỗi phần thay đổi độc lập.</p>
+
+      <ul style="margin: 14px 0 16px 24px; line-height: 2.1; font-size: 15px;">
+        <li><strong>Tầng thấp — sinh mã phụ thuộc máy</strong>: biết cú pháp thô của mã đích và chỉ làm đúng một việc — phát ra một chỉ thị cụ thể. Chẳng hạn, <code>emitLDC(20)</code> phát ra đúng dòng chữ <code>ldc 20</code>. Tầng này không suy nghĩ gì về ngữ nghĩa.</li>
+        <li><strong>Tầng giữa — sinh mã trung gian</strong> (lớp <code>Emitter</code>): phụ thuộc cả ngôn ngữ lẫn máy — nó chọn lệnh phù hợp với thao tác và kiểu dữ liệu, đồng thời mô phỏng sự thực thi trên ngăn xếp. Mỗi khi phát lệnh đẩy giá trị, nó gọi <code>push()</code>; khi phát lệnh tiêu thụ, nó gọi <code>pop()</code>.</li>
+        <li><strong>Tầng cao — sinh mã độc lập máy</strong>: bám sát cấu trúc ngôn ngữ nguồn, duyệt cây cú pháp trừu tượng và, tại mỗi nút, ra lệnh cho hai tầng dưới phát mã. Tầng này không cần biết <code>iadd</code> viết ra sao; nó chỉ cần biết "đây là một phép cộng hai số nguyên".</li>
+      </ul>
+
+      <p>Toàn bộ dòng chảy, từ cây cú pháp đến chương trình chạy được, có thể hình dung như sơ đồ sau:</p>
+
+      <figure class="fig fig-wide">
+        <img src="Sinh mã/h1.png" alt="Hình 1 — Dòng chảy từ cây cú pháp trừu tượng đến tệp .class" onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 1 — Ba tầng sinh mã trong trình biên dịch: bộ sinh mã độc lập máy → Emitter → JasminCode → tệp .j → tệp .class → JVM</figcaption>
+      </figure>
+
+      <p>Bộ sinh mã độc lập máy dẫn dắt, <code>Emitter</code> và <code>JasminCode</code> phát ra văn bản hợp ngữ Jasmin vào một tệp <code>.j</code>. Một trình dịch hợp ngữ Jasmin biến tệp đó thành tệp <code>.class</code> chứa mã byte thật, và cuối cùng máy ảo nạp tệp <code>.class</code> để thực thi.</p>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 3 ════════════════════ -->
+    <div class="lesson-badge">Bài 3 / 8</div>
+    <h1 class="lesson-title" id="may-dich">12.2. Máy đích: mô hình máy ngăn xếp và Máy ảo Java</h1>
+    <div class="lesson-meta">CO3005 · Sinh mã</div>
+
+    <div class="article-section" id="khung-lenh">
+      <h2 class="section-heading">Khung lời gọi</h2>
+      <p>Trước khi sinh mã cho một cỗ máy, ta phải hiểu cỗ máy ấy tính toán ra sao. JVM thuộc lớp <strong>máy ngăn xếp</strong> (stack machine): nó không thực hiện phép toán trực tiếp trên các ô nhớ có tên, mà trên một <strong>ngăn xếp toán hạng</strong> (operand stack) tạm thời. Quy tắc rất đều đặn: muốn tính một phép toán, ta lần lượt đẩy các toán hạng lên đỉnh ngăn xếp, rồi phát một lệnh; lệnh ấy lấy các toán hạng ở đỉnh ra, tính, và đẩy kết quả trở lại. Ngoài ngăn xếp toán hạng, mỗi lần gọi phương thức còn có một <strong>mảng biến cục bộ</strong> (local variable array) để chứa tham số và biến địa phương, mỗi biến chiếm một ô có chỉ số nguyên.</p>
+
+      <p>Hai vùng ấy hợp thành một <strong>khung</strong> (frame) cho mỗi lời gọi phương thức:</p>
+
+      <figure class="fig">
+        <img src="Sinh mã/h2.png" alt="Hình 2 — Khung lời gọi JVM: ngăn xếp toán hạng và mảng biến cục bộ" onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 2 — Khung lời gọi (frame): ngăn xếp toán hạng (operand stack) và mảng biến cục bộ (local variable array)</figcaption>
+      </figure>
+
+      <p>Vì sao chọn một cỗ máy kỳ lạ như vậy làm đích, thay vì một máy thanh ghi (register machine) giống bộ xử lý thật? Đây là một đánh đổi thiết kế có chủ ý. Trên máy thanh ghi, mỗi lệnh phải nêu rõ toán hạng nằm ở thanh ghi nào, nên bộ sinh mã phải giải bài toán <strong>cấp phát thanh ghi</strong> — vốn khó. Trên máy ngăn xếp, toán hạng luôn ngầm nằm ở đỉnh ngăn xếp, nên lệnh cực gọn (<code>iadd</code> không cần ghi thêm gì) và bộ sinh mã chỉ việc đẩy đúng thứ tự rồi phát lệnh. Cái được là mã byte ngắn, khả chuyển, và dễ sinh đến bất ngờ; cái mất là mã ấy chạy chậm hơn nếu thông dịch trực tiếp. Với một máy ảo ưu tiên tính khả chuyển và một trình biên dịch cần đơn giản, đánh đổi này rất đáng.</p>
+
+      <p>Điều lý thú là mô hình máy ngăn xếp không phải đặc sản của JVM: nó là một nguyên lý phổ biến trong cài đặt ngôn ngữ. Trình thông dịch của CPython cũng biên dịch mã nguồn Python ra mã byte cho máy ngăn xếp. Ta có thể tự kiểm chứng bằng mô-đun <code>dis</code>:</p>
+
+      <div class="code-block">
+        <div class="code-label">Python — dùng dis để kiểm tra mã byte</div>
+        <pre><code><span class="kw">import</span> dis
+<span class="kw">def</span> <span class="fn">f</span>(a, b, c):
+    a = b + c * <span class="num">60</span>
+
+dis.<span class="fn">dis</span>(f)</code></pre>
+      </div>
+
+      <p>Kết quả (rút gọn, trên CPython 3.12) cho thấy đúng khuôn hình "đẩy, đẩy, tính":</p>
+
+      <div class="code-block">
+        <div class="code-label">CPython bytecode</div>
+        <pre><code><span class="kw">LOAD_FAST</span>    b
+<span class="kw">LOAD_FAST</span>    c
+<span class="kw">LOAD_CONST</span>   <span class="num">60</span>
+<span class="kw">BINARY_OP</span>    *
+<span class="kw">BINARY_OP</span>    +
+<span class="kw">STORE_FAST</span>   a</code></pre>
+      </div>
+
+      <p>So với mã byte JVM mà ta sắp sinh cho cùng câu lệnh, hai dãy lệnh gần như trùng khớp về ý: nạp b, nạp c, nạp hằng 60, nhân, cộng, rồi cất vào a. Sự trùng khớp ấy không tình cờ — nó cho thấy "sinh mã cho máy ngăn xếp" là một khuôn mẫu chung, chỉ khác nhau ở tên lệnh và ở chỗ JVM phân biệt kiểu (<code>iadd</code> cho số nguyên, <code>fadd</code> cho số thực) còn CPython thì không.</p>
+    </div>
+
+    <div class="article-section" id="mo-ta-kieu">
+      <h2 class="section-heading">Mô tả kiểu Jasmin</h2>
+      <p>Việc JVM phân biệt kiểu dẫn tới một mảnh thông tin mà bộ sinh mã phải mang theo suốt: kiểu của mỗi giá trị. Trong khung làm việc của ta, hệ thống kiểu được biểu diễn bằng một cây lớp, mỗi lớp nguồn ứng với một <strong>mô tả kiểu</strong> (type descriptor) mà Jasmin dùng để đặt tên kiểu trong mã byte:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Kiểu nguồn</th><th>Lớp Type</th><th>Mô tả kiểu Jasmin</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>số nguyên</td><td><code>IntType</code></td><td><code>I</code></td></tr>
+          <tr><td>số thực</td><td><code>FloatType</code></td><td><code>F</code></td></tr>
+          <tr><td>luận lý</td><td><code>BoolType</code></td><td><code>Z</code></td></tr>
+          <tr><td>chuỗi</td><td><code>StringType</code></td><td><code>Ljava/lang/String;</code></td></tr>
+          <tr><td>rỗng (không trả giá trị)</td><td><code>VoidType</code></td><td><code>V</code></td></tr>
+          <tr><td>lớp C</td><td><code>ClassType(cname)</code></td><td><code>LC;</code></td></tr>
+          <tr><td>mảng số nguyên</td><td><code>ArrayType(eleType, dimen)</code></td><td><code>[I</code></td></tr>
+          <tr><td>phương thức (int) → int</td><td><code>MType(partype, rettype)</code></td><td><code>(I)I</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-tip">
+        <strong>💡 Điểm kết nối quan trọng:</strong> Cây kiểu này chính là thứ liên kết pha kiểm tra kiểu ở chương trước với pha sinh mã. Ở chương trước, kiểu dùng để <em>phát hiện lỗi</em>; ở chương này, chính kiểu ấy dùng để <em>chọn lệnh đúng</em> và để in ra mô tả kiểu trong các chỉ thị. Cùng một thông tin, hai công dụng.
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 4 ════════════════════ -->
+    <div class="lesson-badge">Bài 4 / 8</div>
+    <h1 class="lesson-title" id="frame-emitter">12.3. Bộ khung sinh mã: <code>Frame</code> và <code>Emitter</code></h1>
+    <div class="lesson-meta">CO3005 · Sinh mã</div>
+
+    <div class="article-section" id="lop-frame">
+      <h2 class="section-heading">Lớp <code>Frame</code></h2>
+      <p>Sinh mã đúng đòi hỏi kế toán tỉ mỉ: nhãn nào cho vòng lặp nào, biến cục bộ nằm ở ô số mấy, ngăn xếp lúc này sâu bao nhiêu. Nhồi hết việc kế toán ấy vào bộ sinh mã sẽ khiến nó rối. Khung làm việc của ta tách phần kế toán này ra hai lớp công cụ: <code>Frame</code> quản lý thông tin theo từng phương thức, còn <code>Emitter</code> lo việc phát ra từng lệnh. Bộ sinh mã độc lập máy chỉ việc điều phối hai lớp ấy.</p>
+
+      <p>Mỗi phương thức được sinh mã trong ngữ cảnh một đối tượng <code>Frame</code>. <code>Frame</code> quản lý ba loại tài nguyên:</p>
+
+      <p><strong>Thứ nhất là nhãn (label)</strong>. <code>getNewLabel()</code> cấp một nhãn mới chưa từng dùng. Khi vào và ra một tầm vực, ta gọi <code>enterScope()</code> / <code>exitScope()</code>; <code>getStartLabel()</code> và <code>getEndLabel()</code> trả về nhãn đầu và cuối của tầm vực hiện hành. Khi vào và ra một vòng lặp, ta gọi <code>enterLoop()</code> / <code>exitLoop()</code>; lúc này <code>getContinueLabel()</code> cho nhãn mà một lệnh <code>continue</code> cần nhảy tới, còn <code>getBreakLabel()</code> cho nhãn mà một lệnh <code>break</code> cần nhảy tới. Nhờ vậy, khi gặp <code>break</code> lồng sâu trong nhiều cấu trúc, bộ sinh mã chỉ cần hỏi Frame "nhãn thoát của vòng lặp gần nhất là gì" thay vì tự lần theo cấu trúc.</p>
+
+      <p><strong>Thứ hai là mảng biến cục bộ</strong>. <code>getNewIndex()</code> cấp chỉ số cho một biến mới; <code>getMaxIndex()</code> trả về tổng số ô đã dùng, tức kích thước mảng biến cục bộ mà phương thức cần.</p>
+
+      <p><strong>Thứ ba là ngăn xếp toán hạng</strong> — nhưng ở đây Frame không giữ giá trị thật, mà chỉ <strong>mô phỏng độ sâu</strong>. Mỗi khi Emitter phát một lệnh đẩy giá trị, nó gọi <code>push()</code>; mỗi khi phát một lệnh tiêu thụ giá trị, nó gọi <code>pop()</code>. <code>getMaxOpStackSize()</code> trả về độ sâu lớn nhất mà ngăn xếp từng đạt tới.</p>
+
+      <div class="callout">
+        <strong>💡 Vì sao phải mô phỏng thay vì thực thi thật?</strong> Bởi JVM yêu cầu mỗi phương thức khai báo trước hai con số: kích thước tối đa của ngăn xếp toán hạng (<code>.limit stack</code>) và số ô biến cục bộ (<code>.limit locals</code>). Bộ sinh mã không chạy chương trình, nên nó không thể "đo" hai con số ấy bằng cách thực thi; nó phải suy ra chúng trong lúc phát mã. Đây là hình bóng nguyên lý xuyên suốt của sinh mã: <em>mô phỏng đủ để phát ra mã đúng, không hơn</em>.
+      </div>
+    </div>
+
+    <div class="article-section" id="lop-emitter">
+      <h2 class="section-heading">Lớp <code>Emitter</code></h2>
+      <p>Nếu <code>Frame</code> là sổ kế toán thì <code>Emitter</code> là cây bút. Mỗi phương thức <code>emit...</code> làm hai việc gắn liền: chọn đúng lệnh Jasmin cho thao tác và kiểu dữ liệu, đồng thời báo cho Frame biết lệnh ấy tác động thế nào lên ngăn xếp. Ta điểm qua các nhóm chính.</p>
+
+      <p><strong>Đẩy hằng số.</strong> <code>emitPUSHICONST</code> phát lệnh đẩy một hằng số nguyên và chọn lệnh theo độ lớn của giá trị để mã gọn nhất có thể:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Khoảng giá trị</th><th>Lệnh được chọn</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>-1 đến 5</td><td><code>iconst_&lt;n&gt;</code></td></tr>
+          <tr><td>-128 đến 127</td><td><code>bipush</code></td></tr>
+          <tr><td>-32768 đến 32767</td><td><code>sipush</code></td></tr>
+          <tr><td>ngoài các khoảng trên</td><td><code>ldc</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Tương tự, <code>emitPUSHFCONST</code> chọn giữa <code>fconst_&lt;n&gt;</code> (cho 0.0, 1.0, 2.0) và <code>ldc</code> cho các số thực khác. Đây là ví dụ nhỏ mà rõ của việc chọn lệnh: cùng một ý "đẩy hằng số nguyên", nhưng lệnh phát ra khác nhau tùy giá trị.</p>
+
+      <p><strong>Đọc và ghi biến.</strong> <code>emitREADVAR</code> phát lệnh nạp một biến cục bộ lên ngăn xếp (<code>iload</code> / <code>fload</code> / <code>aload</code> tùy kiểu), còn <code>emitWRITEVAR</code> phát lệnh cất giá trị ở đỉnh ngăn xếp vào biến (<code>istore</code> / <code>fstore</code> / <code>astore</code>). Với phần tử mảng có <code>emitALOAD</code> / <code>emitASTORE</code>; với thuộc tính của lớp có <code>emitGETSTATIC</code> / <code>emitPUTSTATIC</code> cho thuộc tính tĩnh và <code>emitGETFIELD</code> / <code>emitPUTFIELD</code> cho thuộc tính thể hiện.</p>
+
+      <p><strong>Phép toán.</strong> <code>emitADDOP</code> và <code>emitMULOP</code> phát lệnh cộng/trừ và nhân/chia tùy lexeme và kiểu (<code>iadd/fadd/isub/fsub</code> và <code>imul/fmul/idiv/fdiv</code>). Riêng chia nguyên và lấy dư có <code>emitDIV</code> (<code>idiv</code>) và <code>emitMOD</code> (<code>irem</code>); phép luận lý có <code>emitANDOP</code> (<code>iand</code>) và <code>emitOROP</code> (<code>ior</code>). Ép kiểu số nguyên sang số thực dùng <code>emitI2F</code> (<code>i2f</code>). Với phép so sánh, <code>emitREOP</code> phát mã tính ra một giá trị luận lý 0/1 đặt lên ngăn xếp, còn <code>emitRELOP</code> phát mã nhảy trực tiếp cho điều kiện trong câu lệnh if.</p>
+
+      <p><strong>Lời gọi và điều khiển.</strong> <code>emitINVOKESTATIC</code>, <code>emitINVOKESPECIAL</code>, <code>emitINVOKEVIRTUAL</code> phát các lệnh gọi phương thức tương ứng. Điều khiển luồng có <code>emitLABEL</code> (đặt một nhãn), <code>emitGOTO</code> (nhảy vô điều kiện), <code>emitIFTRUE</code> (<code>ifgt</code>) và <code>emitIFFALSE</code> (<code>ifle</code>). Thao tác ngăn xếp có <code>emitDUP</code> (<code>dup</code>) và <code>emitPOP</code> (<code>pop</code>); trả về có <code>emitRETURN</code>.</p>
+
+      <p>Bảng dưới tóm lại vài API tiêu biểu cùng lệnh sinh ra và hiệu ứng lên độ sâu ngăn xếp:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>API Emitter</th><th>Lệnh Jasmin</th><th>Hiệu ứng ngăn xếp</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>emitPUSHICONST(5)</code></td><td><code>iconst_5</code></td><td>+1</td></tr>
+          <tr><td><code>emitREADVAR(float)</code></td><td><code>fload</code></td><td>+1</td></tr>
+          <tr><td><code>emitWRITEVAR(float)</code></td><td><code>fstore</code></td><td>−1</td></tr>
+          <tr><td><code>emitADDOP('+', float)</code></td><td><code>fadd</code></td><td>−1</td></tr>
+          <tr><td><code>emitI2F</code></td><td><code>i2f</code></td><td>0</td></tr>
+          <tr><td><code>emitGOTO</code></td><td><code>goto</code></td><td>0</td></tr>
+          <tr><td><code>emitINVOKESTATIC</code></td><td><code>invokestatic</code></td><td>tùy chữ ký</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Chỉ thị.</strong> <code>emitPROLOG</code> mở đầu tệp lớp bằng <code>.source</code>, <code>.class</code>, <code>.super</code>; <code>emitEPILOG</code> khép lại tệp. Trong một lớp, <code>emitATTRIBUTE</code> phát <code>.field</code> khai báo thuộc tính; <code>emitMETHOD</code> phát <code>.method</code> mở một phương thức, và <code>emitENDMETHOD</code> phát <code>.limit stack</code>, <code>.limit locals</code>, <code>.end method</code> để đóng phương thức — chính hai con số giới hạn lấy từ <code>getMaxOpStackSize()</code> và <code>getMaxIndex()</code> của Frame. Cuối cùng, <code>emitVAR</code> phát <code>.var</code> khai báo phạm vi sống của một biến cục bộ, chẳng hạn <code>.var 0 is this LFoo; from Label0 to Label1</code>.</p>
+
+      <div class="callout callout-tip">
+        <strong>✅ Ranh giới trách nhiệm:</strong> <code>Emitter</code> không quyết định <em>khi nào</em> phát lệnh gì — đó là việc của bộ sinh mã độc lập máy — mà chỉ đảm bảo rằng khi được yêu cầu, nó phát ra đúng lệnh cho đúng kiểu và cập nhật ngăn xếp cho đúng. Nhờ ranh giới trách nhiệm rành mạch ấy, bộ sinh mã ở tầng trên có thể suy nghĩ hoàn toàn bằng khái niệm của ngôn ngữ nguồn.
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 5 ════════════════════ -->
+    <div class="lesson-badge">Bài 5 / 8</div>
+    <h1 class="lesson-title" id="bieu-thuc">12.4. Sinh mã cho biểu thức</h1>
+    <div class="lesson-meta">CO3005 · Sinh mã</div>
+
+    <div class="article-section" id="hau-thu-tu">
+      <h2 class="section-heading">Duyệt hậu thứ tự</h2>
+      <p>Biểu thức là nơi mô hình máy ngăn xếp phát huy vẻ đẹp của nó. Một biểu thức số học vốn là một cây: các lá là hằng và biến, các nút trong là phép toán. Để tính đúng, ta cần tính xong các toán hạng trước rồi mới áp dụng phép toán lên chúng — nghĩa là <strong>duyệt hậu thứ tự</strong> (post-order traversal): thăm con trước, thăm gốc sau. Và đó cũng đúng là trật tự mà máy ngăn xếp cần: đẩy các toán hạng trước, phát lệnh phép toán sau.</p>
+
+      <p>Nguyên lý phát mã cho một nút biểu thức do đó rất gọn và có tính đệ quy. Với một nút phép toán hai ngôi, ta phát mã cho cây con trái (kết quả sẽ nằm ở đỉnh ngăn xếp), rồi phát mã cho cây con phải (kết quả nằm chồng lên trên), rồi phát một lệnh phép toán (lệnh này lấy hai giá trị ở đỉnh xuống và đặt kết quả trở lại). Với một lá là biến, ta gọi <code>emitREADVAR</code>; với một lá là hằng, ta gọi <code>emitPUSHICONST</code> hoặc <code>emitPUSHFCONST</code>. Vì mọi nút đều để lại đúng một giá trị ở đỉnh ngăn xếp, các mảnh mã ghép vào nhau một cách tự nhiên mà không cần dọn dẹp.</p>
+
+      <p>Hãy áp dụng vào sợi chỉ đỏ của chương. Giả sử trong một phương thức, a, b, c là các biến cục bộ kiểu số thực, nằm ở các ô 1, 2, 3 (ô 0 dành cho <code>this</code>), và ta cần sinh mã cho vế phải của <code>a = b + c * 60</code>. Cây của biểu thức <code>b + c * 60</code> có gốc là <code>+</code>, con trái là <code>b</code>, con phải là nút <code>*</code> với hai lá <code>c</code> và <code>60</code>. Duyệt hậu thứ tự cho ra dãy lệnh:</p>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin — vế phải của a = b + c * 60 (a, b, c là float)</div>
+        <pre><code><span class="kw">fload_2</span>        <span class="cmt">; nạp b            → [b]</span>
+<span class="kw">fload_3</span>        <span class="cmt">; nạp c            → [b, c]</span>
+<span class="kw">bipush</span> <span class="num">60</span>      <span class="cmt">; đẩy hằng 60      → [b, c, 60]</span>
+<span class="kw">i2f</span>            <span class="cmt">; đổi 60 sang float → [b, c, 60.0]</span>
+<span class="kw">fmul</span>           <span class="cmt">; c * 60.0         → [b, (c*60.0)]</span>
+<span class="kw">fadd</span>           <span class="cmt">; b + (c*60.0)     → [(b + c*60.0)]</span></code></pre>
+      </div>
+
+      <p>Ba điểm đáng dừng lại:</p>
+      <ol style="margin: 14px 0 16px 24px; line-height: 2.1; font-size: 15px;">
+        <li>Hằng 60 được đẩy bằng <code>bipush</code> chứ không phải <code>ldc</code>, vì <code>emitPUSHICONST</code> thấy 60 nằm gọn trong khoảng một byte và chọn lệnh ngắn hơn.</li>
+        <li>Giữa việc đẩy 60 và phép nhân có một lệnh <code>i2f</code>: vì <code>c</code> là số thực còn 60 là số nguyên, và JVM không có lệnh nhân "lai kiểu", nên toán hạng nguyên phải được ép kiểu sang số thực trước khi <code>fmul</code> có nghĩa. Thông tin "cần chèn <code>i2f</code> ở đây" đến từ pha kiểm tra kiểu ở chương trước.</li>
+        <li>Lệnh phép toán được chọn theo kiểu — <code>fmul</code>, <code>fadd</code> chứ không phải <code>imul</code>, <code>iadd</code> — bởi toán hạng là số thực.</li>
+      </ol>
+
+      <p>Diễn tiến của ngăn xếp qua từng lệnh có thể vẽ lại thành các "ảnh chụp" liên tiếp:</p>
+
+      <figure class="fig fig-wide">
+        <img src="Sinh mã/h3.png" alt="Hình 3 — Diễn tiến ngăn xếp toán hạng qua từng lệnh" onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 3 — Ngăn xếp toán hạng biến đổi qua từng lệnh khi sinh mã cho biểu thức b + c * 60</figcaption>
+      </figure>
+
+      <p>Độ sâu lớn nhất mà ngăn xếp đạt tới trong cả quá trình là ba (lúc b, c, 60 cùng nằm trên đỉnh). Con số ấy chính là thứ Frame ghi nhận qua các lần <code>push/pop</code> mà Emitter gọi, và về sau sẽ thành <code>.limit stack 3</code>.</p>
+    </div>
+
+    <div class="article-section" id="so-sanh-luan-ly">
+      <h2 class="section-heading">Biểu thức so sánh và đoản mạch</h2>
+      <p>Với biểu thức so sánh và luận lý, nguyên lý duyệt hậu thứ tự vẫn giữ nguyên, chỉ khác ở lệnh phát ra. Khi cần giá trị luận lý như một dữ liệu — ví dụ gán <code>t = a &gt; b</code> — ta dùng <code>emitREOP</code>, vốn không có lệnh JVM "trả 0/1" trực tiếp cho số nguyên, nên phải dựng bằng nhảy và nhãn:</p>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin — t = a &gt; b (biểu thức luận lý dạng giá trị)</div>
+        <pre><code><span class="kw">iload</span> a
+<span class="kw">iload</span> b
+<span class="kw">if_icmpgt</span> <span class="lbl">LabelTrue</span>    <span class="cmt">; nếu a &gt; b thì nhảy</span>
+<span class="kw">iconst_0</span>               <span class="cmt">; ngược lại, kết quả là 0 (sai)</span>
+<span class="kw">goto</span> <span class="lbl">LabelEnd</span>
+<span class="lbl">LabelTrue:</span>
+<span class="kw">iconst_1</span>               <span class="cmt">; kết quả là 1 (đúng)</span>
+<span class="lbl">LabelEnd:</span></code></pre>
+      </div>
+
+      <p>Một tinh tế nữa của biểu thức luận lý là <strong>đoản mạch</strong> (short-circuit evaluation). Trong nhiều ngôn ngữ, <code>a &gt; 0 &amp;&amp; b &gt; 0</code> phải bỏ qua việc tính <code>b &gt; 0</code> ngay khi <code>a &gt; 0</code> đã sai, không chỉ để nhanh mà đôi khi để tránh tác dụng phụ hoặc lỗi (như chia cho không). Sinh mã đoản mạch vì thế không tính cả hai vế rồi mới <code>iand</code>; thay vào đó nó tính vế trái, và nếu vế trái đủ để quyết định kết quả thì nhảy thẳng tới nhãn kết thúc, bỏ qua mã của vế phải.</p>
+
+      <div class="callout callout-warn">
+        <strong>⚠️ Đánh đổi có thật:</strong> Bản <code>iand</code> ngây thơ thì ngắn và đều nhưng luôn tính cả hai vế; bản đoản mạch thì dài hơn vì phải chèn nhãn nhảy, đổi lại giữ đúng ngữ nghĩa mà đa số ngôn ngữ hiện đại quy định.
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 6 ════════════════════ -->
+    <div class="lesson-badge">Bài 6 / 8</div>
+    <h1 class="lesson-title" id="cau-lenh">12.5. Sinh mã cho câu lệnh</h1>
+    <div class="lesson-meta">CO3005 · Sinh mã</div>
+
+    <div class="article-section">
+      <p>Nếu sinh mã cho biểu thức là chuyện tính ra một giá trị và để nó ở đỉnh ngăn xếp, thì sinh mã cho câu lệnh là chuyện gây ra một hiệu ứng: cất một giá trị, rẽ nhánh, lặp lại. Điểm mấu chốt là mọi câu lệnh đều dựa trên việc sinh mã cho biểu thức đã có ở mục trước — câu lệnh chỉ thêm phần khung điều khiển bao quanh.</p>
+    </div>
+
+    <div class="article-section" id="phep-gan">
+      <h2 class="section-heading">Phép gán</h2>
+      <p>Để dịch <code>a = b + c * 60</code>, trước hết ta sinh mã cho vế phải theo đúng mục 12.4, để kết quả nằm ở đỉnh ngăn xếp, rồi gọi <code>emitWRITEVAR</code> cho a. Câu lệnh gán khép lại như sau, hoàn tất sợi chỉ đỏ của chương:</p>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin — câu lệnh a = b + c * 60 đầy đủ</div>
+        <pre><code><span class="kw">fload_2</span>
+<span class="kw">fload_3</span>
+<span class="kw">bipush</span> <span class="num">60</span>
+<span class="kw">i2f</span>
+<span class="kw">fmul</span>
+<span class="kw">fadd</span>
+<span class="kw">fstore_1</span>       <span class="cmt">; a = đỉnh ngăn xếp; ngăn xếp trở lại rỗng</span></code></pre>
+      </div>
+
+      <div class="callout callout-tip">
+        <strong>✅ Bất biến câu lệnh:</strong> Sau <code>fstore_1</code>, ngăn xếp sạch trở lại — một dấu hiệu lành mạnh: mỗi câu lệnh nên trả ngăn xếp về đúng trạng thái trước khi nó bắt đầu.
+      </div>
+    </div>
+
+    <div class="article-section" id="re-nhanh">
+      <h2 class="section-heading">Rẽ nhánh if</h2>
+      <p>Với câu lệnh <code>if (đk) S1 else S2</code>, ta cần: nếu điều kiện sai thì nhảy tới nhánh else. Đây là chỗ <code>emitRELOP</code> tỏ ra tiện hơn <code>emitREOP</code>: thay vì dựng một giá trị 0/1 rồi kiểm tra, nó gộp so sánh và nhảy vào một lệnh. Với điều kiện <code>a &gt; b</code>, nhảy khi điều kiện sai nghĩa là nhảy khi <code>a &lt;= b</code>, tức lệnh <code>if_icmple</code>:</p>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin — if (a &gt; b) S1 else S2</div>
+        <pre><code><span class="kw">iload</span> a
+<span class="kw">iload</span> b
+<span class="kw">if_icmple</span> <span class="lbl">LabelFalse</span>   <span class="cmt">; điều kiện a &gt; b sai → nhảy sang else</span>
+<span class="cmt">; --- nhánh then: mã của S1 ---</span>
+<span class="kw">goto</span> <span class="lbl">LabelEnd</span>
+<span class="lbl">LabelFalse:</span>
+<span class="cmt">; --- nhánh else: mã của S2 ---</span>
+<span class="lbl">LabelEnd:</span></code></pre>
+      </div>
+
+      <p>Hai nhãn <code>LabelFalse</code> và <code>LabelEnd</code> lấy từ <code>frame.getNewLabel()</code>. So sánh hai cách: dùng <code>emitREOP</code> rồi <code>emitIFFALSE</code> (<code>ifle</code>) thì tách bạch "tính điều kiện" và "rẽ nhánh", dễ tái dùng khi cần chính giá trị luận lý; dùng <code>emitRELOP</code> thì gộp lại, phát ít lệnh hơn cho đúng tình huống if. Đây lại là một đánh đổi giữa tính đều đặn và độ gọn của mã.</p>
+    </div>
+
+    <div class="article-section" id="vong-lap">
+      <h2 class="section-heading">Vòng lặp while</h2>
+      <p>Vòng lặp là nơi các nhãn của Frame phát huy tác dụng. Xét <code>while (đk) S</code>. Ta gọi <code>enterLoop()</code> để Frame ghi nhớ nhãn tiếp tục và nhãn thoát, rồi bố trí mã như sau: đặt nhãn đầu vòng, đánh giá điều kiện, nếu sai thì nhảy tới nhãn thoát; ngược lại chạy thân vòng rồi <code>goto</code> trở lại nhãn đầu. Về mặt luồng điều khiển:</p>
+
+      <figure class="fig">
+        <img src="Sinh mã/h4.png" alt="Hình 4 — Luồng điều khiển của vòng lặp while" onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 4 — Sơ đồ luồng điều khiển sinh mã cho vòng lặp while: nhãn Lstart (continue) và Lend (break)</figcaption>
+      </figure>
+
+      <p>Với vòng lặp <code>while (i &lt; n) i = i + 1;</code>, mã sinh ra là:</p>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin — while (i &lt; n) i = i + 1</div>
+        <pre><code><span class="lbl">Lstart:</span>                <span class="cmt">; = getContinueLabel()</span>
+   <span class="kw">iload</span> i
+   <span class="kw">iload</span> n
+   <span class="kw">if_icmpge</span> <span class="lbl">Lend</span>      <span class="cmt">; i &lt; n sai (i &gt;= n) → thoát</span>
+   <span class="kw">iload</span> i
+   <span class="kw">iconst_1</span>
+   <span class="kw">iadd</span>
+   <span class="kw">istore</span> i
+   <span class="kw">goto</span> <span class="lbl">Lstart</span>
+<span class="lbl">Lend:</span>                  <span class="cmt">; = getBreakLabel()</span></code></pre>
+      </div>
+
+      <p>Bố cục này giải thích vì sao Frame cần phân biệt nhãn tiếp tục và nhãn thoát: một lệnh <code>continue</code> trong thân vòng sẽ được dịch thành <code>goto</code> tới <code>Lstart</code>, còn một lệnh <code>break</code> thành <code>goto</code> tới <code>Lend</code>. Nhờ <code>getContinueLabel()</code> và <code>getBreakLabel()</code> luôn trỏ tới vòng lặp gần nhất, các lệnh nhảy này đúng đắn cả khi vòng lặp lồng nhau, mà bộ sinh mã không phải tự truy vết cấu trúc.</p>
+    </div>
+
+    <div class="article-section" id="tra-ve">
+      <h2 class="section-heading">Trả về và tầm vực</h2>
+      <p>Câu lệnh <code>return</code> sinh mã cho biểu thức trả về (nếu có) rồi gọi <code>emitRETURN</code> với đúng kiểu, phát <code>ireturn/freturn/areturn</code>, hoặc <code>return</code> cho phương thức kiểu rỗng. Khi vào một khối lệnh mới, <code>enterScope()</code> mở một tầm vực để các biến khai báo bên trong nhận ô mới qua <code>getNewIndex()</code>; ra khỏi khối, <code>exitScope()</code> khép tầm vực lại. Chính cặp nhãn đầu/cuối tầm vực này về sau đi vào các chỉ thị <code>.var</code>, ghi lại phạm vi mà mỗi biến cục bộ còn sống.</p>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 7 ════════════════════ -->
+    <div class="lesson-badge">Bài 7 / 8</div>
+    <h1 class="lesson-title" id="ghep-noi">12.6. Ghép nối: bộ sinh mã độc lập máy và mẫu Visitor</h1>
+    <div class="lesson-meta">CO3005 · Sinh mã</div>
+
+    <div class="article-section">
+      <p>Đến đây ta đã có đủ mảnh ghép: một máy đích để nhắm tới, <code>Frame</code> để kế toán, <code>Emitter</code> để phát lệnh, và cách sinh mã cho từng loại biểu thức lẫn câu lệnh. Việc còn lại là ai điều phối tất cả — đó là bộ sinh mã độc lập máy, tầng cao nhất bám theo cấu trúc ngôn ngữ nguồn.</p>
+
+      <p>Bộ sinh mã này duyệt cây cú pháp trừu tượng và, tại mỗi loại nút, phát ra mã tương ứng bằng cách gọi <code>Frame</code> và <code>Emitter</code>. Vì cây gồm nhiều loại nút khác nhau (biểu thức, câu lệnh, khai báo...) và ta muốn "một hành xử cho mỗi loại nút", đây là chỗ dụng võ điển hình của <strong>mẫu thiết kế Visitor</strong> (Visitor design pattern) đã học ở chương lập trình hướng đối tượng: mỗi loại nút có một phương thức thăm riêng, và bộ sinh mã là một "người thăm" mang theo <code>Frame</code> cùng <code>Emitter</code> như hành trang. Thăm một nút phép cộng thì phát mã như mục 12.4; thăm một nút <code>while</code> thì bố trí nhãn như mục 12.5. Cấu trúc đệ quy của cây khớp tự nhiên với cấu trúc đệ quy của việc phát mã.</p>
+    </div>
+
+    <div class="article-section" id="vi-du-day-du">
+      <h2 class="section-heading">Ví dụ đầy đủ: lớp Jasmin hoàn chỉnh</h2>
+      <p>Khi bộ sinh mã đã duyệt xong một phương thức, các mảnh lệnh được gói giữa các chỉ thị mở/đóng, và hai con số giới hạn được Frame chốt lại. Ghép mọi thứ, một phương thức tính <code>a = b + c * 60</code> (với a, b, c là biến cục bộ số thực) nằm trong một lớp hoàn chỉnh sẽ có dạng:</p>
+
+      <div class="code-block">
+        <div class="code-label">Jasmin — lớp Demo hoàn chỉnh</div>
+        <pre><code><span class="dir">.source</span> Demo.java
+<span class="dir">.class</span> <span class="kw">public</span> Demo
+<span class="dir">.super</span> java/lang/Object
+
+<span class="dir">.method</span> <span class="kw">public</span> &lt;init&gt;()V
+   <span class="dir">.limit</span> stack <span class="num">1</span>
+   <span class="dir">.limit</span> locals <span class="num">1</span>
+   <span class="kw">aload_0</span>
+   <span class="kw">invokespecial</span> java/lang/Object/&lt;init&gt;()V
+   <span class="kw">return</span>
+<span class="dir">.end</span> method
+
+<span class="dir">.method</span> <span class="kw">public</span> compute()V
+   <span class="dir">.limit</span> stack <span class="num">3</span>        <span class="cmt">; từ getMaxOpStackSize()</span>
+   <span class="dir">.limit</span> locals <span class="num">4</span>       <span class="cmt">; từ getMaxIndex(): this, a, b, c</span>
+   <span class="cmt">; ... (mã khởi tạo b, c lược bớt) ...</span>
+   <span class="kw">fload_2</span>               <span class="cmt">; b</span>
+   <span class="kw">fload_3</span>               <span class="cmt">; c</span>
+   <span class="kw">bipush</span> <span class="num">60</span>
+   <span class="kw">i2f</span>
+   <span class="kw">fmul</span>
+   <span class="kw">fadd</span>
+   <span class="kw">fstore_1</span>              <span class="cmt">; a</span>
+   <span class="kw">return</span>
+<span class="dir">.end</span> method</code></pre>
+      </div>
+
+      <p>Ở đây thấy rõ vai trò của từng lớp công cụ. Thân phương thức <code>compute</code> là kết quả của việc sinh mã cho câu lệnh gán ở mục 12.5. Hai dòng <code>.limit</code> là do <code>emitENDMETHOD</code> phát ra, lấy số từ Frame. Khối <code>&lt;init&gt;</code> và ba dòng <code>.source/.class/.super</code> là do <code>emitPROLOG</code> cùng các chỉ thị khởi tạo phát ra. Không dòng nào trong tệp này được bộ sinh mã "viết tay"; tất cả đều đi qua Emitter, và nhờ vậy mà đảm bảo nhất quán về kiểu lẫn về kế toán ngăn xếp.</p>
+
+      <p>Bước cuối nằm ngoài trình biên dịch nhưng khép lại toàn cảnh của mục 12.1: văn bản Jasmin trên được ghi ra tệp <code>.j</code>, một trình dịch hợp ngữ Jasmin biến nó thành tệp <code>.class</code> chứa mã byte, và máy ảo nạp tệp <code>.class</code> để chạy. Từ một cây trừu tượng trong bộ nhớ, qua ba tầng sinh mã và hai bước công cụ, ta có một chương trình thực thi được — đó là toàn bộ hành trình mà chương này mô tả.</p>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ════════════════════ BÀI 8: TỔNG KẾT ════════════════════ -->
+    <div class="lesson-badge">Bài 8 / 8 · Bài cuối chương</div>
+    <h1 class="lesson-title" id="tong-ket">Tổng kết chương</h1>
+    <div class="lesson-meta">CO3005 · Sinh mã</div>
+
+    <div class="article-section">
+      <p>Sinh mã là pha biến một cây cú pháp trừu tượng đã hiểu rõ ngữ nghĩa thành mã đích chạy được, và là trái tim của hậu tuyến. Đứng trước lựa chọn máy đích, ta nhắm tới mã byte cho một máy ảo vì tính khả chuyển; và ta chọn Máy ảo Java làm ví dụ vì nó là một máy ngăn xếp điển hình, nơi mọi phép toán diễn ra qua ngăn xếp toán hạng còn biến địa phương nằm trong mảng biến cục bộ — một mô hình đủ đơn giản để sinh mã dễ dàng, đủ phổ quát để tái hiện trong cả những cỗ máy ảo của ngôn ngữ khác.</p>
+
+      <p>Để phát mã một cách có kỷ luật, ta tách việc kế toán khỏi việc phát lệnh. Lớp <code>Frame</code> giữ nhãn, ô biến cục bộ và độ sâu ngăn xếp mô phỏng, nhờ đó suy ra được các giới hạn tài nguyên mà JVM đòi khai báo trước. Lớp <code>Emitter</code> chọn đúng lệnh cho đúng thao tác và đúng kiểu, đồng thời báo lại hiệu ứng ngăn xếp cho Frame. Bộ sinh mã độc lập máy, cài theo mẫu Visitor, chỉ việc duyệt cây và điều phối hai lớp ấy.</p>
+
+      <p>Trên nền đó, ta sinh mã cho biểu thức bằng cách duyệt hậu thứ tự khớp với kỷ luật đẩy-rồi-tính của máy ngăn xếp, chú ý chọn lệnh theo giá trị hằng, chèn ép kiểu nơi kiểu đòi hỏi, và chọn lệnh phép toán theo kiểu toán hạng. Câu lệnh được dựng thêm trên biểu thức: phép gán thêm một lệnh cất, rẽ nhánh và vòng lặp thêm các nhãn nhảy mà Frame cung cấp, với những đánh đổi quen thuộc giữa mã gộp gọn và mã tách bạch dễ tái dùng.</p>
+
+      <p>Ghép tất cả, một cây trừu tượng đi qua ba tầng sinh mã và hai bước công cụ để thành một chương trình thực thi được — khép lại chặng cuối của trình biên dịch mà cả cụm chương này đã dõi theo.</p>
+
+      <div class="callout">
+        <strong>🔗 Điểm kết:</strong> Ba tầng sinh mã — bộ sinh mã độc lập máy (Visitor), <code>Emitter</code> (chọn lệnh), <code>JasminCode</code> (phát văn bản) — cùng <code>Frame</code> (kế toán) hợp thành một kiến trúc rành mạch: mỗi tầng chỉ biết giao diện của tầng liền kề, và nhờ vậy phần phụ thuộc ngôn ngữ nguồn tách biệt hoàn toàn khỏi phần phụ thuộc máy đích.
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a class="nav-btn secondary" href="CO3005.html">← Trang chủ</a>
+      <span>Bài 8 / 8 · Sinh mã</span>
+    </div>
+
+  </main><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+/* ── LIGHTBOX ── */
+function openLb(src, alt) {
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lbImg').alt = alt;
+  document.getElementById('lb').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLb() {
+  document.getElementById('lb').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+/* ── ACTIVE TOC ── */
+const tocLinks = document.querySelectorAll('.toc-item');
+const headings = document.querySelectorAll('[id]');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      tocLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin: '-60px 0px -70% 0px', threshold: 0 });
+headings.forEach(h => obs.observe(h));
+</script>
+
+</body>
+</html>
