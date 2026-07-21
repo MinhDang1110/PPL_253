@@ -684,14 +684,14 @@ a[<span class="num">3</span>]   <span class="cmt">// 40</span></code></pre>
 
       <table class="data-table">
         <thead>
-          <tr><th>Loại mảng</th><th>Ví dụ</th><th>Kích thước biết khi nào</th><th>Đổi được sau khi tạo?</th><th>Cấp phát ở đâu</th></tr>
+          <tr><th>Loại mảng</th><th>Ví dụ</th><th>Kích thước biết khi nào</th><th>Đổi được sau khi tạo?</th><th>Cấp phát ở đâu</th><th>Thời gian sống</th></tr>
         </thead>
         <tbody>
-          <tr><td>Tĩnh</td><td><code>int a[10]</code> toàn cục</td><td>lúc biên dịch</td><td>không</td><td>vùng tĩnh</td></tr>
-          <tr><td>Cố định trên ngăn xếp</td><td><code>int a[10]</code> cục bộ</td><td>lúc biên dịch</td><td>không</td><td>ngăn xếp</td></tr>
-          <tr><td>Động trên ngăn xếp</td><td><code>int a[n]</code> cục bộ</td><td>lúc chạy</td><td>không</td><td>ngăn xếp</td></tr>
-          <tr><td>Cố định trên heap</td><td><code>new int[10]</code></td><td>lúc chạy</td><td>không</td><td>heap</td></tr>
-          <tr><td>Động trên heap</td><td>vector / list</td><td>lúc chạy</td><td>có</td><td>heap</td></tr>
+          <tr><td>Tĩnh</td><td><code>int a[10]</code> toàn cục</td><td>lúc biên dịch</td><td>không</td><td>vùng tĩnh</td><td>toàn bộ chương trình</td></tr>
+          <tr><td>Cố định trên ngăn xếp</td><td><code>int a[10]</code> cục bộ</td><td>lúc biên dịch</td><td>không</td><td>ngăn xếp</td><td>theo lời gọi hàm</td></tr>
+          <tr><td>Động trên ngăn xếp</td><td><code>int a[n]</code> cục bộ</td><td>lúc chạy</td><td>không</td><td>ngăn xếp</td><td>theo lời gọi hàm</td></tr>
+          <tr><td>Cố định trên heap</td><td><code>new int[10]</code></td><td>lúc chạy</td><td>không</td><td>heap</td><td>đến khi được giải phóng</td></tr>
+          <tr><td>Động trên heap</td><td>vector / list</td><td>lúc chạy</td><td>có</td><td>heap</td><td>do thư viên hoặc môi trường thực thi quản lý</td></tr>
         </tbody>
       </table>
 
