@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CO3005 – Câu lệnh: phép gán, chọn lựa, lặp và chuyển điều khiển</title>
+<meta name="description" content="Bài giảng CO3005: Câu lệnh – phép gán, thay đổi trạng thái, chọn lựa, lặp và chuyển điều khiển – Nguyên lý Ngôn ngữ Lập trình, ĐH Bách Khoa TP.HCM.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd9d0;
+    --text: #1a1916;
+    --muted: #6b6760;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --kw:  #569cd6;
+    --str: #ce9178;
+    --cmt: #6a9955;
+    --num: #b5cea8;
+    --fn:  #dcdcaa;
+    --typ: #4ec9b0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar-logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    padding: 0 20px 10px;
+    letter-spacing: .06em;
+    display: block;
+    text-decoration: none;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .toc-item {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .toc-item.sub { padding-left: 32px; font-size: 12px; }
+
+  /* ── MAIN ── */
+  .main { padding: 48px 56px 80px; max-width: 820px; }
+
+  .lesson-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .lesson-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article-section { margin-bottom: 48px; scroll-margin-top: 24px; }
+
+  .section-heading {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+  .section-heading::before {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 40px; height: 2px;
+    background: var(--accent);
+  }
+
+  .sub-heading {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 28px 0 12px;
+  }
+
+  p { margin-bottom: 14px; }
+
+  ul, ol { margin: 12px 0 16px 28px; line-height: 2.0; font-size: 15px; }
+  li { margin-bottom: 4px; }
+
+  /* ── CODE ── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+  }
+  .code-label {
+    background: #2d2d2d;
+    padding: 6px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #333;
+  }
+  pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--code-text);
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #e8e5de;
+    color: #b5451b;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+  .kw  { color: var(--kw); }
+  .str { color: var(--str); }
+  .cmt { color: var(--cmt); font-style: italic; }
+  .num { color: var(--num); }
+  .fn  { color: var(--fn); }
+  .typ { color: var(--typ); }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .callout strong { color: var(--accent); }
+  .callout-warn  { background: #fff8e1; border-left-color: #f59e0b; }
+  .callout-warn  strong { color: #b45309; }
+  .callout-tip   { background: #f0fdf4; border-left-color: #16a34a; }
+  .callout-tip   strong { color: #15803d; }
+  .callout-red   { background: #fff1f2; border-left-color: #e11d48; }
+  .callout-red   strong { color: #be123c; }
+
+  /* ── TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  /* ── FIGURE ── */
+  .fig { text-align: center; margin: 28px 0; }
+  .fig img {
+    max-width: 640px; width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+    cursor: zoom-in;
+    transition: opacity .15s;
+  }
+  .fig img:hover { opacity: .9; }
+  .fig figcaption {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .fig-wide img  { max-width: 740px; }
+  .fig-narrow img { max-width: 420px; }
+
+  /* ── DIVIDER ── */
+  .lesson-divider {
+    border: none;
+    border-top: 2px dashed var(--border);
+    margin: 52px 0;
+  }
+
+  /* ── NAV FOOTER ── */
+  .nav-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 0 0; border-top: 1px solid var(--border);
+    margin-top: 48px; font-size: 14px; color: var(--muted);
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--accent); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 500;
+    text-decoration: none;
+  }
+  .nav-btn.secondary { background: var(--surface); color: var(--accent); border: 1px solid var(--accent); }
+
+  /* ── LIGHTBOX ── */
+  .lb-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,.82);
+    align-items: center; justify-content: center; cursor: zoom-out;
+  }
+  .lb-overlay.open { display: flex; }
+  .lb-overlay img { max-width: 92vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,.6); }
+  .lb-close { position: fixed; top: 18px; right: 24px; font-size: 30px; color: #fff; cursor: pointer; opacity:.8; }
+  .lb-close:hover { opacity: 1; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lb-overlay" id="lb" onclick="closeLb()">
+  <span class="lb-close" onclick="closeLb()">✕</span>
+  <img id="lbImg" src="" alt="">
+</div>
+
+<div class="layout">
+
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <nav class="sidebar">
+    <a class="sidebar-logo" href="CO3005.html">← CO3005</a>
+    <div class="sidebar-title">Mục lục bài học</div>
+
+    <a class="toc-item active" href="#mo-dau">Bài 1 · Mở đầu</a>
+
+    <a class="toc-item" href="#cau-lenh-hanh-dong">Bài 2 · Câu lệnh và hành động</a>
+    <a class="toc-item sub" href="#bieu-thuc-vs-cau-lenh">Biểu thức vs câu lệnh</a>
+    <a class="toc-item sub" href="#tron-gia-tri-hieu-ung">Trộn giá trị với hiệu ứng</a>
+
+    <a class="toc-item" href="#phep-gan">Bài 3 · Phép gán và thay đổi trạng thái</a>
+    <a class="toc-item sub" href="#mo-hinh-luu-tru">Mô hình lưu trữ trừu tượng</a>
+    <a class="toc-item sub" href="#gan-dong-thoi">Gán đồng thời &amp; gán chuỗi</a>
+    <a class="toc-item sub" href="#gan-phuc-hop">Gán phức hợp</a>
+
+    <a class="toc-item" href="#chon-lua">Bài 4 · Câu lệnh chọn lựa</a>
+    <a class="toc-item sub" href="#hai-nhanh">Chọn lựa hai nhánh</a>
+    <a class="toc-item sub" href="#else-lo-lung">Vấn đề else lơ lửng</a>
+    <a class="toc-item sub" href="#nhieu-nhanh">Chọn lựa nhiều nhánh</a>
+
+    <a class="toc-item" href="#lap">Bài 5 · Câu lệnh lặp</a>
+    <a class="toc-item sub" href="#dieu-kien-logic">Lặp điều kiện logic</a>
+    <a class="toc-item sub" href="#bo-dem">Lặp bộ đếm</a>
+    <a class="toc-item sub" href="#lap-cau-truc">Lặp trên cấu trúc dữ liệu</a>
+
+    <a class="toc-item" href="#chuyen-dieu-khien">Bài 6 · Chuyển điều khiển có cấu trúc</a>
+    <a class="toc-item sub" href="#break-continue-return">break · continue · return</a>
+    <a class="toc-item sub" href="#goto">goto và mã rối</a>
+
+    <a class="toc-item" href="#tong-ket">Bài 7 · Tổng kết chương</a>
+  </nav>
+
+  <!-- ══════════════ MAIN ══════════════ -->
+  <main class="main">
+
+    <!-- ═══ BÀI 1: MỞ ĐẦU ═══ -->
+    <div class="lesson-badge">Bài 1 / 7</div>
+    <h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+    <div class="lesson-meta">CO3005 · Câu lệnh: phép gán, chọn lựa, lặp và chuyển điều khiển · Trần Ngọc Bảo Duy · HK253</div>
+
+    <div class="article-section">
+      <p>Chương trước khép lại với một nhận xét: biểu thức là mảnh chương trình tạo ra giá trị, còn câu lệnh là mảnh chương trình gây ra hành động. Ta đã theo đuổi nửa thứ nhất đến tận cùng — cấu trúc, luật nhóm, thứ tự đánh giá, hiệu ứng phụ. Chương này đi nốt nửa còn lại. Nếu biểu thức trả lời câu hỏi <em>"tính ra cái gì"</em>, thì câu lệnh trả lời câu hỏi <em>"làm gì, theo trình tự nào"</em>.</p>
+
+      <p>Cần nói rõ ngay góc tiếp cận, vì chủ đề này rất dễ trượt thành một bài dạy cú pháp. Mục đích ở đây không phải học <code>if</code>, <code>for</code>, <code>while</code> của một ngôn ngữ cụ thể — những thứ ấy tra tài liệu là ra. Mục đích là nhìn ra các mô hình điều khiển nằm dưới chúng, và những lựa chọn thiết kế mà mỗi ngôn ngữ đã phải quyết định. Vì sao có ngôn ngữ bắt điều kiện phải là giá trị luận lý, có ngôn ngữ thì không? Vì sao <code>switch</code> của C cho phép rơi từ nhánh này sang nhánh khác, còn nhiều ngôn ngữ khác thì cấm? Vì sao <code>x += y</code> không phải lúc nào cũng bằng <code>x = x + y</code>? Mỗi câu hỏi ấy đều có một cái được và một cái mất đứng sau.</p>
+
+      <div class="callout">
+        <strong>📌 Mục tiêu chương này:</strong> Làm rõ câu lệnh khác biểu thức ở chỗ nào; phép gán thay đổi trạng thái chương trình ra sao; ngôn ngữ chọn một nhánh thực thi giữa nhiều nhánh bằng luật nào; việc lặp được kiểm soát theo những cách nào; và khi nào thì nên rời khỏi luồng điều khiển có cấu trúc. Sợi chỉ đỏ xuyên chương là một mạch năm tầng: <strong>hành động → thay đổi trạng thái → chọn lựa → lặp → chuyển điều khiển tường minh</strong>.
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ═══ BÀI 2: CÂU LỆNH VÀ HÀNH ĐỘNG ═══ -->
+    <div class="lesson-badge">Bài 2 / 7</div>
+    <h1 class="lesson-title" id="cau-lenh-hanh-dong">Câu lệnh và hành động</h1>
+    <div class="lesson-meta">CO3005 · Câu lệnh: phép gán, chọn lựa, lặp và chuyển điều khiển</div>
+
+    <div class="article-section" id="bieu-thuc-vs-cau-lenh">
+      <h2 class="section-heading">Biểu thức vs câu lệnh</h2>
+      <p>Một <strong>câu lệnh</strong> (statement) là một cấu trúc chương trình được thực thi để tạo ra một hành động. Nó thường làm một trong bốn việc: thay đổi trạng thái chương trình, điều khiển luồng thực thi, thực hiện vào/ra, hoặc gọi một tính toán khác. Đặt cạnh biểu thức, khác biệt cốt lõi nằm ở cái mà ta quan tâm: ở biểu thức là <em>giá trị</em> nó tạo ra, ở câu lệnh là <em>hiệu ứng</em> nó gây ra.</p>
+
+      <p>Bốn ví dụ đủ để thấy phổ của câu lệnh. Với các toán hạng số thông thường, <code>a + b</code> là một biểu thức chỉ tạo ra giá trị và không làm gì khác (khi toán tử được nạp chồng, ngay cả <code>a + b</code> cũng có thể mang hiệu ứng — như chương trước đã chỉ ra). <code>x = a + b</code> là một câu lệnh gán: giá trị của biểu thức được cất vào <code>x</code>, và trạng thái chương trình đổi. <code>if x &gt; 0: print(x)</code> là câu lệnh chọn lựa: nó quyết định có thực hiện một hành động hay không. <code>while x &gt; 0: x -= 1</code> là câu lệnh lặp: nó quyết định thực hiện một hành động bao nhiêu lần. Ba loại sau đều không "trả về" gì cả — chúng tồn tại vì hiệu ứng.</p>
+    </div>
+
+    <div class="article-section" id="tron-gia-tri-hieu-ung">
+      <h2 class="section-heading">Trộn giá trị với hiệu ứng: đánh đổi đầu tiên</h2>
+      <p>Lằn ranh giữa biểu thức và câu lệnh, như đã thấy ở chương trước, mỗi ngôn ngữ vạch một kiểu. Có ngôn ngữ tách bạch rành mạch: gán, rẽ nhánh, lặp là câu lệnh, chấm hết. Có ngôn ngữ cho phép một cấu trúc vừa trả về giá trị vừa mang hiệu ứng — phép gán trong C là ví dụ kinh điển, vì <code>x = 5</code> vừa ghi vào <code>x</code> vừa cho ra giá trị 5, khiến <code>while ((c = getchar()) != EOF)</code> viết được.</p>
+
+      <div class="code-block">
+        <div class="code-label">C — phép gán dùng trong điều kiện vòng lặp</div>
+        <pre><code><span class="kw">while</span> ((c = <span class="fn">getchar</span>()) != EOF) {
+    <span class="cmt">/* vừa đọc, vừa kiểm tra, vừa gán — một biểu thức */</span>
+}</code></pre>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>⚠️ Đánh đổi cốt lõi:</strong> Mỗi lần ngôn ngữ cho phép trộn giá trị với hiệu ứng, nó đổi sự rành mạch lấy sự gọn gàng. Cái được là gọn và kết hợp được; cái mất là người đọc mất đi tín hiệu cú pháp cho biết "chỗ này có hiệu ứng", và mở đường cho lỗi kinh điển viết <code>if (x = 0)</code> khi ý là <code>if (x == 0)</code>. Đây là đánh đổi đầu tiên của chương, và nó sẽ trở đi trở lại.
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ═══ BÀI 3: PHÉP GÁN ═══ -->
+    <div class="lesson-badge">Bài 3 / 7</div>
+    <h1 class="lesson-title" id="phep-gan">Phép gán và thay đổi trạng thái</h1>
+    <div class="lesson-meta">CO3005 · Câu lệnh: phép gán, chọn lựa, lặp và chuyển điều khiển</div>
+
+    <div class="article-section" id="mo-hinh-luu-tru">
+      <h2 class="section-heading">Mô hình lưu trữ trừu tượng</h2>
+      <p>Phép gán là câu lệnh cơ bản nhất để thay đổi trạng thái, và cũng là câu lệnh bị hiểu sai nhiều nhất. Muốn hiểu đúng, phải tách bạch năm khái niệm mà cách viết <code>x = 5</code> gộp chung lại. Trong <strong>mô hình lưu trữ trừu tượng</strong> (abstract storage model) của các ngôn ngữ mệnh lệnh:</p>
+
+      <ul>
+        <li><strong>Biến</strong> (variable): cái tên gắn với một vị trí lưu trữ</li>
+        <li><strong>Ô nhớ</strong> (location): chỗ chứa</li>
+        <li><strong>Giá trị</strong> (value): cái được chứa</li>
+        <li><strong>Phép gán</strong> (assignment): hành động cập nhật trạng thái của vị trí đó</li>
+        <li><strong>Khởi tạo</strong> (initialization): lần đầu tiên một biến được tạo ra kèm giá trị</li>
+      </ul>
+
+      <p>Cần nhấn mạnh rằng đây là một mô hình trừu tượng: mỗi ngôn ngữ có thể hiện thực hóa nó theo cách khác nhau — có ngôn ngữ nhấn mạnh ô lưu trữ theo đúng nghĩa đen, có ngôn ngữ mô tả phép gán cho tên như việc tạo hoặc cập nhật một ràng buộc tới đối tượng. Bộ khái niệm này chính là bộ đã dựng ở chương về tên, ràng buộc, tầm vực và thời gian sống — ở đây ta dùng lại chúng để nói về hành động thay vì về khai báo.</p>
+
+      <p><strong>Gán không phải là phép bằng toán học.</strong> Đây là chỗ vấp của mọi người mới học, và nó không phải chuyện vụn vặt về ký hiệu. Trong toán học, <code>x = x + 1</code> là một mệnh đề sai — không số nào bằng chính nó cộng một. Trong lập trình, cùng dòng ấy hoàn toàn hợp lệ, vì nó không phát biểu một đẳng thức mà mô tả một chuỗi hành động: đọc giá trị hiện tại của <code>x</code>, cộng thêm một, rồi ghi kết quả trở lại vào <code>x</code>. Dấu <code>=</code> ở đây là một mũi tên, không phải một cái cân.</p>
+
+      <figure class="fig">
+        <img src="Câu lệnh - phép gán, chọn lựa, lặp và chuyển điều khiển/h1.png"
+             alt="Hình 1 — Mô hình trước–sau của phép gán x = x + 1"
+             onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 1 — Mô hình trước–sau của phép gán: đọc giá trị cũ → tính → ghi giá trị mới vào ô nhớ</figcaption>
+      </figure>
+
+      <p>Mô hình trước–sau ấy là hạt nhân ngữ nghĩa của phép gán: trước khi thực thi, ô nhớ của <code>x</code> chứa giá trị cũ; ta đánh giá vế phải; sau khi thực thi, ô nhớ của <code>x</code> chứa giá trị mới. Mọi biến thể của phép gán dưới đây đều chỉ là những cách khác nhau để chỉ định "ô nhớ nào" và "giá trị nào".</p>
+
+      <p><strong>Khởi tạo và gán</strong> là hai việc khác nhau. Trong <code>int x = 10;</code>, ngôn ngữ tạo ra biến <code>x</code> rồi thiết lập giá trị đầu tiên cho nó. Trong <code>x = 20;</code>, biến đã tồn tại sẵn và ta chỉ cập nhật nó. Sự phân biệt này quan trọng vì nhiều ngôn ngữ đối xử khác nhau với hai trường hợp: có ngôn ngữ cấm dùng một biến chưa khởi tạo, có ngôn ngữ gán một giá trị mặc định, có ngôn ngữ (như các ngôn ngữ hàm) chỉ cho ràng buộc một lần và không cho gán lại chút nào.
+      </p>
+    </div>
+
+    <div class="article-section" id="gan-dong-thoi">
+      <h2 class="section-heading">Gán đồng thời và gán chuỗi</h2>
+
+      <h3 class="sub-heading">Gán đồng thời</h3>
+      <p>Nhiều ngôn ngữ cho phép gán nhiều biến cùng lúc. Trong Python, phép hoán vị hai biến viết gọn thành một dòng:</p>
+
+      <div class="code-block">
+        <div class="code-label">Python — hoán vị không cần biến tạm</div>
+        <pre><code>a, b = b, a</code></pre>
+      </div>
+
+      <p>Điều làm dòng này chạy đúng — thay vì làm hỏng <code>a</code> rồi mới đọc <code>b</code> — là một nguyên lý phát biểu được rất gọn: <strong>đánh giá xong toàn bộ các giá trị ở vế phải, rồi mới thực hiện việc ràng buộc</strong>. Nếu ngôn ngữ gán tuần tự từng cặp một, <code>a = b</code> sẽ làm mất giá trị cũ của <code>a</code>; sau đó <code>b = a</code> chỉ chép giá trị vừa ghi vào <code>a</code> trở lại <code>b</code>, nên cuối cùng cả hai cùng mang giá trị cũ của <code>b</code>. Cùng một cú pháp, hai ngữ nghĩa, hai kết quả khác nhau — và ngôn ngữ phải chọn.</p>
+
+      <h3 class="sub-heading">Gán chuỗi</h3>
+      <p>Cách viết <code>x = y = 0</code> gán cùng một giá trị cho nhiều biến. Nhưng đừng vội cho rằng nó luôn tương đương với hai phép gán độc lập: ngữ nghĩa phụ thuộc ngôn ngữ. Trong C, nó hoạt động nhờ phép gán là một biểu thức trả về giá trị và kết hợp phải, nên <code>x = (y = 0)</code>. Trong Python, nó là một câu lệnh gán nhiều đích, và điều đáng lưu ý là cả hai tên sẽ trỏ tới cùng một đối tượng — vô hại với số nguyên, nhưng gây bất ngờ lớn với đối tượng thay đổi được.</p>
+    </div>
+
+    <div class="article-section" id="gan-phuc-hop">
+      <h2 class="section-heading">Gán phức hợp và biểu thức gán</h2>
+
+      <h3 class="sub-heading">Gán phức hợp: x += y ≠ x = x + y</h3>
+      <p>Cách viết <code>x += y</code> nhìn như một lối tắt thuần túy của <code>x = x + y</code>. Nhưng đừng mặc định chúng luôn tương đương, vì <strong>bốn lý do có thật</strong>:</p>
+
+      <ul>
+        <li><strong>Số lần đánh giá vế trái:</strong> <code>a[f()] += 1</code> gọi <code>f()</code> một lần, còn <code>a[f()] = a[f()] + 1</code> gọi hai lần — và nếu <code>f</code> có hiệu ứng phụ thì hai bản khác hẳn.</li>
+        <li><strong>Chuyển kiểu:</strong> Trong Java, <code>byte b; b += 1;</code> hợp lệ nhờ ép kiểu ngầm, còn <code>b = b + 1;</code> báo lỗi kiểu.</li>
+        <li><strong>Nạp chồng toán tử:</strong> Ngôn ngữ có thể cho định nghĩa <code>+=</code> riêng, sửa đối tượng tại chỗ (in-place), trong khi <code>+</code> tạo ra đối tượng mới.</li>
+        <li><strong>Hiệu ứng phụ ở vế trái:</strong> Tương tự trường hợp chỉ số mảng nêu trên.</li>
+      </ul>
+
+      <p>Một lối tắt cú pháp, hóa ra, lại là một quyết định ngữ nghĩa.</p>
+
+      <h3 class="sub-heading">Biểu thức gán</h3>
+      <p>Cuối cùng, một số ngôn ngữ để phép gán trả về giá trị, biến nó thành biểu thức dùng được bên trong biểu thức khác. Cái được là gọn — điều kiện vòng lặp có thể vừa đọc dữ liệu vừa kiểm tra. Cái mất là dễ nhầm gán với so sánh, đến mức nhiều ngôn ngữ đời sau cố tình không cho phép, hoặc cho phép nhưng bằng một ký hiệu riêng biệt (như <code>:=</code> trong Python 3.8+, gọi là walrus operator) để buộc người viết nói rõ ý mình.</p>
+
+      <div class="code-block">
+        <div class="code-label">Python 3.8+ — walrus operator</div>
+        <pre><code><span class="kw">while</span> chunk := f.read(<span class="num">8192</span>):
+    process(chunk)   <span class="cmt"># := vừa gán vừa trả giá trị, rõ ràng hơn =</span></code></pre>
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ═══ BÀI 4: CHỌN LỰA ═══ -->
+    <div class="lesson-badge">Bài 4 / 7</div>
+    <h1 class="lesson-title" id="chon-lua">Câu lệnh chọn lựa</h1>
+    <div class="lesson-meta">CO3005 · Câu lệnh: phép gán, chọn lựa, lặp và chuyển điều khiển</div>
+
+    <div class="article-section">
+      <p><strong>Câu lệnh chọn lựa</strong> (selection statement) chọn một đường thực thi trong nhiều đường, dựa trên một điều kiện. Có hai nhóm: chọn lựa hai nhánh (two-way selection) và chọn lựa nhiều nhánh (multiple selection).</p>
+    </div>
+
+    <div class="article-section" id="hai-nhanh">
+      <h2 class="section-heading">Chọn lựa hai nhánh</h2>
+      <p>Dạng tổng quát của chọn lựa hai nhánh rất quen: nếu điều kiện đúng thì làm một việc, ngược lại làm việc kia. Điều đáng quan tâm không phải là cú pháp ấy, mà là loạt câu hỏi thiết kế mà mỗi ngôn ngữ phải trả lời:</p>
+
+      <ul>
+        <li>Điều kiện có buộc phải là giá trị luận lý không, hay chấp nhận giá trị bất kỳ?</li>
+        <li>Nhánh <code>else</code> có bắt buộc không?</li>
+        <li>Mỗi nhánh là một câu lệnh đơn hay một khối?</li>
+        <li>Khối ấy có tạo ra một tầm vực mới không?</li>
+      </ul>
+
+      <p><strong>Điều kiện luận lý hay giá trị "thật/giả".</strong> Một số ngôn ngữ đòi điều kiện phải có kiểu luận lý — viết <code>if (x)</code> với <code>x</code> là số nguyên là lỗi biên dịch. Số khác áp dụng <strong>tính thật–giả</strong> (truthiness): mọi giá trị đều dùng làm điều kiện được, với một quy ước ngầm về giá trị nào coi là "giả" (số không, chuỗi rỗng, danh sách rỗng, con trỏ rỗng...).</p>
+
+      <div class="code-block">
+        <div class="code-label">Python — truthiness</div>
+        <pre><code><span class="kw">if</span> items:              <span class="cmt"># gọn, đọc như tiếng Anh</span>
+    process(items)
+
+<span class="kw">if</span> <span class="fn">len</span>(items) != <span class="num">0</span>:  <span class="cmt"># tường minh hơn, dài hơn</span>
+    process(items)</code></pre>
+      </div>
+
+      <p>Cái được của truthiness là sự ngắn gọn. Cái mất là an toàn: quy ước "giả" khác nhau giữa các ngôn ngữ, và chính lối viết này khiến <code>if (x = 0)</code> trong C trở thành một lỗi chạy được thay vì một lỗi bị bắt.</p>
+
+      <p><strong>Khối lệnh như lời giải.</strong> Bọc mỗi nhánh trong một khối (block) làm được nhiều việc cùng lúc: nó nói rõ cái gì thuộc nhánh nào, nó khiến mã dễ đọc hơn, và trong những ngôn ngữ có tầm vực khối, nó còn giới hạn tầm vực của các biến được khai báo bên trong (không phải ngôn ngữ nào cũng vậy: các khối <code>if</code>, <code>for</code>, <code>while</code> của Python không tạo tầm vực mới cho tên thông thường). Đây là lý do phần lớn hướng dẫn viết mã hiện đại khuyên luôn dùng khối, kể cả khi nhánh chỉ có một câu lệnh.</p>
+    </div>
+
+    <div class="article-section" id="else-lo-lung">
+      <h2 class="section-heading">Vấn đề else lơ lửng</h2>
+      <p>Khi các câu lệnh chọn lựa lồng nhau, một nhập nhằng nổi tiếng xuất hiện. Xét chuỗi:</p>
+
+      <div class="code-block">
+        <div class="code-label">Cú pháp nhập nhằng — else lơ lửng</div>
+        <pre><code><span class="kw">if</span> C1 <span class="kw">then</span>
+    <span class="kw">if</span> C2 <span class="kw">then</span> S1
+    <span class="kw">else</span> S2</code></pre>
+      </div>
+
+      <p>Câu hỏi: <code>else</code> thuộc về <code>if</code> nào? Cùng một chuỗi ký hiệu, hai cách hiểu, hai cây khác nhau — và hai hành vi khác nhau khi C1 sai:</p>
+
+      <figure class="fig fig-wide">
+        <img src="Câu lệnh - phép gán, chọn lựa, lặp và chuyển điều khiển/h2.png"
+             alt="Hình 2 — Hai cách parse cho vấn đề else lơ lửng"
+             onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 2 — Cùng chuỗi ký hiệu, hai cây: trái (<code>else</code> thuộc <code>if C2</code>) và phải (<code>else</code> thuộc <code>if C1</code>)</figcaption>
+      </figure>
+
+      <p>Quy tắc thường được dùng là: <code>else</code> gắn với <code>if</code> gần nhất chưa được khớp, tức cây bên trái. Nhưng điều cốt yếu phải nhấn mạnh là: <strong>đây là một luật thiết kế ngôn ngữ, không phải một chân lý phổ quát</strong>. Ngôn ngữ hoàn toàn có thể chọn khác, hoặc dẹp bỏ nhập nhằng ngay từ gốc — chẳng hạn bằng cách bắt buộc mỗi nhánh phải là một khối có dấu đóng mở, hoặc bằng một từ khóa kết thúc như <code>end if</code>. Bản thân nhập nhằng này là do văn phạm sinh ra, nên cũng phải được chữa bằng thiết kế văn phạm.</p>
+    </div>
+
+    <div class="article-section" id="nhieu-nhanh">
+      <h2 class="section-heading">Chọn lựa nhiều nhánh</h2>
+      <p>Khi cần chọn một trong nhiều khả năng, viết chuỗi <code>if–else if–else if</code> dài dòng và che mất ý "tất cả các nhánh này là những khả năng ngang hàng của cùng một câu hỏi". Câu lệnh chọn lựa nhiều nhánh nói được ý đó. Nhưng thiết kế của nó phân hóa mạnh giữa các ngôn ngữ:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Trục thiết kế</th><th>Kiểu C (switch)</th><th>Kiểu Pascal (case)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Có xuyên nhánh không?</td><td>Có, trừ khi viết <code>break</code></td><td>Không — chọn đúng một nhánh</td></tr>
+          <tr><td>Nhãn nhánh phải là hằng?</td><td>Có</td><td>Có</td></tr>
+          <tr><td>Cho khoảng giá trị / mẫu?</td><td>Không (nguyên thủy)</td><td>Nhiều biến thể cho khoảng</td></tr>
+          <tr><td>Nhánh mặc định bắt buộc?</td><td>Không</td><td>Tùy biến thể</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub-heading">Xuyên nhánh (fall-through)</h3>
+      <p>Trong <code>switch</code> kiểu C, nếu một nhánh không kết thúc bằng <code>break</code>, việc thực thi sẽ rơi tiếp sang nhánh dưới:</p>
+
+      <div class="code-block">
+        <div class="code-label">C — xuyên nhánh</div>
+        <pre><code><span class="kw">switch</span> (x) {
+    <span class="kw">case</span> <span class="num">1</span>:
+        <span class="fn">f</span>();     <span class="cmt">/* no break — falls through */</span>
+    <span class="kw">case</span> <span class="num">2</span>:
+        <span class="fn">g</span>();
+}</code></pre>
+      </div>
+
+      <p>Với <code>x == 1</code>, cả <code>f()</code> lẫn <code>g()</code> đều chạy. <strong>Xuyên nhánh (fall-through) là một lựa chọn thiết kế về luồng điều khiển, không phải một thuộc tính cố hữu.</strong> Cái được là gộp được nhiều nhãn cùng chung một xử lý. Cái mất lớn hơn nhiều: quên <code>break</code> là một trong những lỗi âm thầm phổ biến nhất của C, và chính vì thế mà đa số ngôn ngữ đời sau chọn hành vi ngược lại — chạy đúng một nhánh rồi thoát.</p>
+
+      <div class="callout callout-tip">
+        <strong>💡 Xu hướng hiện đại:</strong> Thay vì so khớp nhãn với hằng, <strong>đối sánh mẫu</strong> (pattern matching) cho phép nhánh mô tả cả hình dạng của dữ liệu — một khoảng giá trị, một cấu trúc có những thành phần nhất định — và đồng thời rút các thành phần ấy ra. Nhìn theo mạch của chương, đó là sự tiến hóa tự nhiên: từ "so sánh với hằng số" lên "so khớp với cấu trúc".
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ═══ BÀI 5: LẶP ═══ -->
+    <div class="lesson-badge">Bài 5 / 7</div>
+    <h1 class="lesson-title" id="lap">Câu lệnh lặp</h1>
+    <div class="lesson-meta">CO3005 · Câu lệnh: phép gán, chọn lựa, lặp và chuyển điều khiển</div>
+
+    <div class="article-section">
+      <p><strong>Câu lệnh lặp</strong> (iteration statement) thực hiện lặp lại một câu lệnh hoặc một khối. Câu hỏi thiết kế trung tâm là: <em>cái gì quyết định số lần lặp?</em> Có ba câu trả lời, ứng với ba nhóm.</p>
+    </div>
+
+    <div class="article-section" id="dieu-kien-logic">
+      <h2 class="section-heading">Lặp điều khiển bằng điều kiện logic</h2>
+      <p>Vòng lặp chạy chừng nào một điều kiện còn đúng. Nhóm này lại chia hai theo thời điểm kiểm tra:</p>
+
+      <ul>
+        <li><strong>Vòng kiểm tra trước</strong> (pretest loop): thử điều kiện trước mỗi lần chạy thân vòng → thân vòng có thể không chạy lần nào.</li>
+        <li><strong>Vòng kiểm tra sau</strong> (posttest loop): chạy thân vòng rồi mới thử điều kiện → thân vòng chạy ít nhất một lần.</li>
+      </ul>
+
+      <figure class="fig">
+        <img src="Câu lệnh - phép gán, chọn lựa, lặp và chuyển điều khiển/h3.png"
+             alt="Hình 3 — Kiểm tra trước vs kiểm tra sau"
+             onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 3 — Kiểm tra trước (while) và kiểm tra sau (do–while): sự khác biệt ở số lần chạy tối thiểu</figcaption>
+      </figure>
+
+      <table class="data-table">
+        <thead>
+          <tr><th></th><th>Kiểm tra trước</th><th>Kiểm tra sau</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Điều kiện được thử</td><td>trước thân vòng</td><td>sau thân vòng</td></tr>
+          <tr><td>Số lần chạy tối thiểu</td><td>0</td><td>1</td></tr>
+          <tr><td>Dạng tiêu biểu</td><td><code>while</code></td><td><code>do–while</code>, <code>repeat–until</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Khác biệt tưởng nhỏ ấy lại quyết định tính đúng đắn trong những tình huống rất thực: một vòng đọc dữ liệu người dùng "cho tới khi hợp lệ" cần chạy ít nhất một lần, nên hợp với kiểm tra sau; một vòng duyệt danh sách có thể rỗng thì bắt buộc phải kiểm tra trước.</p>
+    </div>
+
+    <div class="article-section" id="bo-dem">
+      <h2 class="section-heading">Lặp điều khiển bằng bộ đếm</h2>
+      <p>Ở đây số lần lặp được xác định bởi một biến chạy qua một dãy giá trị. Về mặt khái niệm, mọi vòng lặp loại này đều có bốn thành phần: giá trị đầu, điều kiện kết thúc, bước cập nhật, và thân vòng.</p>
+
+      <p>Đây là chỗ ẩn chứa nhiều câu hỏi thiết kế nhất trong cả chương, và chúng đáng được liệt kê đầy đủ, vì mỗi câu hỏi đều đã được các ngôn ngữ trả lời khác nhau:</p>
+
+      <ul>
+        <li>Biến vòng lặp là một biến mới do vòng lặp tạo ra, hay một biến sẵn có bên ngoài?</li>
+        <li>Tầm vực của biến vòng lặp là gì — chỉ trong vòng lặp, hay cả hàm?</li>
+        <li>Có được sửa biến vòng lặp bên trong thân vòng không?</li>
+        <li>Cận được đánh giá một lần lúc bắt đầu, hay mỗi vòng? (Trong <code>for i in range(n)</code>, thay đổi <code>n</code> giữa chừng không ảnh hưởng gì; trong <code>while i &lt; n</code>, nó ảnh hưởng ngay.)</li>
+        <li>Bước cập nhật có được âm không? Có được khác 1 không?</li>
+        <li>Sau khi vòng lặp kết thúc, biến vòng lặp còn tồn tại không, và giá trị của nó là bao nhiêu?</li>
+      </ul>
+
+      <div class="callout callout-warn">
+        <strong>⚠️ Không câu nào có câu trả lời "hiển nhiên":</strong> Chúng là những chỗ mà các ngôn ngữ lặng lẽ khác nhau, và cũng là những chỗ người lập trình chuyển từ ngôn ngữ này sang ngôn ngữ khác hay vấp.
+      </div>
+    </div>
+
+    <div class="article-section" id="lap-cau-truc">
+      <h2 class="section-heading">Lặp trên cấu trúc dữ liệu</h2>
+      <p>Nhóm thứ ba nâng mức trừu tượng lên một bậc. Thay vì tự quản một chỉ số rồi dùng nó để truy cập phần tử, ta nói thẳng ý định: <em>với mỗi phần tử trong tập hợp này, làm việc kia</em>.</p>
+
+      <div class="code-block">
+        <div class="code-label">Python — lặp trên cấu trúc dữ liệu</div>
+        <pre><code><span class="kw">for</span> item <span class="kw">in</span> collection:
+    <span class="fn">process</span>(item)</code></pre>
+      </div>
+
+      <p>Khác biệt ở đây không phải cú pháp mà là mức trừu tượng: lặp theo bộ đếm là điều khiển một con số, còn lặp trên cấu trúc dữ liệu là duyệt một tập hợp. Cái được là mã không còn chỗ cho lỗi lệch một đơn vị (off-by-one), và nó chạy được trên cả những tập hợp không có chỉ số. Cái mất là thứ tự và bước duyệt không còn được điều khiển tường minh bằng một biến đếm trong thân vòng.</p>
+
+      <p>Cơ chế đứng sau là <strong>bộ lặp</strong> (iterator): bộ lặp là trạng thái duyệt của một tập hợp — nó nhớ "ta đang ở đâu" và biết cách đi tới phần tử kế tiếp. Mô hình chung là <em>tập hợp → bộ lặp → phần tử kế tiếp</em>. Nhờ tách trạng thái duyệt ra khỏi bản thân tập hợp, cùng một câu lệnh lặp dùng được cho danh sách, cây, tệp, hay cả một dãy vô hạn.</p>
+
+      <h3 class="sub-heading">Tiến triển và sự dừng</h3>
+      <p>Cuối cùng, một điểm nguyên lý mà cú pháp không nói ra: điều kiện vòng lặp quyết định có tiếp tục hay không, nhưng chính thân vòng mới là nơi phải làm cho trạng thái tiến về phía điều kiện dừng. Nếu thân vòng không làm trạng thái tiến triển, vòng lặp không bao giờ kết thúc:</p>
+
+      <div class="code-block">
+        <div class="code-label">Python — vòng lặp vô tận vì thiếu tiến triển</div>
+        <pre><code>x = <span class="num">3</span>
+<span class="kw">while</span> x &gt; <span class="num">0</span>:
+    <span class="fn">print</span>(x)      <span class="cmt"># x never decreases -> the loop never terminates</span></code></pre>
+      </div>
+
+      <p>Ngôn ngữ không thể kiểm tra giúp ta điều này (nói chung, đó là bài toán không giải được), nên trách nhiệm thuộc về người viết. Cách suy nghĩ có kỷ luật là tự hỏi: đại lượng nào đang giảm dần về đích, và thân vòng có chắc chắn làm nó giảm không?</p>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ═══ BÀI 6: CHUYỂN ĐIỀU KHIỂN ═══ -->
+    <div class="lesson-badge">Bài 6 / 7</div>
+    <h1 class="lesson-title" id="chuyen-dieu-khien">Chuyển điều khiển và luồng điều khiển có cấu trúc</h1>
+    <div class="lesson-meta">CO3005 · Câu lệnh: phép gán, chọn lựa, lặp và chuyển điều khiển</div>
+
+    <div class="article-section">
+      <p>Ba cấu trúc đã bàn — tuần tự, chọn lựa, lặp — hợp thành nền tảng của <strong>lập trình có cấu trúc</strong> (structured programming). Sức mạnh của bộ ba này nằm ở một tính chất hình học: mỗi cấu trúc có <strong>một điểm vào và một điểm ra</strong>, nên ta có thể suy luận về nó như một khối kín mà không cần nhìn vào bên trong. Nhưng đôi khi ta muốn rời khỏi luồng ấy giữa chừng — và đó là việc của các <strong>câu lệnh chuyển điều khiển</strong> (control-transfer statement).</p>
+    </div>
+
+    <div class="article-section" id="break-continue-return">
+      <h2 class="section-heading">break · continue · return</h2>
+
+      <p><code><strong>break</strong></code> thoát khỏi vòng lặp bao gần nhất. Nó lập tức kéo theo các câu hỏi thiết kế: thoát một vòng hay thoát được nhiều vòng lồng nhau? Có cho phép nhãn để chỉ đích danh vòng cần thoát không? Nó có dùng trong câu lệnh chọn lựa nhiều nhánh không (như trong C, nơi <code>break</code> kiêm luôn vai trò chặn xuyên nhánh)?</p>
+
+      <p><code><strong>continue</strong></code> bỏ qua phần còn lại của lần lặp hiện tại và đi tiếp lần lặp sau. Cặp đôi này rất dễ lẫn, nên đáng chốt lại thành một dòng:</p>
+
+      <div class="callout callout-tip">
+        <strong>✅ Ghi nhớ:</strong> <code>break</code> ra khỏi vòng lặp. <code>continue</code> nhảy sang <em>vòng kế tiếp</em> — không ra khỏi vòng lặp, chỉ bỏ phần còn lại của lần lặp hiện tại.
+      </div>
+
+      <p><code><strong>return</strong></code> kết thúc kích hoạt của chương trình con hiện hành và trả điều khiển về nơi gọi, có thể mang theo một giá trị. Ở đây ta chỉ nhìn <code>return</code> đúng ở tư cách một câu lệnh chuyển điều khiển — nó cho phép thoát sớm khỏi một hàm ngay khi đã có câu trả lời, thay vì phải dựng thêm cờ và điều kiện để đi hết thân hàm.</p>
+    </div>
+
+    <div class="article-section" id="goto">
+      <h2 class="section-heading">goto và mã rối</h2>
+      <p><code><strong>goto</strong></code> là hình thức chuyển điều khiển thô sơ nhất: nhảy thẳng tới một nhãn. Nó có những cái lợi thật sự, và chương này không giả vờ rằng không: nó biểu diễn trực tiếp luồng điều khiển ở mức thấp, tiện cho mã sinh tự động, và đôi khi hữu ích cho đường dọn dẹp hay xử lý lỗi trong các ngôn ngữ mức thấp. Nhưng cái hại thì lớn và có tính hệ thống:</p>
+
+      <figure class="fig fig-wide">
+        <img src="Câu lệnh - phép gán, chọn lựa, lặp và chuyển điều khiển/h4.png"
+             alt="Hình 4 — Luồng điều khiển có cấu trúc vs mã rối với goto"
+             onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 4 — Bên trái: vòng lặp là một khối kín, suy luận được cục bộ. Bên phải: goto phá vỡ tính khối kín, số đường đi bùng nổ</figcaption>
+      </figure>
+
+      <p>Bên trái, vòng lặp là một khối kín: muốn hiểu nó, chỉ cần đọc nó. Bên phải, mỗi câu lệnh có thể bị nhảy tới từ bất cứ đâu, nên muốn biết trạng thái chương trình tại S₃, ta phải truy ra mọi con đường có thể dẫn tới đó. Số đường đi bùng nổ, và khả năng suy luận cục bộ sụp đổ — đây chính là hiện tượng thường gọi là <strong>mã rối</strong>. Cái giá không nằm ở lúc viết, mà ở lúc đọc lại và sửa.</p>
+
+      <p>Cần dùng các cấu trúc thay thế: chọn lựa, vòng lặp, <code>break</code>, <code>continue</code>, <code>return</code>, xử lý ngoại lệ có cấu trúc, hoặc tách một hàm phụ. Nhưng cũng không nên tuyệt đối hóa. Nói "goto luôn vô dụng" là một khẩu hiệu, không phải một nhận định kỹ thuật. Cách phát biểu trung thực hơn là: <em>goto không hạn chế làm suy yếu khả năng suy luận có cấu trúc, dù những bước nhảy có kiểm soát vẫn có thể hữu ích trong mã mức thấp hoặc mã sinh tự động</em>.</p>
+
+      <div class="callout">
+        <strong>🔑 Nhìn lại:</strong> <code>break</code>, <code>continue</code>, <code>return</code> chính là những "bước nhảy có kiểm soát": chúng cũng rời khỏi luồng thông thường, nhưng đích đến của chúng bị ràng buộc chặt bởi cấu trúc bao quanh, nên vẫn suy luận được. Đó là ranh giới giữa chuyển điều khiển "lành mạnh" và goto không hạn chế.
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ═══ BÀI 7: TỔNG KẾT ═══ -->
+    <div class="lesson-badge">Bài 7 / 7 · Bài cuối chương</div>
+    <h1 class="lesson-title" id="tong-ket">Tổng kết chương</h1>
+    <div class="lesson-meta">CO3005 · Câu lệnh: phép gán, chọn lựa, lặp và chuyển điều khiển</div>
+
+    <div class="article-section">
+      <p>Câu lệnh được sử dụng chủ yếu vì hành động hoặc sự thay đổi luồng điều khiển mà nó gây ra, còn biểu thức được sử dụng chủ yếu vì giá trị mà nó tạo ra — dù biểu thức, như chương trước đã chỉ ra, vẫn có thể mang hiệu ứng phụ. Ngay ở lằn ranh ấy đã có một đánh đổi trở đi trở lại suốt chương: mỗi lần ngôn ngữ cho phép một cấu trúc vừa mang giá trị vừa mang hiệu ứng, nó đổi sự rành mạch lấy sự gọn gàng.</p>
+
+      <p>Phép gán là câu lệnh thay đổi trạng thái cơ bản nhất, và hiểu đúng nó đòi hỏi tách bạch biến, ô nhớ, giá trị, ràng buộc và khởi tạo trong mô hình lưu trữ trừu tượng — một mô hình mà mỗi ngôn ngữ hiện thực hóa theo cách riêng. Gán không phải phép bằng toán học mà là một chuỗi đọc–tính–ghi. Các biến thể của nó đều ẩn quyết định thiết kế: gán đồng thời buộc ngôn ngữ chọn "đánh giá hết vế phải rồi mới ràng buộc"; gán chuỗi có ngữ nghĩa tùy ngôn ngữ; và gán phức hợp <code>x += y</code> không đương nhiên bằng <code>x = x + y</code>, vì có thể khác về số lần đánh giá, chuyển kiểu, toán tử nạp chồng và hiệu ứng phụ.</p>
+
+      <p>Chọn lựa quyết định nhánh dựa trên điều kiện, với những lựa chọn thiết kế trải từ việc điều kiện có buộc là luận lý hay chấp nhận tính thật–giả, tới cách khử nhập nhằng else lơ lửng — vốn là do văn phạm sinh ra nên phải chữa bằng thiết kế văn phạm, mà khối lệnh là lời giải gọn nhất. Ở chọn lựa nhiều nhánh, xuyên nhánh là một lựa chọn thiết kế chứ không phải bản chất, và đa số ngôn ngữ đời sau đã chọn ngược lại với C.</p>
+
+      <p>Lặp được kiểm soát bằng điều kiện logic, bằng bộ đếm, hoặc bằng chính cấu trúc dữ liệu. Kiểm tra trước và kiểm tra sau khác nhau ở số lần chạy tối thiểu là 0 hay 1; vòng lặp theo bộ đếm kéo theo cả một chùm câu hỏi về tầm vực, cận và bước cập nhật; còn lặp trên cấu trúc dữ liệu nâng mức trừu tượng lên thành duyệt, với bộ lặp đóng vai trạng thái duyệt. Bất kể hình thức nào, sự dừng chỉ đến khi thân vòng làm trạng thái tiến triển về đích.</p>
+
+      <p>Cuối cùng, tuần tự, chọn lựa và lặp hợp thành luồng điều khiển có cấu trúc, nơi mỗi khối có một điểm vào và một điểm ra nên suy luận được cục bộ. Các câu lệnh chuyển điều khiển cho phép rời khỏi luồng ấy: <code>break</code>, <code>continue</code>, <code>return</code> là những bước nhảy bị ràng buộc chặt bởi cấu trúc bao quanh, còn <code>goto</code> không hạn chế thì phá vỡ chính tính chất một-vào-một-ra khiến việc suy luận trở nên khả thi.</p>
+
+      <div class="callout">
+        <strong>🔗 Thông điệp xuyên suốt:</strong> Nghĩa của một câu lệnh không chỉ nằm ở cú pháp, mà ở thay đổi trạng thái nó gây ra, luật chọn nhánh, cách kiểm soát vòng lặp, và luật chuyển điều khiển mà ngôn ngữ đã chọn. Tựu trung, cùng những nguyên lý ấy sẽ theo ta khi bước sang các chủ đề về chương trình con và xử lý ngoại lệ.
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a class="nav-btn secondary" href="CO3005.html">← Trang chủ</a>
+      <span>Bài 7 / 7 · Câu lệnh: phép gán, chọn lựa, lặp và chuyển điều khiển</span>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function openLb(src, alt) {
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lbImg').alt = alt;
+  document.getElementById('lb').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLb() {
+  document.getElementById('lb').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+const tocLinks = document.querySelectorAll('.toc-item');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+    }
+  });
+}, { rootMargin: '-60px 0px -70% 0px', threshold: 0 });
+document.querySelectorAll('[id]').forEach(h => obs.observe(h));
+</script>
+</body>
+</html>

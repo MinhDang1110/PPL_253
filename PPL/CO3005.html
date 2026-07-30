@@ -109,37 +109,80 @@
     line-height: 1.7;
   }
 
-  /* stats strip */
+  /* ── stats pills ── */
   .stats {
     display: flex;
-    gap: 0;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    width: fit-content;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 4px;
   }
   .stat {
-    padding: 14px 28px;
-    text-align: center;
-    border-right: 1px solid var(--border);
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    min-width: 168px;
+    transition: transform .2s, box-shadow .2s;
+    overflow: hidden;
+    cursor: default;
   }
-  .stat:last-child { border-right: none; }
+  .stat::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--sg);
+    opacity: 0;
+    transition: opacity .2s;
+    border-radius: inherit;
+  }
+  .stat:hover { transform: translateY(-3px); box-shadow: 0 8px 28px color-mix(in srgb, var(--sc) 22%, transparent); }
+  .stat:hover::after { opacity: .055; }
+  .stat-icon {
+    width: 42px; height: 42px;
+    border-radius: 11px;
+    background: var(--sg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    position: relative; z-index: 1;
+  }
+  .stat-body { position: relative; z-index: 1; }
   .stat-num {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--accent);
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--sc);
     display: block;
+    letter-spacing: -0.02em;
   }
   .stat-label {
     font-size: 11px;
     color: var(--muted);
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
-    margin-top: 2px;
+    margin-top: 3px;
     display: block;
+    font-weight: 500;
   }
+  .stat-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 3px;
+    width: var(--pct, 60%);
+    background: var(--sg);
+    border-radius: 0 2px 0 0;
+    transition: width .8s cubic-bezier(.4,0,.2,1);
+  }
+  /* individual pill colours */
+  .stat:nth-child(1) { --sc:#1a56a0; --sg: linear-gradient(135deg,#4f8ef7,#1a56a0); --pct:72%; }
+  .stat:nth-child(2) { --sc:#0e9f6e; --sg: linear-gradient(135deg,#34d399,#059669); --pct:85%; }
+  .stat:nth-child(3) { --sc:#d97706; --sg: linear-gradient(135deg,#fbbf24,#d97706); --pct:55%; }
+  .stat:nth-child(4) { --sc:#7c3aed; --sg: linear-gradient(135deg,#a78bfa,#7c3aed); --pct:40%; }
 
   /* search */
   .search-wrap { margin-top: 28px; max-width: 460px; }
@@ -712,16 +755,36 @@
 
   <div class="stats">
     <div class="stat">
-      <span class="stat-num">11</span>
-      <span class="stat-label">chương</span>
+      <div class="stat-icon">📖</div>
+      <div class="stat-body">
+        <span class="stat-num" data-target="13">0</span>
+        <span class="stat-label">Chương</span>
+      </div>
+      <div class="stat-bar"></div>
     </div>
     <div class="stat">
-      <span class="stat-num">48</span>
-      <span class="stat-label">bài học</span>
+      <div class="stat-icon">🎯</div>
+      <div class="stat-body">
+        <span class="stat-num" data-target="91">0</span>
+        <span class="stat-label">Bài học</span>
+      </div>
+      <div class="stat-bar"></div>
     </div>
     <div class="stat">
-      <span class="stat-num">6</span>
-      <span class="stat-label">bộ quiz</span>
+      <div class="stat-icon">🧩</div>
+      <div class="stat-body">
+        <span class="stat-num" data-target="6">0</span>
+        <span class="stat-label">Bộ quiz</span>
+      </div>
+      <div class="stat-bar"></div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon">📝</div>
+      <div class="stat-body">
+        <span class="stat-num" data-target="5">0</span>
+        <span class="stat-label">Đề thi</span>
+      </div>
+      <div class="stat-bar"></div>
     </div>
   </div>
 
@@ -984,6 +1047,48 @@
           <span class="tag">Code Gen</span>
           <span class="tag">Frame</span>
           <span class="tag">Visitor</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <a class="card" href="CO3005_Bieu_thuc.html"
+       style="--c-accent: var(--c12, #7c3aed);"
+       data-keywords="biểu thức expression câu lệnh statement cây biểu thức ký pháp trung tố tiền tố hậu tố infix prefix postfix RPN độ ưu tiên tính kết hợp hiệu ứng phụ side effect đánh giá lười háo hức đoản mạch short-circuit">
+      <div class="card-top">
+        <div>
+          <div class="card-num">Chương 12</div>
+          <div class="card-title">Biểu thức: cấu trúc, đánh giá và hiệu ứng phụ</div>
+        </div>
+        <div class="card-icon">🔢</div>
+      </div>
+      <div class="card-desc">Cây biểu thức, ký pháp trung tố/tiền tố/hậu tố, độ ưu tiên, tính kết hợp, biểu thức điều kiện, đánh giá chọn lọc, hiệu ứng phụ và các chiến lược đánh giá.</div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">Expressions</span>
+          <span class="tag">Side Effects</span>
+          <span class="tag">Lazy Eval</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <a class="card" href="CO3005_Cau_lenh.html"
+       style="--c-accent: var(--c13, #0891b2);"
+       data-keywords="câu lệnh statement phép gán assignment chọn lựa selection lặp iteration chuyển điều khiển break continue return goto if switch while for iterator truthiness else lơ lửng dangling else fall-through xuyên nhánh structured programming">
+      <div class="card-top">
+        <div>
+          <div class="card-num">Chương 13</div>
+          <div class="card-title">Câu lệnh: phép gán, chọn lựa, lặp và chuyển điều khiển</div>
+        </div>
+        <div class="card-icon">🔀</div>
+      </div>
+      <div class="card-desc">Mô hình lưu trữ trừu tượng, phép gán đồng thời và phức hợp, chọn lựa hai nhánh và nhiều nhánh, lặp điều kiện/bộ đếm/cấu trúc dữ liệu, break/continue/return/goto.</div>
+      <div class="card-footer">
+        <div class="card-tags">
+          <span class="tag">Assignment</span>
+          <span class="tag">Control Flow</span>
+          <span class="tag">Iteration</span>
         </div>
         <div class="card-arrow">→</div>
       </div>
@@ -1374,6 +1479,28 @@
     const base = window.location.origin + window.location.pathname;
     if (base.startsWith('http')) document.getElementById('shareUrl').textContent = base;
   } catch(e) {}
+
+  /* ── STAT COUNT-UP ── */
+  (function() {
+    const nums = document.querySelectorAll('.stat-num[data-target]');
+    const ease = t => t < .5 ? 2*t*t : -1+(4-2*t)*t;
+    const run = (el) => {
+      const target = +el.dataset.target;
+      const dur = 900;
+      const start = performance.now();
+      const tick = now => {
+        const p = Math.min((now - start) / dur, 1);
+        el.textContent = Math.round(ease(p) * target);
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = target;
+      };
+      requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { run(e.target); io.unobserve(e.target); } });
+    }, { threshold: .5 });
+    nums.forEach(n => io.observe(n));
+  })();
 </script>
 </body>
 </html>
