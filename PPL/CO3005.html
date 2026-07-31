@@ -757,23 +757,23 @@
     <div class="stat">
       <div class="stat-icon">📖</div>
       <div class="stat-body">
-        <span class="stat-num" data-target="13">0</span>
+        <span class="stat-num" id="statChapter">0</span>
         <span class="stat-label">Chương</span>
       </div>
       <div class="stat-bar"></div>
     </div>
     <div class="stat">
-      <div class="stat-icon">🎯</div>
+      <div class="stat-icon">📚</div>
       <div class="stat-body">
-        <span class="stat-num" data-target="91">0</span>
-        <span class="stat-label">Bài học</span>
+        <span class="stat-num" id="statApp">0</span>
+        <span class="stat-label">Phụ lục</span>
       </div>
       <div class="stat-bar"></div>
     </div>
     <div class="stat">
       <div class="stat-icon">🧩</div>
       <div class="stat-body">
-        <span class="stat-num" data-target="6">0</span>
+        <span class="stat-num" id="statQuiz">0</span>
         <span class="stat-label">Bộ quiz</span>
       </div>
       <div class="stat-bar"></div>
@@ -781,7 +781,7 @@
     <div class="stat">
       <div class="stat-icon">📝</div>
       <div class="stat-body">
-        <span class="stat-num" data-target="5">0</span>
+        <span class="stat-num" id="statExam">0</span>
         <span class="stat-label">Đề thi</span>
       </div>
       <div class="stat-bar"></div>
@@ -1501,12 +1501,20 @@
     if (base.startsWith('http')) document.getElementById('shareUrl').textContent = base;
   } catch(e) {}
 
-  /* ── STAT COUNT-UP ── */
+  /* ── STAT COUNT-UP (AUTO) ── */
   (function() {
-    const nums = document.querySelectorAll('.stat-num[data-target]');
+    // Count DOM elements automatically — updates whenever cards are added/removed
+    function getCounts() {
+      return {
+        chapter: document.querySelectorAll('#cardGrid .card').length,
+        app:     document.querySelectorAll('#panelApp .app-card').length,
+        quiz:    document.querySelectorAll('#panelQuiz .quiz-card').length,
+        exam:    document.querySelectorAll('#panelExam .exam-card').length,
+      };
+    }
+
     const ease = t => t < .5 ? 2*t*t : -1+(4-2*t)*t;
-    const run = (el) => {
-      const target = +el.dataset.target;
+    function animateTo(el, target) {
       const dur = 900;
       const start = performance.now();
       const tick = now => {
@@ -1516,11 +1524,22 @@
         else el.textContent = target;
       };
       requestAnimationFrame(tick);
-    };
+    }
+
+    function runStats() {
+      const c = getCounts();
+      animateTo(document.getElementById('statChapter'), c.chapter);
+      animateTo(document.getElementById('statApp'),     c.app);
+      animateTo(document.getElementById('statQuiz'),    c.quiz);
+      animateTo(document.getElementById('statExam'),    c.exam);
+    }
+
+    // Fire once when the stats strip enters the viewport
+    const strip = document.querySelector('.stats');
     const io = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { run(e.target); io.unobserve(e.target); } });
-    }, { threshold: .5 });
-    nums.forEach(n => io.observe(n));
+      entries.forEach(e => { if (e.isIntersecting) { runStats(); io.unobserve(e.target); } });
+    }, { threshold: .4 });
+    if (strip) io.observe(strip);
   })();
 </script>
 </body>
