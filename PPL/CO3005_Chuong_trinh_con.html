@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CO3005 – Chương trình con</title>
+<meta name="description" content="Bài giảng CO3005: Chương trình con – định nghĩa, kích hoạt, các cơ chế (đệ quy, ngoại lệ, đồng thường trình, tác vụ), truyền tham số và hàm bậc cao – Nguyên lý Ngôn ngữ Lập trình, ĐH Bách Khoa TP.HCM.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #ddd9d0;
+    --text: #1a1916;
+    --muted: #6b6760;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --kw: #569cd6;
+    --str: #ce9178;
+    --cmt: #6a9955;
+    --num: #b5cea8;
+    --fn: #dcdcaa;
+    --typ: #4ec9b0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar-logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    padding: 0 20px 10px;
+    letter-spacing: .06em;
+    display: block;
+    text-decoration: none;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .toc-item {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .toc-item:hover, .toc-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .toc-item.sub { padding-left: 32px; font-size: 12px; }
+
+  /* ── MAIN ── */
+  .main { padding: 48px 56px 80px; max-width: 820px; }
+
+  .lesson-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .lesson-title {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .lesson-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .article-section { margin-bottom: 48px; scroll-margin-top: 24px; }
+
+  .section-heading {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+  .section-heading::before {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 40px; height: 2px;
+    background: var(--accent);
+  }
+
+  .sub-heading {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 28px 0 12px;
+  }
+
+  p { margin-bottom: 14px; }
+  ul, ol { margin: 12px 0 16px 28px; line-height: 2.0; font-size: 15px; }
+  li { margin-bottom: 4px; }
+
+  /* ── CODE ── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+  }
+  .code-label {
+    background: #2d2d2d;
+    padding: 6px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #333;
+  }
+  pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--code-text);
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #e8e5de;
+    color: #b5451b;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+  .kw  { color: var(--kw); }
+  .str { color: var(--str); }
+  .cmt { color: var(--cmt); font-style: italic; }
+  .num { color: var(--num); }
+  .fn  { color: var(--fn); }
+  .typ { color: var(--typ); }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .callout strong { color: var(--accent); }
+  .callout-warn  { background: #fff8e1; border-left-color: #f59e0b; }
+  .callout-warn  strong { color: #b45309; }
+  .callout-tip   { background: #f0fdf4; border-left-color: #16a34a; }
+  .callout-tip   strong { color: #15803d; }
+  .callout-red   { background: #fff1f2; border-left-color: #e11d48; }
+  .callout-red   strong { color: #be123c; }
+
+  /* ── TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  /* ── FIGURE ── */
+  .fig { text-align: center; margin: 28px 0; }
+  .fig img {
+    max-width: 640px; width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+    cursor: zoom-in;
+    transition: opacity .15s;
+  }
+  .fig img:hover { opacity: .9; }
+  .fig figcaption {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .fig-wide img { max-width: 740px; }
+  .fig-narrow img { max-width: 420px; }
+
+  /* ── DIVIDER ── */
+  .lesson-divider {
+    border: none;
+    border-top: 2px dashed var(--border);
+    margin: 52px 0;
+  }
+
+  /* ── NAV FOOTER ── */
+  .nav-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 0 0; border-top: 1px solid var(--border);
+    margin-top: 48px; font-size: 14px; color: var(--muted);
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; background: var(--accent); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 500;
+    text-decoration: none;
+  }
+  .nav-btn.secondary { background: var(--surface); color: var(--accent); border: 1px solid var(--accent); }
+
+  /* ── LIGHTBOX ── */
+  .lb-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,.82);
+    align-items: center; justify-content: center; cursor: zoom-out;
+  }
+  .lb-overlay.open { display: flex; }
+  .lb-overlay img { max-width: 92vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,.6); }
+  .lb-close { position: fixed; top: 18px; right: 24px; font-size: 30px; color: #fff; cursor: pointer; opacity:.8; }
+  .lb-close:hover { opacity: 1; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lb-overlay" id="lb" onclick="closeLb()">
+  <span class="lb-close" onclick="closeLb()">✕</span>
+  <img id="lbImg" src="" alt="">
+</div>
+
+<div class="layout">
+
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <nav class="sidebar">
+    <a class="sidebar-logo" href="CO3005.html">← CO3005</a>
+    <div class="sidebar-title">Mục lục bài học</div>
+
+    <a class="toc-item active" href="#mo-dau">Bài 1 · Mở đầu</a>
+
+    <a class="toc-item" href="#dinh-nghia-kich-hoat">Bài 2 · Định nghĩa và kích hoạt</a>
+    <a class="toc-item sub" href="#dac-ta-hien-thuc">Đặc tả và phần hiện thực</a>
+    <a class="toc-item sub" href="#ban-ghi-kich-hoat">Lần kích hoạt &amp; bản ghi kích hoạt</a>
+
+    <a class="toc-item" href="#co-che">Bài 3 · Các cơ chế chương trình con</a>
+    <a class="toc-item sub" href="#goi-tra-ve">Gọi–trả về đơn giản</a>
+    <a class="toc-item sub" href="#de-quy">Gọi đệ quy</a>
+    <a class="toc-item sub" href="#ngoai-le">Ngoại lệ</a>
+    <a class="toc-item sub" href="#dong-thuong-trinh">Đồng thường trình</a>
+    <a class="toc-item sub" href="#dinh-thoi">Chương trình con định thời</a>
+    <a class="toc-item sub" href="#tac-vu">Tác vụ</a>
+
+    <a class="toc-item" href="#truyen-tham-so">Bài 4 · Truyền tham số</a>
+    <a class="toc-item sub" href="#hinh-thuc-thuc">Tham số hình thức &amp; tham số thực</a>
+    <a class="toc-item sub" href="#vao-ra">Tham số vào–ra</a>
+    <a class="toc-item sub" href="#chi-vao">Tham số chỉ vào</a>
+    <a class="toc-item sub" href="#chi-ra">Tham số chỉ ra</a>
+    <a class="toc-item sub" href="#chia-se">Truyền theo chia sẻ đối tượng</a>
+    <a class="toc-item sub" href="#truyen-ten">Truyền theo tên</a>
+
+    <a class="toc-item" href="#ham-bac-cao">Bài 5 · Hàm bậc cao &amp; môi trường phi cục bộ</a>
+    <a class="toc-item sub" href="#ham-tham-so">Hàm là tham số</a>
+    <a class="toc-item sub" href="#ham-ket-qua">Hàm là kết quả trả về</a>
+
+    <a class="toc-item" href="#tong-ket">Bài 6 · Tổng kết chương</a>
+  </nav>
+
+  <!-- ══════════════ MAIN ══════════════ -->
+  <main class="main">
+
+    <!-- ═══ BÀI 1: MỞ ĐẦU ═══ -->
+    <div class="lesson-badge">Bài 1 / 6</div>
+    <h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+    <div class="lesson-meta">CO3005 · Chương trình con · Trần Ngọc Bảo Duy · HK253</div>
+
+    <div class="article-section">
+      <p>Khi một chương trình lớn dần, ta không thể — và cũng không nên — viết toàn bộ tính toán thành một khối lệnh duy nhất. Một đoạn tính toán có ý nghĩa trọn vẹn, chẳng hạn "tìm phần tử lớn nhất của một dãy" hay "đọc và kiểm tra một dòng dữ liệu", xứng đáng được đặt tên, được mô tả bằng những gì nó nhận vào và trả ra, rồi được gọi lại ở bất kỳ đâu cần đến mà không phải chép lại từng dòng lệnh. Cơ chế ngôn ngữ đáp ứng nhu cầu đó chính là <strong>chương trình con</strong> (subprogram), mà tùy ngôn ngữ còn được gọi là hàm, thủ tục hay phương thức.</p>
+
+      <p>Ở các chương trước, ta đã khảo sát biểu thức và các cấu trúc điều khiển tuần tự, rẽ nhánh, lặp: chúng mô tả dòng điều khiển bên trong một đoạn mã. Chương trình con nâng mức trừu tượng lên một bậc: nó cho phép ta thao tác với cả một đoạn tính toán như một đơn vị — gọi nó, truyền dữ liệu cho nó, nhận kết quả từ nó, thậm chí tạm dừng rồi tiếp tục nó. Vì lẽ đó, chương trình con được xem là hình thức <strong>trừu tượng hóa điều khiển</strong> (control abstraction) quan trọng nhất của các ngôn ngữ lập trình: người gọi chỉ cần biết <em>cái gì</em> được tính, còn <em>cách tính</em> được che giấu sau đặc tả.</p>
+
+      <p>Cũng như các chương trước trong phần nguyên lý, ta sẽ không dừng lại ở một ngôn ngữ cụ thể. Cùng một khái niệm "gọi hàm" nhưng C, Java, Ada, Scala hay Python trả lời rất khác nhau cho những câu hỏi thiết kế nền tảng: điều gì xảy ra khi một chương trình con được kích hoạt, dữ liệu được trao đổi giữa người gọi và người được gọi theo cơ chế nào, và một hàm có thể được truyền đi hay trả về như một giá trị hay không.</p>
+
+      <div class="callout">
+        <strong>📌 Mục tiêu chương này:</strong> Phân biệt định nghĩa chương trình con, lần kích hoạt và bản ghi kích hoạt; so sánh lời gọi thường, đệ quy, ngoại lệ, đồng thường trình, gọi định thời và tác vụ; phân tích ảnh hưởng của các cơ chế truyền tham số cùng hiện tượng bí danh; và giải thích vì sao hàm bậc cao — đặc biệt là việc trả hàm về — đòi hỏi trạng thái sống vượt ra ngoài một lời gọi thông thường.
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ═══ BÀI 2: ĐỊNH NGHĨA VÀ KÍCH HOẠT ═══ -->
+    <div class="lesson-badge">Bài 2 / 6</div>
+    <h1 class="lesson-title" id="dinh-nghia-kich-hoat">Định nghĩa và kích hoạt chương trình con</h1>
+    <div class="lesson-meta">CO3005 · Chương trình con</div>
+
+    <div class="article-section" id="dac-ta-hien-thuc">
+      <h2 class="section-heading">Đặc tả và phần hiện thực</h2>
+      <p>Một định nghĩa chương trình con gồm hai phần có vai trò rất khác nhau. <strong>Đặc tả</strong> (specification) là phần dành cho người gọi: nó cho biết tên chương trình con; danh sách tham số cùng với chiều dữ liệu (vào, ra hay vừa vào vừa ra), thứ tự, kiểu và cơ chế truyền của từng tham số; và hành vi mà chương trình con cam kết thực hiện. <strong>Phần hiện thực</strong> (implementation) là phần dành cho người viết: các khai báo dữ liệu cục bộ và tập hợp câu lệnh tạo thành thân chương trình con (subprogram body).</p>
+
+      <p>Ví dụ, cùng một hàm tìm số lớn nhất trong hai số, đặc tả và phần hiện thực trong C tách bạch như sau:</p>
+
+      <div class="code-block">
+        <div class="code-label">C — đặc tả và phần hiện thực</div>
+        <pre><code><span class="typ">int</span> <span class="fn">findMax</span>(<span class="typ">int</span> x, <span class="typ">int</span> y);      <span class="cmt">/* specification: name, parameters, types */</span>
+
+<span class="typ">int</span> <span class="fn">findMax</span>(<span class="typ">int</span> x, <span class="typ">int</span> y) {     <span class="cmt">/* implementation */</span>
+    <span class="typ">int</span> m = (x &gt; y) ? x : y;    <span class="cmt">/* local data */</span>
+    <span class="kw">return</span> m;
+}</code></pre>
+      </div>
+
+      <p>Sự tách bạch này chính là nền của trừu tượng hóa: người gọi lập trình dựa trên đặc tả, còn phần hiện thực có thể được viết lại hoàn toàn — đổi thuật toán, đổi dữ liệu cục bộ — miễn là hành vi cam kết không đổi. Các ngôn ngữ khác nhau ở mức độ tường minh của đặc tả. C và Java buộc khai báo kiểu của từng tham số. Python không bắt buộc khai báo kiểu, nhưng chữ ký hàm của nó vẫn biểu diễn được nhiều thông tin khác: loại tham số (chỉ theo vị trí, chỉ theo từ khóa), giá trị mặc định, tham số biến thiên và chú giải kiểu tùy chọn. Ada còn cho phép ghi rõ chiều dữ liệu <code>in</code>, <code>out</code>, <code>in out</code> ngay trong đặc tả.</p>
+
+      <p>Một điểm đáng chú ý là định nghĩa chương trình con có thể <strong>lồng nhau</strong>: một hàm chứa định nghĩa của một hàm cục bộ ngay trong thân của nó. Python cho phép điều này một cách tự nhiên:</p>
+
+      <div class="code-block">
+        <div class="code-label">Python — hàm lồng nhau</div>
+        <pre><code><span class="kw">def</span> <span class="fn">apply_twice</span>(x):
+    <span class="kw">def</span> <span class="fn">inc</span>(v):
+        <span class="cmt"># local function, visible only inside apply_twice</span>
+        <span class="kw">return</span> v + <span class="num">1</span>
+    <span class="kw">return</span> <span class="fn">inc</span>(<span class="fn">inc</span>(x))</code></pre>
+      </div>
+
+      <p>Đoạn mã trên chứa hai định nghĩa chương trình con: <code>apply_twice</code> là hàm ngoài với một tham số <code>x</code>, còn <code>inc</code> là hàm cục bộ với một tham số <code>v</code>, chỉ nhìn thấy được từ bên trong <code>apply_twice</code>; lời gọi <code>apply_twice(5)</code> cho <code>7</code>. Đáng chú ý, C chuẩn không cho phép định nghĩa hàm lồng trong hàm — đây là điểm sẽ quay lại ở cuối chương khi bàn về việc trả hàm ra ngoài.</p>
+    </div>
+
+    <div class="article-section" id="ban-ghi-kich-hoat">
+      <h2 class="section-heading">Lần kích hoạt và bản ghi kích hoạt</h2>
+      <p>Định nghĩa chương trình con chỉ là văn bản tĩnh: nó cung cấp một <strong>đoạn mã</strong> (code segment) dùng chung cho mọi lần gọi, vì các lệnh trong thân không đổi. Khi chương trình con được gọi, một <strong>lần kích hoạt</strong> (activation) ra đời; với lời gọi thông thường, nó được tạo lúc gọi và kết thúc khi chương trình con hoàn tất việc thực thi. Thông tin riêng của từng lần kích hoạt được lưu trong một <strong>bản ghi kích hoạt</strong> (activation record) tạo mới cho lần gọi đó:</p>
+
+      <ul>
+        <li>Tham số hình thức</li>
+        <li>Dữ liệu cục bộ</li>
+        <li>Địa chỉ trả về (return address) — cho biết quay về đâu khi xong việc</li>
+        <li>Các liên kết khác phục vụ việc tra cứu tên và quản lý ngăn xếp</li>
+      </ul>
+
+      <p>Như vậy nhiều lần kích hoạt có thể cùng dùng một đoạn mã nhưng giữ các trạng thái động độc lập; đoạn mã không phải là thứ được tạo lại trong từng lần kích hoạt. Cần nói trước rằng "kết thúc khi hoàn tất" chỉ đúng cho lời gọi thông thường: với đồng thường trình mà ta gặp ở phần sau, trạng thái kích hoạt còn được bảo tồn cả trong thời gian chương trình con bị tạm hoãn.</p>
+
+      <p>Có thể hình dung một bản ghi kích hoạt như sơ đồ sau:</p>
+
+      <figure class="fig">
+        <img src="Chương trình con/h1.png"
+             alt="Hình 1 — Cấu trúc bản ghi kích hoạt"
+             onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 1 — Cấu trúc bản ghi kích hoạt: tham số, dữ liệu cục bộ, địa chỉ trả về và các liên kết</figcaption>
+      </figure>
+
+      <p>Việc tách đoạn mã dùng chung khỏi trạng thái động riêng là quyết định then chốt: chính nhờ mỗi lần gọi có bản ghi kích hoạt riêng mà cùng một đoạn mã có thể đang "sống" nhiều lần đồng thời — điều kiện tiên quyết của đệ quy. Để đối chiếu, FORTRAN 77 với mô hình hiện thực truyền thống không hỗ trợ đệ quy; việc dữ liệu cục bộ thường được cấp phát tĩnh — mỗi chương trình con chỉ có một vùng dữ liệu duy nhất — là một nguyên nhân hiện thực quan trọng khiến các lần gọi lồng nhau không có trạng thái độc lập.</p>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ═══ BÀI 3: CÁC CƠ CHẾ ═══ -->
+    <div class="lesson-badge">Bài 3 / 6</div>
+    <h1 class="lesson-title" id="co-che">Các cơ chế chương trình con</h1>
+    <div class="lesson-meta">CO3005 · Chương trình con</div>
+
+    <div class="article-section" id="goi-tra-ve">
+      <h2 class="section-heading">Gọi–trả về đơn giản</h2>
+      <p>Quan hệ giữa người gọi và người được gọi không chỉ có một hình thức duy nhất. Trong phạm vi chương này, ta dùng một khung so sánh gồm sáu cơ chế tổ chức và chuyển giao điều khiển có liên quan đến chương trình con: gọi–trả về đơn giản, gọi đệ quy, ngoại lệ, đồng thường trình, chương trình con định thời, và tác vụ.</p>
+
+      <p><strong>Gọi–trả về đơn giản</strong> (simple call-return) là cơ chế nguyên thủy nhất, với năm đặc trưng:</p>
+
+      <ul>
+        <li>Không đệ quy</li>
+        <li>Có điểm gọi (call site) tường minh — nhìn vào mã nguồn thấy ngay lệnh gọi ở đâu</li>
+        <li>Một điểm vào (entry point) duy nhất — mọi lần gọi đều bắt đầu từ đầu thân</li>
+        <li>Chuyển điều khiển tức thời — người gọi dừng lại, người được gọi chạy ngay</li>
+        <li>Một lần thực thi trọn vẹn — người được gọi chạy từ đầu đến cuối rồi trả điều khiển về đúng sau điểm gọi</li>
+      </ul>
+
+      <div class="callout">
+        <strong>🔑 Sợi chỉ đỏ xuyên chương:</strong> Mỗi cơ chế tiếp theo chính là kết quả của việc bỏ đi một trong các đặc trưng này. Đệ quy bỏ "không đệ quy"; ngoại lệ bỏ "điểm gọi tường minh"; đồng thường trình bỏ "một lần thực thi trọn vẹn"; chương trình con định thời bỏ "chuyển điều khiển tức thời"; và tác vụ bỏ luôn cả ý niệm người gọi phải dừng chờ người được gọi.
+      </div>
+    </div>
+
+    <div class="article-section" id="de-quy">
+      <h2 class="section-heading">Gọi đệ quy</h2>
+      <p><strong>Gọi đệ quy</strong> (recursive call) cho phép một chương trình con gọi lại chính nó, trực tiếp hoặc gián tiếp. <strong>Đệ quy trực tiếp</strong> (direct recursion) là khi thân của <code>f</code> chứa lời gọi <code>f</code>; <strong>đệ quy tương hỗ</strong> (mutual recursion), còn gọi là đệ quy gián tiếp, là khi <code>f</code> gọi <code>g</code> và <code>g</code> gọi lại <code>f</code>.</p>
+
+      <div class="code-block">
+        <div class="code-label">Python — đệ quy trực tiếp và đệ quy tương hỗ</div>
+        <pre><code><span class="kw">def</span> <span class="fn">fact</span>(n):
+    <span class="cmt"># direct recursion</span>
+    <span class="kw">return</span> <span class="num">1</span> <span class="kw">if</span> n == <span class="num">0</span> <span class="kw">else</span> n * <span class="fn">fact</span>(n - <span class="num">1</span>)
+
+<span class="kw">def</span> <span class="fn">is_even</span>(n):
+    <span class="kw">return</span> <span class="kw">True</span> <span class="kw">if</span> n == <span class="num">0</span> <span class="kw">else</span> <span class="fn">is_odd</span>(n - <span class="num">1</span>)
+
+<span class="kw">def</span> <span class="fn">is_odd</span>(n):
+    <span class="cmt"># mutual recursion with is_even</span>
+    <span class="kw">return</span> <span class="kw">False</span> <span class="kw">if</span> n == <span class="num">0</span> <span class="kw">else</span> <span class="fn">is_even</span>(n - <span class="num">1</span>)</code></pre>
+      </div>
+
+      <p>Chạy <code>fact(5)</code> cho 120, <code>is_even(10)</code> cho <code>True</code> và <code>is_odd(7)</code> cho <code>True</code>. Điều làm đệ quy trở nên khả thi chính là bản ghi kích hoạt: khi <code>fact(3)</code> gọi <code>fact(2)</code>, một bản ghi kích hoạt mới được xếp chồng lên bản ghi của <code>fact(3)</code>, với tham số <code>n</code> riêng của nó. Mỗi lần kích hoạt giữ trạng thái riêng, nên các lần gọi lồng nhau không giẫm lên nhau; khi <code>fact(0)</code> trả về, các bản ghi được gỡ dần theo thứ tự ngược lại.</p>
+
+      <div class="callout callout-warn">
+        <strong>⚠️ Chi phí đệ quy:</strong> Cái giá phải trả là chi phí bộ nhớ ngăn xếp tỷ lệ với độ sâu đệ quy — một dãy gọi quá sâu sẽ làm tràn ngăn xếp. Đây là lý do nhiều ngôn ngữ hàm đầu tư vào <strong>tối ưu hóa lời gọi đuôi</strong> (tail-call optimization) để đổi đệ quy lấy vòng lặp.
+      </div>
+    </div>
+
+    <div class="article-section" id="ngoai-le">
+      <h2 class="section-heading">Ngoại lệ</h2>
+      <p><strong>Ngoại lệ</strong> (exception) là cơ chế chuyển điều khiển khi quá trình thực thi gặp một điều kiện bất thường làm gián đoạn dòng lệnh bình thường. Điểm đặc biệt so với lời gọi hàm thông thường là đích xử lý không được chỉ ra ngay tại câu lệnh gây lỗi: khi ngoại lệ phát sinh, hệ thống thực thi tự tìm một bộ xử lý phù hợp trong các khối bảo vệ đang hoạt động — bộ xử lý được kích hoạt mà không có điểm gọi tường minh trong mã nguồn.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Cơ chế</th><th>Nguyên nhân kích hoạt</th><th>Dùng cho</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Bộ xử lý sự kiện / callback</td><td>Sự kiện được bộ điều phối gửi đến</td><td>Chuột, bàn phím, mạng, giao diện</td></tr>
+          <tr><td>Bộ xử lý ngoại lệ</td><td>Điều kiện bất thường làm gián đoạn dòng lệnh</td><td>Lỗi chuyển đổi, chia cho không, tệp không tồn tại</td></tr>
+        </tbody>
+      </table>
+
+      <p>Ví dụ điển hình bằng Java: hàm tính trung bình cộng không thể trả lời khi mảng rỗng, nên nó ném một ngoại lệ, và người gọi bắt ngoại lệ đó trong một khối bảo vệ:</p>
+
+      <div class="code-block">
+        <div class="code-label">Java — ngoại lệ tùy chỉnh</div>
+        <pre><code><span class="kw">class</span> <span class="typ">EmptyArrayException</span> <span class="kw">extends</span> <span class="typ">Exception</span> {
+    <span class="kw">public</span> <span class="fn">EmptyArrayException</span>() {
+        <span class="kw">super</span>(<span class="str">"Array is empty"</span>);
+    }
+}
+
+<span class="kw">public class</span> <span class="typ">AverageDemo</span> {
+    <span class="kw">static</span> <span class="typ">double</span> <span class="fn">average</span>(<span class="typ">int</span>[] values) <span class="kw">throws</span> <span class="typ">EmptyArrayException</span> {
+        <span class="kw">if</span> (values.length == <span class="num">0</span>) {
+            <span class="kw">throw new</span> <span class="fn">EmptyArrayException</span>();
+        }
+        <span class="typ">long</span> sum = <span class="num">0</span>;                       <span class="cmt">// long: avoid overflow</span>
+        <span class="kw">for</span> (<span class="typ">int</span> value : values) {
+            sum += value;
+        }
+        <span class="kw">return</span> (<span class="typ">double</span>) sum / values.length;
+    }
+
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="typ">String</span>[] args) {
+        <span class="typ">int</span>[] values = {<span class="num">4</span>, <span class="num">7</span>, <span class="num">10</span>};
+        <span class="typ">int</span>[] empty = {};
+        <span class="kw">try</span> {
+            <span class="typ">System</span>.out.<span class="fn">println</span>(<span class="fn">average</span>(values));
+            <span class="typ">System</span>.out.<span class="fn">println</span>(<span class="fn">average</span>(empty));
+        } <span class="kw">catch</span> (<span class="typ">EmptyArrayException</span> e) {
+            <span class="typ">System</span>.out.<span class="fn">println</span>(e.<span class="fn">getMessage</span>());
+        }
+    }
+}</code></pre>
+      </div>
+
+      <p>Chương trình trên tự chạy trọn vẹn và in <code>7.0</code> rồi <code>Array is empty</code>: lời gọi thứ hai bị gián đoạn giữa chừng, điều khiển nhảy thẳng đến khối <code>catch</code>.</p>
+
+      <p>Một ngôn ngữ hỗ trợ ngoại lệ phải trả lời đủ ba câu hỏi thiết kế: ngoại lệ là gì và được định nghĩa thế nào, ngoại lệ được phát sinh ra sao, và ngoại lệ được xử lý ra sao.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Ngôn ngữ</th><th>Ngoại lệ là gì</th><th>Nhận xét</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Java</td><td>Đối tượng thuộc phân cấp lớp <code>Throwable</code></td><td>Chặt chẽ, tận dụng phân cấp lớp để bắt theo nhóm</td></tr>
+          <tr><td>Python</td><td>Đối tượng thuộc lớp kế thừa <code>BaseException</code></td><td>Như Java về tinh thần; phần lớn ngoại lệ kế thừa <code>Exception</code></td></tr>
+          <tr><td>C++</td><td>Đối tượng thuộc gần như mọi kiểu, kể cả số nguyên</td><td>Không buộc vào phân cấp lớp chung, nên người bắt khó đoán</td></tr>
+        </tbody>
+      </table>
+
+      <p>Câu hỏi tinh tế nhất nằm ở chỗ: xử lý xong thì điều khiển đi về đâu? Đây là vấn đề <strong>ngữ nghĩa kết thúc hay tiếp tục</strong>. Theo <strong>ngữ nghĩa kết thúc</strong> (termination semantics) — lựa chọn của C++, Java lẫn Python — khối gây lỗi bị hủy bỏ, các bản ghi kích hoạt giữa nơi ném và nơi bắt bị gỡ dần khỏi ngăn xếp trong quá trình gọi là <strong>tháo ngăn xếp</strong> (stack unwinding), và chương trình chạy tiếp sau khối bảo vệ. Theo <strong>ngữ nghĩa tiếp tục</strong> (resumption semantics), sau khi xử lý xong, điều khiển quay về tại hoặc ngay sau câu lệnh gây lỗi để chạy tiếp.</p>
+
+      <div class="callout callout-tip">
+        <strong>✅ Đồng thuận hiếm hoi:</strong> Ngữ nghĩa tiếp tục nghe hấp dẫn — lỗi được "chữa" rồi thì cứ thế đi tiếp — nhưng thực tế cho thấy nó làm dòng điều khiển cực kỳ khó lần theo và dễ lặp lỗi vô hạn. Hầu hết ngôn ngữ hiện đại đã chọn ngữ nghĩa kết thúc; đây là một ví dụ hiếm hoi mà cộng đồng thiết kế ngôn ngữ gần như đồng thuận về một đánh đổi.
+      </div>
+    </div>
+
+    <div class="article-section" id="dong-thuong-trinh">
+      <h2 class="section-heading">Đồng thường trình</h2>
+      <p>Các cơ chế trên đều giữ đặc trưng "một lần thực thi trọn vẹn": người được gọi chạy đến hết rồi mới trả điều khiển. <strong>Đồng thường trình</strong> (coroutine) từ bỏ đặc trưng này: nó có thể tạm hoãn việc thực thi, trả điều khiển về cho bên kia, rồi khi được tiếp tục, chạy tiếp từ đúng chỗ đã hoãn — chứ không phải từ đầu. Quan hệ giữa hai đồng thường trình vì thế là quan hệ <strong>ngang hàng</strong>: không còn "người gọi" và "người được gọi" cố định, mà là hai luồng thực thi lần lượt chuyền điều khiển cho nhau bằng thao tác <code>resume</code>.</p>
+
+      <p>Có thể hình dung hai đồng thường trình A và B chuyền điều khiển qua lại như sơ đồ sau: điều khiển đi vào A, đến lệnh <code>resume B</code> thì nhảy sang B; B chạy đến <code>resume A</code> thì trả về đúng điểm A vừa dừng, và cứ thế tiếp diễn.</p>
+
+      <figure class="fig fig-wide">
+        <img src="Chương trình con/h2.png"
+             alt="Hình 2 — Hai đồng thường trình chuyền điều khiển qua lại"
+             onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 2 — Đồng thường trình A và B chuyền điều khiển qua lại bằng thao tác resume</figcaption>
+      </figure>
+
+      <p>Đồng thường trình là công cụ tự nhiên cho các bài toán <strong>"sản xuất – tiêu thụ"</strong>: bên sản xuất tạo ra từng phần tử rồi hoãn lại, bên tiêu thụ xử lý phần tử đó rồi yêu cầu phần tử kế tiếp. Cái giá là trạng thái của mỗi đồng thường trình phải tồn tại suốt thời gian tạm hoãn: một ngăn xếp lời gọi duy nhất tuân theo kỷ luật vào sau–ra trước không còn đủ để biểu diễn mọi trường hợp. Generator của Python chính là một dạng đồng thường trình được thu hẹp: điều khiển chỉ chuyền qua lại giữa generator và người dùng nó.</p>
+    </div>
+
+    <div class="article-section" id="dinh-thoi">
+      <h2 class="section-heading">Chương trình con định thời</h2>
+      <p>Cơ chế thứ năm nới lỏng đặc trưng "chuyển điều khiển tức thời". Với <strong>chương trình con định thời</strong> (scheduled subprogram), việc thực thi của người được gọi không bắt đầu ngay khi nó được yêu cầu: lời yêu cầu chỉ đăng ký việc gọi, còn thời điểm chạy thực sự do một bộ định thời (scheduler) quyết định. Việc đăng ký có thể theo thời điểm hoặc theo độ ưu tiên:</p>
+
+      <div class="code-block">
+        <div class="code-label">Mã giả — gọi theo thời điểm và theo độ ưu tiên</div>
+        <pre><code>CALL A AT TIME = CURRENT_TIME + <span class="num">10</span>   <span class="cmt">/* theo thời điểm */</span>
+CALL B WITH PRIORITY <span class="num">7</span>              <span class="cmt">/* theo độ ưu tiên */</span></code></pre>
+      </div>
+
+      <p>Cơ chế này tách rời ý định gọi khỏi thời điểm chạy, rất hợp với các hệ mô phỏng theo sự kiện và các tác vụ nền lặp định kỳ (sao lưu mỗi đêm, gửi báo cáo mỗi giờ). Đổi lại, người lập trình mất quyền suy luận tuần tự quen thuộc: sau dòng đăng ký, không thể giả định công việc đã xảy ra, và thứ tự thực thi thực tế phụ thuộc vào bộ định thời chứ không đọc được trực tiếp từ mã nguồn.</p>
+    </div>
+
+    <div class="article-section" id="tac-vu">
+      <h2 class="section-heading">Tác vụ</h2>
+      <p>Cuối cùng, <strong>tác vụ</strong> (task) bỏ nốt giả định nền tảng nhất: người gọi không dừng lại chờ. Một tác vụ có khả năng <strong>thực thi đồng thời</strong> (concurrent execution) với các tác vụ khác — chạy song song thật sự trên máy nhiều bộ xử lý, hoặc xen kẽ theo kiểu chia sẻ thời gian trên máy một bộ xử lý.</p>
+
+      <p>Sự song hành đặt ra hai vấn đề mà các cơ chế tuần tự không hề có:</p>
+      <ul>
+        <li><strong>Đồng bộ hóa</strong> (synchronization): khi hai tác vụ cùng đọc–ghi một vùng dữ liệu chung, kết quả phụ thuộc vào thứ tự xen kẽ của từng bước — hiện tượng <strong>tranh đoạt</strong> (race condition); còn khi các tác vụ khóa tài nguyên chờ lẫn nhau theo vòng tròn — <strong>khóa chết</strong> (deadlock).</li>
+        <li><strong>Giao tiếp</strong> (communication): các tác vụ cần trao đổi dữ liệu và tín hiệu với nhau, qua bộ nhớ chung có bảo vệ hoặc qua truyền thông điệp.</li>
+      </ul>
+
+      <p>Java cung cấp monitor nội tại gắn với mỗi đối tượng cùng các thao tác <code>wait/notify</code>; Python cung cấp khóa, biến điều kiện và hàng đợi trong thư viện chuẩn; C++ đưa tiểu trình cùng các nguyên thủy đồng bộ vào thư viện chuẩn từ C++11; một số ngôn ngữ khác lại chọn truyền thông điệp làm cơ chế trung tâm.</p>
+
+      <div class="callout callout-red">
+        <strong>⛔ Chi phí nhận thức:</strong> Chương trình đồng thời khó suy luận và khó kiểm thử hơn hẳn chương trình tuần tự, vì số cách xen kẽ tăng bùng nổ theo số tác vụ.
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ═══ BÀI 4: TRUYỀN THAM SỐ ═══ -->
+    <div class="lesson-badge">Bài 4 / 6</div>
+    <h1 class="lesson-title" id="truyen-tham-so">Truyền tham số</h1>
+    <div class="lesson-meta">CO3005 · Chương trình con</div>
+
+    <div class="article-section" id="hinh-thuc-thuc">
+      <h2 class="section-heading">Tham số hình thức và tham số thực</h2>
+      <p>Chương trình con chỉ hữu ích khi trao đổi được dữ liệu với người gọi. Kênh trao đổi chính là tham số, và cách dữ liệu chảy qua kênh đó — sao chép hay chia sẻ, một chiều hay hai chiều — là một trong những điểm khác biệt sâu sắc nhất giữa các ngôn ngữ.</p>
+
+      <ul>
+        <li><strong>Tham số hình thức</strong> (formal parameter): tên xuất hiện trong đặc tả của chương trình con — gần với một khai báo biến, có thể kèm ký hiệu chỉ cơ chế truyền.</li>
+        <li><strong>Tham số thực</strong> (actual parameter), còn gọi là đối số (argument): biểu thức xuất hiện tại điểm gọi.</li>
+      </ul>
+
+      <p>Câu hỏi đầu tiên: tham số thực nào ứng với tham số hình thức nào? Có hai cách tương ứng. <strong>Tương ứng theo vị trí</strong> (positional correspondence) ghép theo thứ tự. <strong>Tương ứng theo tên</strong> (correspondence by name) ghép theo tên tham số hình thức, bất chấp thứ tự — Python là ngôn ngữ khai thác triệt để cách thứ hai. Cần lưu ý để tránh nhầm lẫn về sau: "tương ứng theo tên" nói về việc ghép cặp tham số, hoàn toàn khác với "truyền theo tên" — một cơ chế truyền dữ liệu sẽ xét dưới đây.</p>
+
+      <p>Câu hỏi thứ hai — trọng tâm của mục này — là: sau khi ghép cặp, dữ liệu di chuyển giữa tham số thực và tham số hình thức theo cơ chế nào? Ta dùng chung một ví dụ: người gọi có hai biến <code>a = 5</code> và <code>b = 6</code>, gọi <code>update(a, b)</code>, và trong thân, người được gọi gán <code>x = 7</code>, <code>y = 8</code> cho hai tham số hình thức của nó.</p>
+    </div>
+
+    <div class="article-section" id="vao-ra">
+      <h2 class="section-heading">Tham số vào–ra</h2>
+      <p>Nhóm thứ nhất gồm các cơ chế cho dữ liệu chảy cả hai chiều: giá trị của người gọi vào được thân hàm, và thay đổi trong thân hàm ra được người gọi.</p>
+
+      <h3 class="sub-heading">Truyền theo trị–kết quả</h3>
+      <p><strong>Truyền theo trị–kết quả</strong> (pass by value-result) dùng hai lần sao chép. Khi gọi, giá trị của <code>a</code> và <code>b</code> được chép vào <code>x</code> và <code>y</code>; trong suốt thời gian thực thi, <code>x</code>, <code>y</code> là các ô nhớ độc lập, thân hàm gán <code>x = 7</code>, <code>y = 8</code> không ảnh hưởng gì đến <code>a</code>, <code>b</code>; khi trả về, giá trị cuối của <code>x</code>, <code>y</code> được chép ngược lại <code>a</code>, <code>b</code>. Sơ đồ sau tóm tắt hai thời điểm sao chép:</p>
+
+      <figure class="fig">
+        <img src="Chương trình con/h3.png"
+             alt="Hình 3 — Truyền theo trị–kết quả: hai lần sao chép"
+             onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 3 — Truyền theo trị–kết quả: sao chép vào khi gọi, sao chép ra khi trả về</figcaption>
+      </figure>
+
+      <h3 class="sub-heading">Truyền theo tham chiếu</h3>
+      <p><strong>Truyền theo tham chiếu</strong> (pass by reference) không sao chép giá trị mà trao địa chỉ: <code>x</code> và <code>y</code> trở thành tên khác — <strong>bí danh</strong> (alias) — của chính ô nhớ <code>a</code> và <code>b</code>. Mọi phép gán lên <code>x</code>, <code>y</code> trong thân hàm tác động ngay lập tức lên <code>a</code>, <code>b</code>:</p>
+
+      <figure class="fig">
+        <img src="Chương trình con/h4.png"
+             alt="Hình 4 — Truyền theo tham chiếu: bí danh"
+             onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 4 — Truyền theo tham chiếu: x và y là bí danh của ô nhớ a và b</figcaption>
+      </figure>
+
+      <p>Hai cơ chế này thường cho cùng kết quả, nhưng không phải luôn luôn. Khác biệt lộ ra khi có <strong>bí danh chồng chéo</strong>: nếu người gọi viết <code>update(a, a)</code>, thì theo tham chiếu, <code>x</code> và <code>y</code> là cùng một ô nhớ — gán <code>x = 7</code> rồi đọc <code>y</code> sẽ thấy <code>7</code>; còn theo trị–kết quả, <code>x</code> và <code>y</code> vẫn là hai bản sao độc lập, và giá trị cuối của <code>a</code> phụ thuộc thứ tự chép ngược.</p>
+    </div>
+
+    <div class="article-section" id="chi-vao">
+      <h2 class="section-heading">Tham số chỉ vào</h2>
+      <p>Khi dữ liệu chỉ cần chảy một chiều từ người gọi vào thân hàm, có hai lựa chọn.</p>
+
+      <h3 class="sub-heading">Truyền theo trị</h3>
+      <p><strong>Truyền theo trị</strong> (pass by value) chép giá trị của <code>a</code>, <code>b</code> vào <code>x</code>, <code>y</code> khi gọi, và không chép gì trở lại khi trả về: thân hàm gán <code>x = 7</code>, <code>y = 8</code> thoải mái, còn <code>a</code>, <code>b</code> của người gọi vẫn nguyên <code>5</code>, <code>6</code>. Đây là cơ chế của C và là mặc định dễ suy luận nhất.</p>
+
+      <div class="callout callout-warn">
+        <strong>⚠️ Chính xác hơn:</strong> Truyền theo trị bảo đảm rằng phép gán lên tham số hình thức không <em>tự động</em> gán ngược vào biến được dùng làm đối số — nhưng bảo đảm này không loại bỏ các hiệu ứng phụ đi qua con đường khác, như con trỏ được truyền vào, biến toàn cục, hay một bí danh khác cùng trỏ tới dữ liệu đó.
+      </div>
+
+      <h3 class="sub-heading">Truyền theo tham chiếu hằng</h3>
+      <p><strong>Truyền theo tham chiếu hằng</strong> (pass by constant reference) nhắm cùng mục đích nhưng bằng con đường khác: trao địa chỉ như truyền theo tham chiếu — tránh sao chép — nhưng cấm thân hàm gán lên tham số, như <code>void show(const int&amp; x, const int&amp; y)</code> trong C++. Tuy nhiên bảo đảm của <code>const</code> hẹp hơn vẻ ngoài: nó chỉ cấm sửa đối tượng thông qua chính tham chiếu đó, không làm đối tượng trở nên bất biến — đối tượng vẫn có thể bị thay đổi qua một bí danh không <code>const</code> khác trong cùng phạm vi.</p>
+    </div>
+
+    <div class="article-section" id="chi-ra">
+      <h2 class="section-heading">Tham số chỉ ra</h2>
+      <p>Chiều ngược lại — dữ liệu chỉ chảy từ thân hàm ra người gọi — cũng có hai hình thức.</p>
+
+      <p><strong>Truyền theo kết quả</strong> (pass by result): tham số hình thức <code>x</code>, <code>y</code> bắt đầu không có giá trị vào (không chép gì khi gọi); thân hàm gán cho chúng, và khi trả về, giá trị cuối được chép ra tham số thực <code>a</code>, <code>b</code>.</p>
+
+      <p><strong>Trả kết quả qua giá trị của hàm</strong> (as a result of a function): kết quả tham gia thẳng vào biểu thức, hợp với phong cách hàm. Nhược điểm cổ điển là mỗi hàm chỉ có một giá trị trả về, nên khi cần trả nhiều kết quả, các ngôn ngữ như C phải quay lại tham số chỉ ra hoặc vào–ra. Python xóa nhòa hạn chế này bằng kiểu bộ (tuple): <code>return x, y</code> về ngữ nghĩa tạo một giá trị bộ rồi trả về giá trị duy nhất đó.</p>
+    </div>
+
+    <div class="article-section" id="chia-se">
+      <h2 class="section-heading">Truyền theo chia sẻ đối tượng</h2>
+      <p>Các ngôn ngữ hướng đối tượng hiện đại như Python và Java dùng một mô hình khác cho đối tượng: biến chứa tham chiếu đến đối tượng. Hành vi thu được thường được mô tả bằng mô hình <strong>truyền theo chia sẻ đối tượng</strong> (call by sharing): khi gọi, tham chiếu được chép theo trị, và tham số hình thức cùng tham số thực trở thành hai tên cùng trỏ đến một đối tượng.</p>
+
+      <div class="code-block">
+        <div class="code-label">Python — biến đổi nội dung vs gán lại tên</div>
+        <pre><code><span class="kw">def</span> <span class="fn">append_item</span>(lst):
+    lst.<span class="fn">append</span>(<span class="num">4</span>)      <span class="cmt"># mutates the shared object</span>
+
+<span class="kw">def</span> <span class="fn">rebind</span>(lst):
+    lst = [<span class="num">0</span>]          <span class="cmt"># rebinds the local name only</span>
+
+a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+<span class="fn">append_item</span>(a)         <span class="cmt"># a is now [1, 2, 3, 4]</span>
+<span class="fn">rebind</span>(a)              <span class="cmt"># a is unchanged: [1, 2, 3, 4]</span></code></pre>
+      </div>
+
+      <p>Phép <code>lst.append(4)</code> đi qua tham chiếu đến đối tượng chung nên <code>a</code> thấy phần tử mới; phép <code>lst = [0]</code> chỉ bẻ tên cục bộ <code>lst</code> sang một đối tượng khác, tham chiếu trong <code>a</code> không đổi. Như vậy chia sẻ đối tượng không phải truyền theo trị thuần túy (đối tượng không bị sao chép, thay đổi nội dung lan về người gọi) cũng không phải truyền theo tham chiếu kiểu C++ (gán lại tham số hình thức không đổi hướng biến của người gọi).</p>
+    </div>
+
+    <div class="article-section" id="truyen-ten">
+      <h2 class="section-heading">Cơ chế trì hoãn lượng giá: truyền theo tên</h2>
+      <p><strong>Truyền theo tên</strong> (pass by name) không tính tham số thực trước khi gọi: có thể hình dung nó như việc thay tham số thực vào mọi chỗ tham số hình thức xuất hiện — và mỗi lần thân hàm nhắc đến tham số là một lần biểu thức được lượng giá lại. Nhưng cần nói ngay: phép "thay nguyên văn" chỉ là mô hình ngữ nghĩa trực giác. Hiện thực thực tế trao cho tham số một <strong>thunk</strong> — cặp gồm biểu thức chưa lượng giá và môi trường cần thiết để lượng giá biểu thức đó — nhờ vậy phép thế bảo toàn nghĩa của các tên trong biểu thức.</p>
+
+      <p>Cơ chế này gắn với ALGOL 60; chi phí lượng giá lặp và tính khó đoán khiến nó gần như biến mất khỏi các ngôn ngữ mệnh lệnh hiện đại — C, C++, Java và Python đều không có nó. Tham số truyền theo tên của Scala (<code>op: =&gt; Unit</code>) giữ đúng phần trì hoãn — đối số chỉ được lượng giá mỗi lần được dùng, và không lượng giá nếu không dùng — dùng để xây các cấu trúc điều khiển tự tạo.</p>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ═══ BÀI 5: HÀM BẬC CAO ═══ -->
+    <div class="lesson-badge">Bài 5 / 6</div>
+    <h1 class="lesson-title" id="ham-bac-cao">Hàm bậc cao và môi trường phi cục bộ</h1>
+    <div class="lesson-meta">CO3005 · Chương trình con</div>
+
+    <div class="article-section">
+      <p>Đến đây, tham số của ta mới chỉ là dữ liệu. Bước cuối cùng của trừu tượng hóa điều khiển là cho phép chính chương trình con trở thành dữ liệu. Một hàm là <strong>hàm bậc cao</strong> (higher-order function) khi nó nhận hàm khác làm tham số vào — trường hợp khá phổ biến — hoặc trả về hàm như kết quả. Ở chương này, ta tập trung vào câu hỏi nguyên lý mà cơ chế truyền của chúng đặt ra: khi một hàm được truyền đi hay trả về, môi trường tên của nó đi theo như thế nào?</p>
+    </div>
+
+    <div class="article-section" id="ham-tham-so">
+      <h2 class="section-heading">Hàm là tham số</h2>
+      <p>Nhận hàm làm tham số là kỹ thuật có mặt từ rất sớm, ngay cả trong C. Hàm sắp xếp <code>qsort</code> của thư viện chuẩn nhận một con trỏ hàm so sánh, nhờ đó một thuật toán sắp xếp duy nhất phục vụ được mọi tiêu chí:</p>
+
+      <div class="code-block">
+        <div class="code-label">C — con trỏ hàm</div>
+        <pre><code><span class="kw">void</span> <span class="fn">qsort</span>(<span class="kw">void</span> *base, <span class="typ">size_t</span> nmemb, <span class="typ">size_t</span> size,
+           <span class="typ">int</span> (*compar)(<span class="kw">const void</span> *, <span class="kw">const void</span> *));</code></pre>
+      </div>
+
+      <p>Vấn đề nguyên lý xuất hiện khi hàm được truyền đi có nhắc đến các <strong>biến tự do</strong> (free variable) — tên không phải tham số cũng không phải biến cục bộ của nó. Khi hàm ấy được gọi ở nơi khác, các tên đó tra cứu trong môi trường phi cục bộ nào? Có hai câu trả lời:</p>
+
+      <ul>
+        <li><strong>Liên kết sâu</strong> (deep binding): môi trường được chốt tại thời điểm hàm được truyền đi — hàm mang theo môi trường của nơi nó xuất phát.</li>
+        <li><strong>Liên kết nông</strong> (shallow binding): môi trường được lấy tại thời điểm hàm được gọi thật sự — hàm dùng môi trường của nơi nó được kích hoạt.</li>
+      </ul>
+
+      <div class="code-block">
+        <div class="code-label">Mã giả — phân tích sâu/nông theo tầm vực</div>
+        <pre><code><span class="typ">int</span> x = <span class="num">1</span>;
+<span class="typ">int</span> <span class="fn">f</span>(<span class="typ">int</span> y) { <span class="kw">return</span> x + y; }
+
+<span class="typ">int</span> <span class="fn">g</span>(<span class="typ">int</span> <span class="fn">h</span>(<span class="typ">int</span> b)) {
+    <span class="typ">int</span> x = <span class="num">2</span>;
+    <span class="kw">return</span> <span class="fn">h</span>(<span class="num">3</span>) + x;   <span class="cmt">/* where does h look up its free x? */</span>
+}
+<span class="cmt">/* ... */</span>
+{
+    <span class="typ">int</span> x = <span class="num">4</span>;
+    <span class="typ">int</span> z = <span class="fn">g</span>(f);
+}</code></pre>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Tầm vực</th><th>Liên kết</th><th>x mà f nhìn thấy</th><th>h(3)</th><th>z = h(3) + x</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Tĩnh</td><td>(sâu/nông không đổi kết quả)</td><td>x = 1 toàn cục, theo nơi định nghĩa</td><td>4</td><td>4 + 2 = <strong>6</strong></td></tr>
+          <tr><td>Động</td><td>Sâu</td><td>x = 4 tại nơi f được truyền vào g(f)</td><td>7</td><td>7 + 2 = <strong>9</strong></td></tr>
+          <tr><td>Động</td><td>Nông</td><td>x = 2 tại nơi h(3) được gọi trong g</td><td>5</td><td>5 + 2 = <strong>7</strong></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-tip">
+        <strong>✅ Kết luận:</strong> Với tầm vực tĩnh, câu hỏi sâu–nông trở nên vô nghĩa: môi trường của <code>f</code> luôn là môi trường nơi nó được định nghĩa, bất kể nó được chuyền qua tay ai — đây là một trong những lý do tầm vực tĩnh thắng thế: hành vi của hàm đọc được ngay từ văn bản chương trình.
+      </div>
+    </div>
+
+    <div class="article-section" id="ham-ket-qua">
+      <h2 class="section-heading">Hàm là kết quả trả về</h2>
+      <p>Trả hàm về làm kết quả đặt câu hỏi trên ở dạng gắt gao hơn. Khi một hàm được trả về, cái được trả về phải gồm hai thành phần: <strong>phần mã</strong> — thân hàm — và <strong>phần môi trường</strong> — nơi tra cứu các biến tự do của thân đó.</p>
+
+      <div class="code-block">
+        <div class="code-label">Mã giả — F trả về hàm con g có biến tự do x</div>
+        <pre><code>void-&gt;<span class="typ">int</span> <span class="fn">F</span>() {
+    <span class="typ">int</span> x = <span class="num">1</span>;
+    <span class="typ">int</span> <span class="fn">g</span>() {
+        <span class="kw">return</span> x + <span class="num">1</span>;
+    }
+    <span class="kw">return</span> g;
+}
+
+void-&gt;<span class="typ">int</span> gg = <span class="fn">F</span>();
+<span class="typ">int</span> z = <span class="fn">gg</span>();  <span class="cmt">/* x đã mất chưa? */</span></code></pre>
+      </div>
+
+      <p>Nếu ngôn ngữ chỉ trả về phần mã, tai họa xảy ra: khi <code>gg()</code> được gọi, lần kích hoạt của <code>F</code> đã kết thúc từ lâu, bản ghi kích hoạt chứa <code>x</code> đã bị gỡ khỏi ngăn xếp — không còn <code>x</code> nào để tính <code>x + 1</code>. Sơ đồ sau minh họa tình huống đó:</p>
+
+      <figure class="fig">
+        <img src="Chương trình con/h5.png"
+             alt="Hình 5 — Con trỏ hàm trỏ đến mã nhưng môi trường đã mất"
+             onclick="openLb(this.src,this.alt)">
+        <figcaption>Hình 5 — gg trỏ đến mã của g, nhưng bản ghi kích hoạt chứa x đã bị gỡ khỏi ngăn xếp</figcaption>
+      </figure>
+
+      <p>Lời giải, như đã biết từ chương về lập trình hàm, là <strong>bao đóng</strong> (closure): giá trị hàm được trả về phải đóng gói mã cùng với môi trường chứa các biến tự do của nó, và môi trường ấy phải có thời gian sống độc lập với bản ghi kích hoạt của <code>F</code>.</p>
+
+      <div class="callout">
+        <strong>🔗 Điểm gặp gỡ đẹp:</strong> Cơ chế bản ghi kích hoạt của mục đầu chương phải được nới — từ ngăn xếp sang cấp phát linh hoạt hơn — để cơ chế hàm bậc cao ở cuối chương hoạt động trọn vẹn. Các ngôn ngữ chọn hỗ trợ hàm là kết quả trả về (Python, JavaScript, Scala, các ngôn ngữ hàm) đều trả giá bằng bộ quản lý bộ nhớ phức tạp hơn; C chuẩn không hỗ trợ hàm lồng có tầm vực từ vựng và không cung cấp bao đóng — chỉ có con trỏ hàm phẳng.
+      </div>
+    </div>
+
+    <hr class="lesson-divider">
+
+    <!-- ═══ BÀI 6: TỔNG KẾT ═══ -->
+    <div class="lesson-badge">Bài 6 / 6 · Bài cuối chương</div>
+    <h1 class="lesson-title" id="tong-ket">Tổng kết chương</h1>
+    <div class="lesson-meta">CO3005 · Chương trình con</div>
+
+    <div class="article-section">
+      <p>Chương này khảo sát chương trình con như hình thức trừu tượng hóa điều khiển trung tâm của các ngôn ngữ lập trình. Một định nghĩa chương trình con gồm đặc tả — giao ước với người gọi về tên, tham số và hành vi — và phần hiện thực gồm dữ liệu cục bộ cùng thân chương trình con. Định nghĩa cung cấp một đoạn mã dùng chung cho mọi lần gọi; mỗi lời gọi thông thường tạo một lần kích hoạt với bản ghi kích hoạt riêng chứa tham số, dữ liệu cục bộ, địa chỉ trả về và các liên kết — chính việc nhiều lần kích hoạt dùng chung mã nhưng giữ trạng thái động độc lập mở đường cho đệ quy.</p>
+
+      <p>Về cơ chế, ta đi từ gọi–trả về đơn giản với năm đặc trưng nền, rồi lần lượt chứng kiến các cơ chế sau nới lỏng từng đặc trưng: gọi đệ quy cho phép nhiều lần kích hoạt của cùng một chương trình con cùng tồn tại; ngoại lệ bỏ điểm gọi tường minh và buộc ngôn ngữ trả lời ba câu hỏi định nghĩa–phát sinh–xử lý, với ngữ nghĩa kết thúc kèm tháo ngăn xếp là lựa chọn áp đảo; đồng thường trình bỏ tính trọn vẹn của một lần thực thi, cho phép hoãn và tiếp tục đúng chỗ dừng; chương trình con định thời tách ý định gọi khỏi thời điểm chạy; và tác vụ đưa vào thực thi đồng thời cùng hai vấn đề đi kèm là đồng bộ hóa — với tranh đoạt và khóa chết — và giao tiếp.</p>
+
+      <p>Về truyền tham số, sau khi tách tham số hình thức khỏi tham số thực và hai cách tương ứng theo vị trí, theo tên, ta phân loại các cơ chế theo chiều dữ liệu: vào–ra với truyền theo trị–kết quả và theo tham chiếu; chỉ vào với truyền theo trị và theo tham chiếu hằng; chỉ ra với truyền theo kết quả và qua giá trị trả về của hàm; riêng truyền theo tên được tách ra như một chiến lược trì hoãn lượng giá, hiện thực bằng thunk. Với Python và Java, mô hình truyền theo chia sẻ đối tượng giải thích hành vi truyền đối số, nơi ranh giới giữa biến đổi nội dung và gán lại tên quyết định điều người gọi quan sát được.</p>
+
+      <p>Cuối cùng, khi hàm trở thành tham số hay kết quả, câu hỏi môi trường phi cục bộ xuất hiện: liên kết sâu hay nông chỉ khác nhau dưới tầm vực động, còn trả hàm ra khỏi nơi định nghĩa đòi hỏi bao đóng gói cả mã lẫn môi trường và một mô hình cấp phát vượt ra ngoài ngăn xếp.</p>
+
+      <div class="callout">
+        <strong>🔗 Kết nối tiếp theo:</strong> Phụ lục đi kèm chương này sẽ lần lượt hiện thực các khái niệm trên bằng Python: định nghĩa hàm và các cách truyền đối số, khung xử lý ngoại lệ đầy đủ, generator trong vai trò đồng thường trình, chương trình con định thời, tác vụ với tiểu trình và tiến trình, và bao đóng — để thấy một ngôn ngữ cụ thể đã chọn phương án nào cho từng câu hỏi thiết kế mà chương này nêu ra.
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      <a class="nav-btn secondary" href="CO3005.html">← Trang chủ</a>
+      <span>Bài 6 / 6 · Chương trình con</span>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function openLb(src, alt) {
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lbImg').alt = alt;
+  document.getElementById('lb').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLb() {
+  document.getElementById('lb').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+const tocLinks = document.querySelectorAll('.toc-item');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+    }
+  });
+}, { rootMargin: '-60px 0px -70% 0px', threshold: 0 });
+document.querySelectorAll('[id]').forEach(h => obs.observe(h));
+</script>
+</body>
+</html>
