@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CO3005 — Ôn tập Tầm vực, Ràng buộc và Thời gian sống</title>
+<style>
+:root{
+  --ink:#1a1a1a; --muted:#666; --line:#b8b8b8; --accent:#0d47a1;
+  --good:#1b5e20; --good-bg:#e8f5e9; --bad:#b71c1c; --bad-bg:#ffebee;
+  --box:#fafafa; --code-bg:#f5f6f8; --warn:#8a5a00; --warn-bg:#fff8e1;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#e9e9e9;color:var(--ink);
+  font-family:"Times New Roman",Times,serif;font-size:16px;line-height:1.45}
+.page{max-width:900px;margin:0 auto;background:#fff;padding:34px 46px 60px;
+  box-shadow:0 0 12px rgba(0,0,0,.18);min-height:100vh}
+.exam-header{border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px}
+.hrow{display:flex;justify-content:space-between;gap:18px}
+.hleft{font-size:13px;text-align:center;line-height:1.35;white-space:nowrap}
+.hleft b{display:block}
+.hright{text-align:center;flex:1}
+.hright .t1{font-weight:bold;font-size:19px;letter-spacing:.4px}
+.hright .t2{font-size:15px;margin-top:2px}
+.hright .t3{font-size:13.5px;margin-top:2px;color:var(--muted)}
+.mssv{font-size:13.5px;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.note{font-size:13px;color:var(--muted);font-style:italic;margin-top:6px}
+.source-warning{margin:12px 0 2px;border:1px solid #e0b04c;background:var(--warn-bg);
+  color:var(--warn);padding:9px 12px;border-radius:6px;font-size:13.5px}
+.controls{position:sticky;top:0;z-index:9;background:#fff;border:1px solid var(--line);
+  border-radius:8px;margin:14px 0 20px;padding:10px 12px;display:flex;flex-wrap:wrap;
+  gap:8px;align-items:center;font-family:Arial,Helvetica,sans-serif;font-size:13px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.controls label{color:var(--muted)}
+.controls select,.controls button{font:inherit;padding:5px 9px;border:1px solid var(--line);
+  border-radius:6px;background:#fff;cursor:pointer}
+.controls button:hover,.controls select:hover{border-color:var(--accent);color:var(--accent)}
+#score{margin-left:auto;font-weight:bold;color:var(--accent)}
+.qcard{border-bottom:1px solid #ddd;padding:16px 0 20px;scroll-margin-top:80px}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.qtitle{font-weight:bold}
+.badges{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#fff;white-space:nowrap}
+.badge{display:inline-block;background:#607d8b;border-radius:10px;padding:2px 8px;margin-left:4px}
+.stem{margin-top:6px}
+code{font-family:Consolas,"Courier New",monospace;font-size:.92em;background:var(--code-bg);
+  padding:0 3px;border-radius:3px}
+.codebox{border:1px solid var(--line);border-radius:6px;margin:10px 0;overflow:hidden;
+  background:var(--code-bg)}
+.codelang{font-family:Arial,Helvetica,sans-serif;font-size:11.5px;color:#fff;background:#546e7a;
+  padding:3px 10px;letter-spacing:.2px}
+.codebox pre{margin:0;padding:10px 12px;font-family:Consolas,"Courier New",monospace;
+  font-size:13.5px;line-height:1.5;overflow-x:auto;white-space:pre}
+.qnote{font-size:12.5px;color:var(--muted);font-style:italic;margin-top:7px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-top:12px}
+.opts.wide{grid-template-columns:1fr}
+.opt{border:1px solid #d6d6d6;border-radius:6px;padding:8px 11px;cursor:pointer;
+  display:flex;gap:8px;align-items:flex-start;transition:background .12s,border-color .12s}
+.opt:hover{border-color:var(--accent);background:#f3f7ff}
+.opt .L{font-weight:bold;min-width:20px}
+.answered .opt{cursor:default;pointer-events:none}
+.opt.correct{background:var(--good-bg);border-color:var(--good)}
+.opt.correct .L::after{content:" ✔";color:var(--good)}
+.opt.wrongpick{background:var(--bad-bg);border-color:var(--bad)}
+.opt.wrongpick .L::after{content:" ✘";color:var(--bad)}
+.explain{display:none;margin-top:12px;border-left:4px solid var(--accent);background:#f2f6ff;
+  padding:10px 14px;border-radius:0 6px 6px 0;font-size:14.5px}
+.explain .verdict{font-weight:bold;margin-bottom:4px}
+.explain .verdict.ok{color:var(--good)}
+.explain .verdict.no{color:var(--bad)}
+.endline{text-align:center;margin:34px 0 8px;font-weight:bold;letter-spacing:2px}
+.matrixnote{font-size:12.5px;color:var(--muted);text-align:center}
+@media (max-width:640px){
+  .opts{grid-template-columns:1fr} .page{padding:20px 14px}
+  .hrow{display:block} .hleft{white-space:normal;margin-bottom:10px}
+  #score{width:100%;margin-left:0}
+}
+@media print{
+  body{background:#fff}
+  .page{box-shadow:none;max-width:none;padding:0}
+  .controls{display:none}
+  .explain{display:none !important}
+  .opt{border-color:#999}
+  .opt.correct,.opt.wrongpick{background:#fff;border-color:#999}
+  .opt .L::after{content:"" !important}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="exam-header">
+  <div class="hrow">
+    <div class="hleft">
+      ĐẠI HỌC QUỐC GIA TP.HCM<br><b>TRƯỜNG ĐẠI HỌC BÁCH KHOA</b>
+      Khoa Khoa học &amp; Kỹ thuật Máy tính
+    </div>
+    <div class="hright">
+      <div class="t1">BÀI ÔN TẬP TRẮC NGHIỆM</div>
+      <div class="t2">Tầm vực · Ràng buộc · Thời gian sống · Quản lý bộ nhớ</div>
+      <div class="t3">23 câu từ ảnh đã cung cấp · 1 điểm/câu</div>
+    </div>
+  </div>
+  <div class="mssv">MSSV: …………………………………………&nbsp;&nbsp;&nbsp;Họ và tên SV: …………………………………………</div>
+  <div class="note">Nhấp vào một phương án để trả lời; hệ thống chấm ngay sau khi chọn. Có thể xáo câu, xáo phương án và lưu tiến độ tự động trên trình duyệt.</div>
+</header>
+
+<div class="source-warning">
+  Các ảnh cung cấp có câu 1–13 và 18–27. Câu 14–17 không xuất hiện nên không được tự bổ sung. Ở câu 9, ảnh chỉ hiển thị ba lựa chọn.
+</div>
+
+<div class="controls">
+  <label>Chủ đề:</label>
+  <select id="fTopic">
+    <option value="all">Tất cả</option>
+    <option value="T1">Quá trình xử lý ngôn ngữ</option>
+    <option value="T2">Tầm vực</option>
+    <option value="T3">Tên và ràng buộc</option>
+    <option value="T4">Bộ nhớ và tham chiếu</option>
+    <option value="T5">Closure và biến toàn cục</option>
+    <option value="T6">Tầm vực và thời gian sống</option>
+    <option value="T7">Thời điểm ràng buộc</option>
+  </select>
+  <button id="btnShufQ">⇄ Xáo câu</button>
+  <button id="btnShufO">⇄ Xáo phương án</button>
+  <button id="btnReset">↺ Làm lại</button>
+  <span id="score"></span>
+</div>
+
+<main id="quiz"></main>
+
+<div class="endline">--- HẾT ---</div>
+<div class="matrixnote">Nội dung câu hỏi và lựa chọn được tổng hợp từ các ảnh đã gửi; định dạng dựa trên file HTML mẫu.</div>
+
+<script>
+"use strict";
+const QUESTIONS = [{"n": 1, "topic": "T1", "stem": "Thứ tự ĐÚNG các giai đoạn từ lúc một ngôn ngữ được thiết kế đến lúc một chương trình chạy là gì?", "boxes": [], "opts": ["Hiện thực ngôn ngữ → Thiết kế ngôn ngữ → Lập trình → Nạp → Biên dịch → Liên kết → Thực thi", "Thiết kế ngôn ngữ → Hiện thực ngôn ngữ → Lập trình → Biên dịch → Liên kết → Nạp → Thực thi", "Lập trình → Thiết kế ngôn ngữ → Biên dịch → Nạp → Liên kết → Hiện thực ngôn ngữ → Thực thi", "Thiết kế ngôn ngữ → Biên dịch → Lập trình → Liên kết → Hiện thực ngôn ngữ → Nạp → Thực thi"], "ans": 1, "why": "Ngôn ngữ được thiết kế và hiện thực trước; sau đó chương trình được viết, biên dịch, liên kết, nạp rồi mới thực thi.", "wide": true}, {"n": 2, "topic": "T2", "stem": "Trong biểu thức <code>x + 1</code>, tên <code>x</code> được phân giải về khai báo nào?", "boxes": [{"lang": "C — dùng cho Câu 2–5", "code": "int x = 1;\n\nvoid f() {\n    int x = 2;\n    {\n        int y = x + 1;\n    }\n}"}], "opts": ["Cả hai khai báo, tùy theo lúc chạy", "Khai báo toàn cục <code>int x = 1</code>", "Khai báo cục bộ <code>int x = 2</code> trong hàm <code>f</code>", "Không khai báo nào, gây lỗi biên dịch"], "ans": 2, "why": "Theo tầm vực tĩnh, khai báo gần nhất bao quanh vị trí sử dụng được chọn.", "wide": false}, {"n": 3, "topic": "T2", "stem": "Giá trị của <code>y</code> là bao nhiêu?", "boxes": [{"lang": "C — dùng cho Câu 2–5", "code": "int x = 1;\n\nvoid f() {\n    int x = 2;\n    {\n        int y = x + 1;\n    }\n}"}], "opts": ["3", "2", "1", "Không xác định"], "ans": 0, "why": "Biểu thức dùng <code>x</code> cục bộ có giá trị 2, nên <code>y = 2 + 1 = 3</code>.", "wide": false}, {"n": 4, "topic": "T2", "stem": "Khai báo toàn cục <code>int x = 1</code> ở vị trí biểu thức <code>x + 1</code> thì thế nào?", "boxes": [{"lang": "C — dùng cho Câu 2–5", "code": "int x = 1;\n\nvoid f() {\n    int x = 2;\n    {\n        int y = x + 1;\n    }\n}"}], "opts": ["Bị che bởi khai báo cục bộ <code>x = 2</code>", "Được dùng thay cho khai báo cục bộ", "Gây xung đột khiến chương trình không biên dịch được", "Được cộng gộp với khai báo cục bộ thành <code>x = 3</code>"], "ans": 0, "why": "Khai báo cục bộ cùng tên che khuất khai báo toàn cục trong phạm vi của nó.", "wide": false}, {"n": 5, "topic": "T2", "stem": "Quy tắc tra cứu tên trong tầm vực tĩnh với khối lồng nhau là gì?", "boxes": [{"lang": "C — dùng cho Câu 2–5", "code": "int x = 1;\n\nvoid f() {\n    int x = 2;\n    {\n        int y = x + 1;\n    }\n}"}], "opts": ["Bắt đầu từ phạm vi toàn cục rồi thu hẹp dần vào trong; khai báo ngoài cùng thắng", "Duyệt các khai báo theo đúng thứ tự xuất hiện trong tập tin; khai báo đầu tiên thắng", "Bắt đầu từ phạm vi trong cùng rồi mở rộng ra ngoài; khai báo gần nhất bao quanh thắng", "Chọn ngẫu nhiên một trong các khai báo cùng tên mỗi lần chương trình được chạy"], "ans": 2, "why": "Tra cứu bắt đầu tại khối chứa vị trí sử dụng rồi lần lượt đi ra các khối bao quanh.", "wide": true}, {"n": 6, "topic": "T3", "stem": "Phát biểu nào ĐÚNG về phạm vi của khái niệm “tên” trong ngôn ngữ lập trình?", "boxes": [], "opts": ["Tên chỉ dành cho biến, còn hàm, kiểu và toán tử được quản lý bằng cơ chế hoàn toàn khác", "Tên bao gồm cả biến, hằng số, kiểu, hàm, lớp, module và cả toán tử như <code>+</code> hay <code>*</code>", "Tên chỉ gồm biến và hàm, vì đây là hai thực thể duy nhất có thể được gọi ra khi chạy", "Tên chỉ là nhãn dán cho tiện lợi và không hề mang bất kỳ ý nghĩa ngữ nghĩa nào cả"], "ans": 1, "why": "Khái niệm tên có thể áp dụng cho nhiều loại thực thể ngôn ngữ, không chỉ riêng biến.", "wide": false}, {"n": 7, "topic": "T3", "stem": "Ràng buộc (binding) là gì?", "boxes": [], "opts": ["Là việc kiểm tra kiểu của một biểu thức trước khi chương trình được đem đi thực thi", "Là sự liên kết giữa hai thực thể, phổ biến nhất là giữa một tên và thực thể mà nó đại diện", "Là thao tác sao chép giá trị của một biến này sang một biến khác trong bộ nhớ", "Là quá trình cấp phát một vùng nhớ trên heap cho một đối tượng khi chương trình chạy"], "ans": 1, "why": "Binding là sự liên kết giữa các thực thể, điển hình là liên kết tên với biến, hàm, kiểu hoặc giá trị.", "wide": false}, {"n": 8, "topic": "T4", "stem": "Hậu quả có thể xảy ra khi dùng một tham chiếu treo là gì?", "boxes": [], "opts": ["Không có hậu quả nào vì vùng nhớ đã giải phóng luôn được đặt về giá trị 0 an toàn", "Hành vi không xác định, chương trình sụp đổ, hỏng dữ liệu hoặc thậm chí có lỗ hổng bảo mật", "Chương trình luôn dừng ngay lập tức với một thông báo lỗi rõ ràng và an toàn", "Mức sử dụng bộ nhớ tăng dần đều theo thời gian cho tới khi chương trình cạn bộ nhớ"], "ans": 1, "why": "Truy cập vùng nhớ đã được giải phóng gây hành vi không xác định.", "wide": true}, {"n": 9, "topic": "T5", "stem": "Cho đoạn mã Python sau. Kết quả in ra là gì?", "boxes": [{"lang": "Python", "code": "def make_counter():\n    n = 0\n\n    def inc():\n        nonlocal n\n        n += 1\n        return n\n\n    return inc\n\na = make_counter()\nb = make_counter()\n\nprint(a(), a(), b())"}], "opts": ["<code>1 2 3</code>", "<code>1 1 1</code>", "<code>1 2 1</code>"], "ans": 2, "why": "<code>a</code> và <code>b</code> giữ hai biến <code>n</code> độc lập. Hai lần gọi <code>a()</code> cho 1, 2; lần đầu gọi <code>b()</code> cho 1.", "wide": false, "note": "Ảnh chỉ hiển thị 3 lựa chọn."}, {"n": 10, "topic": "T3", "stem": "Ràng buộc và tầm vực lần lượt trả lời câu hỏi nào?", "boxes": [], "opts": ["Ràng buộc: tên chiếm bao nhiêu byte — Tầm vực: tên có kiểu dữ liệu gì", "Ràng buộc: tên tồn tại bao lâu — Tầm vực: tên được cấp phát ở vùng nhớ nào", "Ràng buộc: tên được dùng ở đâu — Tầm vực: một tên có nghĩa là gì", "Ràng buộc: một tên nghĩa là gì — Tầm vực: tên đó được phép dùng ở đâu"], "ans": 3, "why": "Ràng buộc xác định tên đại diện cho thực thể nào; tầm vực xác định những vị trí có thể dùng tên đó.", "wide": true}, {"n": 11, "topic": "T4", "stem": "Khi có nhiều bí danh cùng trỏ tới một đối tượng, <code>free(p)</code> làm gì?", "boxes": [], "opts": ["Giải phóng đối tượng và đồng thời sao chép nó sang một vùng nhớ an toàn khác", "Giải phóng đối tượng, nhưng KHÔNG xóa các bí danh khác; chúng trở thành tham chiếu treo", "Tự động xóa mọi bí danh đang trỏ tới đối tượng đó nên không còn tham chiếu treo", "Chỉ đánh dấu <code>p</code> là <code>NULL</code>, còn đối tượng thì vẫn tồn tại nguyên vẹn trong bộ nhớ"], "ans": 1, "why": "<code>free</code> giải phóng vùng nhớ nhưng không tự cập nhật các con trỏ khác đang giữ cùng địa chỉ.", "wide": true}, {"n": 12, "topic": "T6", "stem": "Cho đoạn mã C sau. Tầm vực và thời gian sống của <code>x</code> lần lượt là gì?", "boxes": [{"lang": "C", "code": "void f() {\n    int x = 10;\n}"}], "opts": ["Tầm vực: thân hàm <code>f</code> — Thời gian sống: từ khi <code>f</code> được gọi đến khi <code>f</code> kết thúc", "Tầm vực: toàn bộ chương trình — Thời gian sống: toàn bộ quá trình thực thi", "Tầm vực: từ khi <code>f</code> được gọi đến khi <code>f</code> kết thúc — Thời gian sống: thân hàm <code>f</code>", "Tầm vực và thời gian sống đều là toàn bộ quá trình thực thi của chương trình"], "ans": 0, "why": "Biến cục bộ tự động chỉ dùng được trong thân hàm và tồn tại trong mỗi lần kích hoạt hàm.", "wide": true}, {"n": 13, "topic": "T2", "stem": "Tầm vực động phân giải một tham chiếu đến tên theo nguyên tắc nào?", "boxes": [], "opts": ["Dựa trên chuỗi lời gọi đang hoạt động lúc chạy; ràng buộc với khai báo đang hoạt động gần nhất", "Dựa trên thứ tự bảng chữ cái của các tên đã được khai báo trong toàn chương trình", "Dựa trên việc chương trình được biên dịch hay được thông dịch khi đem ra chạy", "Dựa trên cấu trúc văn bản của chương trình; ràng buộc với khai báo gần nhất bao quanh"], "ans": 0, "why": "Tầm vực động dựa trên chuỗi kích hoạt hàm tại thời điểm thực thi, không dựa trên cấu trúc văn bản.", "wide": true}, {"n": 18, "topic": "T7", "stem": "Ý nghĩa của toán tử <code>+</code> cho số nguyên, ví dụ <code>1 + 2</code>, được cố định vào thời điểm nào?", "boxes": [], "opts": ["Thời điểm thực thi", "Thời điểm liên kết", "Thời điểm thiết kế ngôn ngữ", "Thời điểm biên dịch"], "ans": 2, "why": "Ngữ nghĩa cơ bản của toán tử trên các kiểu dựng sẵn được quy định khi ngôn ngữ được thiết kế.", "wide": false}, {"n": 19, "topic": "T3", "stem": "Khai báo trên KHÔNG thiết lập ràng buộc nào sau đây?", "boxes": [{"lang": "C — dùng cho Câu 19–22", "code": "int x = 10;"}], "opts": ["Vị trí lưu trữ với giá trị <code>10</code>", "Tên <code>x</code> với một biến", "Biến với kiểu <code>int</code>", "Tên <code>x</code> với một module"], "ans": 3, "why": "Khai báo này tạo biến, kiểu, ô nhớ và giá trị ban đầu; không tạo liên kết giữa <code>x</code> và một module.", "wide": false}, {"n": 20, "topic": "T3", "stem": "Tên <code>x</code> được ràng buộc TRỰC TIẾP với thực thể nào?", "boxes": [{"lang": "C — dùng cho Câu 19–22", "code": "int x = 10;"}], "opts": ["Một địa chỉ tuyệt đối cố định", "Giá trị <code>10</code>", "Kiểu <code>int</code>", "Một biến"], "ans": 3, "why": "Tên <code>x</code> trực tiếp biểu thị một biến; biến đó tiếp tục có kiểu, ô nhớ và giá trị.", "wide": false}, {"n": 21, "topic": "T3", "stem": "Vị trí lưu trữ (ô nhớ) của biến được ràng buộc với gì?", "boxes": [{"lang": "C — dùng cho Câu 19–22", "code": "int x = 10;"}], "opts": ["Giá trị <code>10</code>", "Tên <code>x</code>", "Một hàm", "Kiểu <code>int</code>"], "ans": 0, "why": "Sau khi khởi tạo, ô nhớ dành cho biến chứa giá trị 10.", "wide": false}, {"n": 22, "topic": "T3", "stem": "Phát biểu nào ĐÚNG về số lượng ràng buộc mà một khai báo đơn giản tạo ra?", "boxes": [{"lang": "C — dùng cho Câu 19–22", "code": "int x = 10;"}], "opts": ["Một khai báo tưởng đơn giản thường thiết lập nhiều ràng buộc đan xen cùng một lúc", "Một khai báo không tạo ràng buộc nào cho tới khi biến được sử dụng lần đầu tiên", "Một khai báo luôn chỉ thiết lập đúng một ràng buộc duy nhất giữa tên và giá trị", "Một khai báo chỉ tạo ràng buộc giữa tên và kiểu, còn giá trị thì tách rời hoàn toàn"], "ans": 0, "why": "Một khai báo có thể đồng thời liên kết tên với biến, biến với kiểu, biến với ô nhớ và ô nhớ với giá trị.", "wide": true}, {"n": 23, "topic": "T4", "stem": "Trường hợp A là lỗi bộ nhớ nào?", "boxes": [{"lang": "C — dùng cho Câu 23–26", "code": "// Trường hợp A\nint *p = malloc(sizeof(int));\nint *q = p;\nfree(p);\n*q = 10;\n\n// Trường hợp B\nint *r = malloc(sizeof(int));\nr = NULL;"}], "opts": ["Không có lỗi", "Tham chiếu treo", "Rò rỉ bộ nhớ", "Tràn ngăn xếp"], "ans": 1, "why": "Sau <code>free(p)</code>, <code>q</code> vẫn giữ địa chỉ của vùng nhớ đã bị giải phóng.", "wide": false}, {"n": 24, "topic": "T4", "stem": "Trường hợp B là lỗi bộ nhớ nào?", "boxes": [{"lang": "C — dùng cho Câu 23–26", "code": "// Trường hợp A\nint *p = malloc(sizeof(int));\nint *q = p;\nfree(p);\n*q = 10;\n\n// Trường hợp B\nint *r = malloc(sizeof(int));\nr = NULL;"}], "opts": ["Không có lỗi", "Rò rỉ bộ nhớ", "Tràn ngăn xếp", "Tham chiếu treo"], "ans": 1, "why": "Gán <code>r = NULL</code> làm mất tham chiếu duy nhất đến vùng nhớ đã cấp phát mà chưa giải phóng.", "wide": false}, {"n": 25, "topic": "T4", "stem": "Ở trường hợp A, trạng thái của đối tượng và của tham chiếu lần lượt là gì?", "boxes": [{"lang": "C — dùng cho Câu 23–26", "code": "// Trường hợp A\nint *p = malloc(sizeof(int));\nint *q = p;\nfree(p);\n*q = 10;\n\n// Trường hợp B\nint *r = malloc(sizeof(int));\nr = NULL;"}], "opts": ["Cả đối tượng lẫn tham chiếu đều còn nguyên vẹn", "Cả đối tượng lẫn tham chiếu đều đã bị hủy", "Đối tượng vẫn còn; tham chiếu đã mất", "Đối tượng đã bị hủy; tham chiếu <code>q</code> vẫn còn"], "ans": 3, "why": "Vùng nhớ đã được giải phóng nhưng biến con trỏ <code>q</code> vẫn tồn tại và giữ địa chỉ cũ.", "wide": false}, {"n": 26, "topic": "T4", "stem": "Ở trường hợp B, trạng thái của đối tượng và của tham chiếu lần lượt là gì?", "boxes": [{"lang": "C — dùng cho Câu 23–26", "code": "// Trường hợp A\nint *p = malloc(sizeof(int));\nint *q = p;\nfree(p);\n*q = 10;\n\n// Trường hợp B\nint *r = malloc(sizeof(int));\nr = NULL;"}], "opts": ["Đối tượng vẫn còn; tham chiếu <code>r</code> đã mất", "Đối tượng đã bị hủy; tham chiếu vẫn còn", "Cả đối tượng lẫn tham chiếu đều còn nguyên vẹn", "Cả đối tượng lẫn tham chiếu đều đã bị hủy"], "ans": 0, "why": "Vùng nhớ chưa được giải phóng, nhưng địa chỉ của nó đã bị mất khi <code>r</code> được gán <code>NULL</code>.", "wide": false}, {"n": 27, "topic": "T5", "stem": "Kết quả in ra là gì và nó tương ứng với loại cấp phát nào?", "boxes": [{"lang": "Python", "code": "counter = 0\n\ndef inc():\n    global counter\n    counter += 1\n\ninc()\ninc()\nprint(counter)"}], "opts": ["<code>0</code> — mỗi lời gọi <code>inc</code> tạo một <code>counter</code> cục bộ mới nên không cộng dồn", "Lỗi <code>UnboundLocalError</code> — không được dùng <code>global</code> cho biến toàn cục", "<code>2</code> — biến toàn cục giữ giá trị giữa các lời gọi, tương tự cấp phát tĩnh", "<code>1</code> — <code>counter</code> bị đặt lại về 0 sau mỗi lời gọi <code>inc</code> rồi mới cộng 1"], "ans": 2, "why": "Hai lần gọi hàm cùng cập nhật biến toàn cục nên giá trị cuối là 2; biến tồn tại suốt quá trình chạy chương trình.", "wide": true}];
+const TOPIC_NAMES = {"T1": "Quá trình xử lý ngôn ngữ", "T2": "Tầm vực", "T3": "Tên và ràng buộc", "T4": "Bộ nhớ và tham chiếu", "T5": "Closure và biến toàn cục", "T6": "Tầm vực và thời gian sống", "T7": "Thời điểm ràng buộc"};
+const KEY = "co3005_scope_binding_review_v1";
+
+let state = {answers:{}, qOrder:null, oOrder:{}, fTopic:"all"};
+try{
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if(saved && typeof saved === "object") state = Object.assign(state, saved);
+}catch(e){}
+
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function shuffled(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function qById(id){ return QUESTIONS.find(q => q.n === id); }
+function visibleQuestions(){
+  let qs = QUESTIONS.slice();
+  if(state.qOrder && state.qOrder.length === qs.length){
+    qs = state.qOrder.map(qById).filter(Boolean);
+  }
+  return qs.filter(q => state.fTopic === "all" || q.topic === state.fTopic);
+}
+function optPerm(q){
+  const p = state.oOrder[q.n];
+  return (p && p.length === q.opts.length) ? p : q.opts.map((_,i)=>i);
+}
+function render(){
+  const root = document.getElementById("quiz");
+  const qs = visibleQuestions();
+  let html = "";
+  for(const q of qs){
+    const perm = optPerm(q);
+    const done = Object.prototype.hasOwnProperty.call(state.answers, q.n);
+    const chosen = done ? state.answers[q.n] : -1;
+    let boxes = "";
+    for(const b of q.boxes){
+      boxes += '<div class="codebox"><div class="codelang">' + esc(b.lang) +
+               '</div><pre>' + esc(b.code) + '</pre></div>';
+    }
+    let opts = "";
+    perm.forEach((oi, pos) => {
+      const letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[pos];
+      let cls = "opt";
+      if(done && oi === q.ans) cls += " correct";
+      if(done && oi === chosen && oi !== q.ans) cls += " wrongpick";
+      opts += '<div class="' + cls + '" data-q="' + q.n + '" data-oi="' + oi + '">' +
+              '<span class="L">' + letter + '.</span><span>' + q.opts[oi] + '</span></div>';
+    });
+    let explain = '<div class="explain"></div>';
+    if(done){
+      const okLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[perm.indexOf(q.ans)];
+      const ok = chosen === q.ans;
+      explain = '<div class="explain" style="display:block">' +
+        '<div class="verdict ' + (ok ? "ok" : "no") + '">' +
+        (ok ? "✔ Chính xác!" : "✘ Chưa đúng.") + " Đáp án: " + okLetter + ".</div>" +
+        q.why + "</div>";
+    }
+    const note = q.note ? '<div class="qnote">' + q.note + '</div>' : '';
+    html += '<article class="qcard' + (done ? " answered" : "") + '" id="q' + q.n + '">' +
+      '<div class="qhead"><span class="qtitle">Câu ' + q.n + '. (1 điểm)</span>' +
+      '<span class="badges"><span class="badge">' + TOPIC_NAMES[q.topic] + '</span></span></div>' +
+      '<div class="stem">' + q.stem + "</div>" + boxes + note +
+      '<div class="opts' + (q.wide ? " wide" : "") + '">' + opts + "</div>" + explain +
+      "</article>";
+  }
+  if(qs.length === 0){
+    html = '<p style="color:#666;font-style:italic">Không có câu nào khớp bộ lọc hiện tại.</p>';
+  }
+  root.innerHTML = html;
+  updateScore();
+}
+function updateScore(){
+  const total = QUESTIONS.length;
+  let answered = 0, right = 0;
+  for(const q of QUESTIONS){
+    if(Object.prototype.hasOwnProperty.call(state.answers, q.n)){
+      answered++;
+      if(state.answers[q.n] === q.ans) right++;
+    }
+  }
+  const el = document.getElementById("score");
+  el.textContent = "Đã làm " + answered + "/" + total + " · Đúng " + right +
+    (answered ? " (" + Math.round(100 * right / answered) + "%)" : "");
+}
+
+document.getElementById("quiz").addEventListener("click", function(ev){
+  const opt = ev.target.closest(".opt");
+  if(!opt) return;
+  const qn = parseInt(opt.dataset.q, 10);
+  if(Object.prototype.hasOwnProperty.call(state.answers, qn)) return;
+  state.answers[qn] = parseInt(opt.dataset.oi, 10);
+  save();
+  render();
+  const card = document.getElementById("q" + qn);
+  if(card) card.scrollIntoView({block:"nearest"});
+});
+document.getElementById("fTopic").addEventListener("change", function(){
+  state.fTopic = this.value; save(); render();
+});
+document.getElementById("btnShufQ").addEventListener("click", function(){
+  state.qOrder = shuffled(QUESTIONS.map(q => q.n)); save(); render();
+});
+document.getElementById("btnShufO").addEventListener("click", function(){
+  for(const q of QUESTIONS) state.oOrder[q.n] = shuffled(q.opts.map((_,i)=>i));
+  save(); render();
+});
+document.getElementById("btnReset").addEventListener("click", function(){
+  if(!confirm("Xóa toàn bộ bài làm và làm lại từ đầu?")) return;
+  state.answers = {}; state.qOrder = null; state.oOrder = {};
+  save(); render();
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+document.getElementById("fTopic").value = state.fTopic;
+render();
+</script>
+</div>
+</body>
+</html>

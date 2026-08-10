@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CO3005 — Ôn tập Biểu thức, Thứ tự đánh giá và Ký pháp</title>
+<style>
+:root{
+  --ink:#1a1a1a; --muted:#666; --line:#b8b8b8; --accent:#0d47a1;
+  --good:#1b5e20; --good-bg:#e8f5e9; --bad:#b71c1c; --bad-bg:#ffebee;
+  --box:#fafafa; --code-bg:#f5f6f8; --warn:#8a5a00; --warn-bg:#fff8e1;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#e9e9e9;color:var(--ink);
+  font-family:"Times New Roman",Times,serif;font-size:16px;line-height:1.45}
+.page{max-width:900px;margin:0 auto;background:#fff;padding:34px 46px 60px;
+  box-shadow:0 0 12px rgba(0,0,0,.18);min-height:100vh}
+.exam-header{border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px}
+.hrow{display:flex;justify-content:space-between;gap:18px}
+.hleft{font-size:13px;text-align:center;line-height:1.35;white-space:nowrap}
+.hleft b{display:block}
+.hright{text-align:center;flex:1}
+.hright .t1{font-weight:bold;font-size:19px;letter-spacing:.4px}
+.hright .t2{font-size:15px;margin-top:2px}
+.hright .t3{font-size:13.5px;margin-top:2px;color:var(--muted)}
+.mssv{font-size:13.5px;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.note{font-size:13px;color:var(--muted);font-style:italic;margin-top:6px}
+.controls{position:sticky;top:0;z-index:9;background:#fff;border:1px solid var(--line);
+  border-radius:8px;margin:14px 0 20px;padding:10px 12px;display:flex;flex-wrap:wrap;
+  gap:8px;align-items:center;font-family:Arial,Helvetica,sans-serif;font-size:13px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.controls label{color:var(--muted)}
+.controls select,.controls button{font:inherit;padding:5px 9px;border:1px solid var(--line);
+  border-radius:6px;background:#fff;cursor:pointer}
+.controls button:hover,.controls select:hover{border-color:var(--accent);color:var(--accent)}
+#score{margin-left:auto;font-weight:bold;color:var(--accent)}
+.qcard{border-bottom:1px solid #ddd;padding:16px 0 20px;scroll-margin-top:80px}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.qtitle{font-weight:bold}
+.badges{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#fff;white-space:nowrap}
+.badge{display:inline-block;background:#607d8b;border-radius:10px;padding:2px 8px;margin-left:4px}
+.stem{margin-top:6px}
+code{font-family:Consolas,"Courier New",monospace;font-size:.92em;background:var(--code-bg);
+  padding:0 3px;border-radius:3px}
+.codebox{border:1px solid var(--line);border-radius:6px;margin:10px 0;overflow:hidden;
+  background:var(--code-bg)}
+.codelang{font-family:Arial,Helvetica,sans-serif;font-size:11.5px;color:#fff;background:#546e7a;
+  padding:3px 10px;letter-spacing:.2px}
+.codebox pre{margin:0;padding:10px 12px;font-family:Consolas,"Courier New",monospace;
+  font-size:13.5px;line-height:1.5;overflow-x:auto;white-space:pre}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-top:12px}
+.opts.wide{grid-template-columns:1fr}
+.opt{border:1px solid #d6d6d6;border-radius:6px;padding:8px 11px;cursor:pointer;
+  display:flex;gap:8px;align-items:flex-start;transition:background .12s,border-color .12s}
+.opt:hover{border-color:var(--accent);background:#f3f7ff}
+.opt .L{font-weight:bold;min-width:20px}
+.answered .opt{cursor:default;pointer-events:none}
+.opt.correct{background:var(--good-bg);border-color:var(--good)}
+.opt.correct .L::after{content:" ✔";color:var(--good)}
+.opt.wrongpick{background:var(--bad-bg);border-color:var(--bad)}
+.opt.wrongpick .L::after{content:" ✘";color:var(--bad)}
+.explain{display:none;margin-top:12px;border-left:4px solid var(--accent);background:#f2f6ff;
+  padding:10px 14px;border-radius:0 6px 6px 0;font-size:14.5px}
+.explain .verdict{font-weight:bold;margin-bottom:4px}
+.explain .verdict.ok{color:var(--good)}
+.explain .verdict.no{color:var(--bad)}
+.endline{text-align:center;margin:34px 0 8px;font-weight:bold;letter-spacing:2px}
+.matrixnote{font-size:12.5px;color:var(--muted);text-align:center}
+@media (max-width:640px){
+  .opts{grid-template-columns:1fr} .page{padding:20px 14px}
+  .hrow{display:block} .hleft{white-space:normal;margin-bottom:10px}
+  #score{width:100%;margin-left:0}
+}
+@media print{
+  body{background:#fff}
+  .page{box-shadow:none;max-width:none;padding:0}
+  .controls{display:none}
+  .explain{display:block !important}
+  .opt{border-color:#999}
+  .opt.correct,.opt.wrongpick{background:#fff;border-color:#999}
+  .opt .L::after{content:"" !important}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="exam-header">
+  <div class="hrow">
+    <div class="hleft">
+      ĐẠI HỌC QUỐC GIA TP.HCM<br><b>TRƯỜNG ĐẠI HỌC BÁCH KHOA</b>
+      Khoa Khoa học &amp; Kỹ thuật Máy tính
+    </div>
+    <div class="hright">
+      <div class="t1">BÀI ÔN TẬP TRẮC NGHIỆM</div>
+      <div class="t2">Biểu thức · Thứ tự đánh giá · Ký pháp tiền tố/hậu tố · Độ ưu tiên</div>
+      <div class="t3">19 câu tổng hợp từ các ảnh đã cung cấp · 1 điểm/câu</div>
+    </div>
+  </div>
+  <div class="mssv">MSSV: …………………………………………&nbsp;&nbsp;&nbsp;Họ và tên SV: …………………………………………</div>
+  <div class="note">Nhấp vào một phương án để trả lời. Hệ thống chấm ngay và hiển thị lời giải cho đáp án đúng. Có thể lọc chủ đề, xáo câu, xáo phương án và lưu tiến độ trên trình duyệt.</div>
+</header>
+
+<div class="controls">
+  <label>Chủ đề:</label>
+  <select id="fTopic">
+    <option value="all">Tất cả</option>
+    <option value="T1">Đánh giá chọn lọc</option>
+    <option value="T2">Biểu thức và câu lệnh</option>
+    <option value="T3">Thứ tự đánh giá</option>
+    <option value="T4">Cây biểu thức và ký pháp</option>
+    <option value="T5">Ngăn xếp, ưu tiên và kết hợp</option>
+    <option value="T6">Số dấu chấm động</option>
+  </select>
+  <button id="btnShufQ">⇄ Xáo câu</button>
+  <button id="btnShufO">⇄ Xáo phương án</button>
+  <button id="btnReset">↺ Làm lại</button>
+  <span id="score"></span>
+</div>
+
+<main id="quiz"></main>
+
+<div class="endline">--- HẾT ---</div>
+<div class="matrixnote">Nội dung câu hỏi, lựa chọn và lời giải được tổng hợp từ các ảnh trong cuộc trò chuyện; giao diện mô phỏng file HTML mẫu đã cung cấp.</div>
+
+<script>
+"use strict";
+const QUESTIONS = [{"n": 1, "topic": "T1", "stem": "Vì sao đánh giá chọn lọc trong biểu thức điều kiện là chuyện đúng–sai, chứ không chỉ là chuyện tiết kiệm công tính toán?", "boxes": [], "opts": ["Vì nhánh không được chọn có thể gây lỗi lúc chạy nếu bị đánh giá, dù giá trị của nó không dùng đến.", "Vì nhánh không được chọn có thể không đúng, khiến trình biên dịch từ chối biên dịch chương trình.", "Vì nhánh không được chọn có thể chứa toán tử có độ ưu tiên cao hơn, làm đổi cách nhóm.", "Vì nhánh không được chọn sẽ không bao giờ được bộ kiểm tra kiểu xét tới lúc biên dịch."], "ans": 0, "why": "Đánh giá chọn lọc chỉ thực hiện nhánh cần thiết. Điều này có thể ngăn những phép tính nguy hiểm ở nhánh không được chọn, chẳng hạn chia cho 0 hoặc truy cập một đối tượng không hợp lệ. Vì vậy, nó ảnh hưởng đến tính đúng đắn của chương trình chứ không chỉ giảm số phép tính.", "wide": true}, {"n": 2, "topic": "T2", "stem": "Rust là ngôn ngữ thiên biểu thức nên viết được đoạn mã sau. Trong C, cách viết tương ứng không hợp lệ. Nguyên nhân là gì?", "boxes": [{"lang": "Rust", "code": "let m = if a > b { a } else { b };"}, {"lang": "C — cách viết không hợp lệ", "code": "int m = if (a > b) a else b;"}], "opts": ["Trong C, <code>if</code> chỉ được dùng bên trong thân hàm nên không dùng trong một lệnh khai báo biến.", "Trong C, mọi toán hạng đều được đánh giá háo hức nên cả hai nhánh đều bị tính trước khi chọn.", "Trong C, phép gán kết hợp phải nên vế phải của nó không được chứa một cấu trúc chọn lựa.", "Trong C, <code>if</code> là câu lệnh: nó được thực thi để chọn nhánh chứ không tạo ra giá trị."], "ans": 3, "why": "Trong Rust, <code>if</code> có thể là một biểu thức và tạo ra giá trị của nhánh được chọn. Trong C, <code>if</code> là câu lệnh điều khiển, không tạo ra giá trị để đặt trực tiếp ở vế phải của phép khởi tạo. C có thể dùng toán tử điều kiện: <code>int m = (a &gt; b) ? a : b;</code>.", "wide": true}, {"n": 3, "topic": "T3", "stem": "Nếu ngôn ngữ quy định toán hạng được đánh giá từ trái sang phải (như Java và C#), giá trị cuối cùng của <code>a</code> là bao nhiêu?", "boxes": [{"lang": "C — dùng cho Câu 3–5", "code": "int a = 5;\n\nint fun1() {\n    a = 17;\n    return 3;\n}\n\nint main() {\n    a = a + fun1();\n}"}], "opts": ["3", "8", "20", "17"], "ans": 1, "why": "Đọc toán hạng trái <code>a</code> trước nên lấy được 5. Sau đó <code>fun1()</code> gán <code>a = 17</code> và trả về 3. Phép cộng tạo ra <code>5 + 3 = 8</code>, rồi kết quả này được gán lại cho <code>a</code>.", "wide": false}, {"n": 4, "topic": "T3", "stem": "Nếu trình biên dịch chọn đánh giá lời gọi hàm trước, giá trị cuối cùng của <code>a</code> là bao nhiêu?", "boxes": [{"lang": "C — dùng cho Câu 3–5", "code": "int a = 5;\n\nint fun1() {\n    a = 17;\n    return 3;\n}\n\nint main() {\n    a = a + fun1();\n}"}], "opts": ["20", "3", "17", "8"], "ans": 0, "why": "<code>fun1()</code> chạy trước, gán <code>a = 17</code> và trả về 3. Sau đó toán hạng <code>a</code> được đọc với giá trị 17, nên phép cộng cho <code>17 + 3 = 20</code> và giá trị này được gán lại cho <code>a</code>.", "wide": false}, {"n": 5, "topic": "T3", "stem": "Trong biểu thức trên, C và C++ không quy định toán hạng nào của phép cộng được đánh giá trước. Hệ quả của lựa chọn thiết kế này với đoạn mã trên là gì?", "boxes": [{"lang": "C — dùng cho Câu 3–5", "code": "int a = 5;\n\nint fun1() {\n    a = 17;\n    return 3;\n}\n\nint main() {\n    a = a + fun1();\n}"}], "opts": ["Chương trình bị từ chối biên dịch vì biểu thức có hiệu ứng phụ trên chính toán hạng của nó.", "Trình biên dịch buộc phải cảnh báo và tự chèn dấu ngoặc để làm rõ cách nhóm biểu thức.", "Kết quả luôn là giá trị nhỏ nhất trong các thứ tự khả dĩ, để bảo đảm tính khả chuyển.", "Cùng một đoạn mã có thể cho kết quả khác nhau trên các trình biên dịch khác nhau."], "ans": 3, "why": "Ý chính của câu hỏi là thứ tự đánh giá không được đảm bảo, trong khi lời gọi hàm vừa thay đổi <code>a</code> vừa xuất hiện cạnh một lần đọc <code>a</code>. Do đó không thể dựa vào một kết quả duy nhất. Nói chính xác theo chuẩn C/C++, trường hợp đọc và thay đổi cùng một đối tượng mà không có quan hệ thứ tự phù hợp có thể dẫn đến hành vi không xác định.", "wide": true}, {"n": 6, "topic": "T2", "stem": "Trong C, đoạn mã sau biên dịch được và <code>t</code> nhận giá trị 5. Trong Python, phải dùng toán tử <code>:=</code>; còn viết <code>t = a + (b = 4)</code> là lỗi cú pháp. Khác biệt nằm ở đâu?", "boxes": [{"lang": "C", "code": "int a = 1, b;\nint t = a + (b = 4);"}, {"lang": "Python", "code": "t = a + (b := 4)"}], "opts": ["Trong C, phép gán là một biểu thức cho ra giá trị được gán; trong Python, <code>b = 4</code> là câu lệnh.", "Trong C, phép gán có độ ưu tiên cao hơn phép cộng nên được nhóm trước và cho ra một giá trị.", "Trong C, trình biên dịch tự chuyển phép gán lồng trong biểu thức thành một câu lệnh riêng.", "Trong C, phép gán kết hợp phải nên có thể lồng vào bất kỳ vị trí nào bên trong biểu thức."], "ans": 0, "why": "Trong C, biểu thức gán <code>(b = 4)</code> vừa gán 4 cho <code>b</code>, vừa có giá trị bằng 4, nên <code>t = 1 + 4 = 5</code>. Trong Python, phép gán thông thường <code>=</code> là câu lệnh; biểu thức gán phải dùng toán tử walrus <code>:=</code>.", "wide": true}, {"n": 7, "topic": "T2", "stem": "Biểu thức điều kiện khác câu lệnh <code>if</code> ở điểm cốt lõi nào?", "boxes": [], "opts": ["Nó chỉ đánh giá điều kiện đúng một lần, còn câu lệnh <code>if</code> đánh giá điều kiện nhiều lần.", "Nó bắt buộc phải nằm ở vế phải của một phép gán, còn câu lệnh <code>if</code> thì đứng độc lập.", "Nó được đánh giá xong ngay lúc biên dịch, còn câu lệnh <code>if</code> chỉ được thực thi khi chương trình chạy.", "Nó tạo ra một giá trị từ nhánh được chọn, nên có thể tham gia vào một biểu thức lớn hơn."], "ans": 3, "why": "Biểu thức điều kiện tạo ra một giá trị, chẳng hạn <code>(a &gt; b) ? a : b</code>, nên có thể xuất hiện trong phép gán, phép cộng hoặc lời gọi hàm. Câu lệnh <code>if</code> chủ yếu điều khiển luồng thực thi và không tự tạo ra một giá trị trong những ngôn ngữ như C.", "wide": true}, {"n": 8, "topic": "T4", "stem": "Áp dụng biểu thức hậu tố sau. Toán tử nào nằm ở gốc của cây tương ứng?", "boxes": [{"lang": "Biểu thức hậu tố — dùng cho Câu 8–10", "code": "a b + c d e * - /"}], "opts": ["+", "-", "/", "*"], "ans": 2, "why": "Trong biểu thức hậu tố hợp lệ, toán tử cuối cùng kết hợp hai biểu thức con hoàn chỉnh và trở thành gốc của cây. Ký hiệu cuối cùng ở đây là <code>/</code>.", "wide": false}, {"n": 9, "topic": "T4", "stem": "Dạng trung tố dùng ít dấu ngoặc nhất của biểu thức là gì?", "boxes": [{"lang": "Biểu thức hậu tố — dùng cho Câu 8–10", "code": "a b + c d e * - /"}], "opts": ["<code>(a + b) / c - d * e</code>", "<code>a + b / c - d * e</code>", "<code>(a + b) / (c - d) * e</code>", "<code>(a + b) / (c - d * e)</code>"], "ans": 3, "why": "Từ hậu tố: <code>a b +</code> tạo <code>a + b</code>; <code>d e *</code> tạo <code>d * e</code>; tiếp theo <code>c ... -</code> tạo <code>c - d * e</code>; cuối cùng chia hai kết quả. Dấu ngoặc cần giữ là <code>(a + b) / (c - d * e)</code>.", "wide": true}, {"n": 10, "topic": "T4", "stem": "Dạng tiền tố Ba Lan của biểu thức là gì?", "boxes": [{"lang": "Biểu thức hậu tố — dùng cho Câu 8–10", "code": "a b + c d e * - /"}], "opts": ["<code>+ a b / - c * d e</code>", "<code>/ - + a b c * d e</code>", "<code>/ + a b * - c d e</code>", "<code>/ + a b - c * d e</code>"], "ans": 3, "why": "Cây biểu thức là phép chia có nhánh trái <code>a + b</code> và nhánh phải <code>c - d * e</code>. Duyệt tiền tự theo thứ tự gốc–trái–phải cho kết quả <code>/ + a b - c * d e</code>.", "wide": true}, {"n": 11, "topic": "T6", "stem": "Trong toán học, phép nhân có tính kết hợp nên <code>(x * y) * z</code> và <code>x * (y * z)</code> luôn bằng nhau. Vì sao khi <code>x</code>, <code>y</code>, <code>z</code> là số thực dấu chấm động, hai cách nhóm này có thể cho hai kết quả khác hẳn?", "boxes": [], "opts": ["Vì tính kết hợp của phép nhân bị mất khi các toán hạng có dấu khác nhau.", "Vì mỗi phép tính trung gian đều bị làm tròn và bị giới hạn bởi miền biểu diễn.", "Vì phép nhân trên số thực đoản mạch khi một toán hạng đã bằng không.", "Vì trình biên dịch đánh giá toán hạng theo thứ tự không định rõ nên kết quả không xác định."], "ans": 1, "why": "Số dấu chấm động chỉ biểu diễn được hữu hạn giá trị. Sau mỗi phép nhân, kết quả trung gian có thể bị làm tròn, tràn hoặc hụt miền biểu diễn. Hai cách đặt ngoặc tạo ra các kết quả trung gian khác nhau, nên sai số cuối cùng cũng có thể khác nhau.", "wide": true}, {"n": 12, "topic": "T2", "stem": "Trong Python, cấu trúc nào sau đây được đánh giá để tạo ra một giá trị, nhờ đó có thể làm toán hạng bên trong một biểu thức lớn hơn?", "boxes": [], "opts": ["<code>if x &gt; 0: y = 1</code>", "<code>x = 3</code>", "<code>while x: pass</code>", "<code>len(s) &gt; 0</code>"], "ans": 3, "why": "<code>len(s) &gt; 0</code> là một biểu thức và được đánh giá thành <code>True</code> hoặc <code>False</code>. Ba lựa chọn còn lại là câu lệnh trong Python, nên không thể đặt trực tiếp làm toán hạng của một biểu thức lớn hơn.", "wide": false}, {"n": 13, "topic": "T3", "stem": "Với <code>a + b * c</code>, luật độ ưu tiên nhóm biểu thức thành <code>a + (b * c)</code>. Kết luận nào về thứ tự đánh giá lúc chạy là đúng?", "boxes": [], "opts": ["Máy bắt buộc phải tính <code>b * c</code> trước, rồi mới đọc giá trị của <code>a</code>.", "Máy bắt buộc phải đọc <code>a</code> trước, vì nó đứng bên trái trong biểu thức.", "Cách nhóm chỉ nói <code>b * c</code> là toán hạng của phép cộng, không quy định toán hạng nào tính trước.", "Cách nhóm quy định luôn thứ tự đánh giá, nên <code>a</code> và <code>b * c</code> bắt buộc phải được tính song song với nhau."], "ans": 2, "why": "Độ ưu tiên và tính kết hợp xác định cấu trúc cú pháp của biểu thức. Chúng cho biết <code>b * c</code> là một biểu thức con, nhưng không tự quyết định trình tự thời gian giữa việc đánh giá <code>a</code> và đánh giá biểu thức con đó.", "wide": true}, {"n": 14, "topic": "T5", "stem": "Đánh giá biểu thức hậu tố sau bằng cơ chế ngăn xếp. Kết quả là bao nhiêu?", "boxes": [{"lang": "Biểu thức hậu tố", "code": "5 1 2 + 4 * + 3 -"}], "opts": ["14", "6", "21", "29"], "ans": 0, "why": "Thực hiện lần lượt: <code>1 + 2 = 3</code>, <code>3 * 4 = 12</code>, <code>5 + 12 = 17</code>, rồi <code>17 - 3 = 14</code>.", "wide": false}, {"n": 15, "topic": "T5", "stem": "Dựa vào bảng độ ưu tiên bên dưới, biểu thức <code>a + b * c ^ d ^ e</code> được nhóm đầy đủ dấu ngoặc thành dạng nào?", "boxes": [{"lang": "Bảng độ ưu tiên — dùng cho Câu 15–17", "code": "Toán tử    Độ ưu tiên    Tính kết hợp\n^          4             phải\n*  /       3             trái\n+  -       2             trái\n=          1             phải"}], "opts": ["<code>a + ((b * c) ^ (d ^ e))</code>", "<code>a + (b * (c ^ (d ^ e)))</code>", "<code>a + (b * ((c ^ d) ^ e))</code>", "<code>(a + b) * ((c ^ d) ^ e)</code>"], "ans": 1, "why": "Toán tử <code>^</code> có ưu tiên cao nhất và kết hợp phải, nên phần lũy thừa là <code>c ^ (d ^ e)</code>. Sau đó <code>*</code> kết hợp <code>b</code> với kết quả này; cuối cùng mới thực hiện phép cộng với <code>a</code>.", "wide": true}, {"n": 16, "topic": "T5", "stem": "Dựa vào bảng độ ưu tiên bên dưới, biểu thức <code>x = y = a - b - c</code> được nhóm đầy đủ dấu ngoặc thành dạng nào?", "boxes": [{"lang": "Bảng độ ưu tiên — dùng cho Câu 15–17", "code": "Toán tử    Độ ưu tiên    Tính kết hợp\n^          4             phải\n*  /       3             trái\n+  -       2             trái\n=          1             phải"}], "opts": ["<code>(x = y) = ((a - b) - c)</code>", "<code>x = (y = ((a - b) - c))</code>", "<code>x = (y = (a - (b - c)))</code>", "<code>(x = (y = a)) - (b - c)</code>"], "ans": 1, "why": "Phép trừ có ưu tiên cao hơn phép gán và kết hợp trái, nên tạo <code>(a - b) - c</code>. Phép gán kết hợp phải, nên <code>y</code> nhận kết quả trước rồi toàn bộ giá trị gán đó tiếp tục được gán cho <code>x</code>.", "wide": true}, {"n": 17, "topic": "T5", "stem": "Dựa vào bảng độ ưu tiên bên dưới, toán tử nào nằm ở gốc cây biểu thức của <code>a * b + c * d</code>?", "boxes": [{"lang": "Bảng độ ưu tiên — dùng cho Câu 15–17", "code": "Toán tử    Độ ưu tiên    Tính kết hợp\n^          4             phải\n*  /       3             trái\n+  -       2             trái\n=          1             phải"}], "opts": ["Không xác định được nếu chưa có dấu ngoặc.", "Phép nhân bên trái <code>a * b</code>.", "Phép nhân bên phải <code>c * d</code>.", "Phép cộng <code>+</code>."], "ans": 3, "why": "Hai phép nhân có ưu tiên cao hơn nên tạo thành hai cây con <code>a * b</code> và <code>c * d</code>. Phép cộng kết hợp hai cây con này, vì vậy <code>+</code> nằm ở gốc.", "wide": false}, {"n": 18, "topic": "T4", "stem": "Máy tính bỏ túi dùng lối nhập RPN và ngôn ngữ Forth chọn ký pháp hậu tố. Lý do kỹ thuật chính là gì?", "boxes": [], "opts": ["Hậu tố cho phép toán tử nhận số toán hạng tùy ý mà không cần dấu ngoặc.", "Hậu tố cho phép người dùng ghi đè độ ưu tiên bằng cách đổi thứ tự các toán hạng.", "Hậu tố đánh giá được bằng một ngăn xếp, không cần nhìn trước và không cần luật ưu tiên.", "Hậu tố cho kết quả số thực chính xác hơn vì giảm số phép làm tròn trung gian."], "ans": 2, "why": "Khi đọc từ trái sang phải, toán hạng được đẩy vào ngăn xếp; gặp toán tử thì lấy các toán hạng cần thiết ra, tính và đẩy kết quả trở lại. Thứ tự đã được mã hóa trực tiếp trong chuỗi hậu tố nên không cần dấu ngoặc, luật ưu tiên hoặc nhìn trước.", "wide": true}, {"n": 19, "topic": "T4", "stem": "Cho biểu thức viết ở dạng tiền tố Ba Lan sau. Hãy viết lại ở dạng trung tố trong ngôn ngữ C sao cho giữ nguyên thứ tự tính toán và dùng ít dấu ngoặc nhất.", "boxes": [{"lang": "Biểu thức tiền tố", "code": "- / + a b c * d - e f"}], "opts": ["<code>(a + b) / (c - d) * (e - f)</code>", "<code>(a + b) / c - (d * e - f)</code>", "<code>(a + b) / c - d * (e - f)</code>", "<code>a + b / c - d * e - f</code>"], "ans": 2, "why": "Phân tích từ tiền tố: <code>+ a b</code> tạo <code>a + b</code>; phép chia tạo <code>(a + b) / c</code>; <code>- e f</code> tạo <code>e - f</code>; phép nhân tạo <code>d * (e - f)</code>; toán tử ngoài cùng là phép trừ. Vì vậy biểu thức là <code>(a + b) / c - d * (e - f)</code>.", "wide": true}];
+const TOPIC_NAMES = {"T1": "Đánh giá chọn lọc", "T2": "Biểu thức và câu lệnh", "T3": "Thứ tự đánh giá", "T4": "Cây biểu thức và ký pháp", "T5": "Ngăn xếp, ưu tiên và kết hợp", "T6": "Số dấu chấm động"};
+const KEY = "co3005_expressions_notation_review_v1";
+
+let state = {answers:{}, qOrder:null, oOrder:{}, fTopic:"all"};
+try{
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if(saved && typeof saved === "object") state = Object.assign(state, saved);
+}catch(e){}
+
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function shuffled(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function qById(id){ return QUESTIONS.find(q => q.n === id); }
+function visibleQuestions(){
+  let qs = QUESTIONS.slice();
+  if(state.qOrder && state.qOrder.length === qs.length){
+    qs = state.qOrder.map(qById).filter(Boolean);
+  }
+  return qs.filter(q => state.fTopic === "all" || q.topic === state.fTopic);
+}
+function optPerm(q){
+  const p = state.oOrder[q.n];
+  return (p && p.length === q.opts.length) ? p : q.opts.map((_,i)=>i);
+}
+function render(){
+  const root = document.getElementById("quiz");
+  const qs = visibleQuestions();
+  let html = "";
+  for(const q of qs){
+    const perm = optPerm(q);
+    const done = Object.prototype.hasOwnProperty.call(state.answers, q.n);
+    const chosen = done ? state.answers[q.n] : -1;
+    let boxes = "";
+    for(const b of q.boxes){
+      boxes += '<div class="codebox"><div class="codelang">' + esc(b.lang) +
+               '</div><pre>' + esc(b.code) + '</pre></div>';
+    }
+    let opts = "";
+    perm.forEach((oi, pos) => {
+      const letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[pos];
+      let cls = "opt";
+      if(done && oi === q.ans) cls += " correct";
+      if(done && oi === chosen && oi !== q.ans) cls += " wrongpick";
+      opts += '<div class="' + cls + '" data-q="' + q.n + '" data-oi="' + oi + '">' +
+              '<span class="L">' + letter + '.</span><span>' + q.opts[oi] + '</span></div>';
+    });
+    let explain = '<div class="explain"></div>';
+    if(done){
+      const okLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[perm.indexOf(q.ans)];
+      const ok = chosen === q.ans;
+      explain = '<div class="explain" style="display:block">' +
+        '<div class="verdict ' + (ok ? "ok" : "no") + '">' +
+        (ok ? "✔ Chính xác!" : "✘ Chưa đúng.") + " Đáp án: " + okLetter + ".</div>" +
+        '<b>Giải thích:</b> ' + q.why + "</div>";
+    }
+    html += '<article class="qcard' + (done ? " answered" : "") + '" id="q' + q.n + '">' +
+      '<div class="qhead"><span class="qtitle">Câu ' + q.n + '. (1 điểm)</span>' +
+      '<span class="badges"><span class="badge">' + TOPIC_NAMES[q.topic] + '</span></span></div>' +
+      '<div class="stem">' + q.stem + "</div>" + boxes +
+      '<div class="opts' + (q.wide ? " wide" : "") + '">' + opts + "</div>" + explain +
+      "</article>";
+  }
+  if(qs.length === 0){
+    html = '<p style="color:#666;font-style:italic">Không có câu nào khớp bộ lọc hiện tại.</p>';
+  }
+  root.innerHTML = html;
+  updateScore();
+}
+function updateScore(){
+  const total = QUESTIONS.length;
+  let answered = 0, right = 0;
+  for(const q of QUESTIONS){
+    if(Object.prototype.hasOwnProperty.call(state.answers, q.n)){
+      answered++;
+      if(state.answers[q.n] === q.ans) right++;
+    }
+  }
+  const el = document.getElementById("score");
+  el.textContent = "Đã làm " + answered + "/" + total + " · Đúng " + right +
+    (answered ? " (" + Math.round(100 * right / answered) + "%)" : "");
+}
+
+document.getElementById("quiz").addEventListener("click", function(ev){
+  const opt = ev.target.closest(".opt");
+  if(!opt) return;
+  const qn = parseInt(opt.dataset.q, 10);
+  if(Object.prototype.hasOwnProperty.call(state.answers, qn)) return;
+  state.answers[qn] = parseInt(opt.dataset.oi, 10);
+  save();
+  render();
+  const card = document.getElementById("q" + qn);
+  if(card) card.scrollIntoView({block:"nearest"});
+});
+document.getElementById("fTopic").addEventListener("change", function(){
+  state.fTopic = this.value; save(); render();
+});
+document.getElementById("btnShufQ").addEventListener("click", function(){
+  state.qOrder = shuffled(QUESTIONS.map(q => q.n)); save(); render();
+});
+document.getElementById("btnShufO").addEventListener("click", function(){
+  for(const q of QUESTIONS) state.oOrder[q.n] = shuffled(q.opts.map((_,i)=>i));
+  save(); render();
+});
+document.getElementById("btnReset").addEventListener("click", function(){
+  if(!confirm("Xóa toàn bộ bài làm và làm lại từ đầu?")) return;
+  state.answers = {}; state.qOrder = null; state.oOrder = {};
+  save(); render();
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+document.getElementById("fTopic").value = state.fTopic;
+render();
+</script>
+</div>
+</body>
+</html>

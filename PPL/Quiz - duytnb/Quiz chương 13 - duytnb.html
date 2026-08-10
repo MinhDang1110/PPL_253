@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CO3005 — Đề ôn tập Điều khiển Python/C++ — 29 câu</title>
+<style>
+:root{
+  --ink:#1a1a1a; --muted:#666; --line:#b8b8b8; --accent:#0d47a1;
+  --good:#1b5e20; --good-bg:#e8f5e9; --bad:#b71c1c; --bad-bg:#ffebee;
+  --box:#fafafa; --code-bg:#f5f6f8; --warn:#8a5a00; --warn-bg:#fff8e1;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#e9e9e9;color:var(--ink);
+  font-family:"Times New Roman",Times,serif;font-size:16px;line-height:1.45}
+.page{max-width:900px;margin:0 auto;background:#fff;padding:34px 46px 60px;
+  box-shadow:0 0 12px rgba(0,0,0,.18);min-height:100vh}
+.exam-header{border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px}
+.hrow{display:flex;justify-content:space-between;gap:18px}
+.hleft{font-size:13px;text-align:center;line-height:1.35;white-space:nowrap}
+.hleft b{display:block}
+.hright{text-align:center;flex:1}
+.hright .t1{font-weight:bold;font-size:19px;letter-spacing:.4px}
+.hright .t2{font-size:15px;margin-top:2px}
+.hright .t3{font-size:13.5px;margin-top:2px;color:var(--muted)}
+.mssv{font-size:13.5px;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.note{font-size:13px;color:var(--muted);font-style:italic;margin-top:6px}
+.source-warning{margin:12px 0 2px;border:1px solid #e0b04c;background:var(--warn-bg);
+  color:var(--warn);padding:9px 12px;border-radius:6px;font-size:13.5px}
+.controls{position:sticky;top:0;z-index:9;background:#fff;border:1px solid var(--line);
+  border-radius:8px;margin:14px 0 20px;padding:10px 12px;display:flex;flex-wrap:wrap;
+  gap:8px;align-items:center;font-family:Arial,Helvetica,sans-serif;font-size:13px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.controls label{color:var(--muted)}
+.controls select,.controls button{font:inherit;padding:5px 9px;border:1px solid var(--line);
+  border-radius:6px;background:#fff;cursor:pointer}
+.controls button:hover,.controls select:hover{border-color:var(--accent);color:var(--accent)}
+#score{margin-left:auto;font-weight:bold;color:var(--accent)}
+.qcard{border-bottom:1px solid #ddd;padding:16px 0 20px;scroll-margin-top:80px}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.qtitle{font-weight:bold}
+.badges{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#fff;white-space:nowrap}
+.badge{display:inline-block;background:#607d8b;border-radius:10px;padding:2px 8px;margin-left:4px}
+.stem{margin-top:6px}
+code{font-family:Consolas,"Courier New",monospace;font-size:.92em;background:var(--code-bg);
+  padding:0 3px;border-radius:3px}
+.codebox{border:1px solid var(--line);border-radius:6px;margin:10px 0;overflow:hidden;
+  background:var(--code-bg)}
+.codelang{font-family:Arial,Helvetica,sans-serif;font-size:11.5px;color:#fff;background:#546e7a;
+  padding:3px 10px;letter-spacing:.2px}
+.codebox pre{margin:0;padding:10px 12px;font-family:Consolas,"Courier New",monospace;
+  font-size:13.5px;line-height:1.5;overflow-x:auto;white-space:pre}
+.qnote{font-size:12.5px;color:var(--muted);font-style:italic;margin-top:7px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-top:12px}
+.opts.wide{grid-template-columns:1fr}
+.opt{border:1px solid #d6d6d6;border-radius:6px;padding:8px 11px;cursor:pointer;
+  display:flex;gap:8px;align-items:flex-start;transition:background .12s,border-color .12s}
+.opt:hover{border-color:var(--accent);background:#f3f7ff}
+.opt .L{font-weight:bold;min-width:20px}
+.answered .opt{cursor:default;pointer-events:none}
+.opt.correct{background:var(--good-bg);border-color:var(--good)}
+.opt.correct .L::after{content:" ✔";color:var(--good)}
+.opt.wrongpick{background:var(--bad-bg);border-color:var(--bad)}
+.opt.wrongpick .L::after{content:" ✘";color:var(--bad)}
+.explain{display:none;margin-top:12px;border-left:4px solid var(--accent);background:#f2f6ff;
+  padding:10px 14px;border-radius:0 6px 6px 0;font-size:14.5px}
+.explain .verdict{font-weight:bold;margin-bottom:4px}
+.explain .verdict.ok{color:var(--good)}
+.explain .verdict.no{color:var(--bad)}
+.endline{text-align:center;margin:34px 0 8px;font-weight:bold;letter-spacing:2px}
+.matrixnote{font-size:12.5px;color:var(--muted);text-align:center}
+@media (max-width:640px){
+  .opts{grid-template-columns:1fr} .page{padding:20px 14px}
+  .hrow{display:block} .hleft{white-space:normal;margin-bottom:10px}
+  #score{width:100%;margin-left:0}
+}
+@media print{
+  body{background:#fff}
+  .page{box-shadow:none;max-width:none;padding:0}
+  .controls{display:none}
+  .explain{display:none !important}
+  .opt{border-color:#999}
+  .opt.correct,.opt.wrongpick{background:#fff;border-color:#999}
+  .opt .L::after{content:"" !important}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="exam-header">
+  <div class="hrow">
+    <div class="hleft">
+      ĐẠI HỌC QUỐC GIA TP.HCM<br><b>TRƯỜNG ĐẠI HỌC BÁCH KHOA</b>
+      Khoa Khoa học &amp; Kỹ thuật Máy tính
+    </div>
+    <div class="hright">
+      <div class="t1">BÀI ÔN TẬP TRẮC NGHIỆM</div>
+      <div class="t2">Biểu thức · Phép gán · Rẽ nhánh · Vòng lặp · Điều khiển Python/C++</div>
+      <div class="t3">29 câu từ ảnh đã cung cấp · 1 điểm/câu</div>
+    </div>
+  </div>
+  <div class="mssv">MSSV: …………………………………………&nbsp;&nbsp;&nbsp;Họ và tên SV: …………………………………………</div>
+  <div class="note">Nhấp vào một phương án để trả lời; hệ thống chấm ngay sau khi chọn. Có thể xáo câu, xáo phương án và lưu tiến độ tự động trên trình duyệt.</div>
+</header>
+
+<div class="source-warning">
+  Đề gồm 29 câu được tổng hợp từ toàn bộ ảnh trong đoạn chat. Nội dung câu hỏi, mã nguồn và các lựa chọn được giữ theo ảnh đã cung cấp.
+</div>
+
+<div class="controls">
+  <label>Chủ đề:</label>
+  <select id="fTopic">
+    <option value="all">Tất cả</option>
+    <option value="T1">Biểu thức và hiệu ứng phụ</option>
+    <option value="T2">Biến, gán và mô hình lưu trữ</option>
+    <option value="T3">Rẽ nhánh và switch</option>
+    <option value="T4">Truth value trong Python</option>
+    <option value="T5">Vòng lặp và phạm vi biến</option>
+    <option value="T6">break · continue · return · else</option>
+    <option value="T7">Iterator và giao thức lặp</option>
+  </select>
+  <button id="btnShufQ">⇄ Xáo câu</button>
+  <button id="btnShufO">⇄ Xáo phương án</button>
+  <button id="btnReset">↺ Làm lại</button>
+  <span id="score"></span>
+</div>
+
+<main id="quiz"></main>
+
+<div class="endline">--- HẾT ---</div>
+<div class="matrixnote">Nội dung câu hỏi và lựa chọn được tổng hợp từ toàn bộ ảnh đã gửi; định dạng và chức năng tương tác dựa trên file HTML mẫu.</div>
+
+<script>
+"use strict";
+const QUESTIONS = [{"n":1,"topic":"T1","stem":"Cho đoạn code Python sau. Dòng cuối in ra chữ <code>adding</code>. Quan sát này cho thấy điều gì về nhận định \"<code>a + b</code> chỉ tạo ra giá trị và không làm gì khác\"?","boxes":[{"lang":"Python","code":"class Noisy:\n    def __init__(self, v):\n        self.v = v\n\n    def __add__(self, other):\n        print(\"adding\")\n        return Noisy(self.v + other.v)\n\nr = Noisy(1) + Noisy(2)"}],"opts":["Nhận định chỉ đúng với toán hạng số thông thường; toán tử nạp chồng có thể mang hiệu ứng","Nhận định vẫn đúng, vì dòng chữ được in bởi phương thức <code>__init__</code> lúc dựng đối tượng chứ không phải bởi phép cộng","Nhận định sai hoàn toàn, vì phép cộng số nguyên cũng in thông tin ra màn hình","Nhận định chỉ đúng trong C++; còn Python cấm nạp chồng toán tử cộng"],"ans":0,"why":"Phép cộng giữa hai đối tượng <code>Noisy</code> gọi <code>__add__</code>. Phương thức này có thể tạo hiệu ứng phụ như in ra màn hình.","wide":true},{"n":2,"topic":"T1","stem":"Cho đoạn code C++ sau. Chương trình in ra gì?","boxes":[{"lang":"C++","code":"#include <iostream>\n\nint c = 0;\n\nint f() {\n    c = c + 10;\n    return c;\n}\n\nint main() {\n    int y = f() + f();\n    std::cout << y << \" \" << c;\n}"}],"opts":["<code>20 10</code>","<code>20 20</code>","<code>30 20</code>","<code>30 10</code>"],"ans":2,"why":"Hai lần gọi <code>f()</code> lần lượt làm <code>c</code> nhận 10 rồi 20 và trả về 10, 20. Tổng là 30, còn <code>c</code> cuối cùng bằng 20.","wide":false},{"n":3,"topic":"T2","stem":"Cho đoạn code C++ sau. Chương trình in ra giá trị nào?","boxes":[{"lang":"C++","code":"#include <iostream>\n\nint vals[] = {2, 5, 0, 7};\nint i = 0;\n\nint next_val() {\n    return vals[i++];\n}\n\nint main() {\n    int n, sum = 0;\n    while ((n = next_val()) != 0)\n        sum += n;\n\n    std::cout << sum;\n}"}],"opts":["<code>0</code>","<code>2</code>","<code>7</code>","<code>14</code>"],"ans":2,"why":"Vòng lặp cộng 2 và 5. Khi lấy được 0, điều kiện sai và vòng lặp dừng, nên tổng bằng 7.","wide":false},{"n":4,"topic":"T2","stem":"Cho đoạn code C++ sau (trích trong hàm <code>main</code>). Sau khi thực thi, <code>a</code> và <code>b</code> lần lượt mang giá trị nào?","boxes":[{"lang":"C++","code":"int a = 1, b = 2;\na = b = a + 4;"}],"opts":["<code>a = 5</code> và <code>b = 5</code>","<code>a = 2</code> và <code>b = 5</code>","<code>a = 6</code> và <code>b = 2</code>","<code>a = 5</code> và <code>b = 2</code>"],"ans":0,"why":"Phép gán kết hợp từ phải sang trái: trước hết <code>b = a + 4 = 5</code>, rồi giá trị 5 được gán tiếp cho <code>a</code>.","wide":false},{"n":5,"topic":"T2","stem":"Cho đoạn code C++ sau. Xét theo mô hình lưu trữ, hai dòng khác nhau ở điểm nào?","boxes":[{"lang":"C++","code":"int x = 10;\nx = 20;"}],"opts":["Dòng đầu cấp phát ô nhớ tạm thời; dòng sau mới cấp phát ô nhớ chính thức cho biến","Dòng đầu là gán có kiểm tra kiểu; dòng sau là gán bỏ qua kiểm tra kiểu","Dòng đầu là khởi tạo: tạo biến kèm giá trị đầu tiên; dòng sau là gán: cập nhật biến đã tồn tại","Dòng đầu diễn ra lúc biên dịch; dòng sau diễn ra lúc liên kết chương trình"],"ans":2,"why":"Dòng đầu vừa khai báo vừa khởi tạo biến <code>x</code>; dòng sau chỉ cập nhật giá trị của biến đã tồn tại.","wide":true},{"n":6,"topic":"T2","stem":"Cho đoạn code C++ sau (trích trong hàm <code>main</code>, đã bao gồm <code>&lt;vector&gt;</code>). Chương trình in ra gì, và điều đó cho thấy C++ hiện thực hóa phép gán theo mô hình nào?","boxes":[{"lang":"C++","code":"std::vector<int> a = {1, 2};\nstd::vector<int> b;\n\nb = a;\nb.push_back(3);\n\nstd::cout << a.size() << \" \" << b.size();"}],"opts":["<code>3 3</code> — <code>b = a</code> làm hai tên cùng tham chiếu tới đúng một đối tượng vector dùng chung","<code>2 2</code> — <code>push_back</code> tạo vector mới và ràng buộc lại tên <code>b</code>","<code>2 3</code> — <code>b = a</code> sao chép nội dung vào chỗ chứa riêng của <code>b</code> theo mô hình ô lưu trữ","<code>3 2</code> — phần tử mới được đưa vào <code>a</code> vì <code>b</code> chỉ là bí danh tạm"],"ans":2,"why":"<code>b = a</code> sao chép nội dung vector. Sau đó <code>b.push_back(3)</code> chỉ làm kích thước của <code>b</code> thành 3, còn <code>a</code> vẫn có kích thước 2.","wide":true},{"n":7,"topic":"T2","stem":"Cho hai đoạn code cùng hình thức. C++ mô tả dòng thứ hai là ghi giá trị mới vào ô nhớ của <code>x</code>; Python mô tả nó là ràng buộc lại tên <code>x</code> sang đối tượng khác. Quan hệ giữa hai cách mô tả là gì?","boxes":[{"lang":"C++","code":"int x = 5;\nx = 6;"},{"lang":"Python","code":"x = 5\nx = 6"}],"opts":["Hai ngữ nghĩa mâu thuẫn nhau nên chương trình cho kết quả khác nhau ở hai ngôn ngữ","Chỉ cách mô tả của C++ là đúng; cách của Python là một cách nói hình tượng không chính xác","Hai cách hiện thực hóa khác nhau của cùng một mô hình lưu trữ trừu tượng về biến và phép gán","Chỉ khác về thuật ngữ dịch thuật; hai ngôn ngữ thao tác bộ nhớ hoàn toàn giống nhau"],"ans":2,"why":"Hai ngôn ngữ có cách hiện thực và cách mô tả phép gán khác nhau, nhưng đều cung cấp một mô hình trừu tượng về biến và phép gán.","wide":true},{"n":8,"topic":"T2","stem":"Cho đoạn code Python sau. Chương trình in ra gì?","boxes":[{"lang":"Python","code":"class P:\n    pass\n\np1 = P()\np2 = p1\np2.tag = \"x\"\n\nprint(p1.tag)"}],"opts":["<code>x</code>","<code>None</code>","Lỗi <code>AttributeError</code> vì <code>p1</code> chưa có thuộc tính <code>tag</code>","Lỗi cú pháp vì không thể gán thuộc tính qua tên thứ hai"],"ans":0,"why":"<code>p1</code> và <code>p2</code> cùng tham chiếu tới một đối tượng. Gán <code>p2.tag = \"x\"</code> làm thuộc tính này xuất hiện khi truy cập qua <code>p1</code>.","wide":true},{"n":9,"topic":"T3","stem":"Với hàm C++ dưới đây, lời gọi <code>run(1)</code> in ra gì?","boxes":[{"lang":"C++ — dùng cho Câu 9–11","code":"void run(int x) {\n    switch (x) {\n        case 1:\n            std::cout << \"A\";\n        case 2:\n            std::cout << \"B\";\n            break;\n        case 3:\n            std::cout << \"C\";\n            break;\n        default:\n            std::cout << \"D\";\n    }\n}"}],"opts":["<code>A</code>","<code>AB</code>","<code>ABC</code>","<code>ABCD</code>"],"ans":1,"why":"Sau <code>case 1</code> không có <code>break</code>, nên chương trình fall-through xuống <code>case 2</code>, in thêm B rồi dừng.","wide":false},{"n":10,"topic":"T3","stem":"Với hàm ở Câu 9–11, lời gọi <code>run(3)</code> in ra gì?","boxes":[{"lang":"C++ — dùng cho Câu 9–11","code":"void run(int x) {\n    switch (x) {\n        case 1:\n            std::cout << \"A\";\n        case 2:\n            std::cout << \"B\";\n            break;\n        case 3:\n            std::cout << \"C\";\n            break;\n        default:\n            std::cout << \"D\";\n    }\n}"}],"opts":["<code>C</code>","<code>CB</code>","<code>CD</code>","<code>D</code>"],"ans":0,"why":"<code>case 3</code> in C rồi gặp <code>break</code>, nên thoát khỏi <code>switch</code>.","wide":false},{"n":11,"topic":"T3","stem":"Sửa đổi nào khiến <code>run(1)</code> chỉ in <code>A</code> mà không thay đổi kết quả của các lời gọi với giá trị khác?","boxes":[{"lang":"C++ — dùng cho Câu 9–11","code":"void run(int x) {\n    switch (x) {\n        case 1:\n            std::cout << \"A\";\n        case 2:\n            std::cout << \"B\";\n            break;\n        case 3:\n            std::cout << \"C\";\n            break;\n        default:\n            std::cout << \"D\";\n    }\n}"}],"opts":["Chuyển toàn bộ <code>case 1</code> xuống ngay sau <code>case 2</code>","Xóa <code>break;</code> ở cuối <code>case 2</code>","Chuyển nhánh <code>default</code> lên đầu câu lệnh <code>switch</code>","Thêm <code>break;</code> ngay sau lệnh in của <code>case 1</code>"],"ans":3,"why":"Thêm <code>break</code> sau lệnh in A ngăn fall-through từ <code>case 1</code> sang <code>case 2</code> mà không ảnh hưởng các case còn lại.","wide":true},{"n":12,"topic":"T3","stem":"Cho đoạn code C++ sau (trích trong hàm <code>main</code>), trong đó phần thụt lề thể hiện ý định của người viết. Chương trình thực sự in ra gì?","boxes":[{"lang":"C++","code":"int a = 1, b = 0;\n\nif (a)\n    if (b)\n        std::cout << \"X\";\nelse\n    std::cout << \"Y\";"}],"opts":["<code>X</code>","Không in gì cả","<code>Y</code>","<code>XY</code>"],"ans":2,"why":"Trong C++, <code>else</code> ghép với <code>if</code> gần nhất chưa có <code>else</code>, tức là <code>if (b)</code>. Vì <code>a</code> đúng và <code>b</code> sai nên in Y.","wide":false},{"n":13,"topic":"T4","stem":"Cho đoạn code Python sau. Sau khi thực thi, <code>count</code> bằng bao nhiêu?","boxes":[{"lang":"Python","code":"count = 0\n\nfor x in [-1, 0, 1]:\n    if x:\n        count += 1"}],"opts":["<code>0</code>","<code>1</code>","<code>2</code>","<code>3</code>"],"ans":2,"why":"Trong ngữ cảnh boolean, -1 và 1 là đúng, còn 0 là sai. Vì vậy <code>count</code> tăng hai lần.","wide":false},{"n":14,"topic":"T4","stem":"Cho đoạn code Python sau. Sau khi thực thi, <code>out</code> là gì?","boxes":[{"lang":"Python","code":"out = []\n\nfor v in [0, \"0\", [], [[]], None]:\n    out.append(bool(v))"}],"opts":["<code>[False, True, False, True, False]</code>","<code>[False, False, False, False, False]</code>","<code>[False, True, False, False, False]</code>","<code>[True, True, False, True, False]</code>"],"ans":0,"why":"<code>0</code>, danh sách rỗng và <code>None</code> là falsey; chuỗi không rỗng <code>\"0\"</code> và danh sách <code>[[]]</code> là truthy.","wide":true},{"n":15,"topic":"T5","stem":"Với đoạn code Python dưới đây, sau khi thực thi, <code>count_for</code> bằng bao nhiêu?","boxes":[{"lang":"Python — dùng cho Câu 15–17","code":"n = 3\ncount_for = 0\nfor _ in range(n):\n    n = 10\n    count_for += 1\n\nn = 3\ni = 0\ncount_while = 0\nwhile i < n:\n    i += 1\n    count_while += 1\n    if count_while == 1:\n        n = 5"}],"opts":["<code>3</code>","<code>4</code>","<code>10</code>","<code>13</code>"],"ans":0,"why":"<code>range(n)</code> được tạo với <code>n = 3</code> trước khi vòng lặp bắt đầu. Việc đổi <code>n</code> trong thân vòng không thay đổi iterable đang duyệt.","wide":false},{"n":16,"topic":"T5","stem":"Với đoạn code ở Câu 15–17, sau khi thực thi, <code>count_while</code> bằng bao nhiêu?","boxes":[{"lang":"Python — dùng cho Câu 15–17","code":"n = 3\ncount_for = 0\nfor _ in range(n):\n    n = 10\n    count_for += 1\n\nn = 3\ni = 0\ncount_while = 0\nwhile i < n:\n    i += 1\n    count_while += 1\n    if count_while == 1:\n        n = 5"}],"opts":["<code>3</code>","<code>5</code>","<code>6</code>","<code>10</code>"],"ans":1,"why":"Sau vòng đầu tiên, <code>n</code> được đổi thành 5. Điều kiện <code>i &lt; n</code> được kiểm tra lại mỗi vòng nên vòng lặp chạy cho đến khi <code>i = 5</code>.","wide":false},{"n":17,"topic":"T5","stem":"Nguyên nhân khiến hai vòng lặp phản ứng khác nhau với việc thay đổi <code>n</code> là gì?","boxes":[{"lang":"Python — dùng cho Câu 15–17","code":"n = 3\ncount_for = 0\nfor _ in range(n):\n    n = 10\n    count_for += 1\n\nn = 3\ni = 0\ncount_while = 0\nwhile i < n:\n    i += 1\n    count_while += 1\n    if count_while == 1:\n        n = 5"}],"opts":["Vòng <code>for</code> đánh giá biểu thức iterable một lần trước khi duyệt; vòng <code>while</code> đánh giá lại điều kiện ở mỗi vòng","Vòng <code>for</code> sao chép giá trị của <code>n</code> vào biến <code>_</code> ở mỗi lần lặp","Vòng <code>while</code> chốt giá trị của <code>n</code> ngay tại thời điểm bước vào lần lặp đầu tiên và giữ nguyên từ đó","Thân vòng <code>for</code> không được phép gán vào <code>n</code> nên phép gán bị bỏ qua"],"ans":0,"why":"Biểu thức iterable của <code>for</code> được đánh giá khi bắt đầu vòng lặp, trong khi điều kiện của <code>while</code> được đánh giá lại trước mỗi lượt.","wide":true},{"n":18,"topic":"T5","stem":"Cho đoạn code C++ sau (trích trong hàm <code>main</code>). Kết quả biên dịch và thực thi là gì?","boxes":[{"lang":"C++","code":"for (int i = 0; i < 3; i++) {\n}\n\nstd::cout << i;"}],"opts":["In ra <code>3</code>, giá trị đầu tiên của <code>i</code> làm điều kiện lặp trở thành sai và kết thúc vòng","In ra <code>2</code>, giá trị của lần lặp cuối cùng","In ra <code>0</code>, vì biến được đặt lại sau khi vòng kết thúc","Lỗi biên dịch: <code>i</code> được khai báo trong phần đầu vòng <code>for</code> nên không tồn tại bên ngoài vòng"],"ans":3,"why":"Biến <code>i</code> được khai báo trong phần khởi tạo của <code>for</code>, nên phạm vi của nó kết thúc cùng câu lệnh <code>for</code>.","wide":true},{"n":19,"topic":"T5","stem":"Python không có vòng kiểm tra sau dựng sẵn. Cho đoạn code Python mô phỏng sau. Sau khi thực thi, <code>runs</code> bằng bao nhiêu, và đoạn code mô phỏng loại vòng lặp nào?","boxes":[{"lang":"Python","code":"runs = 0\nx = 0\n\nwhile True:\n    runs += 1\n    x += 2\n    if x >= 2:\n        break"}],"opts":["<code>1</code> — mô phỏng vòng kiểm tra sau: thân chạy trước, điều kiện xét ở cuối","<code>0</code> — mô phỏng vòng kiểm tra trước: điều kiện được xét ngay khi vào","<code>2</code> — mô phỏng vòng đếm với bước nhảy bằng 2","Không xác định — <code>while True</code> khiến vòng không bao giờ kết thúc"],"ans":0,"why":"Thân vòng chạy một lần, sau đó <code>x</code> thành 2 và <code>break</code> được thực hiện. Cấu trúc này mô phỏng vòng kiểm tra sau.","wide":true},{"n":20,"topic":"T5","stem":"Cho đoạn code Python sau. Sau khi thực thi, <code>steps</code> bằng bao nhiêu?","boxes":[{"lang":"Python","code":"x = 10\nsteps = 0\n\nwhile x != 1:\n    if x % 2 == 0:\n        x //= 2\n    else:\n        x = 3 * x + 1\n    steps += 1"}],"opts":["<code>5</code>","<code>6</code>","<code>7</code>","Vòng lặp không bao giờ kết thúc với giá trị khởi đầu này"],"ans":1,"why":"Chuỗi giá trị là 10 → 5 → 16 → 8 → 4 → 2 → 1, tương ứng 6 bước.","wide":false},{"n":21,"topic":"T6","stem":"Cho đoạn code Python sau. Sau khi thực thi, <code>out</code> mang giá trị nào, và <code>return</code> ở giữa vòng lặp đóng vai trò gì?","boxes":[{"lang":"Python","code":"def check(xs):\n    for v in xs:\n        if v < 0:\n            return \"neg\"\n    return \"ok\"\n\nout = check([1, -2, 3])"}],"opts":["<code>'ok'</code> — <code>return</code> trong thân vòng chỉ có hiệu lực sau khi vòng duyệt hết","<code>'neg'</code> — <code>return</code> chỉ thoát vòng lặp, rồi dòng cuối trả lại giá trị ấy","<code>'neg'</code> — thoát cả vòng lặp lẫn hàm ngay khi gặp phần tử âm, khỏi cần biến cờ","<code>'ok'</code> — phần tử âm bị bỏ qua vì <code>return</code> hoạt động như <code>continue</code>"],"ans":2,"why":"Khi gặp -2, câu lệnh <code>return \"neg\"</code> kết thúc ngay toàn bộ hàm, nên phần tử 3 không được xét.","wide":true},{"n":22,"topic":"T6","stem":"Hàm Python sau có ba câu lệnh <code>return</code> — tức ba điểm ra. Vì sao cách viết này vẫn dễ suy luận, dù nguyên tắc một điểm vào – một điểm ra bị nới lỏng?","boxes":[{"lang":"Python","code":"def f(x):\n    if x < 0:\n        return \"a\"\n    if x == 0:\n        return \"b\"\n    return \"c\""}],"opts":["Nguyên tắc một điểm vào – một điểm ra chỉ đặt ra cho vòng lặp và khối chọn lựa, không đặt ra cho hàm","Ba điểm ra đều viết lại được thành một điểm ra duy nhất, nên về ngữ nghĩa hàm này vẫn chỉ có một điểm ra","Mỗi <code>return</code> chỉ thoát khỏi hàm hiện hành, nên phạm vi ảnh hưởng vẫn bị cấu trúc hàm chặn lại","<code>return</code> sớm chỉ giữ được tính dễ suy luận khi hàm không chứa vòng lặp, và hàm này thỏa điều kiện đó"],"ans":1,"why":"Ba nhánh loại trừ nhau và có thể được biến đổi sang một biến kết quả rồi <code>return</code> một lần ở cuối, nên cấu trúc vẫn dễ theo dõi.","wide":true},{"n":23,"topic":"T6","stem":"Cho đoạn code Python sau. Sau khi thực thi, <code>total</code> bằng bao nhiêu?","boxes":[{"lang":"Python","code":"total = 0\n\nfor x in range(8):\n    if x == 5:\n        break\n    if x % 2 == 1:\n        continue\n    total += x"}],"opts":["<code>6</code>","<code>10</code>","<code>12</code>","<code>28</code>"],"ans":0,"why":"Các số chẵn trước 5 được cộng là 0, 2 và 4. Khi <code>x = 5</code>, <code>break</code> kết thúc vòng lặp. Tổng bằng 6.","wide":false},{"n":24,"topic":"T6","stem":"Với đoạn code Python dưới đây, sau khi thực thi, <code>kept</code> là gì?","boxes":[{"lang":"Python — dùng cho Câu 24–26","code":"kept = []\nnote = \"none\"\n\nfor x in range(10):\n    if x > 5:\n        break\n    if x % 2 == 1:\n        continue\n    kept.append(x)\nelse:\n    note = \"done\""}],"opts":["<code>[0, 2, 4, 6]</code>","<code>[1, 3, 5]</code>","<code>[0, 1, 2, 3, 4, 5]</code>","<code>[0, 2, 4]</code>"],"ans":3,"why":"0, 2, 4 được giữ lại; 1, 3, 5 bị <code>continue</code>; khi <code>x = 6</code> thì <code>break</code> xảy ra trước <code>append</code>.","wide":false},{"n":25,"topic":"T6","stem":"Với đoạn code ở Câu 24–26, sau khi thực thi, <code>note</code> mang giá trị nào?","boxes":[{"lang":"Python — dùng cho Câu 24–26","code":"kept = []\nnote = \"none\"\n\nfor x in range(10):\n    if x > 5:\n        break\n    if x % 2 == 1:\n        continue\n    kept.append(x)\nelse:\n    note = \"done\""}],"opts":["<code>\"done\"</code>, vì nhánh <code>else</code> của vòng lặp chạy khi vòng dừng lại","<code>\"done\"</code>, vì nhánh <code>else</code> chạy ngay sau lần lặp cuối cùng","<code>\"none\"</code>, vì <code>continue</code> vô hiệu hóa nhánh <code>else</code> của vòng lặp","<code>\"none\"</code>, vì vòng lặp kết thúc bằng <code>break</code> nên nhánh <code>else</code> không chạy"],"ans":3,"why":"Nhánh <code>else</code> của vòng <code>for</code> chỉ chạy khi vòng kết thúc bình thường, không chạy khi thoát bằng <code>break</code>.","wide":true},{"n":26,"topic":"T6","stem":"Với đoạn code ở Câu 24–26, sau khi thực thi, giá trị của <code>x</code> là bao nhiêu?","boxes":[{"lang":"Python — dùng cho Câu 24–26","code":"kept = []\nnote = \"none\"\n\nfor x in range(10):\n    if x > 5:\n        break\n    if x % 2 == 1:\n        continue\n    kept.append(x)\nelse:\n    note = \"done\""}],"opts":["<code>5</code>","<code>6</code>","<code>9</code>","<code>10</code>"],"ans":1,"why":"Vòng lặp dừng ở lượt mà <code>x = 6</code>, và sau khi vòng kết thúc biến <code>x</code> vẫn giữ giá trị đó.","wide":false},{"n":27,"topic":"T6","stem":"Cho đoạn code Python sau. Sau khi thực thi, <code>found</code> mang giá trị nào?","boxes":[{"lang":"Python","code":"found = False\n\nfor i in range(3):\n    if i == 5:\n        break\nelse:\n    found = True"}],"opts":["<code>False</code>, vì nhánh <code>else</code> của vòng lặp chỉ được chạy trong trường hợp <code>break</code> đã thực thi","<code>False</code>, vì nhánh <code>else</code> của vòng lặp không bao giờ được chạy","<code>True</code>, vì nhánh <code>else</code> của vòng lặp chạy khi vòng kết thúc mà không gặp <code>break</code>","<code>True</code>, vì nhánh <code>else</code> chạy sau mỗi lần lặp của vòng"],"ans":2,"why":"<code>range(3)</code> chỉ sinh 0, 1, 2 nên không gặp 5 và không có <code>break</code>. Vì vậy nhánh <code>else</code> chạy và đặt <code>found = True</code>.","wide":true},{"n":28,"topic":"T4","stem":"Cho đoạn code Python sau. Chương trình in ra gì?","boxes":[{"lang":"Python","code":"class Odd:\n    def __bool__(self):\n        return False\n\n    def __len__(self):\n        return 5\n\nprint(bool(Odd()))"}],"opts":["<code>True</code>, vì <code>__len__</code> trả về giá trị khác không","<code>True</code>, vì phương thức định nghĩa sau trong lớp thắng phương thức trước","Lỗi lúc chạy, vì hai giao thức cho hai kết luận mâu thuẫn nhau","<code>False</code>, vì <code>__bool__</code> được ưu tiên hơn <code>__len__</code>"],"ans":3,"why":"Khi đánh giá truth value, Python ưu tiên gọi <code>__bool__</code>. Chỉ khi không có <code>__bool__</code> mới dùng <code>__len__</code>.","wide":true},{"n":29,"topic":"T7","stem":"Cho đoạn code Python sau. Đoạn <code>while</code> này cho <code>total = 11</code> và tương đương với câu lệnh nào?","boxes":[{"lang":"Python","code":"xs = [5, 6]\nit = iter(xs)\ntotal = 0\n\nwhile True:\n    try:\n        v = next(it)\n    except StopIteration:\n        break\n    total += v"}],"opts":["<pre style=\"margin:0\">while xs:\n    total += xs.pop()</pre>","<pre style=\"margin:0\">for v in range(xs):\n    total += v</pre>","<pre style=\"margin:0\">while next(it):\n    total += it</pre>","<pre style=\"margin:0\">for v in xs:\n    total += v</pre>"],"ans":3,"why":"Vòng <code>for</code> trong Python sử dụng giao thức iterator: lấy iterator, gọi <code>next()</code> cho đến khi nhận <code>StopIteration</code>.","wide":true}];
+const TOPIC_NAMES = {"T1":"Biểu thức và hiệu ứng phụ","T2":"Biến, gán và mô hình lưu trữ","T3":"Rẽ nhánh và switch","T4":"Truth value trong Python","T5":"Vòng lặp và phạm vi biến","T6":"break · continue · return · else","T7":"Iterator và giao thức lặp"};
+const KEY = "co3005_control_flow_review_29_v1";
+
+let state = {answers:{}, qOrder:null, oOrder:{}, fTopic:"all"};
+try{
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if(saved && typeof saved === "object") state = Object.assign(state, saved);
+}catch(e){}
+
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function shuffled(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function qById(id){ return QUESTIONS.find(q => q.n === id); }
+function visibleQuestions(){
+  let qs = QUESTIONS.slice();
+  if(state.qOrder && state.qOrder.length === qs.length){
+    qs = state.qOrder.map(qById).filter(Boolean);
+  }
+  return qs.filter(q => state.fTopic === "all" || q.topic === state.fTopic);
+}
+function optPerm(q){
+  const p = state.oOrder[q.n];
+  return (p && p.length === q.opts.length) ? p : q.opts.map((_,i)=>i);
+}
+function render(){
+  const root = document.getElementById("quiz");
+  const qs = visibleQuestions();
+  let html = "";
+  for(const q of qs){
+    const perm = optPerm(q);
+    const done = Object.prototype.hasOwnProperty.call(state.answers, q.n);
+    const chosen = done ? state.answers[q.n] : -1;
+    let boxes = "";
+    for(const b of q.boxes){
+      boxes += '<div class="codebox"><div class="codelang">' + esc(b.lang) +
+               '</div><pre>' + esc(b.code) + '</pre></div>';
+    }
+    let opts = "";
+    perm.forEach((oi, pos) => {
+      const letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[pos];
+      let cls = "opt";
+      if(done && oi === q.ans) cls += " correct";
+      if(done && oi === chosen && oi !== q.ans) cls += " wrongpick";
+      opts += '<div class="' + cls + '" data-q="' + q.n + '" data-oi="' + oi + '">' +
+              '<span class="L">' + letter + '.</span><span>' + q.opts[oi] + '</span></div>';
+    });
+    let explain = '<div class="explain"></div>';
+    if(done){
+      const okLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[perm.indexOf(q.ans)];
+      const ok = chosen === q.ans;
+      explain = '<div class="explain" style="display:block">' +
+        '<div class="verdict ' + (ok ? "ok" : "no") + '">' +
+        (ok ? "✔ Chính xác!" : "✘ Chưa đúng.") + " Đáp án: " + okLetter + ".</div>" +
+        q.why + "</div>";
+    }
+    const note = q.note ? '<div class="qnote">' + q.note + '</div>' : '';
+    html += '<article class="qcard' + (done ? " answered" : "") + '" id="q' + q.n + '">' +
+      '<div class="qhead"><span class="qtitle">Câu ' + q.n + '. (1 điểm)</span>' +
+      '<span class="badges"><span class="badge">' + TOPIC_NAMES[q.topic] + '</span></span></div>' +
+      '<div class="stem">' + q.stem + "</div>" + boxes + note +
+      '<div class="opts' + (q.wide ? " wide" : "") + '">' + opts + "</div>" + explain +
+      "</article>";
+  }
+  if(qs.length === 0){
+    html = '<p style="color:#666;font-style:italic">Không có câu nào khớp bộ lọc hiện tại.</p>';
+  }
+  root.innerHTML = html;
+  updateScore();
+}
+function updateScore(){
+  const total = QUESTIONS.length;
+  let answered = 0, right = 0;
+  for(const q of QUESTIONS){
+    if(Object.prototype.hasOwnProperty.call(state.answers, q.n)){
+      answered++;
+      if(state.answers[q.n] === q.ans) right++;
+    }
+  }
+  const el = document.getElementById("score");
+  el.textContent = "Đã làm " + answered + "/" + total + " · Đúng " + right +
+    (answered ? " (" + Math.round(100 * right / answered) + "%)" : "");
+}
+
+document.getElementById("quiz").addEventListener("click", function(ev){
+  const opt = ev.target.closest(".opt");
+  if(!opt) return;
+  const qn = parseInt(opt.dataset.q, 10);
+  if(Object.prototype.hasOwnProperty.call(state.answers, qn)) return;
+  state.answers[qn] = parseInt(opt.dataset.oi, 10);
+  save();
+  render();
+  const card = document.getElementById("q" + qn);
+  if(card) card.scrollIntoView({block:"nearest"});
+});
+document.getElementById("fTopic").addEventListener("change", function(){
+  state.fTopic = this.value; save(); render();
+});
+document.getElementById("btnShufQ").addEventListener("click", function(){
+  state.qOrder = shuffled(QUESTIONS.map(q => q.n)); save(); render();
+});
+document.getElementById("btnShufO").addEventListener("click", function(){
+  for(const q of QUESTIONS) state.oOrder[q.n] = shuffled(q.opts.map((_,i)=>i));
+  save(); render();
+});
+document.getElementById("btnReset").addEventListener("click", function(){
+  if(!confirm("Xóa toàn bộ bài làm và làm lại từ đầu?")) return;
+  state.answers = {}; state.qOrder = null; state.oOrder = {};
+  save(); render();
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+document.getElementById("fTopic").value = state.fTopic;
+render();
+</script>
+</div>
+</body>
+</html>

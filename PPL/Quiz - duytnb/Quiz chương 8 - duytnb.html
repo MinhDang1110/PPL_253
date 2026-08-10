@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CO3005 — Ôn tập Kiểu dữ liệu</title>
+<style>
+:root{
+  --ink:#1a1a1a; --muted:#666; --line:#b8b8b8; --accent:#0d47a1;
+  --good:#1b5e20; --good-bg:#e8f5e9; --bad:#b71c1c; --bad-bg:#ffebee;
+  --box:#fafafa; --code-bg:#f5f6f8; --warn:#8a5a00; --warn-bg:#fff8e1;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#e9e9e9;color:var(--ink);
+  font-family:"Times New Roman",Times,serif;font-size:16px;line-height:1.45}
+.page{max-width:900px;margin:0 auto;background:#fff;padding:34px 46px 60px;
+  box-shadow:0 0 12px rgba(0,0,0,.18);min-height:100vh}
+.exam-header{border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px}
+.hrow{display:flex;justify-content:space-between;gap:18px}
+.hleft{font-size:13px;text-align:center;line-height:1.35;white-space:nowrap}
+.hleft b{display:block}
+.hright{text-align:center;flex:1}
+.hright .t1{font-weight:bold;font-size:19px;letter-spacing:.4px}
+.hright .t2{font-size:15px;margin-top:2px}
+.hright .t3{font-size:13.5px;margin-top:2px;color:var(--muted)}
+.mssv{font-size:13.5px;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.note{font-size:13px;color:var(--muted);font-style:italic;margin-top:6px}
+.source-warning{margin:12px 0 2px;border:1px solid #e0b04c;background:var(--warn-bg);
+  color:var(--warn);padding:9px 12px;border-radius:6px;font-size:13.5px}
+.controls{position:sticky;top:0;z-index:9;background:#fff;border:1px solid var(--line);
+  border-radius:8px;margin:14px 0 20px;padding:10px 12px;display:flex;flex-wrap:wrap;
+  gap:8px;align-items:center;font-family:Arial,Helvetica,sans-serif;font-size:13px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.controls label{color:var(--muted)}
+.controls select,.controls button{font:inherit;padding:5px 9px;border:1px solid var(--line);
+  border-radius:6px;background:#fff;cursor:pointer}
+.controls button:hover,.controls select:hover{border-color:var(--accent);color:var(--accent)}
+#score{margin-left:auto;font-weight:bold;color:var(--accent)}
+.qcard{border-bottom:1px solid #ddd;padding:16px 0 20px;scroll-margin-top:80px}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.qtitle{font-weight:bold}
+.badges{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#fff;white-space:nowrap}
+.badge{display:inline-block;background:#607d8b;border-radius:10px;padding:2px 8px;margin-left:4px}
+.stem{margin-top:6px}
+code{font-family:Consolas,"Courier New",monospace;font-size:.92em;background:var(--code-bg);
+  padding:0 3px;border-radius:3px}
+.codebox{border:1px solid var(--line);border-radius:6px;margin:10px 0;overflow:hidden;
+  background:var(--code-bg)}
+.codelang{font-family:Arial,Helvetica,sans-serif;font-size:11.5px;color:#fff;background:#546e7a;
+  padding:3px 10px;letter-spacing:.2px}
+.codebox pre{margin:0;padding:10px 12px;font-family:Consolas,"Courier New",monospace;
+  font-size:13.5px;line-height:1.5;overflow-x:auto;white-space:pre-wrap}
+.qnote{font-size:12.5px;color:var(--muted);font-style:italic;margin-top:7px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-top:12px}
+.opts.wide{grid-template-columns:1fr}
+.opt{border:1px solid #d6d6d6;border-radius:6px;padding:8px 11px;cursor:pointer;
+  display:flex;gap:8px;align-items:flex-start;transition:background .12s,border-color .12s}
+.opt:hover{border-color:var(--accent);background:#f3f7ff}
+.opt .L{font-weight:bold;min-width:20px}
+.answered .opt{cursor:default;pointer-events:none}
+.opt.correct{background:var(--good-bg);border-color:var(--good)}
+.opt.correct .L::after{content:" ✔";color:var(--good)}
+.opt.wrongpick{background:var(--bad-bg);border-color:var(--bad)}
+.opt.wrongpick .L::after{content:" ✘";color:var(--bad)}
+.explain{display:none;margin-top:12px;border-left:4px solid var(--accent);background:#f2f6ff;
+  padding:10px 14px;border-radius:0 6px 6px 0;font-size:14.5px}
+.explain .verdict{font-weight:bold;margin-bottom:4px}
+.explain .verdict.ok{color:var(--good)}
+.explain .verdict.no{color:var(--bad)}
+.endline{text-align:center;margin:34px 0 8px;font-weight:bold;letter-spacing:2px}
+.matrixnote{font-size:12.5px;color:var(--muted);text-align:center}
+@media (max-width:640px){
+  .opts{grid-template-columns:1fr} .page{padding:20px 14px}
+  .hrow{display:block} .hleft{white-space:normal;margin-bottom:10px}
+  #score{width:100%;margin-left:0}
+}
+@media print{
+  body{background:#fff}
+  .page{box-shadow:none;max-width:none;padding:0}
+  .controls{display:none}
+  .explain{display:none !important}
+  .opt{border-color:#999}
+  .opt.correct,.opt.wrongpick{background:#fff;border-color:#999}
+  .opt .L::after{content:"" !important}
+}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="exam-header">
+  <div class="hrow">
+    <div class="hleft">
+      ĐẠI HỌC QUỐC GIA TP.HCM<br><b>TRƯỜNG ĐẠI HỌC BÁCH KHOA</b>
+      Khoa Khoa học &amp; Kỹ thuật Máy tính
+    </div>
+    <div class="hright">
+      <div class="t1">BÀI ÔN TẬP TRẮC NGHIỆM</div>
+      <div class="t2">Kiểu dữ liệu · Số nguyên · Chuỗi · Bộ nhớ · Mảng nhiều chiều</div>
+      <div class="t3">18 câu tổng hợp từ các ảnh đã cung cấp · 1 điểm/câu</div>
+    </div>
+  </div>
+  <div class="mssv">MSSV: …………………………………………&nbsp;&nbsp;&nbsp;Họ và tên SV: …………………………………………</div>
+  <div class="note">Nhấp vào một phương án để trả lời; hệ thống chấm ngay sau khi chọn. Có thể xáo câu, xáo phương án và lưu tiến độ tự động trên trình duyệt.</div>
+</header>
+
+<div class="source-warning">
+  Bộ ảnh có các câu 1–5, 7–15 và 17–20. Câu 6 và Câu 16 không xuất hiện trong ảnh nên không được tự bổ sung.
+</div>
+
+<div class="controls">
+  <label>Chủ đề:</label>
+  <select id="fTopic">
+    <option value="all">Tất cả</option>
+    <option value="T1">Dấu chấm động</option>
+    <option value="T2">Mảng, bản ghi và enum</option>
+    <option value="T3">Số nguyên và tràn</option>
+    <option value="T4">Bộ nhớ động</option>
+    <option value="T5">Chuỗi</option>
+    <option value="T6">Mảng nhiều chiều</option>
+  </select>
+  <button id="btnShufQ">⇄ Xáo câu</button>
+  <button id="btnShufO">⇄ Xáo phương án</button>
+  <button id="btnReset">↺ Làm lại</button>
+  <span id="score"></span>
+</div>
+
+<main id="quiz"></main>
+
+<div class="endline">--- HẾT ---</div>
+<div class="matrixnote">Nội dung câu hỏi và lựa chọn được tổng hợp từ các ảnh đã gửi; giao diện dựa trên file HTML mẫu.</div>
+
+<script>
+"use strict";
+const QUESTIONS = [{"n": 1, "topic": "T1", "stem": "Bẫy <code>Fraction(0.1)</code> không cho <code>1/10</code> là hiện thân trực tiếp của khái niệm nào ở Chương 8?", "boxes": [], "opts": ["Cơ chế căn lề và đệm đuôi dùng để bảo toàn ràng buộc căn lề cho từng trường của một bản ghi phức hợp.", "Thẻ phân biệt trong kiểu hợp nhất cho biết biến thể nào đang hoạt động.", "Công thức tính địa chỉ theo thứ tự hàng/cột của mảng nhiều chiều.", "Bản chất xấp xỉ của dấu chấm động – sai số phát sinh ngay tại literal, trước mọi phép toán."], "ans": 3, "why": "Giá trị <code>0.1</code> không được biểu diễn chính xác bằng nhị phân hữu hạn, nên sai số đã xuất hiện ngay khi tạo literal dấu chấm động, trước khi truyền vào <code>Fraction</code>.", "wide": true}, {"n": 2, "topic": "T2", "stem": "Việc <code>dict</code> CÓ THỂ biểu diễn dữ liệu bản ghi nhưng KHÔNG PHẢI kiểu bản ghi minh họa sự phân biệt nào của Chương 8?", "boxes": [], "opts": ["Giữa mảng chữ nhật một khối liền và mảng răng cưa gồm nhiều hàng nằm rời rạc trong bộ nhớ.", "Phân biệt con trỏ treo với rò rỉ bộ nhớ trong quản lý bộ nhớ thủ công.", "Giữa kiểu ánh xạ (tập khóa tùy ý) và kiểu bản ghi (tập trường cố định, truy cập bằng tên).", "Phân biệt làm tròn tới gần nhất với cắt cụt khi mã hóa dấu chấm động."], "ans": 2, "why": "<code>dict</code> là kiểu ánh xạ với tập khóa có thể thay đổi, trong khi kiểu bản ghi có tập trường được xác định trước và thường được truy cập bằng tên trường.", "wide": true}, {"n": 3, "topic": "T2", "stem": "Cấu trúc tựa C sau (short 2 byte/căn lề 2, int 4 byte/căn lề 4) có <code>sizeof</code> là:", "boxes": [{"lang": "C", "code": "struct {\n    short s;\n    char  c;\n    int   i;\n    char  d;\n};"}], "opts": ["8", "16", "10", "12"], "ans": 3, "why": "<code>short</code> chiếm byte 0–1, <code>char c</code> ở byte 2, đệm 1 byte để <code>int</code> bắt đầu tại địa chỉ chia hết cho 4, <code>int</code> chiếm byte 4–7, <code>char d</code> ở byte 8 và có 3 byte đệm đuôi. Tổng cộng 12 byte.", "wide": false}, {"n": 4, "topic": "T2", "stem": "Về mặt ngôn ngữ, một <code>list</code> của Python khác một mảng của C ở điểm căn bản nào?", "boxes": [], "opts": ["<code>list</code> tự động sắp xếp các phần tử theo thứ tự giá trị tăng dần.", "<code>list</code> là dãy tham chiếu, có thể chứa các đối tượng thuộc nhiều kiểu khác nhau.", "<code>list</code> không cho truy cập phần tử theo chỉ số mà chỉ duyệt tuần tự.", "<code>list</code> bắt buộc mọi phần tử phải cùng một kiểu, giống hệt mảng của C."], "ans": 1, "why": "Python <code>list</code> lưu các tham chiếu tới đối tượng và có thể chứa các đối tượng khác kiểu; mảng C thông thường chứa các phần tử đồng nhất về kiểu.", "wide": true}, {"n": 5, "topic": "T2", "stem": "Lợi ích chính của kiểu liệt kê (enumeration) so với dùng số nguyên tùy tiện để biểu diễn khái niệm là?", "boxes": [], "opts": ["Diễn đạt một tập giá trị CÓ TÊN và cho hệ thống kiểu hạn chế giá trị không hợp lệ.", "Cho phép thêm bớt các danh hiệu ngay trong lúc chương trình đang chạy một cách hoàn toàn linh hoạt.", "Giúp chương trình chạy nhanh hơn hẳn vì các danh hiệu được thay bằng số nguyên ngay lúc biên dịch.", "Cho phép thực hiện mọi phép toán số học trên các danh hiệu y hệt như trên các số nguyên thông thường."], "ans": 0, "why": "Kiểu liệt kê đặt tên cho một tập giá trị hữu hạn, làm mã nguồn rõ nghĩa hơn và cho phép hệ thống kiểu phát hiện hoặc hạn chế các giá trị không thuộc tập đó.", "wide": true}, {"n": 7, "topic": "T2", "stem": "So sánh mảng và bản ghi, phát biểu nào đúng?", "boxes": [], "opts": ["Cả hai đều truy cập bằng chỉ số và đều đồng nhất về kiểu phần tử.", "Bản ghi truy cập bằng chỉ số, còn mảng truy cập bằng tên trường.", "Mảng truy cập bằng chỉ số; bản ghi bằng tên trường.", "Mảng thì không đồng nhất về kiểu, còn bản ghi thì đồng nhất kiểu."], "ans": 2, "why": "Mảng thường là tập phần tử đồng nhất được truy cập bằng chỉ số; bản ghi gồm các trường có tên và các trường có thể khác kiểu.", "wide": true}, {"n": 8, "topic": "T3", "stem": "Với số có dấu rộng 4 bit, cặp (giá trị nhỏ nhất, giá trị lớn nhất) là:", "boxes": [{"lang": "Ngữ cảnh Câu 8–10", "code": "Số có dấu n bit theo bù hai: [-2^(n-1), 2^(n-1)-1]\nSố không dấu n bit: số học modulo 2^n"}], "opts": ["(0, 15)", "(-8, 7)", "(-7, 7)", "(-16, 15)"], "ans": 1, "why": "Với 4 bit có dấu theo bù hai, miền giá trị là <code>[-2^3, 2^3-1] = [-8, 7]</code>.", "wide": false}, {"n": 9, "topic": "T3", "stem": "Với số không dấu rộng 8 bit, giá trị của biểu thức <code>(unsigned char)(5 - 8)</code> là:", "boxes": [{"lang": "Ngữ cảnh Câu 8–10", "code": "Số có dấu n bit theo bù hai: [-2^(n-1), 2^(n-1)-1]\nSố không dấu n bit: số học modulo 2^n"}], "opts": ["3", "0", "253", "-3"], "ans": 2, "why": "<code>5 - 8 = -3</code>. Khi chuyển sang số không dấu 8 bit, kết quả được lấy modulo <code>256</code>: <code>-3 mod 256 = 253</code>.", "wide": false}, {"n": 10, "topic": "T3", "stem": "Cùng một phép toán vượt miền một từ máy, vì sao <code>unsigned int</code> của C và <code>int</code> của Python cho kết quả khác nhau?", "boxes": [{"lang": "Ngữ cảnh Câu 8–10", "code": "Số có dấu n bit theo bù hai: [-2^(n-1), 2^(n-1)-1]\nSố không dấu n bit: số học modulo 2^n"}], "opts": ["Số không dấu của C báo lỗi ngay khi tràn, còn <code>int</code> của Python thì âm thầm cắt bỏ các bit bị vượt quá.", "Số không dấu của C tự mở rộng độ rộng khi tràn, còn <code>int</code> của Python thì quấn vòng theo modulo hai mũ <code>n</code>.", "Số không dấu của C quấn vòng theo modulo <code>2^n</code>; <code>int</code> của Python có độ chính xác tùy ý nên tự mở rộng biểu diễn.", "Cả hai đều quấn vòng như nhau, chỉ khác nhau ở số bit mà mỗi ngôn ngữ dùng để lưu một số nguyên."], "ans": 2, "why": "Số nguyên không dấu của C có độ rộng cố định và phép toán tuân theo modulo <code>2^n</code>. Python <code>int</code> có độ chính xác tùy ý nên mở rộng số chữ số thay vì quấn vòng.", "wide": true}, {"n": 11, "topic": "T4", "stem": "Trong quản lý bộ nhớ thủ công (như C), lỗi “biến heap động bị mất” (rò rỉ bộ nhớ) xảy ra khi nào?", "boxes": [], "opts": ["Khi có một con trỏ đang trỏ tới một vùng nhớ vốn đã được giải phóng rồi.", "Khi có hai con trỏ khác nhau cùng trỏ tới một đối tượng nằm trên vùng heap.", "Khi một biến cục bộ bị xóa khỏi ngăn xếp lúc hàm chứa nó kết thúc chạy.", "Khi đối tượng còn tồn tại nhưng không còn cách nào truy cập."], "ans": 3, "why": "Rò rỉ bộ nhớ xảy ra khi vùng nhớ heap vẫn được cấp phát nhưng chương trình đã mất mọi tham chiếu tới nó, nên không thể giải phóng hoặc sử dụng lại vùng nhớ đó.", "wide": true}, {"n": 12, "topic": "T5", "stem": "Vì sao chuỗi bất biến như Python <code>str</code> / Java <code>String</code> vẫn cần thông tin độ dài tồn tại lúc chạy?", "boxes": [{"lang": "Ngữ cảnh Câu 12–14", "code": "Tính bất biến, độ dài đối tượng, đơn vị biểu diễn, thời điểm biết độ dài và cơ chế quản lý bộ nhớ là các chiều độc lập.\nBất biến không đồng nghĩa với việc độ dài được biết lúc biên dịch."}], "opts": ["Vì chỉ cần thông tin kiểu lúc biên dịch là đủ, hoàn toàn không tốn chi phí gì trong lúc chạy.", "Vì chuỗi bất biến vẫn có một bộ đệm trần cố định cần một trường ghi độ dài hiện tại đang dùng.", "Vì độ dài có thể chỉ biết lúc chạy (ví dụ chuỗi đọc từ bàn phím), dù chuỗi bất biến sau khi tạo.", "Vì không cần lưu độ dài ở đâu cả, mỗi lần cần thì đếm lại các phần tử của chuỗi từ đầu."], "ans": 2, "why": "Một chuỗi có thể được tạo từ dữ liệu chỉ có lúc chạy. Sau khi được tạo, nó có thể bất biến, nhưng hệ thống vẫn phải lưu hoặc quản lý độ dài thực tế của đối tượng đó.", "wide": true}, {"n": 13, "topic": "T5", "stem": "Trong C, chuỗi <code>char s[] = \"AB\";</code> chiếm bao nhiêu byte trong bộ nhớ?", "boxes": [{"lang": "Ngữ cảnh Câu 12–14", "code": "Tính bất biến, độ dài đối tượng, đơn vị biểu diễn, thời điểm biết độ dài và cơ chế quản lý bộ nhớ là các chiều độc lập.\nBất biến không đồng nghĩa với việc độ dài được biết lúc biên dịch."}], "opts": ["4", "2", "1", "3"], "ans": 3, "why": "Mảng chứa ba ký tự: <code>'A'</code>, <code>'B'</code> và ký tự kết thúc chuỗi <code>'\\0'</code>. Mỗi <code>char</code> chiếm 1 byte, tổng cộng 3 byte.", "wide": false}, {"n": 14, "topic": "T5", "stem": "Hệ quả trực tiếp của việc chuỗi là bất biến (như Python <code>str</code>) là gì?", "boxes": [{"lang": "Ngữ cảnh Câu 12–14", "code": "Tính bất biến, độ dài đối tượng, đơn vị biểu diễn, thời điểm biết độ dài và cơ chế quản lý bộ nhớ là các chiều độc lập.\nBất biến không đồng nghĩa với việc độ dài được biết lúc biên dịch."}], "opts": ["Chuỗi bất biến luôn được cấp phát trên ngăn xếp thay vì trên vùng nhớ heap.", "Mọi thao tác mang ý nghĩa “sửa chuỗi” đều không thay đổi chuỗi ban đầu mà trả về một giá trị chuỗi kết quả.", "Chuỗi bất biến chỉ có thể chứa được các ký tự thuộc bảng mã ASCII cơ bản.", "Chuỗi bất biến bắt buộc phải có một trần độ dài tối đa được quy định trước."], "ans": 1, "why": "Vì đối tượng chuỗi không thể bị thay đổi tại chỗ, thao tác nối, thay thế hoặc biến đổi phải tạo và trả về một chuỗi kết quả mới; chuỗi ban đầu vẫn giữ nguyên.", "wide": true}, {"n": 15, "topic": "T4", "stem": "Một đối tượng heap được trỏ bởi <code>p</code> và <code>q</code> (<code>q</code> là bí danh của <code>p</code>). Sau <code>free(p)</code>, việc dùng <code>*q</code> gặp vấn đề gì?", "boxes": [], "opts": ["Chu trình tham chiếu, vì hai con trỏ <code>p</code> và <code>q</code> khi đó đang trỏ vòng vào lẫn nhau.", "Rò rỉ bộ nhớ, vì đối tượng vẫn còn tồn tại nhưng đã không còn tham chiếu nào tới.", "Hoàn toàn không có vấn đề gì, vì lời gọi <code>free(p)</code> sẽ tự động đặt luôn <code>q</code> về <code>NULL</code>.", "Con trỏ treo, vì giải phóng qua <code>p</code> không cập nhật bí danh <code>q</code>."], "ans": 3, "why": "<code>free(p)</code> giải phóng vùng nhớ nhưng không thay đổi giá trị địa chỉ đang lưu trong <code>q</code>. Vì vậy <code>q</code> trở thành con trỏ treo và việc giải tham chiếu là không hợp lệ.", "wide": true}, {"n": 17, "topic": "T6", "stem": "Điểm khác nhau cốt lõi giữa thứ tự theo hàng (row-major) và theo cột (column-major) là gì?", "boxes": [], "opts": ["Row-major: chỉ số sau chạy nhanh nhất; column-major: chỉ số đầu.", "Column-major chỉ có thể áp dụng được cho các mảng hình vuông mà thôi.", "Row-major thì luôn tốn ít bộ nhớ hơn hẳn so với column-major mọi lúc.", "Hai cách lưu này cho ra cùng một địa chỉ đối với mọi phần tử của mảng."], "ans": 0, "why": "Trong row-major, chiều cuối cùng thay đổi liên tiếp trong bộ nhớ; trong column-major, chiều đầu tiên thay đổi liên tiếp.", "wide": true}, {"n": 18, "topic": "T6", "stem": "Nếu mảng lưu THEO HÀNG (row-major), địa chỉ của <code>A[1][2][1]</code> là:", "boxes": [{"lang": "Ngữ cảnh Câu 18–20", "code": "int A[2][4][3]\nB = 2000, w = 4 byte, mọi biên dưới bằng 0\nXét A[1][2][1], với N1 = 2, N2 = 4, N3 = 3"}], "opts": ["2088", "2064", "2076", "2052"], "ans": 2, "why": "Row-major: <code>offset = ((1 × 4 + 2) × 3 + 1) = 19</code> phần tử. Địa chỉ là <code>2000 + 19 × 4 = 2076</code>.", "wide": false}, {"n": 19, "topic": "T6", "stem": "Nếu mảng lưu THEO CỘT (column-major), địa chỉ của <code>A[1][2][1]</code> là:", "boxes": [{"lang": "Ngữ cảnh Câu 18–20", "code": "int A[2][4][3]\nB = 2000, w = 4 byte, mọi biên dưới bằng 0\nXét A[1][2][1], với N1 = 2, N2 = 4, N3 = 3"}], "opts": ["2040", "2060", "2052", "2076"], "ans": 2, "why": "Column-major: <code>offset = 1 + 2 × 2 + 1 × 2 × 4 = 13</code> phần tử. Địa chỉ là <code>2000 + 13 × 4 = 2052</code>.", "wide": false}, {"n": 20, "topic": "T6", "stem": "Chênh lệch địa chỉ của <code>A[1][2][1]</code> giữa hai cách lưu (row-major trừ column-major) là bao nhiêu byte?", "boxes": [{"lang": "Ngữ cảnh Câu 18–20", "code": "int A[2][4][3]\nB = 2000, w = 4 byte, mọi biên dưới bằng 0\nXét A[1][2][1], với N1 = 2, N2 = 4, N3 = 3"}], "opts": ["24", "12", "48", "0"], "ans": 0, "why": "Địa chỉ row-major là <code>2076</code>, column-major là <code>2052</code>. Hiệu là <code>2076 − 2052 = 24</code> byte.", "wide": false}];
+const TOPIC_NAMES = {"T1": "Dấu chấm động", "T2": "Mảng, bản ghi và enum", "T3": "Số nguyên và tràn", "T4": "Bộ nhớ động", "T5": "Chuỗi", "T6": "Mảng nhiều chiều"};
+const KEY = "co3005_data_types_review_v1";
+
+let state = {answers:{}, qOrder:null, oOrder:{}, fTopic:"all"};
+try{
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if(saved && typeof saved === "object") state = Object.assign(state, saved);
+}catch(e){}
+
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function shuffled(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function qById(id){ return QUESTIONS.find(q => q.n === id); }
+function visibleQuestions(){
+  let qs = QUESTIONS.slice();
+  if(state.qOrder && state.qOrder.length === qs.length){
+    qs = state.qOrder.map(qById).filter(Boolean);
+  }
+  return qs.filter(q => state.fTopic === "all" || q.topic === state.fTopic);
+}
+function optPerm(q){
+  const p = state.oOrder[q.n];
+  return (p && p.length === q.opts.length) ? p : q.opts.map((_,i)=>i);
+}
+function render(){
+  const root = document.getElementById("quiz");
+  const qs = visibleQuestions();
+  let html = "";
+  for(const q of qs){
+    const perm = optPerm(q);
+    const done = Object.prototype.hasOwnProperty.call(state.answers, q.n);
+    const chosen = done ? state.answers[q.n] : -1;
+    let boxes = "";
+    for(const b of q.boxes){
+      boxes += '<div class="codebox"><div class="codelang">' + esc(b.lang) +
+               '</div><pre>' + esc(b.code) + '</pre></div>';
+    }
+    let opts = "";
+    perm.forEach((oi, pos) => {
+      const letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[pos];
+      let cls = "opt";
+      if(done && oi === q.ans) cls += " correct";
+      if(done && oi === chosen && oi !== q.ans) cls += " wrongpick";
+      opts += '<div class="' + cls + '" data-q="' + q.n + '" data-oi="' + oi + '">' +
+              '<span class="L">' + letter + '.</span><span>' + q.opts[oi] + '</span></div>';
+    });
+    let explain = '<div class="explain"></div>';
+    if(done){
+      const okLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[perm.indexOf(q.ans)];
+      const ok = chosen === q.ans;
+      explain = '<div class="explain" style="display:block">' +
+        '<div class="verdict ' + (ok ? "ok" : "no") + '">' +
+        (ok ? "✔ Chính xác!" : "✘ Chưa đúng.") + " Đáp án: " + okLetter + ".</div>" +
+        q.why + "</div>";
+    }
+    const note = q.note ? '<div class="qnote">' + q.note + '</div>' : '';
+    html += '<article class="qcard' + (done ? " answered" : "") + '" id="q' + q.n + '">' +
+      '<div class="qhead"><span class="qtitle">Câu ' + q.n + '. (1 điểm)</span>' +
+      '<span class="badges"><span class="badge">' + TOPIC_NAMES[q.topic] + '</span></span></div>' +
+      '<div class="stem">' + q.stem + "</div>" + boxes + note +
+      '<div class="opts' + (q.wide ? " wide" : "") + '">' + opts + "</div>" + explain +
+      "</article>";
+  }
+  if(qs.length === 0){
+    html = '<p style="color:#666;font-style:italic">Không có câu nào khớp bộ lọc hiện tại.</p>';
+  }
+  root.innerHTML = html;
+  updateScore();
+}
+function updateScore(){
+  const total = QUESTIONS.length;
+  let answered = 0, right = 0;
+  for(const q of QUESTIONS){
+    if(Object.prototype.hasOwnProperty.call(state.answers, q.n)){
+      answered++;
+      if(state.answers[q.n] === q.ans) right++;
+    }
+  }
+  const el = document.getElementById("score");
+  el.textContent = "Đã làm " + answered + "/" + total + " · Đúng " + right +
+    (answered ? " (" + Math.round(100 * right / answered) + "%)" : "");
+}
+
+document.getElementById("quiz").addEventListener("click", function(ev){
+  const opt = ev.target.closest(".opt");
+  if(!opt) return;
+  const qn = parseInt(opt.dataset.q, 10);
+  if(Object.prototype.hasOwnProperty.call(state.answers, qn)) return;
+  state.answers[qn] = parseInt(opt.dataset.oi, 10);
+  save();
+  render();
+  const card = document.getElementById("q" + qn);
+  if(card) card.scrollIntoView({block:"nearest"});
+});
+document.getElementById("fTopic").addEventListener("change", function(){
+  state.fTopic = this.value; save(); render();
+});
+document.getElementById("btnShufQ").addEventListener("click", function(){
+  state.qOrder = shuffled(QUESTIONS.map(q => q.n)); save(); render();
+});
+document.getElementById("btnShufO").addEventListener("click", function(){
+  for(const q of QUESTIONS) state.oOrder[q.n] = shuffled(q.opts.map((_,i)=>i));
+  save(); render();
+});
+document.getElementById("btnReset").addEventListener("click", function(){
+  if(!confirm("Xóa toàn bộ bài làm và làm lại từ đầu?")) return;
+  state.answers = {}; state.qOrder = null; state.oOrder = {};
+  save(); render();
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+document.getElementById("fTopic").value = state.fTopic;
+render();
+</script>
+</div>
+</body>
+</html>

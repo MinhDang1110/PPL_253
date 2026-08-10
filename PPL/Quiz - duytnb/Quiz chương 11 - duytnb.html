@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CO3005 — Đề ôn tập Sinh mã JVM (23 câu)</title>
+<style>
+:root{--ink:#1a1a1a;--muted:#666;--line:#b8b8b8;--accent:#0d47a1;--good:#1b5e20;--good-bg:#e8f5e9;--bad:#b71c1c;--bad-bg:#ffebee;--code-bg:#f5f6f8}
+*{box-sizing:border-box} body{margin:0;background:#e9e9e9;color:var(--ink);font-family:"Times New Roman",Times,serif;font-size:16px;line-height:1.45}
+.page{max-width:900px;margin:0 auto;background:#fff;padding:34px 46px 60px;box-shadow:0 0 12px rgba(0,0,0,.18);min-height:100vh}
+.exam-header{border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px}.hrow{display:flex;justify-content:space-between;gap:18px}
+.hleft{font-size:13px;text-align:center;line-height:1.35;white-space:nowrap}.hleft b{display:block}.hright{text-align:center;flex:1}
+.t1{font-weight:bold;font-size:19px;letter-spacing:.4px}.t2{font-size:15px;margin-top:2px}.t3{font-size:13.5px;margin-top:2px;color:var(--muted)}
+.mssv{font-size:13.5px;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}.note{font-size:13px;color:var(--muted);font-style:italic;margin-top:6px}
+.controls{position:sticky;top:0;z-index:9;background:#fff;border:1px solid var(--line);border-radius:8px;margin:14px 0 20px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:Arial,Helvetica,sans-serif;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.controls button,.controls select{font:inherit;padding:5px 9px;border:1px solid var(--line);border-radius:6px;background:#fff;cursor:pointer}.controls button:hover{border-color:var(--accent);color:var(--accent)}
+#score{margin-left:auto;font-weight:bold;color:var(--accent)}.qcard{border-bottom:1px solid #ddd;padding:16px 0 20px;scroll-margin-top:90px}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.qtitle{font-weight:bold}.badge{font-family:Arial,sans-serif;font-size:11px;color:#fff;background:#607d8b;border-radius:10px;padding:2px 8px}
+.stem{margin-top:6px}code{font-family:Consolas,"Courier New",monospace;font-size:.92em;background:var(--code-bg);padding:0 3px;border-radius:3px}
+.codebox{border:1px solid var(--line);border-radius:6px;margin:10px 0;overflow:hidden;background:var(--code-bg)}.codelang{font-family:Arial,sans-serif;font-size:11.5px;color:#fff;background:#546e7a;padding:3px 10px}
+.codebox pre{margin:0;padding:10px 12px;font-family:Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.5;overflow-x:auto;white-space:pre}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-top:12px}.opt{border:1px solid #d6d6d6;border-radius:6px;padding:8px 11px;cursor:pointer;display:flex;gap:8px;align-items:flex-start;background:#fff;text-align:left;font:inherit;width:100%}
+.opt:hover{border-color:var(--accent);background:#f3f7ff}.opt .L{font-weight:bold;min-width:20px}.opt.correct{background:var(--good-bg);border-color:var(--good)}.opt.wrongpick{background:var(--bad-bg);border-color:var(--bad)}
+.explain{display:none;margin-top:12px;border-left:4px solid var(--accent);background:#f2f6ff;padding:10px 14px;border-radius:0 6px 6px 0;font-size:14.5px}.explain.show{display:block}
+.explain .verdict{font-weight:bold;margin-bottom:4px}.ok{color:var(--good)}.no{color:var(--bad)}.endline{text-align:center;margin:34px 0 8px;font-weight:bold;letter-spacing:2px}
+@media(max-width:640px){.opts{grid-template-columns:1fr}.page{padding:20px 14px}.hrow{display:block}.hleft{white-space:normal;margin-bottom:10px}#score{width:100%;margin-left:0}}
+@media print{body{background:#fff}.page{box-shadow:none;max-width:none;padding:0}.controls{display:none}.explain{display:none!important}.opt{border-color:#999}.opt.correct,.opt.wrongpick{background:#fff;border-color:#999}}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="exam-header">
+  <div class="hrow">
+    <div class="hleft">ĐẠI HỌC QUỐC GIA TP.HCM<br><b>TRƯỜNG ĐẠI HỌC BÁCH KHOA</b>Khoa Khoa học &amp; Kỹ thuật Máy tính</div>
+    <div class="hright">
+      <div class="t1">BÀI ÔN TẬP TRẮC NGHIỆM</div>
+      <div class="t2">Sinh mã JVM · Máy ngăn xếp · Emitter · Điều khiển luồng</div>
+      <div class="t3">23 câu · 1 điểm/câu</div>
+    </div>
+  </div>
+  <div class="mssv">MSSV: …………………………………………&nbsp;&nbsp;&nbsp;Họ và tên SV: …………………………………………</div>
+  <div class="note">Nội dung câu hỏi luôn hiển thị ngay cả khi JavaScript bị tắt. Khi JavaScript hoạt động, nhấp một phương án để chấm ngay và xem lời giải.</div>
+</header>
+
+<div class="controls">
+  <label>Chủ đề:</label>
+  <select id="fTopic"><option value="all">Tất cả</option><option value="Emitter &amp; lệnh JVM/Jasmin">Emitter &amp; lệnh JVM/Jasmin</option><option value="Khung phương thức &amp; máy ngăn xếp">Khung phương thức &amp; máy ngăn xếp</option><option value="Kiến trúc sinh mã &amp; bytecode">Kiến trúc sinh mã &amp; bytecode</option><option value="Điều khiển luồng &amp; đoản mạch">Điều khiển luồng &amp; đoản mạch</option></select>
+  <button id="btnShufQ" type="button">⇄ Xáo câu</button>
+  <button id="btnReset" type="button">↺ Làm lại</button>
+  <span id="score">Đã làm 0/23 · Đúng 0</span>
+</div>
+
+<main id="quiz">
+
+<article class="qcard" id="q1" data-topic="Khung phương thức &amp; máy ngăn xếp">
+  <div class="qhead"><span class="qtitle">Câu 1. (1 điểm)</span><span class="badge">Khung phương thức &amp; máy ngăn xếp</span></div>
+  <div class="stem">Xét một phương thức thể hiện <code>f(int a, int b)</code> có thêm một biến địa phương <code>c</code>. Các biến được đặt trong mảng biến cục bộ, phép toán diễn ra trên ngăn xếp toán hạng.<br><br>Ô chỉ số 0 của mảng biến cục bộ chứa gì?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="3"><span class="L">A.</span><span><code>a</code></span></button><button class="opt" type="button" data-answer="1" data-correct="3"><span class="L">B.</span><span><code>c</code></span></button><button class="opt" type="button" data-answer="2" data-correct="3"><span class="L">C.</span><span><code>b</code></span></button><button class="opt" type="button" data-answer="3" data-correct="3"><span class="L">D.</span><span><code>this</code></span></button></div>
+  <div class="explain"><div class="verdict"></div>Với một phương thức thể hiện (không phải <code>static</code>) của JVM, ô local variable index 0 dành cho tham chiếu <code>this</code>; các tham số lần lượt nằm ở các ô tiếp theo.</div>
+</article>
+
+<article class="qcard" id="q2" data-topic="Khung phương thức &amp; máy ngăn xếp">
+  <div class="qhead"><span class="qtitle">Câu 2. (1 điểm)</span><span class="badge">Khung phương thức &amp; máy ngăn xếp</span></div>
+  <div class="stem">Với cùng phương thức trên, khi thực hiện <code>c = a + b</code>, dữ liệu di chuyển thế nào?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="2"><span class="L">A.</span><span>Ghi thẳng tổng vào ngăn xếp toán hạng và giữ ở đó</span></button><button class="opt" type="button" data-answer="1" data-correct="2"><span class="L">B.</span><span>Cộng trực tiếp <code>a</code> và <code>b</code> ngay trong mảng biến cục bộ mà không dùng tới ngăn xếp toán hạng</span></button><button class="opt" type="button" data-answer="2" data-correct="2"><span class="L">C.</span><span>Nạp <code>a</code>, <code>b</code> từ mảng biến cục bộ lên ngăn xếp, cộng, rồi cất kết quả vào ô của <code>c</code></span></button><button class="opt" type="button" data-answer="3" data-correct="2"><span class="L">D.</span><span>Đưa <code>c</code> lên ngăn xếp trước rồi mới nạp <code>a</code> và <code>b</code></span></button></div>
+  <div class="explain"><div class="verdict"></div>JVM là máy ngăn xếp: nạp <code>a</code>, <code>b</code> lên operand stack, cộng, rồi lưu kết quả trở lại ô local của <code>c</code>.</div>
+</article>
+
+<article class="qcard" id="q3" data-topic="Khung phương thức &amp; máy ngăn xếp">
+  <div class="qhead"><span class="qtitle">Câu 3. (1 điểm)</span><span class="badge">Khung phương thức &amp; máy ngăn xếp</span></div>
+  <div class="stem">Sau khi thực hiện xong câu lệnh <code>c = a + b</code>, độ sâu ngăn xếp toán hạng là bao nhiêu?</div>
+  <div class="codebox"><div class="codelang">Jasmin/JVM — minh họa</div><pre>iload_1
+iload_2
+iadd
+istore_3</pre></div>
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="1"><span class="L">A.</span><span>2</span></button><button class="opt" type="button" data-answer="1" data-correct="1"><span class="L">B.</span><span>0</span></button><button class="opt" type="button" data-answer="2" data-correct="1"><span class="L">C.</span><span>1</span></button><button class="opt" type="button" data-answer="3" data-correct="1"><span class="L">D.</span><span>3</span></button></div>
+  <div class="explain"><div class="verdict"></div><code>iload_1</code> và <code>iload_2</code> làm độ sâu tăng lên 2; <code>iadd</code> biến 2 toán hạng thành 1 kết quả; <code>istore_3</code> lấy kết quả khỏi stack. Độ sâu cuối cùng là 0.</div>
+</article>
+
+<article class="qcard" id="q4" data-topic="Điều khiển luồng &amp; đoản mạch">
+  <div class="qhead"><span class="qtitle">Câu 4. (1 điểm)</span><span class="badge">Điều khiển luồng &amp; đoản mạch</span></div>
+  <div class="stem">Xét <code>if (a &gt;= b) S1 else S2</code> với <code>a</code>, <code>b</code> là biến cục bộ kiểu <code>int</code> ở ô 1 và ô 2. Bộ sinh mã cấp hai nhãn <code>LFALSE</code> và <code>LEND</code>. Chỗ trống (a) — lệnh “nhảy khi <code>a &gt;= b</code> sai” tới <code>LFALSE</code> — là lệnh nào?</div>
+  <div class="codebox"><div class="codelang">Jasmin</div><pre>iload_1
+iload_2
+(a)          ; branch to LFALSE if the condition is false
+&lt;code for S1&gt;
+(b)
+LFALSE:
+    &lt;code for S2&gt;
+LEND:</pre></div>
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="3"><span class="L">A.</span><span><code>if_icmpgt LFALSE</code></span></button><button class="opt" type="button" data-answer="1" data-correct="3"><span class="L">B.</span><span><code>if_icmple LFALSE</code></span></button><button class="opt" type="button" data-answer="2" data-correct="3"><span class="L">C.</span><span><code>if_icmpge LFALSE</code></span></button><button class="opt" type="button" data-answer="3" data-correct="3"><span class="L">D.</span><span><code>if_icmplt LFALSE</code></span></button></div>
+  <div class="explain"><div class="verdict"></div>Điều kiện <code>a &gt;= b</code> sai khi <code>a &lt; b</code>, nên dùng <code>if_icmplt LFALSE</code>.</div>
+</article>
+
+<article class="qcard" id="q5" data-topic="Điều khiển luồng &amp; đoản mạch">
+  <div class="qhead"><span class="qtitle">Câu 5. (1 điểm)</span><span class="badge">Điều khiển luồng &amp; đoản mạch</span></div>
+  <div class="stem">Trong đoạn mã trên, chỗ trống (b) ở cuối nhánh <code>then (S1)</code> là lệnh gì để bỏ qua nhánh <code>else</code>?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="0"><span class="L">A.</span><span><code>goto LEND</code></span></button><button class="opt" type="button" data-answer="1" data-correct="0"><span class="L">B.</span><span><code>return</code></span></button><button class="opt" type="button" data-answer="2" data-correct="0"><span class="L">C.</span><span><code>nop</code></span></button><button class="opt" type="button" data-answer="3" data-correct="0"><span class="L">D.</span><span><code>goto LFALSE</code></span></button></div>
+  <div class="explain"><div class="verdict"></div>Sau khi thực hiện xong <code>S1</code>, cần nhảy qua toàn bộ mã của <code>S2</code> đến nhãn <code>LEND</code>.</div>
+</article>
+
+<article class="qcard" id="q6" data-topic="Điều khiển luồng &amp; đoản mạch">
+  <div class="qhead"><span class="qtitle">Câu 6. (1 điểm)</span><span class="badge">Điều khiển luồng &amp; đoản mạch</span></div>
+  <div class="stem">Hai nhãn <code>LFALSE</code>, <code>LEND</code> được lấy từ đâu?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="0"><span class="L">A.</span><span><code>frame.getNewLabel()</code></span></button><button class="opt" type="button" data-answer="1" data-correct="0"><span class="L">B.</span><span><code>frame.getBreakLabel()</code></span></button><button class="opt" type="button" data-answer="2" data-correct="0"><span class="L">C.</span><span><code>frame.getContinueLabel()</code></span></button><button class="opt" type="button" data-answer="3" data-correct="0"><span class="L">D.</span><span><code>frame.getNewIndex()</code></span></button></div>
+  <div class="explain"><div class="verdict"></div>Đây là các nhãn điều khiển mới phục vụ riêng cho câu lệnh <code>if</code>, nên lấy bằng <code>frame.getNewLabel()</code>.</div>
+</article>
+
+<article class="qcard" id="q7" data-topic="Khung phương thức &amp; máy ngăn xếp">
+  <div class="qhead"><span class="qtitle">Câu 7. (1 điểm)</span><span class="badge">Khung phương thức &amp; máy ngăn xếp</span></div>
+  <div class="stem">Vì sao lệnh trên máy ngăn xếp rất gọn (ví dụ <code>iadd</code> không kèm toán hạng)?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="1"><span class="L">A.</span><span>Vì trình biên dịch nén các lệnh lại cho ngắn</span></button><button class="opt" type="button" data-answer="1" data-correct="1"><span class="L">B.</span><span>Vì toán hạng ngầm nằm ở đỉnh ngăn xếp nên không cần chỉ ra vị trí</span></button><button class="opt" type="button" data-answer="2" data-correct="1"><span class="L">C.</span><span>Vì mọi giá trị trong phép toán đều là hằng số nên không cần nêu vị trí toán hạng</span></button><button class="opt" type="button" data-answer="3" data-correct="1"><span class="L">D.</span><span>Vì JVM chỉ có duy nhất một thanh ghi để dùng</span></button></div>
+  <div class="explain"><div class="verdict"></div>Các lệnh số học của máy ngăn xếp lấy toán hạng trực tiếp từ đỉnh operand stack, nên không cần ghi vị trí toán hạng.</div>
+</article>
+
+<article class="qcard" id="q8" data-topic="Emitter &amp; lệnh JVM/Jasmin">
+  <div class="qhead"><span class="qtitle">Câu 8. (1 điểm)</span><span class="badge">Emitter &amp; lệnh JVM/Jasmin</span></div>
+  <div class="stem">Trong lớp <code>Emitter</code> của một bộ sinh mã hướng JVM, <code>emitREADVAR</code> phát lệnh nào để nạp một biến kiểu <code>float</code>?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="3"><span class="L">A.</span><span><code>aload</code></span></button><button class="opt" type="button" data-answer="1" data-correct="3"><span class="L">B.</span><span><code>iload</code></span></button><button class="opt" type="button" data-answer="2" data-correct="3"><span class="L">C.</span><span><code>istore</code></span></button><button class="opt" type="button" data-answer="3" data-correct="3"><span class="L">D.</span><span><code>fload</code></span></button></div>
+  <div class="explain"><div class="verdict"></div><code>fload</code> dùng để nạp một giá trị <code>float</code> từ local variable array lên operand stack.</div>
+</article>
+
+<article class="qcard" id="q9" data-topic="Kiến trúc sinh mã &amp; bytecode">
+  <div class="qhead"><span class="qtitle">Câu 9. (1 điểm)</span><span class="badge">Kiến trúc sinh mã &amp; bytecode</span></div>
+  <div class="stem">Trong một bộ sinh mã phân tầng, tầng duyệt AST thường được gọi là tầng “sinh mã độc lập máy”. Cụm từ “độc lập máy” ở đây nên được hiểu như thế nào?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="3"><span class="L">A.</span><span>Tầng chạy trực tiếp trên mọi CPU và mọi hệ điều hành mà hoàn toàn không cần chỉnh sửa hay biên dịch lại thêm bất cứ điều gì</span></button><button class="opt" type="button" data-answer="1" data-correct="3"><span class="L">B.</span><span>Tầng hoàn toàn không liên quan tới bất kỳ đặc điểm nào của máy đích đã chọn</span></button><button class="opt" type="button" data-answer="2" data-correct="3"><span class="L">C.</span><span>Tầng tự sinh mã máy cho nhiều kiến trúc phần cứng khác nhau cùng một lúc</span></button><button class="opt" type="button" data-answer="3" data-correct="3"><span class="L">D.</span><span>Tầng không trực tiếp xử lý cú pháp từng chỉ thị đích, nhưng quy tắc dịch vẫn vận dụng theo một mô hình máy đích đã chọn</span></button></div>
+  <div class="explain"><div class="verdict"></div>Tầng này không thao tác trực tiếp với cú pháp từng chỉ thị cụ thể, nhưng vẫn sinh mã theo mô hình máy đích đã chọn, ví dụ JVM.</div>
+</article>
+
+<article class="qcard" id="q10" data-topic="Emitter &amp; lệnh JVM/Jasmin">
+  <div class="qhead"><span class="qtitle">Câu 10. (1 điểm)</span><span class="badge">Emitter &amp; lệnh JVM/Jasmin</span></div>
+  <div class="stem">Trong <code>a = b + c * 60</code> (với <code>b</code>, <code>c</code> kiểu <code>float</code>), hằng <code>60</code> được đẩy bằng lệnh nào?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="0"><span class="L">A.</span><span><code>bipush 60</code></span></button><button class="opt" type="button" data-answer="1" data-correct="0"><span class="L">B.</span><span><code>sipush 60</code></span></button><button class="opt" type="button" data-answer="2" data-correct="0"><span class="L">C.</span><span><code>iconst_60</code></span></button><button class="opt" type="button" data-answer="3" data-correct="0"><span class="L">D.</span><span><code>ldc 60</code></span></button></div>
+  <div class="explain"><div class="verdict"></div>60 nằm trong khoảng của <code>bipush</code> (−128 đến 127), nên dùng <code>bipush 60</code>.</div>
+</article>
+
+<article class="qcard" id="q11" data-topic="Emitter &amp; lệnh JVM/Jasmin">
+  <div class="qhead"><span class="qtitle">Câu 11. (1 điểm)</span><span class="badge">Emitter &amp; lệnh JVM/Jasmin</span></div>
+  <div class="stem">Trong lớp <code>Emitter</code> của một bộ sinh mã hướng JVM, <code>emitI2F</code> tương ứng với lệnh Jasmin nào và làm thay đổi độ sâu ngăn xếp ra sao?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="1"><span class="L">A.</span><span><code>i2f</code>, hiệu ứng +1</span></button><button class="opt" type="button" data-answer="1" data-correct="1"><span class="L">B.</span><span><code>i2f</code>, hiệu ứng 0</span></button><button class="opt" type="button" data-answer="2" data-correct="1"><span class="L">C.</span><span><code>i2f</code>, hiệu ứng −1</span></button><button class="opt" type="button" data-answer="3" data-correct="1"><span class="L">D.</span><span><code>f2i</code>, hiệu ứng 0</span></button></div>
+  <div class="explain"><div class="verdict"></div><code>i2f</code> thay một giá trị <code>int</code> trên đỉnh stack bằng một giá trị <code>float</code>; số phần tử không đổi, nên hiệu ứng 0.</div>
+</article>
+
+<article class="qcard" id="q12" data-topic="Emitter &amp; lệnh JVM/Jasmin">
+  <div class="qhead"><span class="qtitle">Câu 12. (1 điểm)</span><span class="badge">Emitter &amp; lệnh JVM/Jasmin</span></div>
+  <div class="stem"><code>emitPUSHFCONST(1.0)</code> tương ứng lệnh nào và hiệu ứng gì lên độ sâu ngăn xếp?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="0"><span class="L">A.</span><span><code>fconst_1</code>, hiệu ứng +1</span></button><button class="opt" type="button" data-answer="1" data-correct="0"><span class="L">B.</span><span><code>ldc 1.0</code>, hiệu ứng +1</span></button><button class="opt" type="button" data-answer="2" data-correct="0"><span class="L">C.</span><span><code>fconst_1</code>, hiệu ứng 0</span></button><button class="opt" type="button" data-answer="3" data-correct="0"><span class="L">D.</span><span><code>iconst_1</code>, hiệu ứng +1</span></button></div>
+  <div class="explain"><div class="verdict"></div><code>fconst_1</code> đẩy hằng <code>float 1.0</code> lên stack, nên độ sâu tăng 1.</div>
+</article>
+
+<article class="qcard" id="q13" data-topic="Emitter &amp; lệnh JVM/Jasmin">
+  <div class="qhead"><span class="qtitle">Câu 13. (1 điểm)</span><span class="badge">Emitter &amp; lệnh JVM/Jasmin</span></div>
+  <div class="stem"><code>emitADDOP</code> cho hai toán hạng <code>float</code> tương ứng lệnh nào và hiệu ứng gì?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="0"><span class="L">A.</span><span><code>fadd</code>, hiệu ứng −1</span></button><button class="opt" type="button" data-answer="1" data-correct="0"><span class="L">B.</span><span><code>iadd</code>, hiệu ứng −1</span></button><button class="opt" type="button" data-answer="2" data-correct="0"><span class="L">C.</span><span><code>fadd</code>, hiệu ứng +1</span></button><button class="opt" type="button" data-answer="3" data-correct="0"><span class="L">D.</span><span><code>fadd</code>, hiệu ứng 0</span></button></div>
+  <div class="explain"><div class="verdict"></div><code>fadd</code> lấy hai toán hạng <code>float</code> khỏi stack và đẩy lại một kết quả, nên độ sâu giảm 1.</div>
+</article>
+
+<article class="qcard" id="q14" data-topic="Emitter &amp; lệnh JVM/Jasmin">
+  <div class="qhead"><span class="qtitle">Câu 14. (1 điểm)</span><span class="badge">Emitter &amp; lệnh JVM/Jasmin</span></div>
+  <div class="stem">Đẩy hằng số nguyên <code>5</code> dùng lệnh nào?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="1"><span class="L">A.</span><span><code>ldc 5</code></span></button><button class="opt" type="button" data-answer="1" data-correct="1"><span class="L">B.</span><span><code>iconst_5</code></span></button><button class="opt" type="button" data-answer="2" data-correct="1"><span class="L">C.</span><span><code>bipush 5</code></span></button><button class="opt" type="button" data-answer="3" data-correct="1"><span class="L">D.</span><span><code>sipush 5</code></span></button></div>
+  <div class="explain"><div class="verdict"></div>JVM có lệnh chuyên dụng <code>iconst_5</code> cho hằng số nguyên 5.</div>
+</article>
+
+<article class="qcard" id="q15" data-topic="Emitter &amp; lệnh JVM/Jasmin">
+  <div class="qhead"><span class="qtitle">Câu 15. (1 điểm)</span><span class="badge">Emitter &amp; lệnh JVM/Jasmin</span></div>
+  <div class="stem">Đẩy hằng số nguyên <code>100000</code> dùng lệnh nào?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="0"><span class="L">A.</span><span><code>ldc 100000</code></span></button><button class="opt" type="button" data-answer="1" data-correct="0"><span class="L">B.</span><span><code>sipush 100000</code></span></button><button class="opt" type="button" data-answer="2" data-correct="0"><span class="L">C.</span><span><code>bipush 100000</code></span></button><button class="opt" type="button" data-answer="3" data-correct="0"><span class="L">D.</span><span><code>iconst 100000</code></span></button></div>
+  <div class="explain"><div class="verdict"></div>100000 vượt phạm vi của <code>bipush</code> và <code>sipush</code>, nên dùng <code>ldc</code>.</div>
+</article>
+
+<article class="qcard" id="q16" data-topic="Emitter &amp; lệnh JVM/Jasmin">
+  <div class="qhead"><span class="qtitle">Câu 16. (1 điểm)</span><span class="badge">Emitter &amp; lệnh JVM/Jasmin</span></div>
+  <div class="stem">Đẩy hằng số thực <code>0.0</code> dùng lệnh nào?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="3"><span class="L">A.</span><span><code>fconst_1</code></span></button><button class="opt" type="button" data-answer="1" data-correct="3"><span class="L">B.</span><span><code>ldc 0.0</code></span></button><button class="opt" type="button" data-answer="2" data-correct="3"><span class="L">C.</span><span><code>iconst_0</code></span></button><button class="opt" type="button" data-answer="3" data-correct="3"><span class="L">D.</span><span><code>fconst_0</code></span></button></div>
+  <div class="explain"><div class="verdict"></div>JVM có lệnh chuyên dụng <code>fconst_0</code> để đẩy hằng <code>float 0.0</code>.</div>
+</article>
+
+<article class="qcard" id="q17" data-topic="Kiến trúc sinh mã &amp; bytecode">
+  <div class="qhead"><span class="qtitle">Câu 17. (1 điểm)</span><span class="badge">Kiến trúc sinh mã &amp; bytecode</span></div>
+  <div class="stem">Đặc điểm của phương án sinh mã bytecode cho một máy ảo là gì?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="2"><span class="L">A.</span><span>Mã phụ thuộc trực tiếp vào một kiến trúc chip cụ thể và luôn chạy nhanh nhất có thể trên phần cứng</span></button><button class="opt" type="button" data-answer="1" data-correct="2"><span class="L">B.</span><span>Buộc phải biên dịch lại mã nguồn cho từng loại CPU</span></button><button class="opt" type="button" data-answer="2" data-correct="2"><span class="L">C.</span><span>Mã gọn, khả chuyển, mỗi nền tảng chỉ cần một máy ảo là chạy được</span></button><button class="opt" type="button" data-answer="3" data-correct="2"><span class="L">D.</span><span>Không thể thực thi nếu thiếu phần cứng chuyên dụng</span></button></div>
+  <div class="explain"><div class="verdict"></div>Bytecode nhắm tới máy ảo thay vì CPU cụ thể, nên có tính khả chuyển giữa các nền tảng có máy ảo tương thích.</div>
+</article>
+
+<article class="qcard" id="q18" data-topic="Emitter &amp; lệnh JVM/Jasmin">
+  <div class="qhead"><span class="qtitle">Câu 18. (1 điểm)</span><span class="badge">Emitter &amp; lệnh JVM/Jasmin</span></div>
+  <div class="stem">Câu lệnh gán <code>a = b + c * 60</code> (<code>a</code> kiểu <code>float</code> ở ô 1) kết thúc bằng lệnh nào?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="1"><span class="L">A.</span><span><code>astore_1</code></span></button><button class="opt" type="button" data-answer="1" data-correct="1"><span class="L">B.</span><span><code>fstore_1</code></span></button><button class="opt" type="button" data-answer="2" data-correct="1"><span class="L">C.</span><span><code>istore_1</code></span></button><button class="opt" type="button" data-answer="3" data-correct="1"><span class="L">D.</span><span><code>fload_1</code></span></button></div>
+  <div class="explain"><div class="verdict"></div>Kết quả là <code>float</code> và cần lưu vào local variable index 1, nên dùng <code>fstore_1</code>.</div>
+</article>
+
+<article class="qcard" id="q19" data-topic="Kiến trúc sinh mã &amp; bytecode">
+  <div class="qhead"><span class="qtitle">Câu 19. (1 điểm)</span><span class="badge">Kiến trúc sinh mã &amp; bytecode</span></div>
+  <div class="stem">Vì sao nhiều tiền tuyến có thể dùng chung một hậu tuyến?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="0"><span class="L">A.</span><span>Vì nhiều ngôn ngữ nguồn có thể được đưa về cùng một máy đích, nên dùng chung phần tổng hợp mã</span></button><button class="opt" type="button" data-answer="1" data-correct="0"><span class="L">B.</span><span>Vì mọi ngôn ngữ lập trình đều chia sẻ chung một văn phạm và cùng một tập quy tắc ngữ nghĩa nền tảng</span></button><button class="opt" type="button" data-answer="2" data-correct="0"><span class="L">C.</span><span>Vì khi đã có hậu tuyến thì không cần tiền tuyến nữa</span></button><button class="opt" type="button" data-answer="3" data-correct="0"><span class="L">D.</span><span>Vì hậu tuyến tự suy ra ngữ nghĩa của mọi ngôn ngữ nguồn</span></button></div>
+  <div class="explain"><div class="verdict"></div>Các front-end khác nhau có thể cùng đưa chương trình về một biểu diễn/máy đích chung, nên có thể tái sử dụng cùng một back-end.</div>
+</article>
+
+<article class="qcard" id="q20" data-topic="Điều khiển luồng &amp; đoản mạch">
+  <div class="qhead"><span class="qtitle">Câu 20. (1 điểm)</span><span class="badge">Điều khiển luồng &amp; đoản mạch</span></div>
+  <div class="stem">Sinh mã đoản mạch cho <code>a &gt; 0 &amp;&amp; b &gt; 0</code> khác cách dịch “tính cả hai vế rồi <code>iand</code>” ở điểm cốt lõi nào?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="2"><span class="L">A.</span><span>Tính vế phải trước rồi mới quay lại tính vế trái</span></button><button class="opt" type="button" data-answer="1" data-correct="2"><span class="L">B.</span><span>Luôn tính đủ giá trị của cả hai vế trước rồi mới hợp nhất hai kết quả lại bằng một lệnh duy nhất</span></button><button class="opt" type="button" data-answer="2" data-correct="2"><span class="L">C.</span><span>Nếu vế trái đã đủ quyết định thì nhảy thẳng tới nhãn kết thúc, bỏ qua mã của vế phải</span></button><button class="opt" type="button" data-answer="3" data-correct="2"><span class="L">D.</span><span>Không dùng bất kỳ nhãn nhảy nào trong quá trình sinh mã</span></button></div>
+  <div class="explain"><div class="verdict"></div>Với <code>&amp;&amp;</code>, nếu vế trái là false thì toàn bộ biểu thức đã false, nên bỏ qua vế phải. Đây là short-circuit evaluation.</div>
+</article>
+
+<article class="qcard" id="q21" data-topic="Emitter &amp; lệnh JVM/Jasmin">
+  <div class="qhead"><span class="qtitle">Câu 21. (1 điểm)</span><span class="badge">Emitter &amp; lệnh JVM/Jasmin</span></div>
+  <div class="stem">Trong lớp <code>Emitter</code> của một bộ sinh mã hướng JVM, <code>emitPUSHICONST</code> lựa chọn lệnh đẩy hằng số nguyên dựa trên tiêu chí nào?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="2"><span class="L">A.</span><span>Theo kiểu trả về của phương thức</span></button><button class="opt" type="button" data-answer="1" data-correct="2"><span class="L">B.</span><span>Theo tên của biến đích được gán</span></button><button class="opt" type="button" data-answer="2" data-correct="2"><span class="L">C.</span><span>Theo độ lớn của giá trị để mã gọn nhất</span></button><button class="opt" type="button" data-answer="3" data-correct="2"><span class="L">D.</span><span>Theo đúng thứ tự khai báo của các biến trong chương trình</span></button></div>
+  <div class="explain"><div class="verdict"></div>Bộ phát mã chọn giữa <code>iconst_*</code>, <code>bipush</code>, <code>sipush</code>, <code>ldc</code> theo miền giá trị để mã gọn.</div>
+</article>
+
+<article class="qcard" id="q22" data-topic="Khung phương thức &amp; máy ngăn xếp">
+  <div class="qhead"><span class="qtitle">Câu 22. (1 điểm)</span><span class="badge">Khung phương thức &amp; máy ngăn xếp</span></div>
+  <div class="stem">Sau khi thực hiện xong một câu lệnh có luồng thực thi tiếp tục bình thường (ví dụ một phép gán), ngăn xếp toán hạng nên ở trạng thái nào?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="1"><span class="L">A.</span><span>Sâu thêm đúng một mức so với trước</span></button><button class="opt" type="button" data-answer="1" data-correct="1"><span class="L">B.</span><span>Trở về đúng độ sâu như trước khi câu lệnh bắt đầu</span></button><button class="opt" type="button" data-answer="2" data-correct="1"><span class="L">C.</span><span>Rỗng hoàn toàn kể cả khi trước đó ngăn xếp vốn không hề rỗng</span></button><button class="opt" type="button" data-answer="3" data-correct="1"><span class="L">D.</span><span>Còn lại đúng một giá trị trên đỉnh</span></button></div>
+  <div class="explain"><div class="verdict"></div>Một câu lệnh hoàn chỉnh không để lại giá trị trung gian trên operand stack; hiệu ứng ròng lên độ sâu stack bằng 0.</div>
+</article>
+
+<article class="qcard" id="q23" data-topic="Khung phương thức &amp; máy ngăn xếp">
+  <div class="qhead"><span class="qtitle">Câu 23. (1 điểm)</span><span class="badge">Khung phương thức &amp; máy ngăn xếp</span></div>
+  <div class="stem">Đâu là đánh đổi phải chấp nhận khi chọn máy ngăn xếp làm máy đích?</div>
+  
+  <div class="opts"><button class="opt" type="button" data-answer="0" data-correct="2"><span class="L">A.</span><span>Không thể khai báo được biến cục bộ cho phương thức nên phải dùng toàn thanh ghi vật lý</span></button><button class="opt" type="button" data-answer="1" data-correct="2"><span class="L">B.</span><span>Mã mất tính khả chuyển giữa các nền tảng</span></button><button class="opt" type="button" data-answer="2" data-correct="2"><span class="L">C.</span><span>Mã có thể kém hiệu quả khi thông dịch trực tiếp do mọi giá trị phải đi qua ngăn xếp</span></button><button class="opt" type="button" data-answer="3" data-correct="2"><span class="L">D.</span><span>Bộ sinh mã trở nên phức tạp hơn nhiều</span></button></div>
+  <div class="explain"><div class="verdict"></div>Máy ngăn xếp giúp lệnh gọn và bộ sinh mã đơn giản, nhưng khi thông dịch trực tiếp có thể phát sinh thêm thao tác push/pop.</div>
+</article>
+
+</main>
+<div class="endline">--- HẾT ---</div>
+</div>
+<script>
+let answered=0, correct=0;
+const score=document.getElementById('score');
+function updateScore(){score.textContent=`Đã làm ${answered}/23 · Đúng ${correct}`;}
+document.querySelectorAll('.qcard').forEach(card=>{
+  card.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(card.dataset.done==='1') return;
+      card.dataset.done='1'; answered++;
+      const chosen=Number(btn.dataset.answer), ans=Number(btn.dataset.correct);
+      const exp=card.querySelector('.explain'), verdict=card.querySelector('.verdict');
+      card.querySelectorAll('.opt').forEach(b=>{
+        b.disabled=true;
+        if(Number(b.dataset.answer)===ans) b.classList.add('correct');
+      });
+      if(chosen===ans){correct++; verdict.textContent='✔ Chính xác!'; verdict.className='verdict ok';}
+      else{btn.classList.add('wrongpick'); verdict.textContent='✘ Chưa đúng. Đáp án đúng đã được tô xanh.'; verdict.className='verdict no';}
+      exp.classList.add('show'); updateScore();
+    });
+  });
+});
+document.getElementById('fTopic').addEventListener('change',function(){
+  const v=this.value;
+  document.querySelectorAll('.qcard').forEach(c=>c.style.display=(v==='all'||c.dataset.topic===v)?'':'none');
+});
+document.getElementById('btnReset').addEventListener('click',()=>location.reload());
+document.getElementById('btnShufQ').addEventListener('click',()=>{
+  const quiz=document.getElementById('quiz');
+  [...quiz.children].sort(()=>Math.random()-.5).forEach(el=>quiz.appendChild(el));
+});
+updateScore();
+</script>
+</body>
+</html>

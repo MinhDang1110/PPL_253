@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CO3005 — Ôn tập Kiểu, Suy diễn kiểu và Đa hình</title>
+<style>
+:root{
+  --ink:#1a1a1a; --muted:#666; --line:#b8b8b8; --accent:#0d47a1;
+  --good:#1b5e20; --good-bg:#e8f5e9; --bad:#b71c1c; --bad-bg:#ffebee;
+  --box:#fafafa; --code-bg:#f5f6f8; --warn:#8a5a00; --warn-bg:#fff8e1;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#e9e9e9;color:var(--ink);
+  font-family:"Times New Roman",Times,serif;font-size:16px;line-height:1.45}
+.page{max-width:900px;margin:0 auto;background:#fff;padding:34px 46px 60px;
+  box-shadow:0 0 12px rgba(0,0,0,.18);min-height:100vh}
+.exam-header{border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px}
+.hrow{display:flex;justify-content:space-between;gap:18px}
+.hleft{font-size:13px;text-align:center;line-height:1.35;white-space:nowrap}
+.hleft b{display:block}
+.hright{text-align:center;flex:1}
+.hright .t1{font-weight:bold;font-size:19px;letter-spacing:.4px}
+.hright .t2{font-size:15px;margin-top:2px}
+.hright .t3{font-size:13.5px;margin-top:2px;color:var(--muted)}
+.mssv{font-size:13.5px;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.note{font-size:13px;color:var(--muted);font-style:italic;margin-top:6px}
+.source-warning{margin:12px 0 2px;border:1px solid #e0b04c;background:var(--warn-bg);
+  color:var(--warn);padding:9px 12px;border-radius:6px;font-size:13.5px}
+.controls{position:sticky;top:0;z-index:9;background:#fff;border:1px solid var(--line);
+  border-radius:8px;margin:14px 0 20px;padding:10px 12px;display:flex;flex-wrap:wrap;
+  gap:8px;align-items:center;font-family:Arial,Helvetica,sans-serif;font-size:13px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.controls label{color:var(--muted)}
+.controls select,.controls button{font:inherit;padding:5px 9px;border:1px solid var(--line);
+  border-radius:6px;background:#fff;cursor:pointer}
+.controls button:hover,.controls select:hover{border-color:var(--accent);color:var(--accent)}
+#score{margin-left:auto;font-weight:bold;color:var(--accent)}
+.qcard{border-bottom:1px solid #ddd;padding:16px 0 20px;scroll-margin-top:80px}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.qtitle{font-weight:bold}
+.badges{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#fff;white-space:nowrap}
+.badge{display:inline-block;background:#607d8b;border-radius:10px;padding:2px 8px;margin-left:4px}
+.stem{margin-top:6px}
+code{font-family:Consolas,"Courier New",monospace;font-size:.92em;background:var(--code-bg);
+  padding:0 3px;border-radius:3px}
+.codebox{border:1px solid var(--line);border-radius:6px;margin:10px 0;overflow:hidden;
+  background:var(--code-bg)}
+.codelang{font-family:Arial,Helvetica,sans-serif;font-size:11.5px;color:#fff;background:#546e7a;
+  padding:3px 10px;letter-spacing:.2px}
+.codebox pre{margin:0;padding:10px 12px;font-family:Consolas,"Courier New",monospace;
+  font-size:13.5px;line-height:1.5;overflow-x:auto;white-space:pre}
+.qnote{font-size:12.5px;color:var(--muted);font-style:italic;margin-top:7px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-top:12px}
+.opts.wide{grid-template-columns:1fr}
+.opt{border:1px solid #d6d6d6;border-radius:6px;padding:8px 11px;cursor:pointer;
+  display:flex;gap:8px;align-items:flex-start;transition:background .12s,border-color .12s}
+.opt:hover{border-color:var(--accent);background:#f3f7ff}
+.opt .L{font-weight:bold;min-width:20px}
+.answered .opt{cursor:default;pointer-events:none}
+.opt.correct{background:var(--good-bg);border-color:var(--good)}
+.opt.correct .L::after{content:" ✔";color:var(--good)}
+.opt.wrongpick{background:var(--bad-bg);border-color:var(--bad)}
+.opt.wrongpick .L::after{content:" ✘";color:var(--bad)}
+.explain{display:none;margin-top:12px;border-left:4px solid var(--accent);background:#f2f6ff;
+  padding:10px 14px;border-radius:0 6px 6px 0;font-size:14.5px}
+.explain .verdict{font-weight:bold;margin-bottom:4px}
+.explain .verdict.ok{color:var(--good)}
+.explain .verdict.no{color:var(--bad)}
+.endline{text-align:center;margin:34px 0 8px;font-weight:bold;letter-spacing:2px}
+.matrixnote{font-size:12.5px;color:var(--muted);text-align:center}
+@media (max-width:640px){
+  .opts{grid-template-columns:1fr} .page{padding:20px 14px}
+  .hrow{display:block} .hleft{white-space:normal;margin-bottom:10px}
+  #score{width:100%;margin-left:0}
+}
+@media print{
+  body{background:#fff}
+  .page{box-shadow:none;max-width:none;padding:0}
+  .controls{display:none}
+  .explain{display:none !important}
+  .opt{border-color:#999}
+  .opt.correct,.opt.wrongpick{background:#fff;border-color:#999}
+  .opt .L::after{content:"" !important}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="exam-header">
+  <div class="hrow">
+    <div class="hleft">
+      ĐẠI HỌC QUỐC GIA TP.HCM<br><b>TRƯỜNG ĐẠI HỌC BÁCH KHOA</b>
+      Khoa Khoa học &amp; Kỹ thuật Máy tính
+    </div>
+    <div class="hright">
+      <div class="t1">BÀI ÔN TẬP TRẮC NGHIỆM</div>
+      <div class="t2">Kiểu · Kiểm tra kiểu · Suy diễn kiểu · Đa hình</div>
+      <div class="t3">19 câu từ ảnh đã cung cấp · 1 điểm/câu</div>
+    </div>
+  </div>
+  <div class="mssv">MSSV: …………………………………………&nbsp;&nbsp;&nbsp;Họ và tên SV: …………………………………………</div>
+  <div class="note">Nhấp vào một phương án để trả lời; hệ thống chấm ngay sau khi chọn. Có thể xáo câu, xáo phương án và lưu tiến độ tự động trên trình duyệt.</div>
+</header>
+
+<div class="source-warning">
+  Các ảnh cung cấp có Câu 1–16 và Câu 20–22. Câu 17–19 không xuất hiện nên không được tự bổ sung.
+</div>
+
+<div class="controls">
+  <label>Chủ đề:</label>
+  <select id="fTopic">
+    <option value="all">Tất cả</option>
+    <option value="T1">Khái niệm kiểu và liên kết động</option>
+    <option value="T2">Hợp thành x(z(y))</option>
+    <option value="T3">Hợp thành y(z(x))</option>
+    <option value="T4">Chú thích kiểu trên AST</option>
+    <option value="T5">Hàm bậc cao g(f, x)</option>
+    <option value="T6">Cùng hàm áp lên hai tham số</option>
+</select>
+  <button id="btnShufQ">⇄ Xáo câu</button>
+  <button id="btnShufO">⇄ Xáo phương án</button>
+  <button id="btnReset">↺ Làm lại</button>
+  <span id="score"></span>
+</div>
+
+<main id="quiz"></main>
+
+<div class="endline">--- HẾT ---</div>
+<div class="matrixnote">Nội dung câu hỏi và lựa chọn được tổng hợp từ các ảnh đã gửi; giao diện và chức năng dựa trên file HTML mẫu.</div>
+
+<script>
+"use strict";
+const QUESTIONS = [{"n":1,"topic":"T1","stem":"Sau khai báo <code>typedef int StudentId;</code>, vấn đề thiết kế kiểu nào cần được xác định?","boxes":[],"opts":["Một biến mang kiểu <code>StudentId</code> sẽ chiếm bao nhiêu byte bộ nhớ so với một biến mang kiểu <code>int</code>","<code>StudentId</code> có nên được coi là cùng kiểu với <code>int</code> hay là một kiểu khác biệt","Tên <code>StudentId</code> có được phép chứa chữ số hay chỉ được chứa chữ cái","Kiểu <code>int</code> có còn tiếp tục sử dụng được ở những nơi khác trong chương trình nữa hay là không"],"ans":1,"why":"Vấn đề thiết kế quan trọng là quy tắc tương đương kiểu: tên kiểu mới có được xem là cùng kiểu với <code>int</code> hay tạo thành một kiểu phân biệt.","wide":true},{"n":2,"topic":"T1","stem":"Điều nào đúng về bộ kiểm tra kiểu tĩnh trong trình biên dịch?","boxes":[],"opts":["Nó thực thi từng dòng của chương trình rồi quan sát kết quả để suy ra kiểu của mỗi biểu thức","Nó chỉ hoạt động được với những ngôn ngữ có ràng buộc kiểu động chứ không dùng cho kiểu tĩnh","Nó thay thế hoàn toàn cho pha phân tích cú pháp và tự sinh ra cây cú pháp trừu tượng của mã","Nó không thực thi chương trình, chỉ lý luận về kiểu của biểu thức và câu lệnh"],"ans":3,"why":"Kiểm tra kiểu tĩnh được thực hiện khi biên dịch bằng cách phân tích chương trình, không cần chạy chương trình.","wide":true},{"n":3,"topic":"T2","stem":"Vì <code>z</code> được gọi trên <code>y</code> (kiểu <code>a</code>), ràng buộc sinh ra là:","boxes":[{"lang":"Suy diễn kiểu — dùng cho Câu 3–5","code":"def foo(x, y, z) = x(z(y))"}],"opts":["<code>y : a -&gt; b</code>","<code>z : b -&gt; a</code>","<code>z : a -&gt; a</code>","<code>z : a -&gt; b</code>"],"ans":3,"why":"Đối số của <code>z</code> là <code>y : a</code>. Gọi kiểu kết quả của <code>z(y)</code> là <code>b</code>, ta có <code>z : a -&gt; b</code>.","wide":false},{"n":4,"topic":"T2","stem":"<code>z(y)</code> mang kiểu <code>b</code>, nên vì <code>x</code> gọi trên <code>z(y)</code>:","boxes":[{"lang":"Suy diễn kiểu — dùng cho Câu 3–5","code":"def foo(x, y, z) = x(z(y))"}],"opts":["<code>x : a -&gt; c</code>","<code>x : b -&gt; c</code>","<code>x : b -&gt; b</code>","<code>x : c -&gt; b</code>"],"ans":1,"why":"Đầu vào của <code>x</code> là giá trị <code>z(y) : b</code>. Gọi kiểu kết quả cuối là <code>c</code>, suy ra <code>x : b -&gt; c</code>.","wide":false},{"n":5,"topic":"T2","stem":"Biểu thức kiểu cuối cùng của <code>foo</code> là:","boxes":[{"lang":"Suy diễn kiểu — dùng cho Câu 3–5","code":"def foo(x, y, z) = x(z(y))"}],"opts":["<code>(T1-&gt;T2)*T3*(T3-&gt;T1)-&gt;T1</code>","<code>(T2-&gt;T1)*T3*(T3-&gt;T1)-&gt;T2</code>","<code>(T1-&gt;T2)*T3*(T3-&gt;T1)-&gt;T2</code>","<code>(T1-&gt;T2)*T3*(T1-&gt;T3)-&gt;T2</code>"],"ans":2,"why":"Đặt <code>b = T1</code>, <code>c = T2</code>, <code>a = T3</code>. Khi đó <code>x : T1-&gt;T2</code>, <code>y : T3</code>, <code>z : T3-&gt;T1</code> và kết quả là <code>T2</code>.","wide":true},{"n":6,"topic":"T3","stem":"Vì <code>z</code> được gọi trên <code>x</code> (kiểu <code>a</code>), quy tắc áp dụng hàm sinh ra ràng buộc nào?","boxes":[{"lang":"Suy diễn kiểu — dùng cho Câu 6–8","code":"def foo(x, y, z) = y(z(x))"}],"opts":["<code>z : a -&gt; a</code>","<code>x : a -&gt; b</code>","<code>z : a -&gt; b</code>","<code>z : b -&gt; a</code>"],"ans":2,"why":"Đối số của <code>z</code> là <code>x : a</code>. Gọi kiểu kết quả của <code>z(x)</code> là <code>b</code>, suy ra <code>z : a -&gt; b</code>.","wide":false},{"n":7,"topic":"T3","stem":"Do đó <code>z(x)</code> mang kiểu gì, và kéo theo ràng buộc nào cho <code>y</code>?","boxes":[{"lang":"Suy diễn kiểu — dùng cho Câu 6–8","code":"def foo(x, y, z) = y(z(x))"}],"opts":["<code>z(x) : c</code>, và <code>y : c -&gt; b</code>","<code>z(x) : b</code>, và <code>y : c -&gt; b</code>","<code>z(x) : a</code>, và <code>y : a -&gt; b</code>","<code>z(x) : b</code>, và <code>y : b -&gt; c</code>"],"ans":3,"why":"Từ Câu 6, <code>z(x) : b</code>. Vì <code>y</code> được áp dụng lên giá trị này và cho kết quả kiểu <code>c</code>, nên <code>y : b -&gt; c</code>.","wide":true},{"n":8,"topic":"T3","stem":"Biểu thức kiểu cuối cùng của <code>foo</code> là:","boxes":[{"lang":"Suy diễn kiểu — dùng cho Câu 6–8","code":"def foo(x, y, z) = y(z(x))"}],"opts":["<code>T1*(T2-&gt;T3)*(T1-&gt;T2)-&gt;T3</code>","<code>(T1-&gt;T2)*(T2-&gt;T3)*T1-&gt;T3</code>","<code>T1*(T2-&gt;T3)*(T2-&gt;T1)-&gt;T3</code>","<code>T1*(T3-&gt;T2)*(T1-&gt;T2)-&gt;T3</code>"],"ans":0,"why":"Theo thứ tự tham số: <code>x : T1</code>, <code>y : T2-&gt;T3</code>, <code>z : T1-&gt;T2</code>; giá trị trả về có kiểu <code>T3</code>.","wide":true},{"n":9,"topic":"T1","stem":"Biểu thức kiểu có thể là một kiểu cơ bản, một tên kiểu, một biến kiểu, hoặc kết quả áp một bộ tạo kiểu lên các biểu thức kiểu. Lựa chọn nào sau đây <strong>không phải</strong> là một biểu thức kiểu hợp lệ?","boxes":[],"opts":["Một biến kiểu, chẳng hạn ký hiệu <code>T</code> đại diện cho một kiểu chưa biết hoặc kiểu tổng quát","Một bộ tạo kiểu áp lên các biểu thức kiểu khác, chẳng hạn như <code>pointer</code> áp lên kiểu <code>int</code>","Một câu lệnh gán giá trị cho biến","Một kiểu cơ bản như <code>int</code> hoặc <code>bool</code> được dùng trực tiếp làm một biểu thức kiểu độc lập"],"ans":2,"why":"Câu lệnh gán là một câu lệnh của chương trình, không phải một biểu thức mô tả kiểu.","wide":true},{"n":10,"topic":"T1","stem":"Liên kết động (<em>dynamic binding</em>) chọn cài đặt phương thức dựa trên điều gì?","boxes":[],"opts":["Thứ tự khai báo các phương thức nạp chồng trong mã nguồn từ trên xuống dưới của tệp chương trình","Kiểu trả về được ngôn ngữ mong đợi tại vị trí lời gọi phương thức đó trong biểu thức bao ngoài","Kiểu tĩnh của tham chiếu đã được xác định ngay lúc biên dịch chứ không phải kiểu lúc chạy","Kiểu thực tế lúc chạy của đối tượng, không phải kiểu tĩnh của tham chiếu"],"ans":3,"why":"Dynamic binding lựa chọn phương thức dựa trên lớp hoặc kiểu thực tế của đối tượng tại thời điểm chạy.","wide":true},{"n":11,"topic":"T4","stem":"Kiểu chú thích cho hai nút lá <code>x</code> và <code>1</code> lần lượt là:","boxes":[{"lang":"Chú thích kiểu trên AST — dùng cho Câu 11–13","code":"Biểu thức: x + 1\nx : int\n+ : int × int → int"}],"opts":["<code>int</code> và <code>int</code>","<code>int</code> và <code>float</code>","<code>int</code> và <code>bool</code>","<code>float</code> và <code>int</code>"],"ans":0,"why":"Kiểu của định danh <code>x</code> được tra từ bảng ký hiệu là <code>int</code>; hằng số nguyên <code>1</code> cũng có kiểu <code>int</code>.","wide":false},{"n":12,"topic":"T4","stem":"Luật nào cho phép suy ra kiểu của nút gốc <code>+</code>?","boxes":[{"lang":"Chú thích kiểu trên AST — dùng cho Câu 11–13","code":"Biểu thức: x + 1\nx : int\n+ : int × int → int"}],"opts":["<code>+ : float × float → float</code>","<code>+ : int × int → int</code>","<code>+ : int → int</code>","<code>+ : int × int → bool</code>"],"ans":1,"why":"Cả hai toán hạng đều có kiểu <code>int</code>, nên áp dụng đúng luật <code>int × int → int</code>.","wide":false},{"n":13,"topic":"T4","stem":"Kiểu chú thích cuối cùng cho nút gốc của <code>x + 1</code> là:","boxes":[{"lang":"Chú thích kiểu trên AST — dùng cho Câu 11–13","code":"Biểu thức: x + 1\nx : int\n+ : int × int → int"}],"opts":["<code>float</code>","<code>bool</code>","<code>int × int</code>","<code>int</code>"],"ans":3,"why":"Theo luật của phép cộng số nguyên, kết quả của <code>x + 1</code> mang kiểu <code>int</code>.","wide":false},{"n":14,"topic":"T5","stem":"Biểu thức kiểu của <code>g</code> là:","boxes":[{"lang":"Suy diễn kiểu và kiểm tra lời gọi — dùng cho Câu 14–16","code":"def g(f, x) = f(x) + 1\n\nPhép + chỉ áp dụng trên integer."}],"opts":["<code>(T1-&gt;integer)*T1-&gt;integer</code>","<code>(T1-&gt;integer)*integer-&gt;integer</code>","<code>(integer-&gt;T1)*T1-&gt;integer</code>","<code>(T1-&gt;T1)*T1-&gt;integer</code>"],"ans":0,"why":"Vì <code>f</code> được áp dụng lên <code>x : T1</code> và kết quả <code>f(x)</code> phải là <code>integer</code> để cộng với 1, nên <code>f : T1-&gt;integer</code>; toàn hàm trả về <code>integer</code>.","wide":true},{"n":15,"topic":"T5","stem":"Lời gọi <code>g(len, \"abc\")</code> với <code>len : string-&gt;integer</code> và <code>\"abc\" : string</code>:","boxes":[{"lang":"Suy diễn kiểu và kiểm tra lời gọi — dùng cho Câu 14–16","code":"def g(f, x) = f(x) + 1"}],"opts":["Không hợp kiểu vì tham số thứ nhất <code>len</code> bắt buộc phải là một hàm trả về kiểu <code>string</code> mới đúng","Không hợp kiểu vì hàm <code>g</code> chỉ nhận được đúng các đối số thuộc kiểu <code>integer</code> ở cả hai vị trí tham số","Hợp kiểu (<code>T1 = string</code>), kết quả kiểu <code>integer</code>","Hợp kiểu nhưng kết quả trả về sẽ mang kiểu <code>string</code> chứ không phải là kiểu <code>integer</code> như mong đợi"],"ans":2,"why":"<code>len</code> nhận một <code>string</code> và trả về <code>integer</code>, đúng với dạng <code>T1-&gt;integer</code> khi <code>T1 = string</code>.","wide":true},{"n":16,"topic":"T5","stem":"Lời gọi <code>g(neg, true)</code> với <code>neg : boolean-&gt;boolean</code> và <code>true : boolean</code>:","boxes":[{"lang":"Suy diễn kiểu và kiểm tra lời gọi — dùng cho Câu 14–16","code":"def g(f, x) = f(x) + 1"}],"opts":["Hợp kiểu vì cả hai đối số đều nhất quán mang kiểu <code>boolean</code> nên không hề vi phạm ràng buộc nào","Không hợp kiểu vì đối số thứ hai <code>true</code> lẽ ra phải mang kiểu <code>integer</code> thay vì mang kiểu <code>boolean</code>","Không hợp kiểu, vì tham số đầu phải là hàm trả về <code>integer</code>, nhưng <code>neg</code> trả về <code>boolean</code>","Hợp kiểu với <code>T1 = boolean</code> và cho kết quả cuối cùng của toàn bộ lời gọi là một giá trị <code>boolean</code>"],"ans":2,"why":"Đầu vào của <code>f</code> có thể là <code>boolean</code>, nhưng đầu ra của <code>f</code> bắt buộc phải là <code>integer</code> để thực hiện phép cộng. <code>neg</code> trả về <code>boolean</code> nên không hợp kiểu.","wide":true},{"n":20,"topic":"T6","stem":"Việc <code>f</code> được gọi trên cả <code>x</code> lẫn <code>y</code> kéo theo điều gì?","boxes":[{"lang":"Cùng một hàm áp lên hai tham số — dùng cho Câu 20–22","code":"def foo(f, x, y) = f(x) + f(y)\n\nCác lần dùng cùng tham số hàm phải có một kiểu nhất quán.\nPhép + chỉ áp dụng trên integer."}],"opts":["<code>x</code> và <code>y</code> phải cùng kiểu — đều là kiểu tham số của <code>f</code>","<code>x</code> và <code>y</code> có thể mang hai kiểu khác nhau vì mỗi lời gọi <code>f</code> sinh ra một cặp biến kiểu mới riêng","<code>x</code> và <code>y</code> đều phải mang kiểu <code>integer</code> ngay từ đầu vì <code>f</code> là một hàm số học trên các số nguyên","<code>f</code> bắt buộc phải có hai phiên bản nạp chồng, mỗi phiên bản dành cho một kiểu tham số riêng"],"ans":0,"why":"Cùng một tham số hàm <code>f</code> phải giữ một kiểu duy nhất trong toàn bộ định nghĩa. Do đó hai đối số truyền vào <code>f</code> là <code>x</code> và <code>y</code> phải cùng kiểu.","wide":true},{"n":21,"topic":"T6","stem":"Phép <code>+</code> ràng buộc thêm điều gì về <code>f</code>?","boxes":[{"lang":"Cùng một hàm áp lên hai tham số — dùng cho Câu 20–22","code":"def foo(f, x, y) = f(x) + f(y)"}],"opts":["Kiểu tham số của <code>f</code> phải là <code>integer</code>","<code>f</code> không bị ràng buộc gì thêm","Cả kiểu tham số lẫn kiểu kết quả của <code>f</code> đều phải là <code>integer</code>","Kiểu kết quả của <code>f</code> phải là <code>integer</code>"],"ans":3,"why":"Hai toán hạng của phép cộng là <code>f(x)</code> và <code>f(y)</code>. Vì phép <code>+</code> chỉ áp dụng trên số nguyên, kiểu kết quả của <code>f</code> phải là <code>integer</code>.","wide":true},{"n":22,"topic":"T6","stem":"Biểu thức kiểu cuối cùng của <code>foo</code> là:","boxes":[{"lang":"Cùng một hàm áp lên hai tham số — dùng cho Câu 20–22","code":"def foo(f, x, y) = f(x) + f(y)"}],"opts":["<code>(integer-&gt;integer)*integer*integer-&gt;integer</code>","<code>(T1-&gt;T2)*T1*T1-&gt;integer</code>","<code>(T1-&gt;integer)*T1*T1-&gt;integer</code>","<code>(T1-&gt;integer)*T1*T2-&gt;integer</code>"],"ans":2,"why":"Gọi kiểu chung của <code>x</code> và <code>y</code> là <code>T1</code>. Khi đó <code>f : T1-&gt;integer</code>, và phép cộng trả về <code>integer</code>.","wide":true}];
+const TOPIC_NAMES = {"T1":"Khái niệm kiểu và liên kết động","T2":"Hợp thành x(z(y))","T3":"Hợp thành y(z(x))","T4":"Chú thích kiểu trên AST","T5":"Hàm bậc cao g(f, x)","T6":"Cùng hàm áp lên hai tham số"};
+const KEY = "co3005_type_inference_review_v1";
+
+let state = {answers:{}, qOrder:null, oOrder:{}, fTopic:"all"};
+try{
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if(saved && typeof saved === "object") state = Object.assign(state, saved);
+}catch(e){}
+
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function shuffled(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function qById(id){ return QUESTIONS.find(q => q.n === id); }
+function visibleQuestions(){
+  let qs = QUESTIONS.slice();
+  if(state.qOrder && state.qOrder.length === qs.length){
+    qs = state.qOrder.map(qById).filter(Boolean);
+  }
+  return qs.filter(q => state.fTopic === "all" || q.topic === state.fTopic);
+}
+function optPerm(q){
+  const p = state.oOrder[q.n];
+  return (p && p.length === q.opts.length) ? p : q.opts.map((_,i)=>i);
+}
+function render(){
+  const root = document.getElementById("quiz");
+  const qs = visibleQuestions();
+  let html = "";
+  for(const q of qs){
+    const perm = optPerm(q);
+    const done = Object.prototype.hasOwnProperty.call(state.answers, q.n);
+    const chosen = done ? state.answers[q.n] : -1;
+    let boxes = "";
+    for(const b of q.boxes){
+      boxes += '<div class="codebox"><div class="codelang">' + esc(b.lang) +
+               '</div><pre>' + esc(b.code) + '</pre></div>';
+    }
+    let opts = "";
+    perm.forEach((oi, pos) => {
+      const letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[pos];
+      let cls = "opt";
+      if(done && oi === q.ans) cls += " correct";
+      if(done && oi === chosen && oi !== q.ans) cls += " wrongpick";
+      opts += '<div class="' + cls + '" data-q="' + q.n + '" data-oi="' + oi + '">' +
+              '<span class="L">' + letter + '.</span><span>' + q.opts[oi] + '</span></div>';
+    });
+    let explain = '<div class="explain"></div>';
+    if(done){
+      const okLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[perm.indexOf(q.ans)];
+      const ok = chosen === q.ans;
+      explain = '<div class="explain" style="display:block">' +
+        '<div class="verdict ' + (ok ? "ok" : "no") + '">' +
+        (ok ? "✔ Chính xác!" : "✘ Chưa đúng.") + " Đáp án: " + okLetter + ".</div>" +
+        q.why + "</div>";
+    }
+    const note = q.note ? '<div class="qnote">' + q.note + '</div>' : '';
+    html += '<article class="qcard' + (done ? " answered" : "") + '" id="q' + q.n + '">' +
+      '<div class="qhead"><span class="qtitle">Câu ' + q.n + '. (1 điểm)</span>' +
+      '<span class="badges"><span class="badge">' + TOPIC_NAMES[q.topic] + '</span></span></div>' +
+      '<div class="stem">' + q.stem + "</div>" + boxes + note +
+      '<div class="opts' + (q.wide ? " wide" : "") + '">' + opts + "</div>" + explain +
+      "</article>";
+  }
+  if(qs.length === 0){
+    html = '<p style="color:#666;font-style:italic">Không có câu nào khớp bộ lọc hiện tại.</p>';
+  }
+  root.innerHTML = html;
+  updateScore();
+}
+function updateScore(){
+  const total = QUESTIONS.length;
+  let answered = 0, right = 0;
+  for(const q of QUESTIONS){
+    if(Object.prototype.hasOwnProperty.call(state.answers, q.n)){
+      answered++;
+      if(state.answers[q.n] === q.ans) right++;
+    }
+  }
+  const el = document.getElementById("score");
+  el.textContent = "Đã làm " + answered + "/" + total + " · Đúng " + right +
+    (answered ? " (" + Math.round(100 * right / answered) + "%)" : "");
+}
+
+document.getElementById("quiz").addEventListener("click", function(ev){
+  const opt = ev.target.closest(".opt");
+  if(!opt) return;
+  const qn = parseInt(opt.dataset.q, 10);
+  if(Object.prototype.hasOwnProperty.call(state.answers, qn)) return;
+  state.answers[qn] = parseInt(opt.dataset.oi, 10);
+  save();
+  render();
+  const card = document.getElementById("q" + qn);
+  if(card) card.scrollIntoView({block:"nearest"});
+});
+document.getElementById("fTopic").addEventListener("change", function(){
+  state.fTopic = this.value; save(); render();
+});
+document.getElementById("btnShufQ").addEventListener("click", function(){
+  state.qOrder = shuffled(QUESTIONS.map(q => q.n)); save(); render();
+});
+document.getElementById("btnShufO").addEventListener("click", function(){
+  for(const q of QUESTIONS) state.oOrder[q.n] = shuffled(q.opts.map((_,i)=>i));
+  save(); render();
+});
+document.getElementById("btnReset").addEventListener("click", function(){
+  if(!confirm("Xóa toàn bộ bài làm và làm lại từ đầu?")) return;
+  state.answers = {}; state.qOrder = null; state.oOrder = {};
+  save(); render();
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+document.getElementById("fTopic").value = state.fTopic;
+render();
+</script>
+</div>
+</body>
+</html>

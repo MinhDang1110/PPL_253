@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CO3005 — Đề ôn tập 22 câu</title>
+<style>
+:root{
+  --ink:#1a1a1a; --muted:#666; --line:#b8b8b8; --accent:#0d47a1;
+  --good:#1b5e20; --good-bg:#e8f5e9; --bad:#b71c1c; --bad-bg:#ffebee;
+  --box:#fafafa; --code-bg:#f5f6f8; --warn:#8a5a00; --warn-bg:#fff8e1;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#e9e9e9;color:var(--ink);
+  font-family:"Times New Roman",Times,serif;font-size:16px;line-height:1.45}
+.page{max-width:900px;margin:0 auto;background:#fff;padding:34px 46px 60px;
+  box-shadow:0 0 12px rgba(0,0,0,.18);min-height:100vh}
+.exam-header{border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px}
+.hrow{display:flex;justify-content:space-between;gap:18px}
+.hleft{font-size:13px;text-align:center;line-height:1.35;white-space:nowrap}
+.hleft b{display:block}
+.hright{text-align:center;flex:1}
+.hright .t1{font-weight:bold;font-size:19px;letter-spacing:.4px}
+.hright .t2{font-size:15px;margin-top:2px}
+.hright .t3{font-size:13.5px;margin-top:2px;color:var(--muted)}
+.mssv{font-size:13.5px;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.note{font-size:13px;color:var(--muted);font-style:italic;margin-top:6px}
+.source-warning{margin:12px 0 2px;border:1px solid #e0b04c;background:var(--warn-bg);
+  color:var(--warn);padding:9px 12px;border-radius:6px;font-size:13.5px}
+.controls{position:sticky;top:0;z-index:9;background:#fff;border:1px solid var(--line);
+  border-radius:8px;margin:14px 0 20px;padding:10px 12px;display:flex;flex-wrap:wrap;
+  gap:8px;align-items:center;font-family:Arial,Helvetica,sans-serif;font-size:13px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.controls label{color:var(--muted)}
+.controls select,.controls button{font:inherit;padding:5px 9px;border:1px solid var(--line);
+  border-radius:6px;background:#fff;cursor:pointer}
+.controls button:hover,.controls select:hover{border-color:var(--accent);color:var(--accent)}
+#score{margin-left:auto;font-weight:bold;color:var(--accent)}
+.qcard{border-bottom:1px solid #ddd;padding:16px 0 20px;scroll-margin-top:80px}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.qtitle{font-weight:bold}
+.badges{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#fff;white-space:nowrap}
+.badge{display:inline-block;background:#607d8b;border-radius:10px;padding:2px 8px;margin-left:4px}
+.stem{margin-top:6px}
+code{font-family:Consolas,"Courier New",monospace;font-size:.92em;background:var(--code-bg);
+  padding:0 3px;border-radius:3px}
+.codebox{border:1px solid var(--line);border-radius:6px;margin:10px 0;overflow:hidden;
+  background:var(--code-bg)}
+.codelang{font-family:Arial,Helvetica,sans-serif;font-size:11.5px;color:#fff;background:#546e7a;
+  padding:3px 10px;letter-spacing:.2px}
+.codebox pre{margin:0;padding:10px 12px;font-family:Consolas,"Courier New",monospace;
+  font-size:13.5px;line-height:1.5;overflow-x:auto;white-space:pre}
+.qnote{font-size:12.5px;color:var(--muted);font-style:italic;margin-top:7px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-top:12px}
+.opts.wide{grid-template-columns:1fr}
+.opt{border:1px solid #d6d6d6;border-radius:6px;padding:8px 11px;cursor:pointer;
+  display:flex;gap:8px;align-items:flex-start;transition:background .12s,border-color .12s}
+.opt:hover{border-color:var(--accent);background:#f3f7ff}
+.opt .L{font-weight:bold;min-width:20px}
+.answered .opt{cursor:default;pointer-events:none}
+.opt.correct{background:var(--good-bg);border-color:var(--good)}
+.opt.correct .L::after{content:" ✔";color:var(--good)}
+.opt.wrongpick{background:var(--bad-bg);border-color:var(--bad)}
+.opt.wrongpick .L::after{content:" ✘";color:var(--bad)}
+.explain{display:none;margin-top:12px;border-left:4px solid var(--accent);background:#f2f6ff;
+  padding:10px 14px;border-radius:0 6px 6px 0;font-size:14.5px}
+.explain .verdict{font-weight:bold;margin-bottom:4px}
+.explain .verdict.ok{color:var(--good)}
+.explain .verdict.no{color:var(--bad)}
+.endline{text-align:center;margin:34px 0 8px;font-weight:bold;letter-spacing:2px}
+.matrixnote{font-size:12.5px;color:var(--muted);text-align:center}
+@media (max-width:640px){
+  .opts{grid-template-columns:1fr} .page{padding:20px 14px}
+  .hrow{display:block} .hleft{white-space:normal;margin-bottom:10px}
+  #score{width:100%;margin-left:0}
+}
+@media print{
+  body{background:#fff}
+  .page{box-shadow:none;max-width:none;padding:0}
+  .controls{display:none}
+  .explain{display:none !important}
+  .opt{border-color:#999}
+  .opt.correct,.opt.wrongpick{background:#fff;border-color:#999}
+  .opt .L::after{content:"" !important}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="exam-header">
+  <div class="hrow">
+    <div class="hleft">
+      ĐẠI HỌC QUỐC GIA TP.HCM<br><b>TRƯỜNG ĐẠI HỌC BÁCH KHOA</b>
+      Khoa Khoa học &amp; Kỹ thuật Máy tính
+    </div>
+    <div class="hright">
+      <div class="t1">BÀI ÔN TẬP TRẮC NGHIỆM</div>
+      <div class="t2">Nguyên lý Ngôn ngữ Lập trình (CO3005)</div>
+      <div class="t3">22 câu từ toàn bộ ảnh trong đoạn chat · 1 điểm/câu</div>
+    </div>
+  </div>
+  <div class="mssv">MSSV: …………………………………………&nbsp;&nbsp;&nbsp;Họ và tên SV: …………………………………………</div>
+  <div class="note">Nhấp vào một phương án để trả lời; hệ thống chấm ngay sau khi chọn. Có thể xáo câu, xáo phương án và lưu tiến độ tự động trên trình duyệt.</div>
+</header>
+
+<div class="controls">
+  <label>Chủ đề:</label>
+  <select id="fTopic">
+    <option value="all">Tất cả</option>
+    <option value="T1">Tác vụ &amp; tương tranh</option>
+    <option value="T2">Ngoại lệ &amp; sự kiện</option>
+    <option value="T3">Tầm vực &amp; liên kết</option>
+    <option value="T4">Ngữ nghĩa tham số Python</option>
+    <option value="T5">Hàm bậc cao &amp; closure</option>
+    <option value="T6">Chương trình con &amp; bộ nhớ</option>
+    <option value="T7">Coroutine</option>
+    <option value="T8">Cơ chế truyền tham số</option>
+  </select>
+  <button id="btnShufQ">⇄ Xáo câu</button>
+  <button id="btnShufO">⇄ Xáo phương án</button>
+  <button id="btnReset">↺ Làm lại</button>
+  <span id="score"></span>
+</div>
+
+<main id="quiz"></main>
+
+<div class="endline">--- HẾT ---</div>
+<div class="matrixnote">Nội dung câu hỏi và lựa chọn được tổng hợp từ toàn bộ ảnh trong đoạn chat; định dạng dựa trên file HTML mẫu bạn cung cấp.</div>
+
+<script>
+"use strict";
+const QUESTIONS = [{"n": 1, "topic": "T1", "stem": "Hiện tượng tranh đoạt (race condition) giữa các tác vụ (task) được mô tả đúng nhất bằng phát biểu nào?", "boxes": [], "opts": ["Một tác vụ chiếm phần lớn thời gian bộ xử lý của các tác vụ khác.", "Bộ nhớ cạn kiệt do số tác vụ được tạo tăng không kiểm soát.", "Các tác vụ lần lượt khóa tài nguyên rồi chờ lẫn nhau theo một vòng tròn khép kín.", "Kết quả phụ thuộc thứ tự xen kẽ giữa các tác vụ cùng cập nhật dữ liệu chung."], "ans": 3, "why": "Race condition xảy ra khi nhiều tác vụ cùng truy cập hoặc cập nhật dữ liệu chung và kết quả phụ thuộc thứ tự xen kẽ thực thi.", "wide": true}, {"n": 2, "topic": "T2", "stem": "Một ngôn ngữ hỗ trợ ngoại lệ (exception) phải trả lời ba câu hỏi thiết kế nào?", "boxes": [], "opts": ["Ngoại lệ được khai báo kiểu, khởi tạo và hủy như thế nào.", "Ngoại lệ được đặt tên, đánh số và ghi nhật ký như thế nào.", "Ngoại lệ được định nghĩa, phát sinh và xử lý như thế nào.", "Ngoại lệ được biên dịch, liên kết và nạp như thế nào."], "ans": 2, "why": "Ba vấn đề cơ bản là ngoại lệ được định nghĩa, phát sinh (raise/throw) và xử lý (handle/catch) như thế nào.", "wide": true}, {"n": 3, "topic": "T3", "stem": "Theo quy tắc liên kết sâu (deep binding), môi trường phi cục bộ (nonlocal environment) của một hàm được truyền làm đối số được chốt tại thời điểm nào?", "boxes": [], "opts": ["Lúc hàm được gọi thật sự bên trong người nhận (liên kết nông, shallow binding).", "Lúc bản ghi kích hoạt của người nhận bị hủy.", "Lúc hàm được truyền đi làm đối số.", "Lúc chương trình được dịch sang mã đích."], "ans": 2, "why": "Deep binding chốt môi trường phi cục bộ tại thời điểm hàm được truyền làm đối số.", "wide": true}, {"n": 4, "topic": "T4", "stem": "Cho đoạn mã Python sau. Hai dòng in ra lần lượt là gì?", "boxes": [{"lang": "Python", "code": "def append_item(lst):\n    lst.append(4)\n\ndef rebind(lst):\n    lst = [0]\n\na = [1, 2, 3]\nappend_item(a)\nprint(a)\nrebind(a)\nprint(a)"}], "opts": ["<code>[1, 2, 3]</code> rồi <code>[1, 2, 3]</code>", "<code>[1, 2, 3, 4]</code> rồi <code>[1, 2, 3, 4]</code>", "<code>[1, 2, 3, 4]</code> rồi <code>[0]</code>", "<code>[1, 2, 3, 4]</code> rồi <code>[1, 2, 3, 4, 0]</code>"], "ans": 1, "why": "<code>append</code> thay đổi trực tiếp list mà <code>a</code> trỏ tới; còn <code>lst = [0]</code> chỉ gán lại biến cục bộ <code>lst</code>.", "wide": true}, {"n": 5, "topic": "T1", "stem": "Về quan hệ với bên đã tạo ra nó, tác vụ (task) khác lời gọi chương trình con thông thường (ordinary subprogram call) ở điểm nào?", "boxes": [], "opts": ["Bên tạo không bắt buộc đứng chờ; hai bên có thể chạy đồng thời hoặc xen kẽ.", "Tác vụ luôn bắt đầu thực thi từ giữa thân của nó thay vì từ điểm vào đầu tiên.", "Tác vụ bắt buộc phải được chạy trên một máy tính có nhiều bộ xử lý vật lý.", "Tác vụ không thể nhận được bất kỳ tham số nào tại thời điểm nó được khởi động."], "ans": 0, "why": "Bên tạo task không nhất thiết phải chờ; hai bên có thể thực thi đồng thời hoặc xen kẽ.", "wide": true}, {"n": 6, "topic": "T5", "stem": "Một hàm được gọi là hàm bậc cao (higher-order function) khi nó có đặc điểm nào?", "boxes": [], "opts": ["Được định nghĩa ở cấp cao nhất của tệp chương trình nguồn.", "Có độ phức tạp tính toán lớn hơn tuyến tính.", "Gọi lại chính nó ở ít nhất một nhánh trong thân.", "Nhận hàm khác làm đối số, hoặc trả về hàm làm kết quả."], "ans": 3, "why": "Higher-order function là hàm nhận hàm khác làm đối số hoặc trả về một hàm.", "wide": true}, {"n": 7, "topic": "T4", "stem": "Cho đoạn mã Python sau. Tham số <code>acc</code> có giá trị mặc định khả biến (mutable default argument). Hai dòng in ra lần lượt là gì?", "boxes": [{"lang": "Python", "code": "def bad_append(v, acc=[]):\n    acc.append(v)\n    return acc\n\nprint(bad_append(1))\nprint(bad_append(2))"}], "opts": ["<code>[1]</code> rồi <code>[1, 2]</code>", "<code>[1, 2]</code> rồi <code>[1, 2]</code>", "<code>[1]</code> rồi <code>[1]</code>", "<code>[1]</code> rồi <code>[2]</code>"], "ans": 0, "why": "Danh sách mặc định được tạo một lần khi định nghĩa hàm và được tái sử dụng qua các lần gọi.", "wide": true}, {"n": 8, "topic": "T2", "stem": "Về kiểu của đối tượng ngoại lệ (exception), Java và C++ khác nhau như thế nào?", "boxes": [], "opts": ["Cả hai ngôn ngữ đều buộc ngoại lệ kế thừa cùng một lớp gốc chung.", "Java buộc ngoại lệ thuộc phân cấp <code>Throwable</code>; C++ cho ném đối tượng gần như mọi kiểu.", "Cả hai ngôn ngữ đều cho ném số nguyên nhưng cấm ném đối tượng.", "Java cho ném đối tượng thuộc gần như mọi kiểu; C++ buộc mọi ngoại lệ kế thừa <code>std::exception</code>."], "ans": 1, "why": "Java yêu cầu đối tượng được ném thuộc phân cấp <code>Throwable</code>; C++ có thể ném giá trị của nhiều kiểu và không bắt buộc kế thừa <code>std::exception</code>.", "wide": true}, {"n": 9, "topic": "T6", "stem": "Bản ghi kích hoạt (activation record) của một lời gọi chương trình con (subprogram call) lưu giữ nhóm nội dung nào?", "boxes": [], "opts": ["Toàn bộ các biến toàn cục mà thân chương trình con tham chiếu.", "Bản sao phần đặc tả để người gọi đối chiếu khi truyền tham số.", "Tham số hình thức, dữ liệu cục bộ, địa chỉ trả về và các liên kết.", "Mã máy của thân chương trình con được sao chép riêng cho lời gọi."], "ans": 2, "why": "Activation record thường chứa tham số, dữ liệu cục bộ, địa chỉ trả về và các liên kết phục vụ lời gọi.", "wide": true}, {"n": 10, "topic": "T6", "stem": "Cho đoạn mã Python sau. Đoạn mã chứa bao nhiêu định nghĩa chương trình con (subprogram), và tổng số tham số hình thức (formal parameter) của tất cả các định nghĩa là bao nhiêu?", "boxes": [{"lang": "Python", "code": "def outer(a, b):\n    def helper(v):\n        return v * 2\n    return helper(a) + helper(b)"}], "opts": ["1 định nghĩa, 2 tham số.", "2 định nghĩa, 3 tham số.", "3 định nghĩa, 4 tham số.", "2 định nghĩa, 2 tham số."], "ans": 1, "why": "<code>outer(a, b)</code> có 2 tham số và <code>helper(v)</code> có 1 tham số, tổng cộng 2 định nghĩa và 3 tham số hình thức.", "wide": true}, {"n": 11, "topic": "T3", "stem": "Dưới tầm vực tĩnh (static scoping), <code>z</code> nhận giá trị nào?", "boxes": [{"lang": "Pseudocode tựa C — dùng cho Câu 11–13", "code": "int x = 1;\nint f(int y) { return x + y; }\n\nint g(int h(int b)) {\n    int x = 2;\n    return h(3) + x;\n}\n\n{\n    int x = 4;\n    int z = g(f);\n}"}], "opts": ["9", "7", "5", "6"], "ans": 3, "why": "Với static scoping, <code>x</code> trong <code>f</code> là <code>x = 1</code> toàn cục; <code>f(3)=4</code>, nên <code>z=4+2=6</code>.", "wide": false}, {"n": 12, "topic": "T3", "stem": "Dưới tầm vực động (dynamic scoping) kết hợp liên kết sâu (deep binding), <code>z</code> nhận giá trị nào?", "boxes": [{"lang": "Pseudocode tựa C — dùng cho Câu 11–13", "code": "int x = 1;\nint f(int y) { return x + y; }\n\nint g(int h(int b)) {\n    int x = 2;\n    return h(3) + x;\n}\n\n{\n    int x = 4;\n    int z = g(f);\n}"}], "opts": ["9", "7", "6", "5"], "ans": 0, "why": "Deep binding dùng môi trường lúc <code>f</code> được truyền cho <code>g</code>, khi đó <code>x=4</code>; <code>f(3)=7</code>, nên <code>z=9</code>.", "wide": false}, {"n": 13, "topic": "T3", "stem": "Dưới tầm vực động (dynamic scoping) kết hợp liên kết nông (shallow binding), <code>z</code> nhận giá trị nào?", "boxes": [{"lang": "Pseudocode tựa C — dùng cho Câu 11–13", "code": "int x = 1;\nint f(int y) { return x + y; }\n\nint g(int h(int b)) {\n    int x = 2;\n    return h(3) + x;\n}\n\n{\n    int x = 4;\n    int z = g(f);\n}"}], "opts": ["5", "9", "6", "7"], "ans": 3, "why": "Shallow binding dùng môi trường lúc <code>f</code> thực sự được gọi trong <code>g</code>, nên <code>x=2</code>; <code>f(3)=5</code>, và <code>z=7</code>.", "wide": false}, {"n": 14, "topic": "T2", "stem": "Trong Python, mọi ngoại lệ phải thuộc phân cấp lớp ngoại lệ cơ sở (base exception). Câu lệnh <code>raise 42</code> dẫn đến kết quả nào?", "boxes": [], "opts": ["Số 42 được in thẳng ra màn hình như một thông điệp lỗi.", "Ném <code>TypeError</code> vì đối tượng ném phải kế thừa <code>BaseException</code>.", "Câu lệnh bị bỏ qua vì 42 không phải một lớp ngoại lệ.", "Ngoại lệ mang giá trị 42 được ném và bắt được bằng <code>except</code>."], "ans": 1, "why": "Python yêu cầu đối tượng được <code>raise</code> là lớp/đối tượng ngoại lệ kế thừa <code>BaseException</code>; số nguyên 42 không hợp lệ.", "wide": true}, {"n": 15, "topic": "T7", "stem": "Đồng chương trình (coroutine) A trao điều khiển cho B bằng thao tác tiếp tục thực thi (resume); sau đó B thực hiện cùng thao tác đó để tiếp tục A. Việc thực thi của A tiếp tục từ vị trí nào?", "boxes": [], "opts": ["Từ điểm mà B vừa dừng lại trong thân của B.", "Từ câu lệnh đầu tiên trong thân của A.", "Từ ngay sau điểm mà A đã trao điều khiển đi.", "Từ điểm vào của chương trình chính."], "ans": 2, "why": "Coroutine giữ trạng thái thực thi; khi được resume, A tiếp tục từ ngay sau điểm đã trao điều khiển đi.", "wide": true}, {"n": 16, "topic": "T8", "stem": "Trong hiện thực truyền theo tên (call-by-name), mỗi tham số được trao một khối trì hoãn (thunk). Khối trì hoãn gồm những thành phần nào?", "boxes": [], "opts": ["Con trỏ trỏ đến thân của chương trình con người gọi.", "Địa chỉ ô nhớ nơi giá trị của tham số thực đang được lưu giữ.", "Bản sao giá trị của tham số thực tại thời điểm gọi.", "Biểu thức chưa lượng giá kèm môi trường dùng để lượng giá nó."], "ans": 3, "why": "Thunk chứa biểu thức chưa lượng giá cùng môi trường cần thiết để lượng giá biểu thức đó khi tham số được sử dụng.", "wide": true}, {"n": 17, "topic": "T2", "stem": "Điểm khác biệt bản chất giữa bộ xử lý ngoại lệ (exception handler) và bộ xử lý sự kiện (event handler) là gì?", "boxes": [], "opts": ["Ngoại lệ gắn với điều kiện bất thường gián đoạn dòng lệnh; sự kiện do bộ điều phối gửi tới.", "Bộ xử lý ngoại lệ cũng do vòng lặp sự kiện điều phối như một callback.", "Bộ xử lý sự kiện phải được gọi tường minh tại từng vị trí phát sinh sự kiện trong mã ứng dụng.", "Ngoại lệ do phần cứng phát sinh, còn sự kiện do phần mềm phát sinh."], "ans": 0, "why": "Exception gắn với tình huống bất thường làm thay đổi luồng thực thi; event thường được hệ thống hoặc event loop phân phối đến handler.", "wide": true}, {"n": 18, "topic": "T6", "stem": "Một ngôn ngữ cấp phát tĩnh (static allocation) dữ liệu cục bộ (local data): mỗi chương trình con (subprogram) chỉ có đúng một vùng dữ liệu trong suốt lần chạy. Hệ quả trực tiếp của thiết kế này là gì?", "boxes": [], "opts": ["Các lần gọi lồng nhau không có trạng thái riêng nên không hỗ trợ đệ quy tổng quát (general recursion).", "Mỗi lời gọi phải tự sao chép lại toàn bộ đoạn mã của thân trước khi bắt đầu thực thi.", "Địa chỉ trả về không thể được lưu giữ giữa hai lời gọi liên tiếp của chương trình con.", "Tham số của chương trình con chỉ còn có thể được truyền đi theo cơ chế tham chiếu."], "ans": 0, "why": "Static allocation không tạo vùng dữ liệu riêng cho từng lần kích hoạt, nên không hỗ trợ general recursion theo cách thông thường.", "wide": true}, {"n": 19, "topic": "T5", "stem": "Biểu thức <code>[f(10) for f in make_adders()]</code> cho kết quả nào?", "boxes": [{"lang": "Python — dùng cho Câu 19–20", "code": "def make_adders():\n    return [lambda v: v + i for i in range(3)]\n\ndef make_fixed():\n    return [lambda v, i=i: v + i for i in range(3)]"}], "opts": ["<code>[11, 12, 13]</code>", "<code>[10, 10, 10]</code>", "<code>[12, 12, 12]</code>", "<code>[10, 11, 12]</code>"], "ans": 2, "why": "Các lambda cùng tham chiếu biến <code>i</code>; do late binding, khi được gọi thì <code>i=2</code>, nên cả ba kết quả đều là 12.", "wide": false}, {"n": 20, "topic": "T5", "stem": "Biểu thức <code>[f(10) for f in make_fixed()]</code> cho kết quả nào?", "boxes": [{"lang": "Python — dùng cho Câu 19–20", "code": "def make_adders():\n    return [lambda v: v + i for i in range(3)]\n\ndef make_fixed():\n    return [lambda v, i=i: v + i for i in range(3)]"}], "opts": ["<code>[10, 11, 12]</code>", "<code>[12, 12, 12]</code>", "<code>[10, 10, 10]</code>", "<code>[11, 12, 13]</code>"], "ans": 0, "why": "Tham số mặc định <code>i=i</code> chốt giá trị hiện tại của <code>i</code> khi mỗi lambda được tạo: 0, 1, 2.", "wide": false}, {"n": 21, "topic": "T8", "stem": "Nếu cả hai tham số được truyền theo tham chiếu (pass-by-reference), chương trình in ra giá trị nào?", "boxes": [{"lang": "Pseudocode — dùng cho Câu 21–22", "code": "void inc_both(x, y) {\n    x = x + 1;\n    y = y + 10;\n}\n\nint a = 5;\ninc_both(a, a);\nprint(a);"}], "opts": ["15", "6", "5", "16"], "ans": 3, "why": "<code>x</code> và <code>y</code> cùng là bí danh của <code>a</code>: sau hai phép cập nhật, <code>a=16</code>.", "wide": false}, {"n": 22, "topic": "T8", "stem": "Nếu cả hai tham số được truyền theo trị-kết quả (pass-by-value-result), chương trình in ra giá trị nào? Biết rằng giá trị được chép ngược về theo thứ tự <code>x</code> trước, <code>y</code> sau.", "boxes": [{"lang": "Pseudocode — dùng cho Câu 21–22", "code": "void inc_both(x, y) {\n    x = x + 1;\n    y = y + 10;\n}\n\nint a = 5;\ninc_both(a, a);\nprint(a);"}], "opts": ["16", "15", "6", "5"], "ans": 1, "why": "Khi vào hàm: <code>x=5</code>, <code>y=5</code>; sau xử lý: <code>x=6</code>, <code>y=15</code>. Copy-out <code>x</code> trước rồi <code>y</code> sau nên giá trị cuối của <code>a</code> là 15.", "wide": false}];
+const TOPIC_NAMES = {"T1": "Tác vụ & tương tranh", "T2": "Ngoại lệ & sự kiện", "T3": "Tầm vực & liên kết", "T4": "Ngữ nghĩa tham số Python", "T5": "Hàm bậc cao & closure", "T6": "Chương trình con & bộ nhớ", "T7": "Coroutine", "T8": "Cơ chế truyền tham số"};
+const KEY = "co3005_22q_review_v1";
+
+let state = {answers:{}, qOrder:null, oOrder:{}, fTopic:"all"};
+try{
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if(saved && typeof saved === "object") state = Object.assign(state, saved);
+}catch(e){}
+
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function shuffled(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function qById(id){ return QUESTIONS.find(q => q.n === id); }
+function visibleQuestions(){
+  let qs = QUESTIONS.slice();
+  if(state.qOrder && state.qOrder.length === qs.length){
+    qs = state.qOrder.map(qById).filter(Boolean);
+  }
+  return qs.filter(q => state.fTopic === "all" || q.topic === state.fTopic);
+}
+function optPerm(q){
+  const p = state.oOrder[q.n];
+  return (p && p.length === q.opts.length) ? p : q.opts.map((_,i)=>i);
+}
+function render(){
+  const root = document.getElementById("quiz");
+  const qs = visibleQuestions();
+  let html = "";
+  for(const q of qs){
+    const perm = optPerm(q);
+    const done = Object.prototype.hasOwnProperty.call(state.answers, q.n);
+    const chosen = done ? state.answers[q.n] : -1;
+    let boxes = "";
+    for(const b of q.boxes){
+      boxes += '<div class="codebox"><div class="codelang">' + esc(b.lang) +
+               '</div><pre>' + esc(b.code) + '</pre></div>';
+    }
+    let opts = "";
+    perm.forEach((oi, pos) => {
+      const letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[pos];
+      let cls = "opt";
+      if(done && oi === q.ans) cls += " correct";
+      if(done && oi === chosen && oi !== q.ans) cls += " wrongpick";
+      opts += '<div class="' + cls + '" data-q="' + q.n + '" data-oi="' + oi + '">' +
+              '<span class="L">' + letter + '.</span><span>' + q.opts[oi] + '</span></div>';
+    });
+    let explain = '<div class="explain"></div>';
+    if(done){
+      const okLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[perm.indexOf(q.ans)];
+      const ok = chosen === q.ans;
+      explain = '<div class="explain" style="display:block">' +
+        '<div class="verdict ' + (ok ? "ok" : "no") + '">' +
+        (ok ? "✔ Chính xác!" : "✘ Chưa đúng.") + " Đáp án: " + okLetter + ".</div>" +
+        q.why + "</div>";
+    }
+    const note = q.note ? '<div class="qnote">' + q.note + '</div>' : '';
+    html += '<article class="qcard' + (done ? " answered" : "") + '" id="q' + q.n + '">' +
+      '<div class="qhead"><span class="qtitle">Câu ' + q.n + '. (1 điểm)</span>' +
+      '<span class="badges"><span class="badge">' + TOPIC_NAMES[q.topic] + '</span></span></div>' +
+      '<div class="stem">' + q.stem + "</div>" + boxes + note +
+      '<div class="opts' + (q.wide ? " wide" : "") + '">' + opts + "</div>" + explain +
+      "</article>";
+  }
+  if(qs.length === 0){
+    html = '<p style="color:#666;font-style:italic">Không có câu nào khớp bộ lọc hiện tại.</p>';
+  }
+  root.innerHTML = html;
+  updateScore();
+}
+function updateScore(){
+  const total = QUESTIONS.length;
+  let answered = 0, right = 0;
+  for(const q of QUESTIONS){
+    if(Object.prototype.hasOwnProperty.call(state.answers, q.n)){
+      answered++;
+      if(state.answers[q.n] === q.ans) right++;
+    }
+  }
+  const el = document.getElementById("score");
+  el.textContent = "Đã làm " + answered + "/" + total + " · Đúng " + right +
+    (answered ? " (" + Math.round(100 * right / answered) + "%)" : "");
+}
+
+document.getElementById("quiz").addEventListener("click", function(ev){
+  const opt = ev.target.closest(".opt");
+  if(!opt) return;
+  const qn = parseInt(opt.dataset.q, 10);
+  if(Object.prototype.hasOwnProperty.call(state.answers, qn)) return;
+  state.answers[qn] = parseInt(opt.dataset.oi, 10);
+  save();
+  render();
+  const card = document.getElementById("q" + qn);
+  if(card) card.scrollIntoView({block:"nearest"});
+});
+document.getElementById("fTopic").addEventListener("change", function(){
+  state.fTopic = this.value; save(); render();
+});
+document.getElementById("btnShufQ").addEventListener("click", function(){
+  state.qOrder = shuffled(QUESTIONS.map(q => q.n)); save(); render();
+});
+document.getElementById("btnShufO").addEventListener("click", function(){
+  for(const q of QUESTIONS) state.oOrder[q.n] = shuffled(q.opts.map((_,i)=>i));
+  save(); render();
+});
+document.getElementById("btnReset").addEventListener("click", function(){
+  if(!confirm("Xóa toàn bộ bài làm và làm lại từ đầu?")) return;
+  state.answers = {}; state.qOrder = null; state.oOrder = {};
+  save(); render();
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+document.getElementById("fTopic").value = state.fTopic;
+render();
+</script>
+</div>
+</body>
+</html>

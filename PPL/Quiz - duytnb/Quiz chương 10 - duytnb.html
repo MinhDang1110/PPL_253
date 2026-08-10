@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CO3005 — Ôn tập JVM & Jasmin</title>
+<style>
+:root{
+  --ink:#1a1a1a; --muted:#666; --line:#b8b8b8; --accent:#0d47a1;
+  --good:#1b5e20; --good-bg:#e8f5e9; --bad:#b71c1c; --bad-bg:#ffebee;
+  --box:#fafafa; --code-bg:#f5f6f8; --warn:#8a5a00; --warn-bg:#fff8e1;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#e9e9e9;color:var(--ink);
+  font-family:"Times New Roman",Times,serif;font-size:16px;line-height:1.45}
+.page{max-width:900px;margin:0 auto;background:#fff;padding:34px 46px 60px;
+  box-shadow:0 0 12px rgba(0,0,0,.18);min-height:100vh}
+.exam-header{border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px}
+.hrow{display:flex;justify-content:space-between;gap:18px}
+.hleft{font-size:13px;text-align:center;line-height:1.35;white-space:nowrap}
+.hleft b{display:block}
+.hright{text-align:center;flex:1}
+.hright .t1{font-weight:bold;font-size:19px;letter-spacing:.4px}
+.hright .t2{font-size:15px;margin-top:2px}
+.hright .t3{font-size:13.5px;margin-top:2px;color:var(--muted)}
+.mssv{font-size:13.5px;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.note{font-size:13px;color:var(--muted);font-style:italic;margin-top:6px}
+.source-warning{margin:12px 0 2px;border:1px solid #e0b04c;background:var(--warn-bg);
+  color:var(--warn);padding:9px 12px;border-radius:6px;font-size:13.5px}
+.controls{position:sticky;top:0;z-index:9;background:#fff;border:1px solid var(--line);
+  border-radius:8px;margin:14px 0 20px;padding:10px 12px;display:flex;flex-wrap:wrap;
+  gap:8px;align-items:center;font-family:Arial,Helvetica,sans-serif;font-size:13px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.controls label{color:var(--muted)}
+.controls select,.controls button{font:inherit;padding:5px 9px;border:1px solid var(--line);
+  border-radius:6px;background:#fff;cursor:pointer}
+.controls button:hover,.controls select:hover{border-color:var(--accent);color:var(--accent)}
+#score{margin-left:auto;font-weight:bold;color:var(--accent)}
+.qcard{border-bottom:1px solid #ddd;padding:16px 0 20px;scroll-margin-top:80px}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.qtitle{font-weight:bold}
+.badges{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#fff;white-space:nowrap}
+.badge{display:inline-block;background:#607d8b;border-radius:10px;padding:2px 8px;margin-left:4px}
+.stem{margin-top:6px}
+code{font-family:Consolas,"Courier New",monospace;font-size:.92em;background:var(--code-bg);
+  padding:0 3px;border-radius:3px}
+.codebox{border:1px solid var(--line);border-radius:6px;margin:10px 0;overflow:hidden;
+  background:var(--code-bg)}
+.codelang{font-family:Arial,Helvetica,sans-serif;font-size:11.5px;color:#fff;background:#546e7a;
+  padding:3px 10px;letter-spacing:.2px}
+.codebox pre{margin:0;padding:10px 12px;font-family:Consolas,"Courier New",monospace;
+  font-size:13.5px;line-height:1.5;overflow-x:auto;white-space:pre}
+.qnote{font-size:12.5px;color:var(--muted);font-style:italic;margin-top:7px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-top:12px}
+.opts.wide{grid-template-columns:1fr}
+.opt{border:1px solid #d6d6d6;border-radius:6px;padding:8px 11px;cursor:pointer;
+  display:flex;gap:8px;align-items:flex-start;transition:background .12s,border-color .12s}
+.opt:hover{border-color:var(--accent);background:#f3f7ff}
+.opt .L{font-weight:bold;min-width:20px}
+.answered .opt{cursor:default;pointer-events:none}
+.opt.correct{background:var(--good-bg);border-color:var(--good)}
+.opt.correct .L::after{content:" ✔";color:var(--good)}
+.opt.wrongpick{background:var(--bad-bg);border-color:var(--bad)}
+.opt.wrongpick .L::after{content:" ✘";color:var(--bad)}
+.explain{display:none;margin-top:12px;border-left:4px solid var(--accent);background:#f2f6ff;
+  padding:10px 14px;border-radius:0 6px 6px 0;font-size:14.5px}
+.explain .verdict{font-weight:bold;margin-bottom:4px}
+.explain .verdict.ok{color:var(--good)}
+.explain .verdict.no{color:var(--bad)}
+.endline{text-align:center;margin:34px 0 8px;font-weight:bold;letter-spacing:2px}
+.matrixnote{font-size:12.5px;color:var(--muted);text-align:center}
+@media (max-width:640px){
+  .opts{grid-template-columns:1fr} .page{padding:20px 14px}
+  .hrow{display:block} .hleft{white-space:normal;margin-bottom:10px}
+  #score{width:100%;margin-left:0}
+}
+@media print{
+  body{background:#fff}
+  .page{box-shadow:none;max-width:none;padding:0}
+  .controls{display:none}
+  .explain{display:none !important}
+  .opt{border-color:#999}
+  .opt.correct,.opt.wrongpick{background:#fff;border-color:#999}
+  .opt .L::after{content:"" !important}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="exam-header">
+  <div class="hrow">
+    <div class="hleft">
+      ĐẠI HỌC QUỐC GIA TP.HCM<br><b>TRƯỜNG ĐẠI HỌC BÁCH KHOA</b>
+      Khoa Khoa học &amp; Kỹ thuật Máy tính
+    </div>
+    <div class="hright">
+      <div class="t1">BÀI ÔN TẬP TRẮC NGHIỆM</div>
+      <div class="t2">JVM · Jasmin · Bytecode · Bộ mô tả kiểu · Lệnh điều khiển</div>
+      <div class="t3">26 câu từ ảnh đã cung cấp · 1 điểm/câu</div>
+    </div>
+  </div>
+  <div class="mssv">MSSV: …………………………………………&nbsp;&nbsp;&nbsp;Họ và tên SV: …………………………………………</div>
+  <div class="note">Nhấp vào một phương án để trả lời; hệ thống chấm ngay sau khi chọn. Có thể lọc theo chủ đề, xáo câu, xáo phương án và lưu tiến độ tự động trên trình duyệt.</div>
+</header>
+
+<div class="controls">
+  <label>Chủ đề:</label>
+  <select id="fTopic">
+      <option value="all">Tất cả</option>
+      <option value="T1">Máy ngăn xếp và máy thanh ghi</option>
+      <option value="T2">Bộ mô tả kiểu JVM</option>
+      <option value="T3">Lệnh điều kiện</option>
+      <option value="T4">Jasmin và thực thi JVM</option>
+      <option value="T5">Nạp hằng số</option>
+      <option value="T6">Bộ nhớ JVM</option>
+      <option value="T7">Gọi phương thức và operand stack</option>
+      <option value="T8">Local variable slots</option>
+      <option value="T9">Bytecode và JIT</option>
+      <option value="T10">Bộ mô tả phương thức</option>
+      <option value="T11">Khai báo lớp Jasmin</option>
+      <option value="T12">Lệnh chuyển điều khiển</option>
+    </select>
+  <button id="btnShufQ">⇄ Xáo câu</button>
+  <button id="btnShufO">⇄ Xáo phương án</button>
+  <button id="btnReset">↺ Làm lại</button>
+  <span id="score"></span>
+</div>
+
+<main id="quiz"></main>
+
+<div class="endline">--- HẾT ---</div>
+<div class="matrixnote">Đề gồm 26 câu về JVM, Jasmin và bytecode; định dạng tương tác dựa trên file HTML mẫu.</div>
+
+<script>
+"use strict";
+const QUESTIONS = [{"n": 1, "topic": "T1", "stem": "Điểm khác biệt cơ bản giữa hai đoạn mã là:", "boxes": [{"lang": "Biểu thức và hai mô hình máy", "code": "a = b + c * 60\n\n; stack machine (JVM)\niload_1\niload_2\nbipush 60\nimul\niadd\nistore_0\n\n; hypothetical register machine\nLOAD R1, b\nLOAD R2, c\nMUL  R2, R2, 60\nADD  R1, R1, R2\nSTORE a, R1"}], "opts": ["Mã ngăn xếp chỉ dùng được cho biểu thức số nguyên còn mã thanh ghi thì dùng cho mọi kiểu số", "Mã ngăn xếp tính từ trái sang phải còn mã thanh ghi thì luôn tính từ phải sang trái ngược lại", "Mã ngăn xếp phải khai báo trước số lượng toán hạng còn mã thanh ghi thì không cần khai báo", "Mã ngăn xếp lấy toán hạng ngầm định ở đỉnh ngăn xếp; mã thanh ghi nêu tường minh thanh ghi nguồn và đích"], "ans": 3, "why": "Máy ngăn xếp dùng các toán hạng ngầm định trên đỉnh stack; máy thanh ghi ghi rõ các thanh ghi nguồn và đích.", "wide": true}, {"n": 2, "topic": "T1", "stem": "Một đánh đổi của mô hình máy ngăn xếp so với mô hình máy thanh ghi là:", "boxes": [], "opts": ["Bộ dịch phải giải thêm bài toán cấp phát thanh ghi vốn rất khó và tốn thời gian dịch", "Không thể hiện thực được đệ quy vì mọi lời gọi đều dùng chung một ngăn xếp toán hạng duy nhất", "Không biểu diễn được các biểu thức lồng nhau sâu vì ngăn xếp toán hạng bị giới hạn độ sâu", "Thường cần nhiều lệnh hơn để biểu diễn cùng một phép tính"], "ans": 3, "why": "Máy ngăn xếp thường cần nhiều lệnh nạp/đẩy/lấy hơn để thực hiện cùng một phép tính so với máy thanh ghi.", "wide": true}, {"n": 3, "topic": "T2", "stem": "Bộ mô tả của <code>String[]</code> là:", "boxes": [], "opts": ["<code>[java/lang/String</code>", "<code>Ljava/lang/String;[</code>", "<code>[Ljava.lang.String;</code>", "<code>[Ljava/lang/String;</code>"], "ans": 3, "why": "Mỗi chiều mảng thêm một dấu <code>[</code>; kiểu tham chiếu lớp có dạng <code>L...;</code>.", "wide": false}, {"n": 4, "topic": "T2", "stem": "Bộ mô tả của <code>float[][]</code> là:", "boxes": [], "opts": ["<code>F[[</code>", "<code>[F[F</code>", "<code>[2F</code>", "<code>[[F</code>"], "ans": 3, "why": "<code>float</code> có descriptor <code>F</code>; mảng hai chiều thêm hai dấu <code>[</code> phía trước.", "wide": false}, {"n": 5, "topic": "T2", "stem": "Vì sao <code>[I</code> không có dấu chấm phẩy còn <code>[Ljava/lang/String;</code> lại có?", "boxes": [], "opts": ["Vì đó chỉ là một quy ước tùy tiện của Jasmin chứ không hề mang một ý nghĩa cú pháp nào cả", "Vì dấu chấm phẩy dùng để phân tách các chiều của mảng nên mảng một chiều thì không cần tới", "Vì mảng số nguyên có kích thước cố định còn mảng chuỗi thì có kích thước thay đổi lúc chạy", "Vì dấu <code>;</code> chỉ dùng để kết thúc tên lớp; bộ mô tả kiểu nguyên thủy chỉ là một ký tự nên không cần"], "ans": 3, "why": "Descriptor của kiểu nguyên thủy chỉ là một ký tự như <code>I</code>; descriptor lớp phải kết thúc tên lớp bằng <code>;</code>.", "wide": true}, {"n": 6, "topic": "T3", "stem": "Trong <code>if (a &gt; b) c = 1; else c = 2;</code>, vì sao đoạn bytecode tương ứng lại nhảy khi <code>a &lt;= b</code>?", "boxes": [], "opts": ["Vì JVM quy định mọi cấu trúc <code>if-else</code> phải bố trí nhánh <code>else</code> tại đích của lệnh nhảy", "Vì nhãn đích của lệnh nhảy là nhánh không thỏa điều kiện, nên điều kiện phải bị đảo", "Vì thứ tự hai toán hạng <code>a</code> và <code>b</code> bị đảo ngược khi chúng được đẩy lên ngăn xếp toán hạng", "Vì JVM không có lệnh so sánh lớn hơn nên bộ dịch buộc phải thay bằng phép so sánh nhỏ hơn hoặc bằng"], "ans": 1, "why": "Bytecode thường nhảy đến nhánh <code>else</code> khi điều kiện gốc sai, nên phép kiểm tra được đảo thành <code>a <= b</code>.", "wide": true}, {"n": 7, "topic": "T4", "stem": "Trình tự lệnh đúng để hợp dịch <code>Vidu.j</code> và chạy lớp là:", "boxes": [], "opts": ["<code>javac Vidu.j</code>, sau đó <code>java Vidu.class</code>", "<code>java -jar jasmin.jar Vidu.j</code>, sau đó <code>java Vidu</code>", "<code>java Vidu</code>, sau đó <code>java -jar jasmin.jar Vidu.j</code>", "<code>java -jar jasmin.jar Vidu.j</code>, sau đó <code>java Vidu.class</code>"], "ans": 1, "why": "Jasmin tạo <code>Vidu.class</code> từ <code>Vidu.j</code>; JVM chạy lớp bằng tên lớp <code>Vidu</code>, không kèm đuôi <code>.class</code>.", "wide": true}, {"n": 8, "topic": "T4", "stem": "Nếu xóa toàn bộ chỉ thị <code>.line</code> nhưng giữ nguyên phần còn lại của tệp Jasmin, điều gì xảy ra?", "boxes": [], "opts": ["Lớp chạy nhưng cho kết quả sai do thiếu thông tin dòng", "Tệp không hợp dịch được vì thiếu một chỉ thị bắt buộc", "JVM từ chối nạp lớp vì bảng phương thức không hợp lệ", "Chương trình vẫn chạy đúng nhưng mất thông tin ánh xạ dòng nguồn phục vụ gỡ lỗi"], "ans": 3, "why": "<code>.line</code> chủ yếu phục vụ thông tin gỡ lỗi/ánh xạ dòng nguồn, không quyết định ngữ nghĩa thực thi của chương trình.", "wide": true}, {"n": 9, "topic": "T5", "stem": "Trong các lệnh sau, lệnh nào nạp trực tiếp hằng số nguyên <code>1000</code> bằng một toán hạng tức thời 16 bit có dấu?", "boxes": [], "opts": ["<code>bipush</code>", "<code>sipush</code>", "<code>ldc2_w</code>", "<code>ldc</code>"], "ans": 1, "why": "<code>sipush</code> dùng toán hạng tức thời 16-bit có dấu, phù hợp với giá trị 1000.", "wide": false}, {"n": 10, "topic": "T6", "stem": "Một đối tượng được tạo bằng <code>new</code> bên trong một phương thức nhưng vẫn được tham chiếu sau khi phương thức kết thúc. Đối tượng đó được cấp phát ở vùng nào?", "boxes": [], "opts": ["Ngăn xếp JVM", "Vùng phương thức", "Thanh ghi <code>pc</code>", "Heap"], "ans": 3, "why": "Đối tượng tạo bởi <code>new</code> được cấp phát trên heap; biến tham chiếu cục bộ có thể nằm trong local variables của frame.", "wide": false}, {"n": 11, "topic": "T7", "stem": "Cho lời gọi <code>x.foo(a + 1, b * 2)</code>, trong đó <code>a</code>, <code>b</code> là <code>int</code>, <code>x</code> là đối tượng lớp <code>VD</code>, và dùng <code>invokevirtual VD/foo(II)I</code>. Tính từ đỉnh ngăn xếp xuống, vị trí đầu tiên là:", "boxes": [], "opts": ["Hằng <code>2</code>", "Kết quả của <code>b * 2</code>", "Tham chiếu đối tượng <code>x</code>", "Kết quả của <code>a + 1</code>"], "ans": 1, "why": "Trước <code>invokevirtual</code>, stack có thứ tự từ đáy lên: objectref <code>x</code>, đối số 1 <code>a+1</code>, đối số 2 <code>b*2</code>.", "wide": true}, {"n": 12, "topic": "T7", "stem": "Với cùng lời gọi trên, vị trí kế tiếp (ngay dưới đỉnh) là:", "boxes": [], "opts": ["Kết quả của <code>a + 1</code>", "Biến <code>b</code>", "Kết quả của <code>b * 2</code>", "Tham chiếu đối tượng <code>x</code>"], "ans": 0, "why": "Ngay dưới kết quả <code>b*2</code> là kết quả đối số thứ nhất <code>a+1</code>.", "wide": false}, {"n": 13, "topic": "T7", "stem": "Với cùng lời gọi trên, vị trí dưới cùng (đáy của cụm toán hạng) là:", "boxes": [], "opts": ["Kết quả của <code>b * 2</code>", "Tham chiếu đối tượng <code>x</code>", "Hằng <code>1</code>", "Kết quả của <code>a + 1</code>"], "ans": 1, "why": "Đối với <code>invokevirtual</code>, object reference nằm dưới các đối số trên operand stack.", "wide": false}, {"n": 14, "topic": "T8", "stem": "Với <code>int foo(long x, int y)</code> (phương thức thực thể), chỉ số của tham số <code>y</code> là:", "boxes": [], "opts": ["<code>1</code>", "<code>2</code>", "<code>3</code>", "<code>0</code>"], "ans": 2, "why": "Slot 0 dành cho <code>this</code>; <code>long x</code> chiếm slot 1–2; vì vậy <code>y</code> ở slot 3.", "wide": false}, {"n": 15, "topic": "T8", "stem": "Với <code>int foo(long x, int y, int z, float t)</code> (phương thức thực thể), chỉ số của <code>z</code> và <code>t</code> lần lượt là:", "boxes": [], "opts": ["<code>5</code> và <code>6</code>", "<code>2</code> và <code>3</code>", "<code>3</code> và <code>4</code>", "<code>4</code> và <code>5</code>"], "ans": 3, "why": "Slot: <code>this=0</code>, <code>x=1–2</code>, <code>y=3</code>, <code>z=4</code>, <code>t=5</code>.", "wide": false}, {"n": 16, "topic": "T8", "stem": "Với phương thức tĩnh <code>int foo(long x, int y, int z, float t)</code>, chỉ số của tham số <code>z</code> là:", "boxes": [], "opts": ["<code>5</code>", "<code>2</code>", "<code>4</code>", "<code>3</code>"], "ans": 3, "why": "Phương thức static không có <code>this</code>: <code>x=0–1</code>, <code>y=2</code>, <code>z=3</code>, <code>t=4</code>.", "wide": false}, {"n": 17, "topic": "T9", "stem": "Lợi ích cốt lõi của việc sinh mã byte cho một máy ảo thay vì mã máy thật là:", "boxes": [], "opts": ["Kích thước tệp sinh ra nhỏ hơn nhiều so với mã máy nên tiết kiệm được bộ nhớ khi lưu trữ", "Khả chuyển — cùng một tệp mã byte chạy được trên mọi nền tảng có máy ảo tương ứng", "Tốc độ thực thi cao hơn vì mã byte được vi xử lý hiểu và chạy trực tiếp không qua tầng nào", "Không cần khâu kiểm tra kiểu nữa vì máy ảo sẽ tự kiểm tra mọi lỗi kiểu trong lúc chạy"], "ans": 1, "why": "Bytecode độc lập nền tảng; chỉ cần có JVM tương ứng trên hệ thống đích.", "wide": true}, {"n": 18, "topic": "T9", "stem": "Phát biểu nào đúng về <code>boolean</code>, <code>byte</code>, <code>char</code> và <code>short</code> trong JVM?", "boxes": [], "opts": ["Chúng không thể xuất hiện trong bộ mô tả phương thức vì JVM quy chúng hết về kiểu <code>int</code> khi biên dịch", "Chúng chỉ là kiểu <code>int</code> mang tên khác, không có bộ mô tả riêng và cũng không có lệnh mảng riêng", "Trong tính toán và biến cục bộ chúng dùng lệnh của <code>int</code>, nhưng vẫn có bộ mô tả riêng và một số lệnh mảng riêng", "Chúng là các kiểu hoàn toàn tách biệt với <code>int</code>, có đủ tập lệnh số học riêng cho từng kiểu"], "ans": 2, "why": "Các kiểu này thường dùng nhóm lệnh int trong tính toán/local variable, nhưng descriptor và một số array instruction vẫn riêng.", "wide": true}, {"n": 19, "topic": "T9", "stem": "Biên dịch tức thời (JIT) giúp cải thiện hiệu năng thực thi của JVM bằng cách nào?", "boxes": [], "opts": ["Bỏ qua bước kiểm chứng mã byte trong lúc nạp lớp để chương trình khởi động nhanh hơn", "Dịch các phương thức hoặc đoạn mã được chạy nhiều lần sang mã máy ngay trong lúc chạy", "Dịch toàn bộ mã byte trở lại mã nguồn Java rồi mới thực thi tuần tự từng dòng nguồn", "Nén mã byte lại để giảm kích thước tệp class và rút ngắn thời gian nạp lớp vào bộ nhớ"], "ans": 1, "why": "JIT biên dịch các đoạn mã nóng (hot code) sang mã máy để các lần chạy sau nhanh hơn.", "wide": true}, {"n": 20, "topic": "T10", "stem": "<code>int foo(VD x[], boolean y[], float m)</code> có bộ mô tả phương thức:", "boxes": [], "opts": ["<code>([VD;[ZF)I</code>", "<code>([LVD;[FZ)I</code>", "<code>([LVD;[ZF)I</code>", "<code>([LVD;Z[F)I</code>"], "ans": 2, "why": "Mảng đối tượng <code>VD[]</code> là <code>[LVD;</code>, <code>boolean[]</code> là <code>[Z</code>, <code>float</code> là <code>F</code>, trả về <code>int</code> là <code>I</code>.", "wide": false}, {"n": 21, "topic": "T10", "stem": "<code>void main(String[] args)</code> có bộ mô tả phương thức:", "boxes": [], "opts": ["<code>(Ljava/lang/String;)V</code>", "<code>([Ljava/lang/String)V</code>", "<code>([Ljava/lang/String;)V</code>", "<code>(String[])V</code>"], "ans": 2, "why": "<code>String[]</code> có descriptor <code>[Ljava/lang/String;</code>; kiểu trả về <code>void</code> là <code>V</code>.", "wide": false}, {"n": 22, "topic": "T10", "stem": "<code>char foo(float a, Object b)</code> có bộ mô tả phương thức:", "boxes": [], "opts": ["<code>(F,Ljava/lang/Object;)C</code>", "<code>(FObject)C</code>", "<code>(FLjava/lang/Object;)I</code>", "<code>(FLjava/lang/Object;)C</code>"], "ans": 3, "why": "Các descriptor tham số nối liền nhau không có dấu phẩy: <code>F</code> và <code>Ljava/lang/Object;</code>; trả về <code>char</code> là <code>C</code>.", "wide": false}, {"n": 23, "topic": "T11", "stem": "Trong tệp Jasmin, dòng <code>.super java/lang/Object</code> cho biết điều gì về lớp hiện tại?", "boxes": [], "opts": ["Lớp hiện tại nạp <code>java/lang/Object</code> vào vùng phương thức khi khởi động", "Lớp hiện tại kế thừa (là lớp con) của <code>java/lang/Object</code>", "Lớp hiện tại chứa một trường tĩnh tên là <code>Object</code>", "Lớp hiện tại gọi hàm dựng của <code>java/lang/Object</code> trong phương thức <code>main</code>"], "ans": 1, "why": "Chỉ thị <code>.super</code> khai báo lớp cha trực tiếp của lớp hiện tại.", "wide": true}, {"n": 24, "topic": "T12", "stem": "Sau lệnh <code>if_icmplt</code>, số phần tử trên ngăn xếp:", "boxes": [], "opts": ["Giảm đi <code>3</code>", "Giảm đi <code>1</code>", "Không đổi", "Giảm đi <code>2</code>"], "ans": 3, "why": "<code>if_icmplt</code> lấy hai số nguyên khỏi operand stack để so sánh nên stack giảm 2 phần tử.", "wide": false}, {"n": 25, "topic": "T12", "stem": "Khi điều kiện là số thực (<code>float</code>), vì sao không so sánh-và-nhảy trực tiếp được?", "boxes": [], "opts": ["Vì mọi số thực đều phải được ép về kiểu số nguyên bằng lệnh <code>f2i</code> trước khi có thể so sánh", "Vì số thực không thể so sánh được với nhau một cách chính xác nên JVM cấm hoàn toàn việc này", "Vì JVM không có lệnh <code>if_fcmp...</code>; phải dùng <code>fcmpl/fcmpg</code> đẩy một trong ba giá trị <code>-1, 0, 1</code> rồi mới dùng một lệnh nhảy so với <code>0</code>", "Vì lệnh so sánh số thực chỉ hoạt động được khi cả hai toán hạng đều đang nằm trong biến cục bộ"], "ans": 2, "why": "JVM tách bước so sánh float (<code>fcmpl/fcmpg</code>) và bước rẽ nhánh theo kết quả int.", "wide": true}, {"n": 26, "topic": "T12", "stem": "Hai biến thể <code>fcmpg</code> và <code>fcmpl</code> khác nhau ở chỗ nào?", "boxes": [], "opts": ["<code>fcmpg</code> so sánh hai số <code>float</code> còn <code>fcmpl</code> chỉ so sánh được hai số thuộc kiểu <code>double</code>", "<code>fcmpg</code> đẩy kết quả luận lý lên ngăn xếp còn <code>fcmpl</code> thì đẩy một giá trị số nguyên lên ngăn xếp", "<code>fcmpg</code> dùng để so sánh lớn hơn còn <code>fcmpl</code> dùng để so sánh nhỏ hơn giữa hai số thực", "Chỉ khác khi có toán hạng là <code>NaN</code>: <code>fcmpg</code> đẩy <code>1</code>, còn <code>fcmpl</code> đẩy <code>-1</code>"], "ans": 3, "why": "Nếu có NaN, <code>fcmpg</code> cho 1 còn <code>fcmpl</code> cho -1; các trường hợp bình thường cho cùng quy tắc -1/0/1.", "wide": true}];
+const TOPIC_NAMES = {"T1": "Máy ngăn xếp và máy thanh ghi", "T2": "Bộ mô tả kiểu JVM", "T3": "Lệnh điều kiện", "T4": "Jasmin và thực thi JVM", "T5": "Nạp hằng số", "T6": "Bộ nhớ JVM", "T7": "Gọi phương thức và operand stack", "T8": "Local variable slots", "T9": "Bytecode và JIT", "T10": "Bộ mô tả phương thức", "T11": "Khai báo lớp Jasmin", "T12": "Lệnh chuyển điều khiển"};
+const KEY = "co3005_jvm_jasmin_review_v1";
+
+let state = {answers:{}, qOrder:null, oOrder:{}, fTopic:"all"};
+try{
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if(saved && typeof saved === "object") state = Object.assign(state, saved);
+}catch(e){}
+
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function shuffled(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function qById(id){ return QUESTIONS.find(q => q.n === id); }
+function visibleQuestions(){
+  let qs = QUESTIONS.slice();
+  if(state.qOrder && state.qOrder.length === qs.length){
+    qs = state.qOrder.map(qById).filter(Boolean);
+  }
+  return qs.filter(q => state.fTopic === "all" || q.topic === state.fTopic);
+}
+function optPerm(q){
+  const p = state.oOrder[q.n];
+  return (p && p.length === q.opts.length) ? p : q.opts.map((_,i)=>i);
+}
+function render(){
+  const root = document.getElementById("quiz");
+  const qs = visibleQuestions();
+  let html = "";
+  for(const q of qs){
+    const perm = optPerm(q);
+    const done = Object.prototype.hasOwnProperty.call(state.answers, q.n);
+    const chosen = done ? state.answers[q.n] : -1;
+    let boxes = "";
+    for(const b of q.boxes){
+      boxes += '<div class="codebox"><div class="codelang">' + esc(b.lang) +
+               '</div><pre>' + esc(b.code) + '</pre></div>';
+    }
+    let opts = "";
+    perm.forEach((oi, pos) => {
+      const letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[pos];
+      let cls = "opt";
+      if(done && oi === q.ans) cls += " correct";
+      if(done && oi === chosen && oi !== q.ans) cls += " wrongpick";
+      opts += '<div class="' + cls + '" data-q="' + q.n + '" data-oi="' + oi + '">' +
+              '<span class="L">' + letter + '.</span><span>' + q.opts[oi] + '</span></div>';
+    });
+    let explain = '<div class="explain"></div>';
+    if(done){
+      const okLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[perm.indexOf(q.ans)];
+      const ok = chosen === q.ans;
+      explain = '<div class="explain" style="display:block">' +
+        '<div class="verdict ' + (ok ? "ok" : "no") + '">' +
+        (ok ? "✔ Chính xác!" : "✘ Chưa đúng.") + " Đáp án: " + okLetter + ".</div>" +
+        q.why + "</div>";
+    }
+    const note = q.note ? '<div class="qnote">' + q.note + '</div>' : '';
+    html += '<article class="qcard' + (done ? " answered" : "") + '" id="q' + q.n + '">' +
+      '<div class="qhead"><span class="qtitle">Câu ' + q.n + '. (1 điểm)</span>' +
+      '<span class="badges"><span class="badge">' + TOPIC_NAMES[q.topic] + '</span></span></div>' +
+      '<div class="stem">' + q.stem + "</div>" + boxes + note +
+      '<div class="opts' + (q.wide ? " wide" : "") + '">' + opts + "</div>" + explain +
+      "</article>";
+  }
+  if(qs.length === 0){
+    html = '<p style="color:#666;font-style:italic">Không có câu nào khớp bộ lọc hiện tại.</p>';
+  }
+  root.innerHTML = html;
+  updateScore();
+}
+function updateScore(){
+  const total = QUESTIONS.length;
+  let answered = 0, right = 0;
+  for(const q of QUESTIONS){
+    if(Object.prototype.hasOwnProperty.call(state.answers, q.n)){
+      answered++;
+      if(state.answers[q.n] === q.ans) right++;
+    }
+  }
+  const el = document.getElementById("score");
+  el.textContent = "Đã làm " + answered + "/" + total + " · Đúng " + right +
+    (answered ? " (" + Math.round(100 * right / answered) + "%)" : "");
+}
+
+document.getElementById("quiz").addEventListener("click", function(ev){
+  const opt = ev.target.closest(".opt");
+  if(!opt) return;
+  const qn = parseInt(opt.dataset.q, 10);
+  if(Object.prototype.hasOwnProperty.call(state.answers, qn)) return;
+  state.answers[qn] = parseInt(opt.dataset.oi, 10);
+  save();
+  render();
+  const card = document.getElementById("q" + qn);
+  if(card) card.scrollIntoView({block:"nearest"});
+});
+document.getElementById("fTopic").addEventListener("change", function(){
+  state.fTopic = this.value; save(); render();
+});
+document.getElementById("btnShufQ").addEventListener("click", function(){
+  state.qOrder = shuffled(QUESTIONS.map(q => q.n)); save(); render();
+});
+document.getElementById("btnShufO").addEventListener("click", function(){
+  for(const q of QUESTIONS) state.oOrder[q.n] = shuffled(q.opts.map((_,i)=>i));
+  save(); render();
+});
+document.getElementById("btnReset").addEventListener("click", function(){
+  if(!confirm("Xóa toàn bộ bài làm và làm lại từ đầu?")) return;
+  state.answers = {}; state.qOrder = null; state.oOrder = {};
+  save(); render();
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+document.getElementById("fTopic").value = state.fTopic;
+render();
+</script>
+</div>
+</body>
+</html>
