@@ -1,0 +1,441 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phụ lục – Tên, ràng buộc, tầm vực và thời gian sống trong Python</title>
+<meta name="description" content="Phụ lục CO3005: Tên, ràng buộc, tầm vực và thời gian sống trong Python – LEGB, bí danh, bao đóng, thu gom rác.">
+<link rel="icon" type="image/png" href="../favicon_hcmut.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+  :root{--bg:#f7f6f2;--surface:#ffffff;--surface2:#f0ede6;--border:#ddd9d0;--text:#1a1916;--muted:#6b6760;--accent:#1a56a0;--accent-light:#e8f0fb;--code-bg:#1e1e1e;--code-text:#d4d4d4;--kw:#569cd6;--str:#ce9178;--cmt:#6a9955;--num:#b5cea8;--fn:#dcdcaa;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.75;}
+  .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;max-width:1280px;margin:0 auto;}
+  .sidebar{background:var(--surface);border-right:1px solid var(--border);padding:28px 0;position:sticky;top:0;height:100vh;overflow-y:auto;}
+  .sidebar-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:0 20px 12px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+  .toc-item{display:block;padding:8px 20px;font-size:13px;color:var(--muted);text-decoration:none;border-left:3px solid transparent;transition:all .15s;line-height:1.4;}
+  .toc-item:hover,.toc-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-light);}
+  .toc-item.sub{padding-left:32px;font-size:12px;}
+  .main{padding:48px 56px 80px;max-width:820px;}
+  .lesson-badge{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:4px;margin-bottom:16px;}
+  .lesson-title{font-family:'IBM Plex Serif',serif;font-size:30px;font-weight:600;line-height:1.25;color:var(--text);margin-bottom:8px;}
+  .lesson-meta{font-size:13px;color:var(--muted);margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid var(--border);}
+  .article-section{margin-bottom:52px;scroll-margin-top:24px;}
+  .section-heading{font-family:'IBM Plex Serif',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--border);position:relative;}
+  .section-heading::before{content:'';position:absolute;bottom:-2px;left:0;width:40px;height:2px;background:var(--accent);}
+  p{margin-bottom:14px;} ul,ol{margin:0 0 14px 24px;line-height:2;}
+  .code-block{background:var(--code-bg);border-radius:8px;margin:20px 0;overflow:hidden;font-size:13.5px;}
+  .code-label{background:#2d2d2d;padding:6px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;letter-spacing:.06em;border-bottom:1px solid #333;}
+  pre{padding:18px 20px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;line-height:1.6;color:var(--code-text);}
+  code{font-family:'IBM Plex Mono',monospace;background:#e8e5de;color:#b5451b;padding:1px 6px;border-radius:3px;font-size:.88em;}
+  pre code{background:none;color:inherit;padding:0;border-radius:0;font-size:inherit;}
+  .kw{color:var(--kw);} .str{color:var(--str);} .cmt{color:var(--cmt);font-style:italic;} .num{color:var(--num);} .fn{color:var(--fn);}
+  .callout{background:var(--accent-light);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  .callout-warn{background:#fff8e6;border-left:4px solid #d97706;border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  .callout-green{background:#f0fdf4;border-left:4px solid #16a34a;border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  .data-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px;}
+  .data-table th{background:var(--surface2);padding:10px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.05em;color:var(--muted);border-bottom:2px solid var(--border);}
+  .data-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .data-table tr:last-child td{border-bottom:none;} .data-table tr:hover td{background:var(--surface2);}
+  .img-wrap{margin:24px 0;text-align:center;}
+  .img-wrap img{max-width:100%;border-radius:8px;border:1px solid var(--border);cursor:zoom-in;transition:box-shadow .2s;}
+  .img-wrap img:hover{box-shadow:0 6px 24px rgba(0,0,0,.15);}
+  .img-caption{font-size:12px;color:var(--muted);margin-top:8px;font-style:italic;}
+  #lb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out;}
+  #lb-overlay.open{display:flex;}
+  #lb-overlay img{max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  hr.divider{border:none;border-top:2px dashed var(--border);margin:48px 0;}
+  .nav-footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0 0;border-top:1px solid var(--border);margin-top:48px;font-size:14px;color:var(--muted);}
+  .nav-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--accent);color:#fff;border-radius:6px;font-size:13px;font-weight:500;text-decoration:none;}
+  .nav-btn.secondary{background:var(--surface);color:var(--accent);border:1px solid var(--accent);}
+  @media(max-width:900px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.main{padding:32px 24px 60px;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-title">Phụ lục · Tầm vực Python</div>
+  <a class="toc-item active" href="#mo-dau">Tài liệu 1 · Mở đầu</a>
+  <a class="toc-item" href="#ten-rang-buoc">Tài liệu 2 · Tên và ràng buộc</a>
+  <a class="toc-item sub" href="#ten-python">Tên trong Python</a>
+  <a class="toc-item sub" href="#phep-gan-rang-buoc">Phép gán là ràng buộc</a>
+  <a class="toc-item sub" href="#bi-danh">Bí danh trong Python</a>
+  <a class="toc-item" href="#ham-rang-buoc">Tài liệu 3 · Hàm và ràng buộc tham số</a>
+  <a class="toc-item sub" href="#dinh-nghia-ham">Định nghĩa hàm tạo ra ràng buộc</a>
+  <a class="toc-item sub" href="#tham-so-khi-goi">Ràng buộc tham số khi gọi hàm</a>
+  <a class="toc-item sub" href="#args-kwargs">*args và **kwargs</a>
+  <a class="toc-item" href="#tam-vuc">Tài liệu 4 · Tầm vực và môi trường</a>
+  <a class="toc-item sub" href="#legb">Quy tắc LEGB</a>
+  <a class="toc-item sub" href="#ham-long">Hàm lồng nhau và tính nhìn thấy</a>
+  <a class="toc-item sub" href="#global-nonlocal">global và nonlocal</a>
+  <a class="toc-item sub" href="#moi-truong">Môi trường tham chiếu</a>
+  <a class="toc-item" href="#thoi-gian-song">Tài liệu 5 · Thời gian sống</a>
+  <a class="toc-item sub" href="#bao-dong">Tầm vực và thời gian sống qua bao đóng</a>
+  <a class="toc-item sub" href="#thu-gom-rac">Thời gian sống và thu gom rác</a>
+  <a class="toc-item sub" href="#thoi-diem-rang-buoc">Thời điểm ràng buộc trong Python</a>
+  <a class="toc-item" href="#tong-ket">Tài liệu 6 · Tổng kết phụ lục</a>
+</nav>
+<!-- MAIN -->
+<main class="main" id="mainContent">
+
+<!-- TÀI LIỆU 1: MỞ ĐẦU -->
+<div class="lesson-badge">Phụ lục · Tài liệu 1 / 6</div>
+<h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Tên, ràng buộc, tầm vực và thời gian sống trong Python · Trần Ngọc Bảo Duy</div>
+<div class="article-section">
+  <p>Ở Chương 7, ta đã bàn về tên, ràng buộc, tầm vực và thời gian sống dưới góc độ nguyên lý, minh họa bằng nhiều ngôn ngữ. Phụ lục này thu hẹp lại vào một ngôn ngữ duy nhất là Python, không phải để học cú pháp Python, mà để xem một ngôn ngữ thực tế hiện thực những nguyên lý đó như thế nào qua các ví dụ ngắn, chạy được.</p>
+  <p>Câu hỏi trung tâm của phụ lục là: <strong>Python gán ý nghĩa cho các tên trong lúc chương trình chạy bằng cách nào?</strong> Để trả lời, ta sẽ lần lượt soi các khái niệm tên, ràng buộc, bí danh, tầm vực, môi trường tham chiếu, thời gian sống và bao đóng dưới lăng kính Python. Mỗi ví dụ sẽ được diễn giải bằng đúng thuật ngữ của ngôn ngữ lập trình đã học, chứ không chỉ mô tả "Python làm gì".</p>
+  <p>Bảng dưới đây tóm lược cách các khái niệm tổng quát của chương ánh xạ sang Python:</p>
+  <table class="data-table">
+    <thead><tr><th>Khái niệm tổng quát</th><th>Góc nhìn Python</th></tr></thead>
+    <tbody>
+      <tr><td>Tên</td><td>định danh như <code>x</code>, <code>count</code>, <code>f</code>, <code>math</code></td></tr>
+      <tr><td>Ràng buộc</td><td>liên kết giữa một tên và một đối tượng, hàm, module hoặc lớp</td></tr>
+      <tr><td>Tầm vực</td><td>vùng nơi một tên có thể được phân giải</td></tr>
+      <tr><td>Môi trường tham chiếu</td><td>tập các ràng buộc nhìn thấy được tại một điểm</td></tr>
+      <tr><td>Thời gian sống</td><td>một đối tượng hoặc ràng buộc tồn tại bao lâu khi chạy</td></tr>
+    </tbody>
+  </table>
+  <p>Một điểm cần ghi nhớ ngay từ đầu, làm nền cho toàn bộ phụ lục: trong Python, một tên được phân giải bằng cách tìm ràng buộc của nó trong các môi trường có cấu trúc. Hãy xét một đoạn mã rất ngắn:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="num">10</span>
+
+<span class="kw">def</span> <span class="fn">square</span>(n):
+    <span class="kw">return</span> n * n</code></pre></div>
+  <p>Có thể diễn giải đoạn này hoàn toàn bằng ngôn ngữ của Chương 7:</p>
+  <div class="code-block"><div class="code-label">Diễn giải</div><pre><code>x       → được ràng buộc với một đối tượng số nguyên
+square  → được ràng buộc với một đối tượng hàm
+n       → được ràng buộc khi hàm được gọi</code></pre></div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 2: TÊN VÀ RÀNG BUỘC -->
+<div class="lesson-badge">Phụ lục · Tài liệu 2 / 6</div>
+<h1 class="lesson-title" id="ten-rang-buoc">Tên và ràng buộc trong Python</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Tên, ràng buộc, tầm vực và thời gian sống trong Python</div>
+<div class="article-section" id="ten-python">
+  <h2 class="section-heading">Tên trong Python</h2>
+  <p>Một tên trong Python là một định danh dùng để trỏ tới một thực thể của chương trình. Giống như đã thấy ở chương, tên trong Python không chỉ giới hạn ở biến. Một tên có thể trỏ tới một tham chiếu đối tượng kiểu biến, một hàm, một lớp, một module, một tham số, một thuộc tính, hay tên một ngoại lệ.</p>
+  <p>Ví dụ:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">import</span> math
+
+radius = <span class="num">5</span>
+
+<span class="kw">def</span> <span class="fn">area</span>(r):
+    <span class="kw">return</span> math.pi * r * r</code></pre></div>
+  <p>Chỉ trong vài dòng đã có nhiều tên thuộc nhiều loại khác nhau:</p>
+  <div class="code-block"><div class="code-label">Phân tích</div><pre><code>math    → module
+radius  → tham chiếu đối tượng
+area    → hàm
+r       → tham số
+pi      → thuộc tính của module math</code></pre></div>
+  <div class="callout">Điều quan trọng dưới góc độ ngôn ngữ lập trình là: bản thân tên chỉ là một ký hiệu. Ý nghĩa của nó đến từ ràng buộc tìm được trong môi trường hiện tại. Đây chính là phát biểu của Chương 7, nay được quan sát trực tiếp trong Python.</div>
+</div>
+<div class="article-section" id="phep-gan-rang-buoc">
+  <h2 class="section-heading">Phép gán là ràng buộc và tái ràng buộc</h2>
+  <p>Trong nhiều ngôn ngữ kiểu mệnh lệnh, ta quen hình dung phép gán là "cất một giá trị vào một ô nhớ cố định". Trong Python, cách hình dung chính xác hơn là: <strong>phép gán tạo ra hoặc thay đổi một ràng buộc giữa một tên và một đối tượng</strong>.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="num">10</span>
+x = <span class="str">"hello"</span></code></pre></div>
+  <p>Về mặt khái niệm:</p>
+  <div class="code-block"><div class="code-label">Diễn giải ràng buộc</div><pre><code>x  →  <span class="num">10</span>
+x  →  <span class="str">"hello"</span></code></pre></div>
+  <p>Cùng một tên <code>x</code> được <strong>tái ràng buộc (rebinding)</strong> sang một đối tượng khác, thậm chí khác kiểu. Tên không phải là một cái hộp cố định chứa giá trị; nó là một nhãn được gắn vào một đối tượng, và nhãn đó có thể được chuyển sang đối tượng khác.</p>
+  <p>Một hệ quả trực tiếp của cách nhìn này xuất hiện khi hai tên cùng được gán từ nhau:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>a = [<span class="num">1</span>, <span class="num">2</span>]
+b = a</code></pre></div>
+  <p>Phép gán <code>b = a</code> không tạo ra một danh sách mới. Nó chỉ tạo thêm một ràng buộc từ tên <code>b</code> tới cùng đối tượng mà <code>a</code> đang trỏ tới. Đây chính là cửa ngõ dẫn tới hiện tượng bí danh.</p>
+</div>
+<div class="article-section" id="bi-danh">
+  <h2 class="section-heading">Bí danh trong Python</h2>
+  <p>Như đã định nghĩa ở chương, bí danh xảy ra khi hai hay nhiều tên cùng trỏ tới một đối tượng. Python làm cho hiện tượng này rất dễ quan sát:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>a = [<span class="num">1</span>, <span class="num">2</span>]
+b = a
+b.append(<span class="num">3</span>)
+<span class="fn">print</span>(a)</code></pre></div>
+  <p>Kết quả in ra:</p>
+  <div class="code-block"><div class="code-label">Output</div><pre><code>[<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]</code></pre></div>
+  <p>Thoạt nhìn có vẻ lạ: ta chỉ thao tác trên <code>b</code> mà <code>a</code> cũng đổi theo. Lý do nằm ở chỗ <code>a</code> và <code>b</code> là hai tên cùng được ràng buộc với một đối tượng danh sách:</p>
+  <div class="img-wrap">
+    <img src="Tên, ràng buộc, tầm vực và thời gian sống trong Python_PL/h1.png" alt="Hinh 1 - Bi danh" onclick="openLB(this)">
+    <div class="img-caption">Hình 1 – Bí danh: <code>a</code> và <code>b</code> cùng trỏ tới một đối tượng danh sách</div>
+  </div>
+  <p>Việc thay đổi đối tượng qua tên <code>b</code> (bằng <code>b.append(3)</code>) lập tức nhìn thấy được qua tên <code>a</code>, vì cả hai cùng chỉ một đối tượng. Cần phân biệt rõ điều này với tái ràng buộc ở mục trước: <code>b.append(3)</code> thay đổi đối tượng mà <code>b</code> trỏ tới, còn <code>b = [9]</code> sẽ ràng buộc lại <code>b</code> sang một đối tượng khác mà không ảnh hưởng tới <code>a</code>. Đánh đổi mà chương đã nêu thể hiện rõ ở đây: bí danh giúp chia sẻ và sửa dữ liệu hiệu quả, nhưng khiến việc suy luận khó hơn vì một thay đổi có thể lan tới những tên tưởng chừng không liên quan.</p>
+  <div class="callout-warn"><strong>Đánh đổi:</strong> Bí danh giúp chia sẻ và sửa dữ liệu hiệu quả, nhưng khiến việc suy luận khó hơn vì một thay đổi có thể lan tới những tên tưởng chừng không liên quan.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 3: HÀM VÀ RÀNG BUỘC THAM SỐ -->
+<div class="lesson-badge">Phụ lục · Tài liệu 3 / 6</div>
+<h1 class="lesson-title" id="ham-rang-buoc">Hàm và ràng buộc tham số</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Tên, ràng buộc, tầm vực và thời gian sống trong Python</div>
+<div class="article-section" id="dinh-nghia-ham">
+  <h2 class="section-heading">Định nghĩa hàm tạo ra ràng buộc</h2>
+  <p>Một định nghĩa hàm trong Python không chỉ là một khai báo cú pháp. Khi câu lệnh <code>def</code> được thực thi, Python tạo ra một đối tượng hàm và ràng buộc tên hàm với đối tượng đó.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">square</span>(x):
+    <span class="kw">return</span> x * x</code></pre></div>
+  <p>Về mặt khái niệm:</p>
+  <div class="code-block"><div class="code-label">Diễn giải</div><pre><code>square  →  một đối tượng hàm
+x       →  tên tham số, được ràng buộc khi hàm được gọi</code></pre></div>
+  <p>Vì tên hàm chỉ là một ràng buộc tới một đối tượng, ta có thể ràng buộc tên khác tới chính đối tượng hàm đó:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>f = square</code></pre></div>
+  <p>Sau dòng này, cả <code>square</code> lẫn <code>f</code> cùng trỏ tới một đối tượng hàm, đúng theo kiểu bí danh đã thấy ở Mục 1.3. Đây là lý do nền tảng vì sao trong Python hàm có thể được gán cho tên khác, truyền làm đối số, hay trả về từ một hàm khác: hàm là đối tượng, và tên hàm chỉ là ràng buộc tới đối tượng đó.</p>
+</div>
+<div class="article-section" id="tham-so-khi-goi">
+  <h2 class="section-heading">Ràng buộc tham số khi gọi hàm</h2>
+  <p>Lời gọi hàm cũng là một quá trình ràng buộc. Khi một hàm được gọi, Python ràng buộc các tên tham số với các đối tượng đối số.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">add</span>(x, y):
+    <span class="kw">return</span> x + y
+
+<span class="fn">add</span>(<span class="num">3</span>, <span class="num">4</span>)</code></pre></div>
+  <p>Trong suốt lời gọi, hai ràng buộc tạm thời được thiết lập:</p>
+  <div class="code-block"><div class="code-label">Diễn giải</div><pre><code>x  →  <span class="num">3</span>
+y  →  <span class="num">4</span></code></pre></div>
+  <p>Ở đây cần phân biệt <strong>tham số hình thức (formal parameter)</strong>, tức các tên <code>x</code>, <code>y</code> viết trong định nghĩa, với <strong>đối số thực (actual argument)</strong>, tức các biểu thức <code>3</code>, <code>4</code> ở chỗ gọi. Khi gọi, Python lượng giá các đối số thực rồi ràng buộc các tham số hình thức với những đối tượng kết quả. Những ràng buộc này chỉ tồn tại trong thời gian lời gọi, một điểm sẽ quay lại ở phần thời gian sống.</p>
+  <p>Python cung cấp nhiều cơ chế để khớp đối số với tham số:</p>
+  <table class="data-table">
+    <thead><tr><th>Cơ chế</th><th>Ví dụ</th></tr></thead>
+    <tbody>
+      <tr><td>Đối số vị trí (positional argument)</td><td><code>add(3, 4)</code></td></tr>
+      <tr><td>Đối số từ khóa (keyword argument)</td><td><code>add(y=4, x=3)</code></td></tr>
+      <tr><td>Giá trị mặc định (default value)</td><td><code>def f(x, y=0): ...</code></td></tr>
+      <tr><td>Vị trí tùy ý</td><td><code>*args</code></td></tr>
+      <tr><td>Từ khóa tùy ý</td><td><code>**kwargs</code></td></tr>
+    </tbody>
+  </table>
+  <p>Dù khác nhau về hình thức, tất cả các cơ chế này đều phục vụ cùng một mục đích: thiết lập ràng buộc cho các tham số hình thức.</p>
+</div>
+<div class="article-section" id="args-kwargs">
+  <h2 class="section-heading"><code>*args</code> và <code>**kwargs</code> như cơ chế ràng buộc</h2>
+  <p>Hai ký pháp <code>*args</code> và <code>**kwargs</code> thường được dạy như cú pháp đặc biệt cần nhớ. Sẽ hữu ích hơn nếu hiểu chúng như cơ chế ràng buộc: chúng gom nhiều đối số thực vào một ràng buộc duy nhất.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">report</span>(title, *items, **options):
+    <span class="fn">print</span>(title)
+    <span class="fn">print</span>(items)
+    <span class="fn">print</span>(options)
+
+<span class="fn">report</span>(<span class="str">"Scores"</span>, <span class="num">10</span>, <span class="num">20</span>, sort=<span class="kw">True</span>)</code></pre></div>
+  <p>Trong lời gọi này, các ràng buộc được thiết lập như sau:</p>
+  <div class="code-block"><div class="code-label">Diễn giải ràng buộc</div><pre><code>title    → <span class="str">"Scores"</span>
+items    → (<span class="num">10</span>, <span class="num">20</span>)
+options  → {<span class="str">"sort"</span>: <span class="kw">True</span>}</code></pre></div>
+  <div class="callout">Các đối số vị trí dư ra được gom thành một tuple và ràng buộc với <code>items</code>, còn các đối số từ khóa dư ra được gom thành một dictionary và ràng buộc với <code>options</code>. Cách diễn giải này khái quát hóa ý tưởng ràng buộc tham số: thay vì mỗi tham số nhận đúng một đối số, một tham số có thể nhận cả một nhóm đối số đã được cấu trúc lại thành một đối tượng. Nó củng cố đúng phát biểu của chương: <em>một ngôn ngữ phải định nghĩa rõ các quy tắc liên kết tên với thực thể</em>.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 4: TẦM VỰC VÀ MÔI TRƯỜNG -->
+<div class="lesson-badge">Phụ lục · Tài liệu 4 / 6</div>
+<h1 class="lesson-title" id="tam-vuc">Tầm vực và môi trường tham chiếu</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Tên, ràng buộc, tầm vực và thời gian sống trong Python</div>
+<div class="article-section" id="legb">
+  <h2 class="section-heading">Quy tắc LEGB</h2>
+  <p>Python phân giải một tên bằng cách tìm trong các môi trường theo một thứ tự cố định, gọi là <strong>quy tắc LEGB</strong> (Local, Enclosing, Global, Built-in): cục bộ, bao quanh, toàn cục, rồi dựng sẵn.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="str">"global"</span>
+
+<span class="kw">def</span> <span class="fn">outer</span>():
+    x = <span class="str">"enclosing"</span>
+
+    <span class="kw">def</span> <span class="fn">inner</span>():
+        x = <span class="str">"local"</span>
+        <span class="fn">print</span>(x)
+
+    <span class="fn">inner</span>()</code></pre></div>
+  <p>Với lời gọi <code>print(x)</code> bên trong <code>inner</code>, Python tìm thấy ngay tên <code>x</code> ở tầng cục bộ và dừng lại:</p>
+  <div class="code-block"><div class="code-label">Kết quả</div><pre><code>x cục bộ  → <span class="str">"local"</span></code></pre></div>
+  <p>Có thể hình dung thứ tự tra cứu như một chồng các tầng môi trường, dò từ trong ra ngoài và dừng ở tầng đầu tiên tìm thấy tên:</p>
+  <div class="img-wrap">
+    <img src="Tên, ràng buộc, tầm vực và thời gian sống trong Python_PL/h2.png" alt="Hinh 2 - LEGB" onclick="openLB(this)">
+    <div class="img-caption">Hình 2 – Quy tắc LEGB: thứ tự tra cứu tên từ Local → Enclosing → Global → Built-in</div>
+  </div>
+  <div class="callout">Quy tắc LEGB chính là hình thức cụ thể của một khái niệm tổng quát ở chương: <em>phân giải tên qua môi trường tham chiếu</em>. Vì các tầng bao quanh được xác định từ cấu trúc văn bản của chương trình chứ không từ chuỗi lời gọi lúc chạy, Python chủ yếu dùng <strong>tầm vực từ vựng (tầm vực tĩnh)</strong>, đúng như mô hình mà chương đã khẳng định là phổ biến trong ngôn ngữ hiện đại.</div>
+</div>
+<div class="article-section" id="ham-long">
+  <h2 class="section-heading">Hàm lồng nhau và tính nhìn thấy</h2>
+  <p>Một hàm lồng bên trong một hàm khác tạo ra một tầm vực cục bộ mới. Điều quan trọng không phải là "Python cho phép lồng hàm", mà là: định nghĩa một hàm bên trong một hàm khác tạo ra một ràng buộc trong tầm vực cục bộ của hàm bao ngoài, và ràng buộc đó không tự động nhìn thấy được từ bên ngoài.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">outer</span>(x):
+    y = x + <span class="num">1</span>
+
+    <span class="kw">def</span> <span class="fn">inner</span>(z):
+        <span class="kw">return</span> z + <span class="num">1</span>
+
+    <span class="kw">return</span> <span class="fn">inner</span>(y)
+
+<span class="fn">print</span>(<span class="fn">outer</span>(<span class="num">3</span>))
+<span class="fn">print</span>(<span class="fn">inner</span>(<span class="num">2</span>))   <span class="cmt"># lỗi NameError</span></code></pre></div>
+  <p>Lời gọi <code>outer(3)</code> chạy bình thường và in ra <code>5</code>. Nhưng lời gọi <code>inner(2)</code> ở mức module gây lỗi <code>NameError</code>, vì tên <code>inner</code> chỉ được ràng buộc trong tầm vực của <code>outer</code>:</p>
+  <div class="code-block"><div class="code-label">Diễn giải</div><pre><code>inner được ràng buộc bên trong tầm vực của outer.
+inner không nhìn thấy được ở mức module.</code></pre></div>
+  <p>Cấu trúc tầm vực lồng nhau của ví dụ này có thể vẽ thành cây:</p>
+  <div class="img-wrap">
+    <img src="Tên, ràng buộc, tầm vực và thời gian sống trong Python_PL/h3.png" alt="Hinh 3 - Cay tam vuc" onclick="openLB(this)">
+    <div class="img-caption">Hình 3 – Cây tầm vực lồng nhau: <code>inner</code> nằm trong tầm vực của <code>outer</code>, không nhìn thấy được ở ngoài</div>
+  </div>
+  <p>Tên <code>inner</code> nằm trong tầm vực của <code>outer</code>, nên nó nhìn thấy được bên trong <code>outer</code> (chẳng hạn để gọi <code>inner(y)</code>) nhưng không nhìn thấy được ở ngoài. Muốn dùng <code>inner</code> bên ngoài, ta phải trả nó ra hoặc phơi bày nó bằng cách nào đó, ý tưởng dẫn thẳng tới bao đóng ở Mục 4.1.</p>
+</div>
+<div class="article-section" id="global-nonlocal">
+  <h2 class="section-heading"><code>global</code> và <code>nonlocal</code></h2>
+  <p>Cho đến đây ta mới nói về việc đọc một tên. Việc gán vào một tên lại là một vấn đề hơi khác. Theo mặc định, một phép gán bên trong một hàm tạo ra hoặc cập nhật một ràng buộc cục bộ.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="num">0</span>
+
+<span class="kw">def</span> <span class="fn">f</span>():
+    x = <span class="num">1</span></code></pre></div>
+  <p>Ở đây phép gán <code>x = 1</code> tạo một ràng buộc cục bộ mới trong <code>f</code>; ràng buộc toàn cục <code>x</code> không hề thay đổi:</p>
+  <div class="code-block"><div class="code-label">Diễn giải</div><pre><code>x bên trong f  → x cục bộ
+x toàn cục     → giữ nguyên</code></pre></div>
+  <p>Nếu muốn phép gán nhắm vào ràng buộc toàn cục, ta dùng <code>global</code>:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="num">0</span>
+
+<span class="kw">def</span> <span class="fn">f</span>():
+    <span class="kw">global</span> x
+    x = <span class="num">1</span></code></pre></div>
+  <p>Nếu muốn phép gán nhắm vào ràng buộc trong hàm bao quanh gần nhất, ta dùng <code>nonlocal</code>:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">outer</span>():
+    x = <span class="num">0</span>
+
+    <span class="kw">def</span> <span class="fn">inner</span>():
+        <span class="kw">nonlocal</span> x
+        x = x + <span class="num">1</span></code></pre></div>
+  <div class="callout-warn"><strong>Điểm cốt lõi:</strong> <code>global</code> và <code>nonlocal</code> không đơn thuần cho phép truy cập tên ở phạm vi ngoài; chúng <strong>thay đổi đích của phép gán</strong>. Đọc một tên có thể vươn ra các phạm vi bao quanh hay toàn cục một cách tự nhiên theo LEGB, nhưng gán vào một tên thì mặc định luôn tạo ràng buộc cục bộ, trừ khi <code>global</code> hoặc <code>nonlocal</code> chuyển đích sang một môi trường khác.</div>
+</div>
+<div class="article-section" id="moi-truong">
+  <h2 class="section-heading">Môi trường tham chiếu trong Python</h2>
+  <p>Môi trường tham chiếu tại một điểm trong chương trình là tập các ràng buộc nhìn thấy được tại điểm đó. Python cho ta một ví dụ rất cụ thể về khái niệm tưởng chừng trừu tượng này.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="num">1</span>
+
+<span class="kw">def</span> <span class="fn">outer</span>():
+    y = <span class="num">2</span>
+
+    <span class="kw">def</span> <span class="fn">inner</span>():
+        z = <span class="num">3</span>
+        <span class="cmt"># điểm P</span>
+        <span class="fn">print</span>(x + y + z)</code></pre></div>
+  <p>Tại điểm P, các ràng buộc nhìn thấy được bao gồm:</p>
+  <div class="code-block"><div class="code-label">Môi trường tại điểm P</div><pre><code>z     → cục bộ trong inner
+y     → tầm vực bao quanh của outer
+x     → tầm vực toàn cục / module
+print → tầm vực dựng sẵn</code></pre></div>
+  <p>Có thể hình dung môi trường tham chiếu tại P như một chuỗi các môi trường lồng nhau, từ trong cùng ra ngoài cùng:</p>
+  <div class="img-wrap">
+    <img src="Tên, ràng buộc, tầm vực và thời gian sống trong Python_PL/h4.png" alt="Hinh 4 - Moi truong tham chieu" onclick="openLB(this)">
+    <div class="img-caption">Hình 4 – Môi trường tham chiếu tại điểm P: chuỗi các môi trường lồng nhau theo quy tắc LEGB</div>
+  </div>
+  <p>Khi phân giải một tên tại P, trình thông dịch có một môi trường cục bộ hiện tại cùng một chuỗi các môi trường bao quanh, và việc tra cứu diễn ra qua các môi trường này theo đúng quy tắc LEGB. Đây chính là hiện thân cụ thể của môi trường tham chiếu mà Chương 7 đã định nghĩa.</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 5: THỜI GIAN SỐNG -->
+<div class="lesson-badge">Phụ lục · Tài liệu 5 / 6</div>
+<h1 class="lesson-title" id="thoi-gian-song">Thời gian sống và thời điểm ràng buộc trong Python</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Tên, ràng buộc, tầm vực và thời gian sống trong Python</div>
+<div class="article-section" id="bao-dong">
+  <h2 class="section-heading">Tầm vực và thời gian sống qua bao đóng</h2>
+  <p>Chương 7 nhấn mạnh rằng tầm vực là khái niệm về văn bản, còn thời gian sống là khái niệm về lúc chạy, và hai điều này không phải lúc nào cũng trùng nhau. Python cho ta một ví dụ đẹp về sự lệch pha đó qua <strong>bao đóng (closure)</strong>.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">make_counter</span>():
+    count = <span class="num">0</span>
+
+    <span class="kw">def</span> <span class="fn">inc</span>():
+        <span class="kw">nonlocal</span> count
+        count = count + <span class="num">1</span>
+        <span class="kw">return</span> count
+
+    <span class="kw">return</span> inc
+
+c = <span class="fn">make_counter</span>()
+<span class="fn">print</span>(<span class="fn">c</span>())
+<span class="fn">print</span>(<span class="fn">c</span>())</code></pre></div>
+  <p>Kết quả in ra:</p>
+  <div class="code-block"><div class="code-label">Output</div><pre><code><span class="num">1</span>
+<span class="num">2</span></code></pre></div>
+  <p>Điều đáng chú ý là: tên <code>count</code> nằm trong tầm vực của <code>make_counter</code>. Nếu chỉ dựa vào tầm vực, ta có thể nghĩ <code>count</code> biến mất ngay khi <code>make_counter</code> trả về. Nhưng hàm <code>inc</code> được trả ra vẫn tiếp tục dùng <code>count</code> ở những lời gọi sau, tức là ràng buộc của <code>count</code> vẫn còn sống dù lời gọi <code>make_counter</code> đã kết thúc.</p>
+  <div class="img-wrap">
+    <img src="Tên, ràng buộc, tầm vực và thời gian sống trong Python_PL/h5.png" alt="Hinh 5 - Bao dong" onclick="openLB(this)">
+    <div class="img-caption">Hình 5 – Bao đóng: thời gian sống của <code>count</code> kéo dài hơn lời gọi <code>make_counter</code> đã kết thúc</div>
+  </div>
+  <div class="callout">Thời gian sống của lời gọi <code>make_counter</code> ngắn, nhưng đối tượng và ràng buộc gắn với <code>count</code> vẫn còn truy cập được qua hàm <code>inc</code> được trả về. Đây là minh chứng rõ ràng vì sao không nên đồng nhất tầm vực với thời gian sống: một bao đóng có thể kéo dài thời gian sống của một ràng buộc trong hàm bao quanh vượt quá thời gian sống của chính lời gọi tạo ra nó.</div>
+</div>
+<div class="article-section" id="thu-gom-rac">
+  <h2 class="section-heading">Thời gian sống của đối tượng và thu gom rác</h2>
+  <p>Trong Python, các đối tượng được tạo lúc chạy và do môi trường thực thi quản lý. Đây chính là kiểu cấp phát động trên heap ngầm mà Chương 7 đã nêu: người lập trình thường không tự giải phóng đối tượng.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+y = x
+
+x = <span class="kw">None</span>
+y = <span class="kw">None</span></code></pre></div>
+  <p>Diễn biến của các ràng buộc:</p>
+  <div class="code-block"><div class="code-label">Diễn giải</div><pre><code>x, y  → đối tượng list
+x     → None
+y     → None</code></pre></div>
+  <p>Ban đầu cả <code>x</code> và <code>y</code> cùng trỏ tới đối tượng danh sách. Sau khi cả hai được ràng buộc lại sang <code>None</code>, không còn tên nào trỏ tới danh sách nữa, và đối tượng danh sách trở nên không thể với tới.</p>
+  <div class="img-wrap">
+    <img src="Tên, ràng buộc, tầm vực và thời gian sống trong Python_PL/h6.png" alt="Hinh 6 - Thu gom rac" onclick="openLB(this)">
+    <div class="img-caption">Hình 6 – Thu gom rác: khi không còn tên nào trỏ tới đối tượng, nó đủ điều kiện để bộ thu gom rác thu hồi</div>
+  </div>
+  <p>Trong Python, thời gian sống của đối tượng được quản lý theo <strong>khả năng với tới (reachability)</strong>, chứ không bằng <code>free</code> hay <code>delete</code> tường minh. Một đối tượng còn sống chừng nào còn với tới được qua một tên hay một tham chiếu nào đó; khi trở nên không thể với tới, nó đủ điều kiện để bộ thu gom rác thu hồi. Cần lưu ý rằng việc thu hồi không nhất thiết xảy ra ngay tại dòng lệnh làm mất tham chiếu cuối cùng; đó là việc của môi trường thực thi quyết định thời điểm. So với mô hình heap tường minh ở chương, cách này đánh đổi một phần khả năng kiểm soát và chi phí lúc chạy để lấy sự an toàn: lập trình viên gần như không còn phải lo về tham chiếu treo hay rò rỉ bộ nhớ theo kiểu thủ công.</p>
+  <div class="callout-green">So với mô hình heap tường minh ở chương, cách này đánh đổi một phần khả năng kiểm soát và chi phí lúc chạy để lấy sự an toàn: lập trình viên gần như không còn phải lo về tham chiếu treo hay rò rỉ bộ nhớ theo kiểu thủ công.</div>
+</div>
+<div class="article-section" id="thoi-diem-rang-buoc">
+  <h2 class="section-heading">Thời điểm ràng buộc trong Python</h2>
+  <p>Một hiểu lầm phổ biến là cho rằng ngôn ngữ động như Python "không có quy tắc gì cho đến lúc chạy". Điều này không đúng. Python kết hợp các quyết định ràng buộc sớm và muộn theo những quy tắc rất chính xác.</p>
+  <table class="data-table">
+    <thead><tr><th>Ràng buộc</th><th>Ví dụ</th><th>Thời điểm tiêu biểu</th></tr></thead>
+    <tbody>
+      <tr><td>Ý nghĩa của <code>def</code></td><td>Quy tắc ngôn ngữ</td><td>Thời điểm thiết kế ngôn ngữ</td></tr>
+      <tr><td>Tên hàm với đối tượng hàm</td><td><code>def f(): ...</code></td><td>Khi câu lệnh định nghĩa thực thi</td></tr>
+      <tr><td>Tên tham số với đối tượng đối số</td><td><code>f(10)</code></td><td>Khi gọi hàm</td></tr>
+      <tr><td>Quy tắc phân giải tên cục bộ</td><td>LEGB</td><td>Thời điểm thiết kế ngôn ngữ</td></tr>
+      <tr><td>Tra cứu thuộc tính</td><td><code>obj.method()</code></td><td>Lúc chạy</td></tr>
+      <tr><td>Cấp phát đối tượng</td><td><code>[1, 2, 3]</code></td><td>Lúc chạy</td></tr>
+    </tbody>
+  </table>
+  <p>Có thể thấy điều này rất rõ qua một ví dụ nhỏ:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">f</span>(x):
+    <span class="kw">return</span> x + <span class="num">1</span>
+<span class="cmt"># f được ràng buộc khi câu lệnh def thực thi.</span>
+<span class="cmt"># x được ràng buộc mỗi lần f được gọi.</span></code></pre></div>
+  <p>Một số ràng buộc do thiết kế ngôn ngữ quy định, một số xảy ra khi một câu lệnh định nghĩa được thực thi, một số khác xảy ra khi hàm được gọi hay khi tra cứu thuộc tính. Python linh hoạt vì trì hoãn nhiều ràng buộc đến lúc chạy, nhưng sự linh hoạt đó vẫn nằm trong khuôn khổ các quy tắc thời điểm ràng buộc mà Chương 7 đã trình bày.</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 6: TỔNG KẾT -->
+<div class="lesson-badge">Phụ lục · Tài liệu 6 / 6</div>
+<h1 class="lesson-title" id="tong-ket">Tổng kết phụ lục</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Tên, ràng buộc, tầm vực và thời gian sống trong Python</div>
+<div class="article-section">
+  <p>Phụ lục này đã dùng Python như một nghiên cứu trường hợp để thấy các nguyên lý của Chương 7 vận hành trong một ngôn ngữ thực tế. Trong Python, một tên là một ký hiệu, và ý nghĩa của nó đến từ ràng buộc tìm được trong môi trường hiện tại; phép gán là thao tác ràng buộc và tái ràng buộc tên với đối tượng, từ đó bí danh xuất hiện một cách tự nhiên khi nhiều tên cùng trỏ một đối tượng.</p>
+  <p>Hàm trong Python là đối tượng, nên định nghĩa hàm và lời gọi hàm đều là những trường hợp của ràng buộc: tên hàm ràng buộc với đối tượng hàm, còn tham số hình thức ràng buộc với đối số thực khi gọi, kể cả qua các cơ chế gom nhóm như <code>*args</code> và <code>**kwargs</code>. Về tầm vực, Python dùng quy tắc LEGB như hiện thân cụ thể của tầm vực từ vựng và môi trường tham chiếu, trong đó <code>global</code> và <code>nonlocal</code> là công cụ điều chỉnh đích của phép gán chứ không chỉ là quyền truy cập.</p>
+  <p>Cuối cùng, bao đóng cho thấy rõ tầm vực và thời gian sống là hai khái niệm tách biệt, khi một ràng buộc trong hàm bao quanh có thể sống lâu hơn lời gọi tạo ra nó; còn thời gian sống của đối tượng được quản lý theo khả năng với tới và bộ thu gom rác, đúng với mô hình cấp phát động trên heap ngầm. Tất cả những hành vi tưởng như rời rạc của Python, khi nhìn qua lăng kính của chương, đều quy về cùng một câu hỏi nền tảng: <em>một ngôn ngữ gán ý nghĩa cho tên như thế nào</em>.</p>
+  <table class="data-table">
+    <thead><tr><th>Khái niệm</th><th>Hiện thân trong Python</th><th>Liên hệ Chương 7</th></tr></thead>
+    <tbody>
+      <tr><td>Tên</td><td>Định danh (identifier)</td><td>Ký hiệu không mang nghĩa độc lập</td></tr>
+      <tr><td>Ràng buộc</td><td>Phép gán <code>x = obj</code></td><td>Liên kết tên với thực thể</td></tr>
+      <tr><td>Bí danh</td><td><code>a = b</code> trên mutable object</td><td>Nhiều tên cùng trỏ một đối tượng</td></tr>
+      <tr><td>Tầm vực</td><td>Quy tắc LEGB</td><td>Tầm vực từ vựng (tĩnh)</td></tr>
+      <tr><td>Môi trường tham chiếu</td><td>Chuỗi tầng L→E→G→B tại điểm P</td><td>Tập ràng buộc nhìn thấy được</td></tr>
+      <tr><td>Bao đóng</td><td>Hàm trả về hàm dùng <code>nonlocal</code></td><td>Tầm vực ≠ thời gian sống</td></tr>
+      <tr><td>Thu gom rác</td><td>Reachability-based GC</td><td>Heap cấp phát động ngầm</td></tr>
+      <tr><td>Thời điểm ràng buộc</td><td>Sớm (def) + Muộn (call, attr)</td><td>Kết hợp ràng buộc tĩnh và động</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="nav-footer">
+  <a class="nav-btn secondary" href="../CO3005.html">← Về trang chủ</a>
+  <span>Tài liệu 6 / 6 · Phụ lục hoàn thành</span>
+</div>
+</main>
+</div>
+<div id="lb-overlay" onclick="closeLB()"><img id="lb-img" src="" alt=""></div>
+<script>
+  const tocLinks=document.querySelectorAll('.toc-item');
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){tocLinks.forEach(l=>l.classList.remove('active'));const m=document.querySelector('.toc-item[href="#'+e.target.id+'"]');if(m)m.classList.add('active');}});},{rootMargin:'-10% 0px -80% 0px'});
+  document.querySelectorAll('[id]').forEach(el=>{if([...tocLinks].some(l=>l.getAttribute('href')==='#'+el.id))obs.observe(el);});
+  function openLB(img){document.getElementById('lb-img').src=img.src;document.getElementById('lb-overlay').classList.add('open');}
+  function closeLB(){document.getElementById('lb-overlay').classList.remove('open');}
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLB();});
+</script>
+</body>
+</html>
