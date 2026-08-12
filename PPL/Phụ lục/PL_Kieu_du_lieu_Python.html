@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phụ lục – Kiểu dữ liệu và biểu diễn dữ liệu trong Python</title>
+<meta name="description" content="Phu luc CO3005: Kieu du lieu va bieu dien du lieu trong Python">
+<link rel="icon" type="image/png" href="../favicon_hcmut.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+  :root{--bg:#f7f6f2;--surface:#ffffff;--surface2:#f0ede6;--border:#ddd9d0;--text:#1a1916;--muted:#6b6760;--accent:#1a56a0;--accent-light:#e8f0fb;--code-bg:#1e1e1e;--code-text:#d4d4d4;--kw:#569cd6;--str:#ce9178;--cmt:#6a9955;--num:#b5cea8;--fn:#dcdcaa;--type:#4ec9b0;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.75;}
+  .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;max-width:1280px;margin:0 auto;}
+  .sidebar{background:var(--surface);border-right:1px solid var(--border);padding:28px 0;position:sticky;top:0;height:100vh;overflow-y:auto;}
+  .sidebar-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:0 20px 12px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+  .toc-item{display:block;padding:8px 20px;font-size:13px;color:var(--muted);text-decoration:none;border-left:3px solid transparent;transition:all .15s;line-height:1.4;}
+  .toc-item:hover,.toc-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-light);}
+  .toc-item.sub{padding-left:32px;font-size:12px;}
+  .main{padding:48px 56px 80px;max-width:820px;}
+  .lesson-badge{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:4px;margin-bottom:16px;}
+  .lesson-title{font-family:'IBM Plex Serif',serif;font-size:30px;font-weight:600;line-height:1.25;color:var(--text);margin-bottom:8px;}
+  .lesson-meta{font-size:13px;color:var(--muted);margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid var(--border);}
+  .article-section{margin-bottom:52px;scroll-margin-top:24px;}
+  .section-heading{font-family:'IBM Plex Serif',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--border);position:relative;}
+  .section-heading::before{content:'';position:absolute;bottom:-2px;left:0;width:40px;height:2px;background:var(--accent);}
+  p{margin-bottom:14px;} ul,ol{margin:0 0 14px 24px;line-height:2;}
+  .code-block{background:var(--code-bg);border-radius:8px;margin:20px 0;overflow:hidden;font-size:13.5px;}
+  .code-label{background:#2d2d2d;padding:6px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;letter-spacing:.06em;border-bottom:1px solid #333;}
+  pre{padding:18px 20px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;line-height:1.6;color:var(--code-text);}
+  code{font-family:'IBM Plex Mono',monospace;background:#e8e5de;color:#b5451b;padding:1px 6px;border-radius:3px;font-size:.88em;}
+  pre code{background:none;color:inherit;padding:0;border-radius:0;font-size:inherit;}
+  .kw{color:var(--kw);} .str{color:var(--str);} .cmt{color:var(--cmt);font-style:italic;} .num{color:var(--num);} .fn{color:var(--fn);} .type{color:var(--type);}
+  .callout{background:var(--accent-light);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  .callout-warn{background:#fff8e6;border-left:4px solid #d97706;border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  .callout-green{background:#f0fdf4;border-left:4px solid #16a34a;border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  .data-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px;}
+  .data-table th{background:var(--surface2);padding:10px 14px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.05em;color:var(--muted);border-bottom:2px solid var(--border);}
+  .data-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .data-table tr:last-child td{border-bottom:none;} .data-table tr:hover td{background:var(--surface2);}
+  .img-wrap{margin:24px 0;text-align:center;}
+  .img-wrap img{max-width:100%;border-radius:8px;border:1px solid var(--border);cursor:zoom-in;transition:box-shadow .2s;}
+  .img-wrap img:hover{box-shadow:0 6px 24px rgba(0,0,0,.15);}
+  .img-caption{font-size:12px;color:var(--muted);margin-top:8px;font-style:italic;}
+  #lb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out;}
+  #lb-overlay.open{display:flex;}
+  #lb-overlay img{max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  hr.divider{border:none;border-top:2px dashed var(--border);margin:48px 0;}
+  .nav-footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0 0;border-top:1px solid var(--border);margin-top:48px;font-size:14px;color:var(--muted);}
+  .nav-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--accent);color:#fff;border-radius:6px;font-size:13px;font-weight:500;text-decoration:none;}
+  .nav-btn.secondary{background:var(--surface);color:var(--accent);border:1px solid var(--accent);}
+  @media(max-width:900px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.main{padding:32px 24px 60px;}}
+</style>
+</head>
+<body>
+<div class="layout">
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-title">Phụ lục · Kiểu dữ liệu Python</div>
+  <a class="toc-item active" href="#mo-dau">Tài liệu 1 · Mở đầu</a>
+  <a class="toc-item" href="#kieu-doi-tuong-ten">Tài liệu 2 · Kiểu, đối tượng và tên</a>
+  <a class="toc-item sub" href="#moi-gia-tri-la-doi-tuong">Mọi giá trị là đối tượng</a>
+  <a class="toc-item sub" href="#dinh-kieu-dong">Tái ràng buộc và định kiểu động</a>
+  <a class="toc-item sub" href="#duck-typing">Duck typing và gợi ý kiểu</a>
+  <a class="toc-item" href="#kieu-dung-san">Tài liệu 3 · Các kiểu dựng sẵn</a>
+  <a class="toc-item sub" href="#so-nguyen">Số nguyên độ chính xác tùy ý</a>
+  <a class="toc-item sub" href="#so-float">Số dấu chấm động</a>
+  <a class="toc-item sub" href="#luan-ly">Luận lý là kiểu con của số nguyên</a>
+  <a class="toc-item sub" href="#chuoi-unicode">Chuỗi và Unicode</a>
+  <a class="toc-item sub" href="#day-anh-xa">Dãy, ánh xạ và tập hợp</a>
+  <a class="toc-item sub" href="#liet-ke">Liệt kê và miền con</a>
+  <a class="toc-item" href="#kieu-nguoi-dung">Tài liệu 4 · Kiểu người dùng định nghĩa</a>
+  <a class="toc-item sub" href="#ban-ghi">Bản ghi: lớp, namedtuple, dataclass</a>
+  <a class="toc-item sub" href="#kieu-tong">Mô phỏng kiểu tổng có thẻ</a>
+  <a class="toc-item sub" href="#kieu-de-quy">Kiểu đệ quy</a>
+  <a class="toc-item" href="#kha-bien-bat-bien">Tài liệu 5 · Khả biến, bất biến và bí danh</a>
+  <a class="toc-item sub" href="#ten-tham-chieu">Tên tham chiếu tới đối tượng</a>
+  <a class="toc-item sub" href="#list-day-tham-chieu">list là một dãy các tham chiếu</a>
+  <a class="toc-item sub" href="#bat-bien">Bất biến</a>
+  <a class="toc-item sub" href="#sao-chep">Sao chép nông và sâu</a>
+  <a class="toc-item sub" href="#bay-tham-so">Bẫy tham số mặc định khả biến</a>
+  <a class="toc-item" href="#tham-chieu-bo-nho">Tài liệu 6 · Tham chiếu và quản lý bộ nhớ</a>
+  <a class="toc-item sub" href="#danh-tinh-gia-tri">Danh tính và giá trị</a>
+  <a class="toc-item sub" href="#quan-ly-tu-dong">Quản lý bộ nhớ tự động</a>
+  <a class="toc-item sub" href="#con-tro-treo">Vì sao con trỏ treo biến mất</a>
+  <a class="toc-item sub" href="#ro-ri">Bộ nhớ vẫn có thể bị giữ</a>
+  <a class="toc-item" href="#bieu-dien-nhi-phan">Tài liệu 7 · Biểu diễn nhị phân bên ngoài</a>
+  <a class="toc-item sub" href="#bytes-ma-hoa">bytes và mã hóa chuỗi</a>
+  <a class="toc-item sub" href="#struct">Module struct</a>
+  <a class="toc-item" href="#tong-ket">Tài liệu 8 · Tổng kết phụ lục</a>
+</nav>
+<!-- MAIN -->
+<main class="main" id="mainContent">
+
+<!-- TAI LIEU 1 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 1 / 8</div>
+<h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Kiểu dữ liệu và biểu diễn dữ liệu trong Python · Trần Ngọc Bảo Duy</div>
+<div class="article-section">
+  <p>Ở Chương 8, ta đã bàn về kiểu dữ liệu và biểu diễn dữ liệu dưới góc độ nguyên lý, minh họa chủ yếu bằng các ngôn ngữ mức thấp như C. Phụ lục này thu hẹp vào Python, không phải để học cú pháp Python, mà để xem một ngôn ngữ mức cao, định kiểu động trả lời những câu hỏi của chương ra sao.</p>
+  <p>Cần nói rõ ngay phạm vi, vì đây là điều quyết định cách đọc mọi ví dụ bên dưới. Ta chỉ bàn về ngữ nghĩa ở mức ngôn ngữ Python: những gì Python quy định và người lập trình có thể tin cậy. Ta không đi vào chi tiết bên trong của một hiện thực cụ thể. Vì vậy, trong phụ lục này, cụm “biểu diễn dữ liệu” được hiểu là mô hình dữ liệu quan sát được trong ngôn ngữ, chứ không phải bố trí byte trong bộ nhớ.</p>
+  <p>Ba đặc điểm nền tảng cần nắm trước: mọi giá trị đều là đối tượng; kiểu gắn với đối tượng chứ không gắn với tên; và người lập trình thao tác với đối tượng thông qua tham chiếu, không qua con trỏ thô. Bảng dưới đây ánh xạ các khái niệm của chương sang Python:</p>
+  <table class="data-table">
+    <thead><tr><th>Khái niệm ở Chương 8</th><th>Biểu hiện trong Python</th></tr></thead>
+    <tbody>
+      <tr><td>Kiểu dữ liệu</td><td>kiểu gắn với đối tượng, xem bằng <code>type()</code></td></tr>
+      <tr><td>Kiểu số và luận lý</td><td><code>int</code>, <code>float</code>, <code>complex</code>, <code>bool</code></td></tr>
+      <tr><td>Ký tự</td><td>không có kiểu riêng; dùng <code>str</code> độ dài 1</td></tr>
+      <tr><td>Kiểu dãy</td><td><code>str</code>, <code>list</code>, <code>tuple</code>, <code>range</code></td></tr>
+      <tr><td>Kiểu ánh xạ</td><td><code>dict</code></td></tr>
+      <tr><td>Kiểu tập hợp</td><td><code>set</code>, <code>frozenset</code></td></tr>
+      <tr><td>Bản ghi</td><td>lớp, <code>namedtuple</code>, <code>dataclass</code></td></tr>
+      <tr><td>Truy cập gián tiếp</td><td>tên và phần tử chứa tham chiếu tới đối tượng</td></tr>
+      <tr><td>Quản lý bộ nhớ</td><td>tự động, không giải phóng thủ công</td></tr>
+      <tr><td>An toàn bộ nhớ</td><td>không có con trỏ thô và số học con trỏ trong mã Python thông thường</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider">
+
+<!-- TAI LIEU 2 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 2 / 8</div>
+<h1 class="lesson-title" id="kieu-doi-tuong-ten">Kiểu, đối tượng và tên trong Python</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Kiểu dữ liệu và biểu diễn dữ liệu trong Python</div>
+<div class="article-section" id="moi-gia-tri-la-doi-tuong">
+  <h2 class="section-heading">Mọi giá trị là một đối tượng</h2>
+  <p>Chương 8 định nghĩa một kiểu, ở mức ngữ nghĩa, là một tập giá trị cùng một tập phép toán hợp lệ. Python hiện thực định nghĩa này một cách triệt để: mỗi giá trị là một đối tượng, và kiểu của nó là một thuộc tính có thể truy vấn được lúc chạy.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="num">10</span>
+<span class="fn">print</span>(<span class="fn">type</span>(x))
+<span class="cmt"># &lt;class 'int'&gt;</span></code></pre></div>
+  <p>Điều đáng chú ý là kiểu gắn với đối tượng <code>10</code>, chứ không gắn với tên <code>x</code>. Ngay cả bản thân kiểu cũng là một đối tượng, nên <code>type(x)</code> trả về một đối tượng lớp mà ta có thể gán cho tên khác hay truyền đi như một giá trị bình thường.</p>
+</div>
+<div class="article-section" id="dinh-kieu-dong">
+  <h2 class="section-heading">Định kiểu động và tái ràng buộc tên</h2>
+  <p>Vì kiểu gắn với đối tượng chứ không với tên, một tên có thể lần lượt được ràng buộc với các đối tượng khác kiểu, đúng theo ý tưởng tái ràng buộc ở Phụ lục A:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="num">10</span>
+x = <span class="str">"hello"</span>
+x = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]</code></pre></div>
+  <p>Cần diễn đạt cho chuẩn: không phải “biến x đổi kiểu”, mà là tên <code>x</code> lần lượt được ràng buộc với ba đối tượng thuộc ba kiểu khác nhau. Bản thân các đối tượng không hề đổi kiểu.</p>
+  <p>Điều này không có nghĩa Python “không có kiểu”. Kiểu được kiểm tra lúc chạy, và Python không tự động cho phép tùy tiện các phép toán giữa những kiểu không tương thích:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="str">"hello"</span> + <span class="num">5</span>
+<span class="cmt"># TypeError: can only concatenate str (not "int") to str</span></code></pre></div>
+</div>
+<div class="article-section" id="duck-typing">
+  <h2 class="section-heading">Duck typing và gợi ý kiểu</h2>
+  <p>Thay vì hỏi “đối tượng này thuộc lớp nào”, Python thường theo tinh thần <em>duck typing</em>: đánh giá một đối tượng qua các thao tác và giao thức (protocol) mà nó hỗ trợ, thay vì dựa trên quan hệ kế thừa hay tên lớp cụ thể. Một giao thức đòi hỏi nhiều hơn là một phương thức trùng tên: nó có thể gồm các phương thức đặc biệt, khả năng lặp, các phép toán, và cả quy ước về hành vi.</p>
+  <p>Với những nơi cần độ chắc chắn cao hơn, Python cung cấp gợi ý kiểu (type hints):</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">add</span>(x: <span class="type">int</span>, y: <span class="type">int</span>) -&gt; <span class="type">int</span>:
+    <span class="kw">return</span> x + y</code></pre></div>
+  <div class="callout-warn"><strong>Điểm mấu chốt:</strong> gợi ý kiểu không được cưỡng chế lúc chạy. Lời gọi <code>add("a", "b")</code> vẫn chạy và trả về <code>"ab"</code>. Gợi ý kiểu phục vụ người đọc và các công cụ kiểm tra kiểu tĩnh, giúp phát hiện lỗi trước khi chạy đúng theo tinh thần phát hiện lỗi sớm ở Chương 8, chứ không biến Python thành ngôn ngữ định kiểu tĩnh.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TAI LIEU 3 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 3 / 8</div>
+<h1 class="lesson-title" id="kieu-dung-san">Các kiểu dữ liệu dựng sẵn</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Kiểu dữ liệu và biểu diễn dữ liệu trong Python</div>
+<div class="article-section" id="so-nguyen">
+  <h2 class="section-heading">Số nguyên với độ chính xác tùy ý</h2>
+  <p>Chương 8 cho thấy số nguyên thường được biểu diễn bằng chuỗi bit có độ rộng cố định, nên có thể tràn số. Python đứng hẳn về phía còn lại của đánh đổi đó:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="num">2</span> ** <span class="num">100</span>
+<span class="fn">print</span>(x)
+<span class="cmt"># 1267650600228229401496703205376</span></code></pre></div>
+  <p>Kiểu <code>int</code> của Python có độ chính xác tùy ý (arbitrary precision): các phép toán số nguyên thông thường không bị tràn theo kiểu quấn vòng ở một số bit cố định như trong C hay Java. Tuy nhiên nói “int của Python không bao giờ có giới hạn” thì lại quá lời: giá trị vẫn bị giới hạn trên thực tế bởi bộ nhớ khả dụng, và bởi những giao diện đòi hỏi kiểu có độ rộng hữ u hạn:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">import</span> struct
+struct.pack(<span class="str">">i"</span>, <span class="num">2</span> ** <span class="num">40</span>)
+<span class="cmt"># struct.error: 'i' format requires -2147483648 &lt;= number &lt;= 2147483647</span></code></pre></div>
+  <div class="callout">Trong phép toán <code>int</code> thông thường không có hiện tượng tràn số của số nguyên độ rộng cố định, chứ không phải Python xóa bỏ mọi giới hạn.</div>
+</div>
+<div class="article-section" id="so-float">
+  <h2 class="section-heading">Số dấu chấm động và nhu cầu chính xác</h2>
+  <p>Trong hầu hết các hiện thực Python hiện nay, kiểu <code>float</code> là số dấu chấm động nhị phân 64 bit, nên nó thừa hưởng đúng bản chất xấp xỉ đã phân tích ở Chương 8:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="fn">print</span>(<span class="num">0.1</span> + <span class="num">0.2</span> == <span class="num">0.3</span>)
+<span class="cmt"># False</span></code></pre></div>
+  <p>Khi cần độ chính xác kiểu khác, thư viện chuẩn cung cấp hai lựa chọn:</p>
+  <div class="code-block"><div class="code-label">decimal.Decimal</div><pre><code><span class="kw">from</span> decimal <span class="kw">import</span> Decimal
+<span class="fn">print</span>(Decimal(<span class="str">"0.1"</span>) + Decimal(<span class="str">"0.2"</span>) == Decimal(<span class="str">"0.3"</span>))
+<span class="cmt"># True</span></code></pre></div>
+  <p>Nhưng <code>Decimal</code> không phải số học thực chính xác tuyệt đối. Các phép toán vẫn chịu độ chính xác và chế độ làm tròn của ngữ cảnh tính toán hiện hành:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="fn">print</span>(Decimal(<span class="num">1</span>) / Decimal(<span class="num">3</span>))
+<span class="cmt"># 0.3333333333333333333333333333</span></code></pre></div>
+  <p>Kiểu <code>fractions.Fraction</code> biểu diễn chính xác số hữ u tỉ bằng cặp tử số và mẫu số nguyên. Tuy nhiên đây là một cái bẫy tinh vi:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">from</span> fractions <span class="kw">import</span> Fraction
+<span class="fn">print</span>(Fraction(<span class="num">1</span>, <span class="num">10</span>))
+<span class="fn">print</span>(Fraction(<span class="str">"0.1"</span>))
+<span class="fn">print</span>(Fraction(<span class="num">0.1</span>))
+<span class="cmt"># 1/10</span>
+<span class="cmt"># 1/10</span>
+<span class="cmt"># 3602879701896397/36028797018963968</span></code></pre></div>
+  <p>Hai dòng đầu cho đúng 1/10. Dòng thứ ba thì không, vì đối số <code>0.1</code> đã là một giá trị dấu chấm động, tức đã bị làm tròn trước khi <code>Fraction</code> nhìn thấy nó. Ví dụ này minh họa sắc nét bản chất xấp xỉ của dấu chấm động ở Chương 8: sai số đã phát sinh ngay tại chữ literal, không phải ở phép toán sau đó.</p>
+  <p>Cuối cùng, Python còn có kiểu số phức dựng sẵn <code>complex</code> (ví dụ <code>3 + 4j</code>); ở mức sử dụng, đây cũng là một kiểu số vô hướng.</p>
+</div>
+<div class="article-section" id="luan-ly">
+  <h2 class="section-heading">Luận lý là một kiểu con của số nguyên</h2>
+  <p>Một chi tiết thú vị về thiết kế kiểu của Python là kiểu luận lý không tách rời khỏi số nguyên:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="fn">print</span>(<span class="fn">issubclass</span>(<span class="type">bool</span>, <span class="type">int</span>))
+<span class="fn">print</span>(<span class="kw">True</span> + <span class="kw">True</span>)
+<span class="cmt"># True</span>
+<span class="cmt"># 2</span></code></pre></div>
+  <p>Vì <code>bool</code> kế thừa <code>int</code>, <code>True</code> và <code>False</code> hành xử như <code>1</code> và <code>0</code> trong ngữ cảnh số học. Python chọn sự tiện lợi và tính nhất quán với số nguyên, đổi lại đôi khi làm mờ ranh giới giữa giá trị luận lý và giá trị số.</p>
+</div>
+<div class="article-section" id="chuoi-unicode">
+  <h2 class="section-heading">Chuỗi và Unicode</h2>
+  <p>Python không có kiểu ký tự riêng. “A” không phải một “ký tự” mà là một đối tượng <code>str</code> có độ dài 1. Bản thân <code>str</code> là một kiểu dãy bất biến, thuộc nhóm kiểu hợp thành theo cách phân loại của Chương 8, chứ không phải kiểu vô hướng.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>c = <span class="str">"A"</span>
+<span class="fn">print</span>(<span class="fn">type</span>(c), <span class="fn">len</span>(c))
+<span class="fn">print</span>(<span class="fn">ord</span>(<span class="str">"A"</span>), <span class="fn">chr</span>(<span class="num">65</span>))
+<span class="cmt"># &lt;class 'str'&gt; 1</span>
+<span class="cmt"># 65 A</span></code></pre></div>
+  <p>ửe đây cần phát biểu cẩn thận theo đúng tinh thần phân tầng Unicode của Chương 8. Hàm <code>ord()</code> trả về điểm mã (code point) của một chuỗi có đúng một điểm mã. Nhưng một ký tự mà người dùng nhìn thấy trên màn hình không nhất thiết ứng với một phần tử của <code>str</code>:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>e = <span class="str">"e\u0301"</span>      <span class="cmt"># chữ e cộng dấu sắc tổ hợp</span>
+<span class="fn">print</span>(e, <span class="fn">len</span>(e))
+<span class="cmt"># é 2</span></code></pre></div>
+  <p>Chuỗi trên hiển thị thành một ký tự duy nhất nhưng có độ dài 2, vì nó gồm hai điểm mã tạo thành một cụm hiển thị. Nói cách khác, <code>len()</code> đếm điểm mã, không đếm ký tự theo cảm nhận của người đọc. Đây chính là sự phân tầng giữa điểm mã và cụm hiển thị mà Chương 8 đã cảnh báo.</p>
+</div>
+<div class="article-section" id="day-anh-xa">
+  <h2 class="section-heading">Các kiểu dãy, ánh xạ và tập hợp</h2>
+  <p>Python cung cấp một bộ kiểu hợp thành dựng sẵn, ánh xạ khá gọn sang các kiểu hợp thành ở Chương 8:</p>
+  <table class="data-table">
+    <thead><tr><th>Kiểu Python</th><th>Vai trò</th><th>Khả biến</th></tr></thead>
+    <tbody>
+      <tr><td><code>list</code></td><td>dãy có thứ tự, thay đổi được</td><td>khả biến</td></tr>
+      <tr><td><code>tuple</code></td><td>dãy có thứ tự, cố định sau khi tạo</td><td>bất biến</td></tr>
+      <tr><td><code>range</code></td><td>dãy số nguyên sinh theo yêu cầu</td><td>bất biến</td></tr>
+      <tr><td><code>str</code></td><td>dãy ký tự</td><td>bất biến</td></tr>
+      <tr><td><code>dict</code></td><td>ánh xạ khóa sang giá trị</td><td>khả biến</td></tr>
+      <tr><td><code>set</code> / <code>frozenset</code></td><td>bộ sưu tập các phần tử phân biệt</td><td>khả biến / bất biến</td></tr>
+    </tbody>
+  </table>
+  <div class="code-block"><div class="code-label">Python – set operations</div><pre><code>a = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>}
+b = {<span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>}
+<span class="fn">print</span>(a | b, a &amp; b, a - b, <span class="num">2</span> <span class="kw">in</span> a)
+<span class="cmt"># {1, 2, 3, 4} {2, 3} {1} True</span></code></pre></div>
+  <div class="callout-warn"><strong>Ràng buộc quan trọng:</strong> khóa của <code>dict</code> và phần tử của <code>set</code> phải băm được (hashable). Điều kiện trực tiếp là băm được, chứ không phải “bất biến” chung chung. Vì vậy <code>str</code> làm khóa được, <code>list</code> thì không, và một <code>tuple</code> chứa một <code>list</code> bên trong cũng không băm được.</div>
+</div>
+<div class="article-section" id="liet-ke">
+  <h2 class="section-heading">Liệt kê và mô phỏng miền con</h2>
+  <p>Python hỗ trợ kiểu liệt kê qua module <code>enum</code>:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">from</span> enum <span class="kw">import</span> Enum
+
+<span class="kw">class</span> <span class="type">Day</span>(Enum):
+    MON = <span class="num">1</span>
+    TUE = <span class="num">2</span>
+    WED = <span class="num">3</span>
+
+today = Day.MON</code></pre></div>
+  <p>Về kiểu miền con thì cần nói thẳng: Python không có kiểu miền con dựng sẵn như Pascal. Ràng buộc “giá trị phải nằm trong một khoảng” không được biểu diễn ở mức kiểu, mà phải mô phỏng bằng kiểm tra lúc chạy:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">class</span> <span class="type">Score</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, value):
+        self.value = value
+
+    @<span class="fn">property</span>
+    <span class="kw">def</span> <span class="fn">value</span>(self):
+        <span class="kw">return</span> self._value
+
+    @value.setter
+    <span class="kw">def</span> <span class="fn">value</span>(self, v):
+        <span class="kw">if not</span> <span class="num">0</span> &lt;= v &lt;= <span class="num">10</span>:
+            <span class="kw">raise</span> ValueError(<span class="str">"score must be in 0..10"</span>)
+        self._value = v</code></pre></div>
+  <div class="callout">Khác biệt này làm nổi bật một điểm của chương: kiểu miền con đưa ràng buộc giá trị vào ngay hệ thống kiểu, còn ở Python trách nhiệm bảo đảm ràng buộc chuyển sang người lập trình.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TAI LIEU 4 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 4 / 8</div>
+<h1 class="lesson-title" id="kieu-nguoi-dung">Kiểu do người dùng định nghĩa</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Kiểu dữ liệu và biểu diễn dữ liệu trong Python</div>
+<div class="article-section" id="ban-ghi">
+  <h2 class="section-heading">Bản ghi: lớp, <code>namedtuple</code> và <code>dataclass</code></h2>
+  <p>Chương 8 định nghĩa bản ghi là một kết hợp không đồng nhất, truy cập bằng tên trường. Python có vài cách dựng khái niệm này.</p>
+  <div class="callout-warn"><strong>Cần gỡ nhầm lẫn:</strong> <code>dict</code> không phải là một kiểu bản ghi. Nó là kiểu ánh xạ, có thể dùng để biểu diễn dữ liệu dạng bản ghi, nhưng khóa có thể thêm hoặc xóa tùy ý, không có tập trường cố định nào được bảo đảm.</div>
+  <div class="code-block"><div class="code-label">namedtuple – bản ghi bất biến</div><pre><code><span class="kw">from</span> collections <span class="kw">import</span> namedtuple
+
+Student = <span class="fn">namedtuple</span>(<span class="str">"Student"</span>, [<span class="str">"id"</span>, <span class="str">"name"</span>, <span class="str">"gpa"</span>])
+s = Student(<span class="num">1</span>, <span class="str">"An"</span>, <span class="num">3.6</span>)
+<span class="fn">print</span>(s.name)</code></pre></div>
+  <div class="code-block"><div class="code-label">dataclass – gần với struct của C</div><pre><code><span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+
+@dataclass
+<span class="kw">class</span> <span class="type">Student</span>:
+    id: <span class="type">int</span>
+    name: <span class="type">str</span>
+    gpa: <span class="type">float</span></code></pre></div>
+  <p>Tuy vậy, đừng nghĩ <code>dataclass</code> cưỡng chế kiểu. Các gợi ý kiểu ở đây cũng không được kiểm tra lúc chạy:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>Student(<span class="str">"not-an-int"</span>, <span class="num">123</span>, <span class="str">"high"</span>)   <span class="cmt"># vẫn chạy</span></code></pre></div>
+</div>
+<div class="article-section" id="kieu-tong">
+  <h2 class="section-heading">Mô phỏng kiểu tổng có thẻ</h2>
+  <p>Python không có cơ chế hợp nhất dùng chung vùng nhớ như <code>union</code> của C. Ý tưởng “một giá trị có thể thuộc nhiều kiểu” chỉ được diễn đạt ở mức gợi ý kiểu:</p>
+  <div class="code-block"><div class="code-label">Python 3.10+</div><pre><code><span class="kw">def</span> <span class="fn">parse</span>(x: <span class="type">int</span> | <span class="type">str</span>) -&gt; <span class="type">str</span>:
+    <span class="kw">return</span> <span class="fn">str</span>(x)</code></pre></div>
+  <p>Kiểu tổng có thẻ ở Chương 8 có thể được mô phỏng bằng các lớp biến thể cùng với khớp mẫu:</p>
+  <div class="code-block"><div class="code-label">Python 3.10+</div><pre><code><span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+
+@dataclass
+<span class="kw">class</span> <span class="type">Circle</span>:
+    radius: <span class="type">float</span>
+
+@dataclass
+<span class="kw">class</span> <span class="type">Rectangle</span>:
+    width: <span class="type">float</span>
+    height: <span class="type">float</span>
+
+<span class="kw">def</span> <span class="fn">area</span>(shape):
+    <span class="kw">match</span> shape:
+        <span class="kw">case</span> Circle(r):
+            <span class="kw">return</span> <span class="num">3.14</span> * r * r
+        <span class="kw">case</span> Rectangle(w, h):
+            <span class="kw">return</span> w * h</code></pre></div>
+  <div class="callout-warn">ửe đây lớp của đối tượng đóng vai trò thẻ phân biệt. Cách này rõ nghĩa hơn hẳn hợp nhất tự do của C, nhưng Python mặc định không kiểm tra tính đầy đủ của các nhánh, nên thêm một lớp biến thể mới sẽ không gây lỗi biên dịch.</div>
+</div>
+<div class="article-section" id="kieu-de-quy">
+  <h2 class="section-heading">Kiểu đệ quy</h2>
+  <p>Kiểu đệ quy được dựng tự nhiên bằng một lớp có trường trỏ tới chính kiểu của nó, đúng như nút danh sách liên kết ở Chương 8:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">class</span> <span class="type">Node</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, value, next=<span class="kw">None</span>):
+        self.value = value
+        self.next = next
+
+head = <span class="fn">Node</span>(<span class="num">10</span>, <span class="fn">Node</span>(<span class="num">20</span>, <span class="fn">Node</span>(<span class="num">30</span>)))</code></pre></div>
+  <div class="callout">Điểm mấu chốt là trường <code>next</code> giữ một tham chiếu tới một <code>Node</code> khác, chứ không nhúng cả một <code>Node</code> vào bên trong. Đây chính là điều Chương 8 nhấn mạnh khi nói kiểu đệ quy cần con trỏ hoặc tham chiếu; trong Python, vai trò đó do tham chiếu đối tượng đảm nhận.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TAI LIEU 5 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 5 / 8</div>
+<h1 class="lesson-title" id="kha-bien-bat-bien">Khả biến, bất biến và bí danh</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Kiểu dữ liệu và biểu diễn dữ liệu trong Python</div>
+<div class="article-section" id="ten-tham-chieu">
+  <h2 class="section-heading">Tên tham chiếu tới đối tượng</h2>
+  <p>Đây là mô hình “biểu diễn” đúng đắn nhất để dạy ở mức ngôn ngữ Python: một tên không chứa giá trị, mà tham chiếu tới một đối tượng. Phép gán giữa hai tên không sao chép đối tượng.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+b = a</code></pre></div>
+  <div class="img-wrap">
+    <img src="Kiểu dữ liệu và biểu diễn dữ liệu trong Python_PL/h1.png" alt="Hình 1 – a và b cùng tham chiếu một đối tượng" onclick="openLB(this)">
+    <div class="img-caption">Hình 1 – <code>a</code> và <code>b</code> không phải hai danh sách độc lập; cả hai cùng tham chiếu tới một đối tượng</div>
+  </div>
+  <p>Như sơ đồ trên, <code>a</code> và <code>b</code> không phải hai danh sách độc lập; cả hai cùng tham chiếu tới một đối tượng. Vì vậy thay đổi qua <code>b</code> quan sát được qua <code>a</code>:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>b.append(<span class="num">4</span>)
+<span class="fn">print</span>(a)
+<span class="cmt"># [1, 2, 3, 4]</span></code></pre></div>
+  <p>Đây là hiện tượng bí danh của Chương 7 và Chương 8, nay quan sát trực tiếp mà không cần nói tới địa chỉ hay con trỏ máy. Cần phân biệt rõ với tái ràng buộc: <code>b.append(4)</code> thay đổi đối tượng mà <code>b</code> tham chiếu, còn <code>b = [9]</code> sẽ ràng buộc lại <code>b</code> sang một đối tượng khác và không ảnh hưởng tới <code>a</code>.</p>
+</div>
+<div class="article-section" id="list-day-tham-chieu">
+  <h2 class="section-heading"><code>list</code> là một dãy các tham chiếu</h2>
+  <p>Một <code>list</code> lưu một dãy tham chiếu tới các đối tượng, nên các phần tử hoàn toàn có thể thuộc những kiểu khác nhau:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre></code></pre></div>
+  <div class="img-wrap">
+    <img src="Kiểu dữ liệu và biểu diễn dữ liệu trong Python_PL/h2.png" alt="Hình 2 – list là dãy các tham chiếu tới đối tượng" onclick="openLB(this)">
+    <div class="img-caption">Hình 2 – Một <code>list</code> lưu dãy tham chiếu tới các đối tượng; phần tử có thể thuộc kiểu khác nhau</div>
+  </div>
+  <p>Đây là khác biệt căn bản so với mảng của C. Khái niệm mảng răng cưa ở Chương 8 chỉ tương ứng khi các phần tử lại là những <code>list</code> có độ dài khác nhau:</p> ở Chương 8 chỉ tương ứng khi các phần tử lại là những <code>list</code> có độ dài khác nhau:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>jagged = [[<span class="num">1</span>, <span class="num">2</span>], [<span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>], [<span class="num">6</span>]]</code></pre></div>
+  <p>Nếu cần một dãy đồng nhất theo một kiểu số cố định, thư viện chuẩn có <code>array.array</code>:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">from</span> array <span class="kw">import</span> array
+a = <span class="fn">array</span>(<span class="str">"i"</span>, [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>])   <span class="cmt"># dãy các số nguyên cùng kiểu</span></code></pre></div>
+</div>
+<div class="article-section" id="bat-bien">
+  <h2 class="section-heading">Bất biến</h2>
+  <p>Ba kiểu dãy bất biến quan trọng là <code>tuple</code>, <code>str</code> và <code>range</code>. Chúng không cho sửa phần tử tại chỗ:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>t = (<span class="num">3</span>, <span class="num">4</span>)
+t[<span class="num">0</span>] = <span class="num">99</span>
+<span class="cmt"># TypeError: 'tuple' object does not support item assignment</span>
+s = <span class="str">"Alice"</span>
+s[<span class="num">0</span>] = <span class="str">"X"</span>
+<span class="cmt"># TypeError: 'str' object does not support item assignment</span></code></pre></div>
+  <p>Hệ quả quan trọng của tính bất biến là mọi thao tác “sửa” thực chất tạo ra một đối tượng mới. Chẳng hạn phép ghép chuỗi không sửa chuỗi cũ mà sinh ra một chuỗi mới:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>s = <span class="str">"Alice"</span>
+t = s + <span class="str">"!"</span>      <span class="cmt"># t là đối tượng mới; s không đổi</span></code></pre></div>
+</div>
+<div class="article-section" id="sao-chep">
+  <h2 class="section-heading">Sao chép nông và sao chép sâu</h2>
+  <p>Vì gán không sao chép, khi thực sự cần một bản sao ta phải nói rõ. Ngay cả “sao chép” cũng có hai mức, và sự phân biệt này là hệ quả trực tiếp của việc phần tử chỉ là tham chiếu.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">import</span> copy
+
+a  = [[<span class="num">1</span>, <span class="num">2</span>], [<span class="num">3</span>, <span class="num">4</span>]]
+sh = copy.<span class="fn">copy</span>(a)        <span class="cmt"># sao chép nông</span>
+dp = copy.<span class="fn">deepcopy</span>(a)    <span class="cmt"># sao chép sâu</span>
+
+a[<span class="num">0</span>][<span class="num">0</span>] = <span class="num">99</span>
+<span class="fn">print</span>(sh)
+<span class="fn">print</span>(dp)
+<span class="cmt"># [[99, 2], [3, 4]]</span>
+<span class="cmt"># [[1, 2], [3, 4]]</span></code></pre></div>
+  <div class="img-wrap">
+    <img src="Kiểu dữ liệu và biểu diễn dữ liệu trong Python_PL/h3.png" alt="Hình 3 – Sao chép nông và sâu" onclick="openLB(this)">
+    <div class="img-caption">Hình 3 – Sao chép nông chỉ sao chép đối tượng ngoài; sao chép sâu nhân bản toàn bộ cấu trúc đệ quy</div>
+  </div>
+  <p>Sao chép nông tạo một đối tượng ngoài mới, nhưng đối tượng ngoài mới đó vẫn chứa cùng những tham chiếu như bản gốc, tức vẫn dùng chung các <code>list</code> bên trong; vì vậy sửa <code>a[0][0]</code> vẫn nhìn thấy được qua <code>sh</code>. Sao chép sâu nhân bản đệ quy cả các đối tượng bên trong, nên <code>dp</code> hoàn toàn độc lập với <code>a</code>.</p>
+</div>
+<div class="article-section" id="bay-tham-so">
+  <h2 class="section-heading">Bẫy tham số mặc định khả biến</h2>
+  <p>Một biểu hiện tinh vi và hay gây lỗi của bí danh khả biến:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">add</span>(x, acc=[]):
+    acc.append(x)
+    <span class="kw">return</span> acc
+
+<span class="fn">print</span>(<span class="fn">add</span>(<span class="num">1</span>))
+<span class="fn">print</span>(<span class="fn">add</span>(<span class="num">2</span>))
+<span class="cmt"># [1]</span>
+<span class="cmt"># [1, 2]</span></code></pre></div>
+  <div class="callout-warn">Danh sách mặc định <code>acc</code> được tạo một lần khi câu lệnh định nghĩa hàm được thực thi, rồi dùng lại qua mọi lời gọi, nên trạng thái tích lũy. Đây là giao điểm của ba ý đã học: bí danh, tính khả biến, và thời điểm ràng buộc ở Chương 7. Cách sửa quen thuộc: dùng <code>None</code> làm mặc định rồi tạo danh sách mới bên trong thân hàm.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TAI LIEU 6 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 6 / 8</div>
+<h1 class="lesson-title" id="tham-chieu-bo-nho">Tham chiếu và quản lý bộ nhớ tự động</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Kiểu dữ liệu và biểu diễn dữ liệu trong Python</div>
+<div class="article-section" id="danh-tinh-gia-tri">
+  <h2 class="section-heading">Danh tính và giá trị</h2>
+  <p>Python không có con trỏ thô và không có số học con trỏ. Toán tử <code>is</code> so sánh danh tính, còn <code>==</code> so sánh giá trị:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+b = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+c = a
+<span class="fn">print</span>(a == b, a <span class="kw">is</span> b)
+<span class="fn">print</span>(a == c, a <span class="kw">is</span> c)
+<span class="cmt"># True False</span>
+<span class="cmt"># True True</span></code></pre></div>
+
+  <div class="callout-warn"><strong>Quy tắc thực hành:</strong> không bao giờ dùng <code>is</code> để so sánh giá trị số hoặc chuỗi; hãy dùng <code>==</code>. Toán tử <code>is</code> chỉ nên dùng khi ta thật sự hỏi về danh tính, chẳng hạn <code>x is None</code>.</div>
+</div>
+<div class="article-section" id="quan-ly-tu-dong">
+  <h2 class="section-heading">Quản lý bộ nhớ tự động</h2>
+  <p>Python quản lý bộ nhớ tự động. Người lập trình tạo đối tượng và sử dụng chúng qua các tham chiếu, nhưng không trực tiếp giải phóng vùng nhớ bằng một thao tác kiểu <code>free</code> hay <code>delete</code> của C.</p>
+  <p>ửe mức ngôn ngữ, quy tắc cần nhớ chỉ có hai vế. Thứ nhất, một đối tượng còn với tới được thì phải tiếp tục tồn tại. Thứ hai, một đối tượng không còn với tới được sẽ trở thành ứng viên để thu hồi. Thời điểm và cơ chế thu hồi cụ thể là chuyện của từng hiện thực, và một chương trình đúng đắn không nên phụ thuộc vào chúng.</p>
+</div>
+<div class="article-section" id="con-tro-treo">
+  <h2 class="section-heading">Vì sao con trỏ treo hầu như biến mất</h2>
+  <p>Chương 8 mô tả con trỏ treo là con trỏ trỏ tới một đối tượng đã được giải phóng. Trong mã Python thông thường, lỗi này hầu như không xuất hiện, và lý do rất trực tiếp: người lập trình không thể giải phóng một đối tượng trong khi vẫn giữ một tham chiếu hợp lệ tới nó. Không có <code>free</code>, nên không thể tạo ra tình huống “đối tượng đã chết nhưng tham chiếu vẫn còn”.</p>
+  <div class="callout-green">Đây chính là vị trí của Python trên trục đánh đổi ở cuối Chương 8: từ bỏ quyền điều khiển mức thấp để đổi lấy an toàn bộ nhớ do ngôn ngữ bảo đảm.</div>
+</div>
+<div class="article-section" id="ro-ri">
+  <h2 class="section-heading">Bộ nhớ vẫn có thể bị giữ lâu hơn cần thiết</h2>
+  <p>Nếu con trỏ treo gần như biến mất, thì lỗi đối nghịch là rò rỉ bộ nhớ vẫn còn, nhưng dưới hình thức khác. Trong Python, rò rỉ không phải là “quên free”, mà là chương trình tiếp tục giữ tham chiếu tới những đối tượng không còn hữ u ích:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>cache = {}
+
+<span class="kw">def</span> <span class="fn">remember</span>(key, value):
+    cache[key] = value      <span class="cmt"># không bao giờ dọn: đối tượng luôn với tới được</span></code></pre></div>
+  <p>Khi cần tham chiếu tới một đối tượng mà không giữ nó sống, thư viện chuẩn cung cấp tham chiếu yếu (weak reference) qua module <code>weakref</code>: một tham chiếu yếu không ngăn đối tượng bị thu hồi.</p>
+  <div class="callout">Quản lý bộ nhớ tự động giải quyết được vế “đối tượng mất nhưng tham chiếu còn”, nhưng vế “tham chiếu còn dù không cần nữ a” thì vẫn thuộc trách nhiệm thiết kế của người lập trình.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TAI LIEU 7 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 7 / 8</div>
+<h1 class="lesson-title" id="bieu-dien-nhi-phan">Biểu diễn nhị phân bên ngoài</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Kiểu dữ liệu và biểu diễn dữ liệu trong Python</div>
+<div class="article-section" id="bytes-ma-hoa">
+  <h2 class="section-heading"><code>bytes</code> và mã hóa chuỗi</h2>
+  <p>Có những lúc chương trình phải làm việc với biểu diễn nhị phân bên ngoài: đọc ghi tập tin nhị phân, hay trao đổi dữ liệu với một hệ thống khác. Python cung cấp các giao diện chuẩn cho việc này. Điều quan trọng cần hiểu ngay là chúng không mô tả cách các đối tượng Python được lưu trong bộ nhớ; chúng chỉ chuyển đổi giữa giá trị Python và một định dạng byte do ta chỉ định rõ.</p>
+  <p>Kiểu <code>bytes</code> là một dãy byte bất biến, khác hẳn <code>str</code> vốn là dãy điểm mã. Cầu nối giữ a hai thế giới là mã hóa và giải mã:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>s = <span class="str">"Xin chào"</span>
+b = s.<span class="fn">encode</span>(<span class="str">"utf-8"</span>)
+
+<span class="fn">print</span>(<span class="fn">len</span>(s), <span class="fn">len</span>(b))
+<span class="fn">print</span>(b)
+<span class="fn">print</span>(b.<span class="fn">decode</span>(<span class="str">"utf-8"</span>))
+<span class="cmt"># 8 9</span>
+<span class="cmt"># b'Xin ch\xc3\xa0o'</span>
+<span class="cmt"># Xin chào</span></code></pre></div>
+  <div class="img-wrap">
+    <img src="Kiểu dữ liệu và biểu diễn dữ liệu trong Python_PL/h4.png" alt="Hình 4 – Phân biệt điểm mã str và byte UTF-8" onclick="openLB(this)">
+    <div class="img-caption">Hình 4 – Chuỗi 8 điểm mã cần 9 byte UTF-8: phân tầng giữa điểm mã và byte mã hóa</div>
+  </div>
+  <p>Chuỗi có 8 điểm mã nhưng cần 9 byte khi mã hóa UTF-8, vì ký tự à cần hai byte. Đây chính là sự phân biệt giữa điểm mã và byte mã hóa mà Chương 8 đã nêu, nay quan sát trực tiếp. Kiểu <code>bytearray</code> là phiên bản khả biến của <code>bytes</code>.</p>
+</div>
+<div class="article-section" id="struct">
+  <h2 class="section-heading">Module <code>struct</code></h2>
+  <p>Khi cần đóng gói các giá trị vào một bố trí nhị phân xác định, thư viện chuẩn có module <code>struct</code>:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">import</span> struct
+
+data = struct.<span class="fn">pack</span>(<span class="str">">if"</span>, <span class="num">10</span>, <span class="num">3.5</span>)
+x, y = struct.<span class="fn">unpack</span>(<span class="str">">if"</span>, data)
+
+<span class="fn">print</span>(data, <span class="fn">len</span>(data))
+<span class="fn">print</span>(x, y)
+<span class="cmt"># b'\x00\x00\x00\n@`\x00\x00' 8</span>
+<span class="cmt"># 10 3.5</span></code></pre></div>
+  <p>Chuỗi định dạng <code>&quot;&gt;if&quot;</code> chỉ định rõ ba điều: <code>&gt;</code> là thứ tự byte lớn trước (big-endian), <code>i</code> là số nguyên 4 byte, và <code>f</code> là số dấu chấm động 4 byte. Nhờ chỉ định tường minh như vậy, kết quả không phụ thuộc vào nền tảng đang chạy, điều tối quan trọng khi ghi tập tin hay gửi dữ liệu qua mạng cho một hệ thống viết bằng ngôn ngữ khác.</p>
+  <div class="callout">Chính ở đây, các khái niệm mức byte của Chương 8 quay lại một cách hữ u hình: thứ tự byte, độ rộng cố định của từng trường, và tổng số byte của cả gói. Nhưng cần nhắc lại: <code>struct</code> mô tả định dạng byte bên ngoài mà ta tự chọn, chứ không tiết lộ gì về cách một đối tượng <code>int</code> hay <code>float</code> của Python được lưu bên trong.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TAI LIEU 8 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 8 / 8</div>
+<h1 class="lesson-title" id="tong-ket">Tổng kết phụ lục</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Kiểu dữ liệu và biểu diễn dữ liệu trong Python</div>
+<div class="article-section">
+  <p>Phụ lục này đã dùng Python làm nghiên cứu trường hợp cho Chương 8, giữ nguyên một nguyên tắc xuyên suốt: chỉ bàn những gì thuộc ngữ nghĩa của ngôn ngữ, không bàn chi tiết bên trong của một hiện thực cụ thể.</p>
+  <p>Trong Python, mọi giá trị là đối tượng và kiểu gắn với đối tượng chứ không với tên; định kiểu động cho phép tái ràng buộc một tên sang đối tượng khác kiểu, trong khi các phép toán giữa những kiểu không tương thích vẫn bị báo lỗi lúc chạy, và gợi ý kiểu không được cưỡng chế lúc chạy.</p>
+  <p>Bộ kiểu dựng sẵn ánh xạ khá gọn sang các kiểu của chương, nhưng có ba điều dễ nói quá lời mà ta đã cẩn thận đính chính: <code>int</code> có độ chính xác tùy ý nên không tràn theo kiểu quấn vòng, song vẫn bị giới hạn bởi tài nguyên và bởi các giao diện độ rộng hữ u hạn; <code>Decimal</code> và <code>Fraction</code> chính xác hơn <code>float</code> nhưng đều có giới hạn riêng, đặc biệt <code>Fraction(0.1)</code> không cho 1/10; và <code>str</code> là một kiểu dãy bất biến, không phải kiểu ký tự hay kiểu vô hướng.</p>
+  <p>Mô hình “biểu diễn” thích hợp để dạy ở mức ngôn ngữ là quan hệ giữa tên và đối tượng: tên tham chiếu tới đối tượng, gán không sao chép, nên bí danh xuất hiện tự nhiên và trở nên nguy hiểm khi đối tượng khả biến. Từ đó nảy sinh sự phân biệt giữa sao chép nông và sao chép sâu, cùng bậy tham số mặc định khả biến. Cuối cùng, Python quản lý bộ nhớ tự động: một đối tượng còn với tới được thì còn tồn tại, nên con trỏ treo hầu như biến mất, nhưng việc vô tình giữ tham chiếu lâu hơn cần thiết vẫn là trách nhiệm của người lập trình. Khi thật sự cần chạm tới byte, các giao diện chuẩn như <code>bytes</code> và <code>struct</code> cho phép làm việc với định dạng nhị phân bên ngoài mà không cần biết gì về cách Python lưu đối tượng bên trong.</p>
+  <table class="data-table">
+    <thead><tr><th>Chủ đề</th><th>Nội dung chính</th><th>Liên hệ Chương 8</th></tr></thead>
+    <tbody>
+      <tr><td>Kiểu đối tượng</td><td>Kiểu gắn đối tượng, <code>type()</code></td><td>Định kiểu động vs. tĩnh</td></tr>
+      <tr><td>int</td><td>Độ chính xác tùy ý, không tràn quấn vòng</td><td>Số nguyên độ rộng cố định</td></tr>
+      <tr><td>float, Decimal, Fraction</td><td>Xấp xỉ, có giới hạn</td><td>Dấu chấm động và kiểu thập phân</td></tr>
+      <tr><td>str</td><td>Dãy bất biến điểm mã, không phải ký tự</td><td>Phân tầng Unicode</td></tr>
+      <tr><td>list, dict, set</td><td>Kiểu hợp thành khả biến</td><td>Dãy, ánh xạ, tập hợp</td></tr>
+      <tr><td>tuple, str</td><td>Bất biến, tạo đối tượng mới khi “sửa”</td><td>Tính bất biến</td></tr>
+      <tr><td>Bí danh</td><td>Gán không sao chép, nguy hiểm khi khả biến</td><td>Con trỏ và tham chiếu</td></tr>
+      <tr><td>Sao chép nông / sâu</td><td>Nông: cùng tham chiếu phần tử; sâu: độc lập</td><td>Sao chép đối tượng</td></tr>
+      <tr><td>Quản lý bộ nhớ</td><td>Tự động, không có con trỏ treo</td><td>Đánh đổi an toàn vs. kiểm soát</td></tr>
+      <tr><td>bytes, struct</td><td>Định dạng nhị phân bên ngoài</td><td>Biểu diễn bit và thứ tự byte</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="nav-footer">
+  <a class="nav-btn secondary" href="../CO3005.html">← Về trang chủ</a>
+  <span>Tài liệu 8 / 8 · Phụ lục hoàn thành</span>
+</div>
+</main>
+</div>
+<div id="lb-overlay" onclick="closeLB()"><img id="lb-img" src="" alt=""></div>
+<script>
+  const tocLinks=document.querySelectorAll('.toc-item');
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){tocLinks.forEach(l=>l.classList.remove('active'));const m=document.querySelector('.toc-item[href="#'+e.target.id+'"]');if(m)m.classList.add('active');}});},{rootMargin:'-10% 0px -80% 0px'});
+  document.querySelectorAll('[id]').forEach(el=>{if([...tocLinks].some(l=>l.getAttribute('href')==='#'+el.id))obs.observe(el);});
+  function openLB(img){document.getElementById('lb-img').src=img.src;document.getElementById('lb-overlay').classList.add('open');}
+  function closeLB(){document.getElementById('lb-overlay').classList.remove('open');}
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLB();});
+</script>
+</body>
+</html>
