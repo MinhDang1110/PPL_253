@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phụ lục – Chương trình con trong Python</title>
+<meta name="description" content="Phụ lục CO3005: Chương trình con trong Python – hàm, ngoại lệ, generator, tác vụ, bao đóng">
+<link rel="icon" type="image/png" href="../favicon_hcmut.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+  :root{--bg:#f7f6f2;--surface:#ffffff;--surface2:#f0ede6;--border:#ddd9d0;--text:#1a1916;--muted:#6b6760;--accent:#1a56a0;--accent-light:#e8f0fb;--code-bg:#1e1e1e;--code-text:#d4d4d4;--kw:#569cd6;--str:#ce9178;--cmt:#6a9955;--num:#b5cea8;--fn:#dcdcaa;--type:#4ec9b0;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.75;}
+  .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;max-width:1280px;margin:0 auto;}
+  .sidebar{background:var(--surface);border-right:1px solid var(--border);padding:28px 0;position:sticky;top:0;height:100vh;overflow-y:auto;}
+  .sidebar-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:0 20px 12px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+  .toc-item{display:block;padding:8px 20px;font-size:13px;color:var(--muted);text-decoration:none;border-left:3px solid transparent;transition:all .15s;line-height:1.4;}
+  .toc-item:hover,.toc-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-light);}
+  .toc-item.sub{padding-left:32px;font-size:12px;}
+  .main{padding:48px 56px 80px;max-width:820px;}
+  .lesson-badge{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:4px;margin-bottom:16px;}
+  .lesson-title{font-family:'IBM Plex Serif',serif;font-size:30px;font-weight:600;line-height:1.25;color:var(--text);margin-bottom:8px;}
+  .lesson-meta{font-size:13px;color:var(--muted);margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid var(--border);}
+  .article-section{margin-bottom:52px;scroll-margin-top:24px;}
+  .section-heading{font-family:'IBM Plex Serif',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--border);position:relative;}
+  .section-heading::before{content:'';position:absolute;bottom:-2px;left:0;width:40px;height:2px;background:var(--accent);}
+  p{margin-bottom:14px;}
+  ul,ol{margin:0 0 14px 24px;line-height:2;}
+  table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px;}
+  th{background:var(--accent);color:#fff;padding:10px 14px;text-align:left;font-weight:600;}
+  td{padding:9px 14px;border-bottom:1px solid var(--border);}
+  tr:nth-child(even) td{background:var(--surface2);}
+  .code-block{background:var(--code-bg);border-radius:8px;margin:20px 0;overflow:hidden;font-size:13.5px;}
+  .code-label{background:#2d2d2d;padding:6px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;letter-spacing:.06em;border-bottom:1px solid #333;}
+  pre{padding:18px 20px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;line-height:1.6;color:var(--code-text);}
+  code{font-family:'IBM Plex Mono',monospace;background:#e8e5de;color:#b5451b;padding:1px 6px;border-radius:3px;font-size:.88em;}
+  pre code{background:none;color:inherit;padding:0;border-radius:0;font-size:inherit;}
+  .kw{color:var(--kw);} .str{color:var(--str);} .cmt{color:var(--cmt);font-style:italic;} .num{color:var(--num);} .fn{color:var(--fn);} .type{color:var(--type);}
+  .callout{background:var(--accent-light);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  .callout-warn{background:#fff8e6;border-left:4px solid #d97706;border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  .callout-green{background:#f0fdf4;border-left:4px solid #16a34a;border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  .callout-red{background:#fff1f0;border-left:4px solid #dc2626;border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  hr.divider{border:none;border-top:2px dashed var(--border);margin:48px 0;}
+  .nav-footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0 0;border-top:1px solid var(--border);margin-top:48px;font-size:14px;color:var(--muted);}
+  .nav-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--accent);color:#fff;border-radius:6px;font-size:13px;font-weight:500;text-decoration:none;}
+  .nav-btn.secondary{background:var(--surface);color:var(--accent);border:1px solid var(--accent);}
+  @media(max-width:900px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.main{padding:32px 24px 60px;}}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-title">Phụ lục · Chương trình con trong Python</div>
+  <a class="toc-item active" href="#mo-dau">Tài liệu 1 · Mở đầu</a>
+  <a class="toc-item" href="#dinh-nghia-ham">Tài liệu 2 · Định nghĩa hàm và truyền đối số</a>
+  <a class="toc-item sub" href="#chu-ky-ham">Chữ ký hàm: vị trí, từ khóa, mặc định</a>
+  <a class="toc-item sub" href="#bay-mac-dinh">Bẫy mặc định khả biến</a>
+  <a class="toc-item sub" href="#truyen-doi-so">Cơ chế truyền: chia sẻ đối tượng</a>
+  <a class="toc-item" href="#ngoai-le">Tài liệu 3 · Ngoại lệ</a>
+  <a class="toc-item sub" href="#raise-assert">raise và assert</a>
+  <a class="toc-item sub" href="#try-except">try / except / else / finally</a>
+  <a class="toc-item sub" href="#finally-ngu-nghia">Ngữ nghĩa của finally</a>
+  <a class="toc-item" href="#generator">Tài liệu 4 · Generator: đồng thường trình bất đối xứng</a>
+  <a class="toc-item sub" href="#yield-next">yield, next và StopIteration</a>
+  <a class="toc-item sub" href="#generator-expr">Biểu thức generator & tính lười</a>
+  <a class="toc-item sub" href="#send">Kênh dữ liệu hai chiều: send</a>
+  <a class="toc-item" href="#dinh-thoi">Tài liệu 5 · Chương trình con định thời</a>
+  <a class="toc-item" href="#tac-vu">Tài liệu 6 · Tác vụ: tiểu trình và tiến trình</a>
+  <a class="toc-item sub" href="#threading">threading: song hành chia sẻ nhớ</a>
+  <a class="toc-item sub" href="#tranh-doat">Tranh đoạt và đồng bộ hóa</a>
+  <a class="toc-item" href="#bao-dong">Tài liệu 7 · Hàm bậc cao và bao đóng</a>
+  <a class="toc-item sub" href="#ham-bac-cao">Hàm là giá trị hạng nhất</a>
+  <a class="toc-item sub" href="#closure">Bao đóng và nonlocal</a>
+  <a class="toc-item sub" href="#bat-giu-bien">Bắt giữ biến, không phải giá trị</a>
+  <a class="toc-item" href="#tong-ket">Tài liệu 8 · Tổng kết phụ lục</a>
+</nav>
+
+<!-- MAIN -->
+<main class="main" id="mainContent">
+
+<!-- TÀI LIỆU 1 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 1 / 8</div>
+<h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Chương trình con trong Python · Trần Ngọc Bảo Duy</div>
+<div class="article-section">
+  <p>Phụ lục này là người bạn đồng hành thực hành của chương về chương trình con: mỗi khái niệm nguyên lý ở đó — định nghĩa và tham số, ngoại lệ, đồng thường trình, chương trình con định thời, tác vụ, hàm bậc cao — sẽ được hiện thực cụ thể bằng Python, với cú pháp thật và ví dụ chạy được. Mọi kết quả in ra trong phụ lục đều là kết quả thực, được kiểm chứng trên Python 3.12; những hành vi phụ thuộc phiên bản — đặc biệt các thay đổi từ Python 3.14 — được ghi chú ngay tại vị trí liên quan.</p>
+  <p>Ta đi theo đúng trật tự của chương: bắt đầu từ cách Python định nghĩa hàm và truyền đối số, qua khung xử lý ngoại lệ đầy đủ, đến generator, bộ định thời, tiểu trình và tiến trình, rồi khép lại với bao đóng.</p>
+  <p>Để tránh nhầm lẫn về vị thế của từng công cụ, phụ lục phân biệt ba tầng: cơ chế của ngôn ngữ (<code>def</code>, <code>raise</code>, <code>try</code>, <code>yield</code>, bao đóng — thuộc đặc tả Python), thư viện chuẩn (<code>threading</code>, và trên các nền tảng được hỗ trợ là <code>multiprocessing</code> — đây là các module thư viện, không phải cú pháp ngôn ngữ), và thư viện bên thứ ba (<code>schedule</code> — phải cài thêm, chỉ dùng để minh họa nguyên lý).</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 2 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 2 / 8</div>
+<h1 class="lesson-title" id="dinh-nghia-ham">Định nghĩa hàm và truyền đối số</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Chương trình con trong Python</div>
+<div class="article-section" id="chu-ky-ham">
+  <h2 class="section-heading">Chữ ký hàm: vị trí, từ khóa và tham số tổng hợp</h2>
+  <p>Python định nghĩa chương trình con bằng từ khóa <code>def</code>. Một định nghĩa hàm tối thiểu cho biết tên, danh sách tham số và thân hàm; kiểu của tham số và kết quả không bắt buộc phải khai báo:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">find_max</span>(x, y):
+    <span class="cmt"># local data and body</span>
+    m = x <span class="kw">if</span> x &gt; y <span class="kw">else</span> y
+    <span class="kw">return</span> m</code></pre></div>
+  <p>Python hỗ trợ cả hai cách tương ứng giữa tham số thực và tham số hình thức. Tương ứng theo vị trí ghép theo thứ tự, còn đối số từ khóa ghép theo tên và cho phép đảo trật tự tùy ý:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">foo</span>(a, b):
+    <span class="kw">return</span> a - b
+
+<span class="fn">foo</span>(<span class="num">10</span>, <span class="num">3</span>)        <span class="cmt"># positional: a = 10, b = 3  => 7</span>
+<span class="fn">foo</span>(b=<span class="num">3</span>, a=<span class="num">10</span>)    <span class="cmt"># keyword: same pairing      => 7</span></code></pre></div>
+  <p>Cả hai lời gọi đều cho 7. Nhưng chữ ký hàm Python biểu diễn được nhiều hơn thế: tham số chỉ theo vị trí (đứng trước dấu <code>/</code>), tham số chỉ theo từ khóa (đứng sau dấu <code>*</code>), tham số biến thiên <code>*args</code>/<code>**kwargs</code>, giá trị mặc định, và chú giải kiểu tùy chọn — Python không tự động dùng các chú giải này để cưỡng chế kiểu đối số khi gọi hàm, dù mã chương trình và thư viện vẫn truy cập được chúng. Một chữ ký tổng hợp:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">process</span>(source, /, limit=<span class="num">10</span>, *, strict=<span class="kw">False</span>):
+    <span class="kw">return</span> (source, limit, strict)
+
+<span class="fn">process</span>(<span class="str">"db"</span>, limit=<span class="num">5</span>, strict=<span class="kw">True</span>)
+<span class="cmt"># ('db', 5, True)</span>
+<span class="fn">process</span>(source=<span class="str">"db"</span>)
+<span class="cmt"># TypeError: process() got some positional-only arguments</span>
+<span class="cmt"># passed as keyword arguments: 'source'</span></code></pre></div>
+  <p>Như vậy "theo vị trí" và "theo tên" trong Python không có nghĩa là mọi tham số đều dùng được theo cả hai cách: người thiết kế hàm được quyền quy định từng tham số ghép theo cách nào.</p>
+</div>
+<div class="article-section" id="bay-mac-dinh">
+  <h2 class="section-heading">Bẫy mặc định khả biến</h2>
+  <p>Tham số còn có thể mang giá trị mặc định, và người gọi được bỏ qua tham số đã có mặc định — đây là chỗ đối số từ khóa phát huy tác dụng khi hàm có nhiều tham số tùy chọn. Tuy nhiên, giá trị mặc định trong Python được lượng giá một lần duy nhất lúc định nghĩa hàm, không phải mỗi lần gọi, nên dùng đối tượng khả biến làm mặc định là một cái bẫy kinh điển:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">bad_append</span>(v, acc=[]):
+    acc.append(v)      <span class="cmt"># all calls share ONE default list</span>
+    <span class="kw">return</span> acc
+
+<span class="fn">print</span>(<span class="fn">bad_append</span>(<span class="num">1</span>))   <span class="cmt"># [1]</span>
+<span class="fn">print</span>(<span class="fn">bad_append</span>(<span class="num">2</span>))   <span class="cmt"># [1, 2]  -- surprise!</span></code></pre></div>
+  <p>Danh sách mặc định được tạo một lần và mọi lời gọi dùng chung, nên lời gọi thứ hai in <code>[1, 2]</code> thay vì <code>[2]</code>. Khuôn mẫu chuẩn để tránh bẫy là dùng <code>None</code> làm lính canh:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">good_append</span>(v, acc=<span class="kw">None</span>):
+    <span class="kw">if</span> acc <span class="kw">is</span> <span class="kw">None</span>:
+        acc = []       <span class="cmt"># a fresh list per call</span>
+    acc.append(v)
+    <span class="kw">return</span> acc
+
+<span class="fn">print</span>(<span class="fn">good_append</span>(<span class="num">1</span>))  <span class="cmt"># [1]</span>
+<span class="fn">print</span>(<span class="fn">good_append</span>(<span class="num">2</span>))  <span class="cmt"># [2]</span></code></pre></div>
+</div>
+<div class="article-section" id="truyen-doi-so">
+  <h2 class="section-heading">Cơ chế truyền: chia sẻ đối tượng</h2>
+  <p>Về cơ chế truyền, Python dùng truyền theo chia sẻ đối tượng như đã phân tích ở chương: tham chiếu đến đối tượng được chép theo trị, nên tham số hình thức và tham số thực cùng trỏ đến một đối tượng. Ranh giới quyết định nằm giữa biến đổi nội dung và gán lại tên:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">append_item</span>(lst):
+    lst.append(<span class="num">4</span>)      <span class="cmt"># mutates the shared object</span>
+
+<span class="kw">def</span> <span class="fn">rebind</span>(lst):
+    lst = [<span class="num">0</span>]          <span class="cmt"># rebinds the local name only</span>
+
+a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+<span class="fn">append_item</span>(a)
+<span class="fn">print</span>(a)               <span class="cmt"># [1, 2, 3, 4]  -- caller sees the mutation</span>
+<span class="fn">rebind</span>(a)
+<span class="fn">print</span>(a)               <span class="cmt"># [1, 2, 3, 4]  -- rebinding is invisible</span></code></pre></div>
+  <p>Với đối tượng bất biến như số nguyên, mọi "thay đổi" đều là gán lại, nên hành vi quan sát được giống truyền theo trị:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="num">5</span>
+
+<span class="kw">def</span> <span class="fn">try_inc</span>(n):
+    n = n + <span class="num">1</span>          <span class="cmt"># int is immutable: rebinding only</span>
+
+<span class="fn">try_inc</span>(x)
+<span class="fn">print</span>(x)               <span class="cmt"># 5</span></code></pre></div>
+  <p>Python không có chế độ tham số <code>out</code> riêng trong chữ ký hàm (dù về nguyên tắc vẫn có thể đưa kết quả ra ngoài bằng cách biến đổi một đối tượng khả biến được truyền vào); thông lệ Python khi cần nhiều kết quả là trả về một bộ giá trị — <code>return lo, hi</code> rồi người gọi tháo bộ bằng <code>lo, hi = span(data)</code>. Đây chính là lý do tham số chỉ ra trong bảng phân loại ở chương hiếm khi xuất hiện trong mã Python thực tế.</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 3 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 3 / 8</div>
+<h1 class="lesson-title" id="ngoai-le">Ngoại lệ</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Chương trình con trong Python</div>
+<div class="article-section" id="raise-assert">
+  <h2 class="section-heading"><code>raise</code> và <code>assert</code></h2>
+  <p>Người lập trình Python chủ động phát sinh ngoại lệ bằng lệnh <code>raise</code>. Về đặc tả ngôn ngữ, đối tượng được ném phải thuộc lớp kế thừa <code>BaseException</code> — gốc của toàn bộ phân cấp ngoại lệ; ném một giá trị khác (chẳng hạn <code>raise 42</code>) sẽ bị từ chối bằng <code>TypeError</code>. Trong mã ứng dụng, các lớp ngoại lệ tự định nghĩa thông thường nên kế thừa <code>Exception</code> — lớp cơ sở cho phần lớn ngoại lệ — để không vô tình bị đồng nhất với những tín hiệu điều khiển như <code>SystemExit</code> hay <code>KeyboardInterrupt</code>, vốn kế thừa thẳng <code>BaseException</code> và cố ý nằm ngoài <code>Exception</code> để không bị các khối <code>except Exception</code> bắt nhầm:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"negative size"</span>)</code></pre></div>
+  <p>Bên cạnh <code>raise</code>, Python còn có lệnh <code>assert</code>, nhưng cần đặt nó đúng vai: đây là cơ chế kiểm tra giả định nội bộ phục vụ gỡ lỗi, không phải một cách phát sinh lỗi ngang hàng với <code>raise</code>. Câu lệnh <code>assert điều_kiện, thông_điệp</code> tương đương với việc phát sinh <code>AssertionError</code> khi <code>__debug__</code> là đúng — và khi chạy Python với chế độ tối ưu hóa <code>-O</code>, mã của <code>assert</code> bị loại bỏ hoàn toàn:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = -<span class="num">1</span>
+<span class="kw">assert</span> x &gt;= <span class="num">0</span>, <span class="str">"x must be non-negative"</span>
+<span class="cmt"># python  demo.py   -> AssertionError: x must be non-negative</span>
+<span class="cmt"># python -O demo.py -> the assert is stripped, nothing is checked</span></code></pre></div>
+  <div class="callout-warn">Vì có thể biến mất lúc chạy, <code>assert</code> không được dùng để kiểm tra dữ liệu đầu vào hay thực thi quy tắc nghiệp vụ; những kiểm tra đó phải dùng <code>raise</code>.</div>
+</div>
+<div class="article-section" id="try-except">
+  <h2 class="section-heading">Cấu trúc <code>try / except / else / finally</code></h2>
+  <p>Một câu lệnh <code>try</code> của Python phải có ít nhất một <code>except</code> hoặc một <code>finally</code>, và có hai dạng chính. Dạng xử lý ngoại lệ gồm <code>try</code> với một hay nhiều <code>except</code>, sau đó có thể thêm <code>else</code> và <code>finally</code> (mệnh đề <code>else</code> chỉ tồn tại trong dạng này):</p>
+  <div class="code-block"><div class="code-label">Cú pháp (ký pháp ngữ pháp)</div><pre><code><span class="kw">try</span>:
+    &lt;stmt_list&gt;        <span class="cmt"># protected block: might raise</span>
+<span class="kw">except</span> &lt;Exception&gt; (<span class="kw">as</span> &lt;name&gt;)?:
+    &lt;stmt_list&gt;        <span class="cmt"># runs if that exception was caught</span>
+<span class="kw">else</span>:
+    &lt;stmt_list&gt;        <span class="cmt"># runs only if NO exception was raised</span>
+<span class="kw">finally</span>:
+    &lt;stmt_list&gt;        <span class="cmt"># runs last on every path</span></code></pre></div>
+  <p>(Khối trên là ký pháp ngữ pháp để nhìn toàn cảnh, không phải mã chạy được; các ví dụ chạy được theo ngay sau.)</p>
+  <p>Dạng thứ hai chỉ nhằm bảo đảm dọn dẹp tài nguyên: <code>try–finally</code> không cần <code>except</code> nào — ngoại lệ nếu có sẽ không bị bắt, nhưng phần dọn dẹp vẫn chạy trước khi nó lan tiếp:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">cleanup_only</span>():
+    <span class="kw">try</span>:
+        <span class="kw">return</span> <span class="str">"work"</span>
+    <span class="kw">finally</span>:
+        <span class="fn">print</span>(<span class="str">"cleaned up"</span>)   <span class="cmt"># printed before the value is delivered</span></code></pre></div>
+  <p>Ví dụ trọn vẹn với cả bốn mệnh đề — một hàm đổi chuỗi thành số:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">parse_int</span>(s):
+    <span class="kw">try</span>:
+        v = <span class="fn">int</span>(s)
+    <span class="kw">except</span> <span class="type">ValueError</span> <span class="kw">as</span> err:
+        <span class="fn">print</span>(<span class="str">"except:"</span>, err)
+        <span class="kw">return</span> <span class="kw">None</span>
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="str">"else: no exception, v ="</span>, v)
+        <span class="kw">return</span> v
+    <span class="kw">finally</span>:
+        <span class="fn">print</span>(<span class="str">"finally: cleanup for"</span>, <span class="fn">repr</span>(s))</code></pre></div>
+  <p>Chạy <code>parse_int("42")</code> in nhánh <code>else</code> rồi <code>finally</code>; chạy <code>parse_int("4x")</code> in nhánh <code>except</code> rồi vẫn in <code>finally</code>:</p>
+  <div class="code-block"><div class="code-label">Kết quả</div><pre><code><span class="cmt">else: no exception, v = 42</span>
+<span class="cmt">finally: cleanup for '42'</span>
+<span class="cmt">except: invalid literal for int() with base 10: '4x'</span>
+<span class="cmt">finally: cleanup for '4x'</span></code></pre></div>
+</div>
+<div class="article-section" id="finally-ngu-nghia">
+  <h2 class="section-heading">Ngữ nghĩa của <code>finally</code> và lưu ý với Python 3.14</h2>
+  <p>Ngữ nghĩa của <code>finally</code> cần được phát biểu chính xác: trong mọi đường chuyển điều khiển do Python quản lý — thực thi bình thường, ngoại lệ, <code>return</code>, <code>break</code>, <code>continue</code> — khối <code>finally</code> được thực hiện trước khi quyền điều khiển rời cấu trúc <code>try</code>. (Chữ "luôn" tuyệt đối thì không đúng: tiến trình bị buộc kết thúc, mất nguồn hay các cơ chế thoát cấp hệ điều hành không cho <code>finally</code> cơ hội chạy.) Từ ngữ nghĩa đó suy ra hai hệ quả. Thứ nhất, nếu ngoại lệ không được mệnh đề <code>except</code> nào bắt, nó chỉ được ném tiếp sau khi <code>finally</code> đã chạy xong; ngoại lệ phát sinh ngay trong <code>except</code> hay <code>else</code> cũng vậy. Thứ hai, <code>finally</code> chạy ngay trước khi các lệnh <code>break</code>, <code>continue</code> hay <code>return</code> trong khối <code>try</code> có hiệu lực. Hệ quả gây ngạc nhiên nhất: một lệnh <code>return</code> trong <code>finally</code> sẽ lấn át lệnh <code>return</code> trong <code>try</code>:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">func</span>():
+    <span class="kw">try</span>:
+        <span class="kw">return</span> <span class="kw">True</span>
+    <span class="kw">finally</span>:
+        <span class="kw">return</span> <span class="kw">False</span>
+
+<span class="fn">print</span>(<span class="fn">func</span>())          <span class="cmt"># False</span></code></pre></div>
+  <p>Lời gọi <code>func()</code> trả về <code>False</code>: lệnh <code>return True</code> đã bắt đầu, nhưng <code>finally</code> chạy chen vào trước khi giá trị được trao, và <code>return False</code> trong đó thay thế luôn kết quả.</p>
+  <div class="callout-warn"><strong>Lưu ý PEP 765 / Python 3.14:</strong> đây là hành vi lịch sử cần nhận biết khi đọc mã cũ, không phải kỹ thuật nên dùng — vì nó che khuất cả <code>return</code> lẫn ngoại lệ đang lan truyền. Từ Python 3.14, trình biên dịch phát <code>SyntaxWarning</code> cho các lệnh <code>return</code>, <code>break</code>, <code>continue</code> chuyển điều khiển ra khỏi khối <code>finally</code>, và đặc tả cho phép các hiện thực khác nâng thành <code>SyntaxError</code>. <strong>Quy tắc hành nghề:</strong> dành <code>finally</code> cho việc dọn dẹp tài nguyên, không đặt lệnh chuyển điều khiển trong đó.</div>
+  <p>Đối chiếu với ba câu hỏi thiết kế ở chương: Python định nghĩa ngoại lệ là đối tượng thuộc phân cấp lớp gốc <code>BaseException</code> (gần với mô hình <code>Throwable</code> của Java); phát sinh tường minh bằng <code>raise</code> hoặc bởi hệ thống thực thi khi gặp điều kiện bất thường; và xử lý theo ngữ nghĩa kết thúc — khối gây lỗi bị hủy, ngăn xếp được tháo cho đến khối bảo vệ gần nhất có bộ xử lý phù hợp.</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 4 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 4 / 8</div>
+<h1 class="lesson-title" id="generator">Generator: một dạng đồng thường trình bất đối xứng trong Python</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Chương trình con trong Python</div>
+<div class="article-section" id="yield-next">
+  <h2 class="section-heading"><code>yield</code>, <code>next</code> và <code>StopIteration</code></h2>
+  <p>Cơ chế hoãn–tiếp tục gần với đồng thường trình mà phụ lục này khảo sát là generator — Python còn có coroutine nguyên sinh khai báo bằng <code>async def</code> và tạm hoãn bằng <code>await</code>, nằm ngoài phạm vi phụ lục. Generator là đồng thường trình bất đối xứng (semi-coroutine): nó chỉ trao điều khiển về cho phía vừa tiếp tục nó, không tự do chuyển sang một bên ngang hàng bất kỳ. Một hàm generator là hàm có chứa <code>yield</code> trong thân — sự xuất hiện của <code>yield</code> là dấu hiệu nhận diện, chứ không phải "thay cho return": generator vẫn được dùng <code>return</code>, như ta thấy ngay dưới đây. Gọi hàm ấy không thực thi thân hàm mà trả về một đối tượng generator; mỗi lần <code>next</code> được gọi trên đối tượng đó, thân hàm chạy đến lệnh <code>yield</code> kế tiếp, trao giá trị ra ngoài rồi tạm hoãn tại đúng chỗ đó, giữ nguyên toàn bộ trạng thái cục bộ:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">gen</span>():
+    <span class="kw">yield</span> <span class="num">1</span>
+    <span class="kw">yield</span> <span class="num">2</span>
+    <span class="kw">yield</span> <span class="num">3</span>
+
+x = <span class="fn">gen</span>()
+<span class="fn">print</span>(<span class="fn">next</span>(x))         <span class="cmt"># 1</span>
+<span class="fn">print</span>(<span class="fn">next</span>(x))         <span class="cmt"># 2</span>
+<span class="fn">print</span>(<span class="fn">next</span>(x))         <span class="cmt"># 3</span>
+<span class="fn">next</span>(x)                <span class="cmt"># raises StopIteration</span></code></pre></div>
+  <p>Ba lời gọi <code>next</code> đầu lần lượt cho 1, 2, 3; lời gọi thứ tư ném <code>StopIteration</code> báo generator đã cạn. Khác biệt giữa hai từ khóa nằm ở trạng thái: <code>yield</code> tạm hoãn và bảo tồn trạng thái để tiếp tục lần sau, còn <code>return</code> kết thúc generator — không bảo tồn gì — và giá trị đi kèm <code>return</code> (nếu có) được gắn vào thuộc tính <code>value</code> của <code>StopIteration</code>:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">gen2</span>():
+    <span class="kw">yield</span> <span class="num">1</span>
+    <span class="kw">return</span> <span class="str">"done"</span>     <span class="cmt"># ends the generator; value goes to StopIteration</span>
+
+g = <span class="fn">gen2</span>()
+<span class="fn">print</span>(<span class="fn">next</span>(g))        <span class="cmt"># 1</span>
+<span class="kw">try</span>:
+    <span class="fn">next</span>(g)
+<span class="kw">except</span> <span class="type">StopIteration</span> <span class="kw">as</span> e:
+    <span class="fn">print</span>(e.value)    <span class="cmt"># done</span></code></pre></div>
+  <p>Đây đúng là dáng hình hoãn–tiếp tục của đồng thường trình: mỗi <code>yield</code> là một lần "resume người dùng", mỗi <code>next</code> là một lần "resume generator", và điểm tiếp tục là nơi vừa dừng chứ không phải đầu thân hàm. Đối chiếu với mô hình resume tổng quát ở chương, tính bất đối xứng hiện rõ: điều khiển chỉ chuyền qua lại giữa generator và người dùng nó.</p>
+</div>
+<div class="article-section" id="generator-expr">
+  <h2 class="section-heading">Biểu thức generator và tính lười</h2>
+  <p>Generator còn được tạo gọn bằng biểu thức generator, cú pháp giống dạng rút gọn danh sách nhưng dùng ngoặc tròn:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>squares = (i * i <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">4</span>))
+<span class="fn">print</span>(<span class="fn">list</span>(squares))   <span class="cmt"># [1, 4, 9]</span></code></pre></div>
+  <p>Sức mạnh thực tế của generator nằm ở tính lười: phần tử chỉ được sinh khi được yêu cầu, nên generator thường không cần giữ toàn bộ dãy kết quả trong bộ nhớ — miễn là trạng thái nội bộ và kích thước từng phần tử được giữ giới hạn, lượng bộ nhớ phụ trợ không tăng theo số phần tử đã duyệt. So sánh hai cách đếm số dòng của một tệp:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">read_all</span>(fname):
+    <span class="kw">with</span> <span class="fn">open</span>(fname, encoding=<span class="str">"utf-8"</span>) <span class="kw">as</span> file:
+        <span class="kw">return</span> file.readlines()      <span class="cmt"># whole file in memory</span>
+
+<span class="kw">def</span> <span class="fn">rows</span>(fname):
+    <span class="kw">with</span> <span class="fn">open</span>(fname, encoding=<span class="str">"utf-8"</span>) <span class="kw">as</span> file:
+        <span class="kw">for</span> row <span class="kw">in</span> file:
+            <span class="kw">yield</span> row                <span class="cmt"># one line alive at a time</span>
+
+<span class="fn">print</span>(<span class="fn">sum</span>(<span class="num">1</span> <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">rows</span>(<span class="str">"abc.csv"</span>)))</code></pre></div>
+  <p>Cả hai phiên bản đều dùng <code>with</code> để tài nguyên tệp được đóng chắc chắn — đúng tinh thần dọn dẹp mà mục ngoại lệ vừa nhấn mạnh; trong phiên bản generator của ví dụ này, <code>sum</code> duyệt generator đến hết nên khối <code>with</code> kết thúc và tệp được đóng. Nếu dừng việc duyệt sớm mà vẫn giữ tham chiếu đến generator, tệp có thể còn mở; khi đó cần đóng generator tường minh (phương thức <code>close</code>) hoặc tổ chức mã bằng một context manager thích hợp — không nên dựa vào thu gom rác để dọn dẹp tài nguyên đúng thời điểm. Khác biệt nằm ở bộ nhớ: cách thứ nhất tải trọn tệp rồi mới đếm; cách thứ hai không cần giữ toàn bộ dữ liệu trong bộ nhớ — mức dùng bộ nhớ chỉ phụ thuộc vào trạng thái generator và phần tử đang xử lý — minh họa trực tiếp cho nhận xét ở chương rằng chuyền điều khiển từng bước giữa bên sản xuất và bên tiêu thụ tiết kiệm bộ nhớ so với tính sẵn toàn bộ kết quả.</p>
+</div>
+<div class="article-section" id="send">
+  <h2 class="section-heading">Kênh dữ liệu hai chiều: phương thức <code>send</code></h2>
+  <p>Generator của Python còn cho điều khiển chảy hai chiều: phương thức <code>send</code> vừa tiếp tục generator vừa trao một giá trị vào, và giá trị ấy trở thành kết quả của biểu thức <code>yield</code> bên trong. Nhờ đó generator trở thành một đồng thường trình bất đối xứng có kênh dữ liệu hai chiều — nhận dữ liệu qua <code>send</code>, cập nhật trạng thái, trao kết quả qua <code>yield</code>, rồi chờ lần trao kế tiếp (quyền điều khiển vẫn luôn quay về phía đã gọi <code>next</code> hay <code>send</code>):</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">running_avg</span>():
+    total = <span class="num">0.0</span>
+    count = <span class="num">0</span>
+    avg = <span class="kw">None</span>
+    <span class="kw">while</span> <span class="kw">True</span>:
+        value = <span class="kw">yield</span> avg    <span class="cmt"># receive a value, hand back current avg</span>
+        total += value
+        count += <span class="num">1</span>
+        avg = total / count
+
+c = <span class="fn">running_avg</span>()
+<span class="fn">next</span>(c)                      <span class="cmt"># prime: run to the first yield</span>
+<span class="fn">print</span>(c.<span class="fn">send</span>(<span class="num">10</span>))            <span class="cmt"># 10.0</span>
+<span class="fn">print</span>(c.<span class="fn">send</span>(<span class="num">20</span>))            <span class="cmt"># 15.0</span>
+<span class="fn">print</span>(c.<span class="fn">send</span>(<span class="num">60</span>))            <span class="cmt"># 30.0</span></code></pre></div>
+  <div class="callout">Lưu ý lời gọi <code>next(c)</code> đầu tiên để "mồi" generator chạy đến <code>yield</code> thứ nhất; sau đó mỗi <code>send</code> đẩy một giá trị vào và nhận về trung bình cộng mới: 10.0, 15.0, 30.0.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 5 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 5 / 8</div>
+<h1 class="lesson-title" id="dinh-thoi">Chương trình con định thời</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Chương trình con trong Python</div>
+<div class="article-section">
+  <p>Nguyên lý "đăng ký lời gọi, bộ định thời quyết định thời điểm chạy" được module <code>schedule</code> thể hiện rất sát. Cần nói rõ vị thế: <code>schedule</code> là thư viện bên thứ ba (cài bằng <code>pip install schedule</code>), được chọn ở đây thuần túy để minh họa nguyên lý — nó không phải cú pháp ngôn ngữ hay module chuẩn của Python như <code>yield</code> hay <code>threading</code>. Ta đăng ký công việc theo thời gian, rồi một vòng lặp trao quyền cho bộ định thời kích hoạt những công việc đến hạn:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">import</span> schedule
+<span class="kw">import</span> time
+
+<span class="kw">def</span> <span class="fn">job</span>():
+    <span class="fn">print</span>(<span class="str">"job ran at"</span>, time.<span class="fn">strftime</span>(<span class="str">"%H:%M:%S"</span>))
+
+schedule.every(<span class="num">10</span>).minutes.<span class="fn">do</span>(job)       <span class="cmt"># register scheduled jobs</span>
+schedule.every().hour.<span class="fn">do</span>(job)
+schedule.every().day.at(<span class="str">"10:30"</span>).<span class="fn">do</span>(job)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    schedule.<span class="fn">run_pending</span>()               <span class="cmt"># invoke jobs that are due</span>
+    time.<span class="fn">sleep</span>(<span class="num">1</span>)</code></pre></div>
+  <div class="callout">Dòng <code>schedule.every(...).do(job)</code> không gọi <code>job</code>: nó chỉ ghi lời hẹn vào sổ của bộ định thời. Lời gọi thật diễn ra bên trong <code>run_pending</code>, tại vòng lặp — đúng như phân tích ở chương: sau dòng đăng ký, không thể giả định công việc đã xảy ra.</div>
+  <p>Để tự tay quan sát, hãy rút chu kỳ xuống mỗi giây và giới hạn vòng lặp trong vài giây (đoạn mã trên đăng ký theo phút, giờ và ngày nên không cho kết quả ngay):</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">import</span> schedule
+<span class="kw">import</span> time
+
+<span class="kw">def</span> <span class="fn">job</span>():
+    <span class="fn">print</span>(<span class="str">"job ran at"</span>, time.<span class="fn">strftime</span>(<span class="str">"%H:%M:%S"</span>))
+
+schedule.every(<span class="num">1</span>).seconds.<span class="fn">do</span>(job)
+end = time.<span class="fn">perf_counter</span>() + <span class="num">3.5</span>
+<span class="kw">while</span> time.<span class="fn">perf_counter</span>() &lt; end:
+    schedule.<span class="fn">run_pending</span>()
+    time.<span class="fn">sleep</span>(<span class="num">0.2</span>)</code></pre></div>
+  <p>Bộ định thời ở đây hoạt động theo lối hợp tác: công việc chỉ được kích hoạt bên trong <code>run_pending</code>, nên thời điểm thực tế còn chịu sai số của vòng lặp và của hệ điều hành. Một lần chạy có thể thu được ba lần kích hoạt với khoảng cách xấp xỉ một giây:</p>
+  <div class="code-block"><div class="code-label">Kết quả mẫu</div><pre><code><span class="cmt">job ran at 04:07:46</span>
+<span class="cmt">job ran at 04:07:47</span>
+<span class="cmt">job ran at 04:07:48</span></code></pre></div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 6 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 6 / 8</div>
+<h1 class="lesson-title" id="tac-vu">Tác vụ: tiểu trình và tiến trình</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Chương trình con trong Python</div>
+<div class="article-section" id="threading">
+  <h2 class="section-heading">threading: song hành chia sẻ không gian nhớ</h2>
+  <p>Python cung cấp tác vụ qua hai module chính: <code>threading</code> tạo tiểu trình (thread) chia sẻ không gian nhớ trong cùng tiến trình, và <code>multiprocessing</code> tạo tiến trình (process) với không gian nhớ riêng. Cả hai dùng chung một giao diện: tạo đối tượng với <code>target</code> là chương trình con cần chạy, <code>start</code> để bắt đầu chạy song hành, và <code>join</code> để chờ nó kết thúc.</p>
+  <p>So sánh chạy tuần tự với chạy bằng tiểu trình trên bốn công việc, mỗi công việc ngủ 0,2 giây:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">import</span> threading
+<span class="kw">import</span> time
+
+<span class="kw">def</span> <span class="fn">only_sleep</span>():
+    time.<span class="fn">sleep</span>(<span class="num">0.2</span>)
+
+start = time.<span class="fn">perf_counter</span>()            <span class="cmt"># monotonic clock for intervals</span>
+<span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">4</span>):
+    <span class="fn">only_sleep</span>()                       <span class="cmt"># serial: one after another</span>
+<span class="fn">print</span>(<span class="str">"serial :"</span>, <span class="fn">round</span>(time.<span class="fn">perf_counter</span>() - start, <span class="num">2</span>), <span class="str">"s"</span>)
+
+start = time.<span class="fn">perf_counter</span>()
+threads = [threading.<span class="fn">Thread</span>(target=only_sleep) <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">4</span>)]
+<span class="kw">for</span> t <span class="kw">in</span> threads:
+    t.<span class="fn">start</span>()                          <span class="cmt"># all four run concurrently</span>
+<span class="kw">for</span> t <span class="kw">in</span> threads:
+    t.<span class="fn">join</span>()                           <span class="cmt"># wait for all to finish</span>
+<span class="fn">print</span>(<span class="str">"threads:"</span>, <span class="fn">round</span>(time.<span class="fn">perf_counter</span>() - start, <span class="num">2</span>), <span class="str">"s"</span>)</code></pre></div>
+  <p>(Để đo khoảng thời gian, ta dùng <code>time.perf_counter()</code> — đồng hồ đơn điệu độ phân giải cao — thay vì <code>time.time()</code> vốn dành cho thời điểm lịch.) Một lần chạy đo được xấp xỉ 0.8 giây cho bản tuần tự (bốn lần 0,2 giây nối đuôi) và xấp xỉ 0.2 giây cho bốn tiểu trình song hành — cả bốn cùng ngủ một lượt; con số cụ thể dao động theo hệ điều hành và chi phí lập lịch. Ví dụ này cũng cho thấy tiểu trình phát huy rõ nhất với công việc chờ đợi — ngủ, vào/ra tệp, chờ mạng — vì trong lúc một tiểu trình chờ, các tiểu trình khác được chạy; mức lợi ích với công việc thuần tính toán phụ thuộc vào hiện thực Python đang dùng, một chủ đề nằm ngoài phạm vi ngữ nghĩa ngôn ngữ của phụ lục này.</p>
+</div>
+<div class="article-section" id="tranh-doat">
+  <h2 class="section-heading">Tranh đoạt và đồng bộ hóa bằng khóa</h2>
+  <p>Chia sẻ dữ liệu giữa các tác vụ là nơi tranh đoạt xuất hiện. Ta tái hiện nó bằng bốn tiến trình cùng tăng một biến đếm trong vùng nhớ chia sẻ không đồng bộ hóa:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">import</span> multiprocessing <span class="kw">as</span> mp
+
+<span class="kw">def</span> <span class="fn">inc</span>(shared, n):
+    <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(n):
+        shared.value += <span class="num">1</span>      <span class="cmt"># read-modify-write, NOT atomic</span>
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    shared = mp.<span class="fn">Value</span>(<span class="str">'i'</span>, <span class="num">0</span>, lock=<span class="kw">False</span>)
+    ps = [mp.<span class="fn">Process</span>(target=inc, args=(shared, <span class="num">100000</span>)) <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">4</span>)]
+    <span class="kw">for</span> p <span class="kw">in</span> ps:
+        p.<span class="fn">start</span>()
+    <span class="kw">for</span> p <span class="kw">in</span> ps:
+        p.<span class="fn">join</span>()
+    <span class="fn">print</span>(<span class="str">"expected 400000, got"</span>, shared.value)</code></pre></div>
+  <p>Phép <code>shared.value += 1</code> gồm ba bước đọc – cộng – ghi; khi hai tiến trình xen kẽ giữa các bước, một lượt tăng bị nuốt mất. Một phiên chạy thử ba lần có thể cho kết quả như sau — số cụ thể thay đổi theo lần chạy và môi trường, và về lý thuyết lịch thực thi vẫn có thể tình cờ cho đúng 400000 dù chương trình có tranh đoạt:</p>
+  <div class="code-block"><div class="code-label">Kết quả mẫu (tranh đoạt)</div><pre><code><span class="cmt">expected 400000, got 286896</span>
+<span class="cmt">expected 400000, got 229634</span>
+<span class="cmt">expected 400000, got 148371</span></code></pre></div>
+  <div class="callout-red">Đây chính là chân dung của tranh đoạt: kết quả không những có thể sai mà còn không lặp lại được — và một lần chạy đúng không chứng minh được chương trình không có lỗi.</div>
+  <p>Phương thuốc là đồng bộ hóa — khoanh vùng đọc–cộng–ghi thành một vùng găng (critical section) được khóa bảo vệ, mỗi thời điểm chỉ một tác vụ được vào:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">inc_safe</span>(shared, n):
+    <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(n):
+        <span class="kw">with</span> shared.<span class="fn">get_lock</span>():    <span class="cmt"># critical section</span>
+            shared.value += <span class="num">1</span>
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    shared = mp.<span class="fn">Value</span>(<span class="str">'i'</span>, <span class="num">0</span>)      <span class="cmt"># this Value carries a lock</span>
+    ps = [mp.<span class="fn">Process</span>(target=inc_safe, args=(shared, <span class="num">100000</span>)) <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">4</span>)]
+    <span class="kw">for</span> p <span class="kw">in</span> ps:
+        p.<span class="fn">start</span>()
+    <span class="kw">for</span> p <span class="kw">in</span> ps:
+        p.<span class="fn">join</span>()
+    <span class="fn">print</span>(<span class="str">"with lock:"</span>, shared.value)</code></pre></div>
+  <p>Lần này kết quả luôn là 400000. Cái giá của khóa là các tác vụ phải xếp hàng qua vùng găng — mất bớt độ song hành — và nếu dùng nhiều khóa lồng nhau theo thứ tự không nhất quán, ta mở cửa cho khóa chết như đã cảnh báo ở chương. Với <code>threading</code>, câu chuyện y hệt: <code>threading.Lock</code> đóng vai trò chiếc khóa. Phát biểu cho chuẩn xác: dữ liệu bất biến hoặc chỉ được đọc không cần khóa; điều phải bảo vệ là trạng thái khả biến dùng chung — khi nhiều tác vụ có thể đồng thời cập nhật nó, các thao tác phụ thuộc vào tính nguyên tử hoặc một bất biến chung phải được đồng bộ hóa bằng khóa, hàng đợi hoặc cơ chế tương đương.</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 7 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 7 / 8</div>
+<h1 class="lesson-title" id="bao-dong">Hàm bậc cao và bao đóng</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Chương trình con trong Python</div>
+<div class="article-section" id="ham-bac-cao">
+  <h2 class="section-heading">Hàm là giá trị hạng nhất</h2>
+  <p>Trong Python, hàm là giá trị hạng nhất: gán được cho biến, truyền được làm đối số, trả về được làm kết quả. Nhận hàm làm tham số gặp thường ngày qua các hàm thư viện — <code>sorted</code> nhận hàm <code>key</code> quyết định tiêu chí so sánh, <code>map</code> nhận hàm biến đổi từng phần tử:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="fn">print</span>(<span class="fn">sorted</span>([<span class="str">"banana"</span>, <span class="str">"kiwi"</span>, <span class="str">"fig"</span>], key=<span class="fn">len</span>))
+<span class="cmt"># ['fig', 'kiwi', 'banana']</span>
+
+<span class="fn">print</span>(<span class="fn">list</span>(<span class="fn">map</span>(<span class="kw">lambda</span> v: v * <span class="num">2</span>, [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>])))
+<span class="cmt"># [2, 4, 6]</span></code></pre></div>
+</div>
+<div class="article-section" id="closure">
+  <h2 class="section-heading">Bao đóng và <code>nonlocal</code></h2>
+  <p>Chiều ngược lại — hàm trả về hàm — là nơi bao đóng xuất hiện. Ví dụ một "xưởng" sinh bộ đếm:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">make_counter</span>():
+    count = <span class="num">0</span>
+
+    <span class="kw">def</span> <span class="fn">step</span>():
+        <span class="kw">nonlocal</span> count     <span class="cmt"># write to the enclosing binding</span>
+        count += <span class="num">1</span>
+        <span class="kw">return</span> count
+
+    <span class="kw">return</span> step
+
+c1 = <span class="fn">make_counter</span>()
+c2 = <span class="fn">make_counter</span>()
+<span class="fn">print</span>(<span class="fn">c1</span>(), <span class="fn">c1</span>(), <span class="fn">c2</span>())    <span class="cmt"># 1 2 1</span></code></pre></div>
+  <p>Hàm <code>step</code> được trả ra khỏi <code>make_counter</code>, nhưng vẫn đọc–ghi được biến tự do <code>count</code>: giá trị trả về không chỉ là mã mà là bao đóng gói cả môi trường chứa <code>count</code>, và môi trường ấy sống lâu hơn lần kích hoạt của <code>make_counter</code> — đúng lời giải mà chương đã nêu cho bài toán "không còn x để tính x + 1". Hai lời gọi <code>make_counter</code> tạo hai môi trường độc lập, nên <code>c1</code> đếm 1, 2 trong khi <code>c2</code> bắt đầu lại từ 1. Từ khóa <code>nonlocal</code> cần thiết vì phép gán trong Python mặc định tạo tên cục bộ; nó tuyên bố <code>count</code> thuộc về môi trường bao ngoài.</p>
+</div>
+<div class="article-section" id="bat-giu-bien">
+  <h2 class="section-heading">Bắt giữ biến, không phải giá trị</h2>
+  <p>Một điểm tinh tế đáng biết: bao đóng của Python bắt giữ biến, không bắt giữ giá trị tại thời điểm tạo. Ba hàm lambda sinh trong một vòng lặp cùng trỏ về một biến <code>i</code>, và khi được gọi sau vòng lặp, cả ba nhìn thấy giá trị cuối cùng:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">make_adders</span>():
+    <span class="kw">return</span> [<span class="kw">lambda</span> v: v + i <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">3</span>)]
+
+<span class="fn">print</span>([<span class="fn">f</span>(<span class="num">10</span>) <span class="kw">for</span> f <span class="kw">in</span> <span class="fn">make_adders</span>()])
+<span class="cmt"># [12, 12, 12]  -- all three see the final i = 2</span></code></pre></div>
+  <p>Muốn "đóng băng" giá trị tại từng vòng, khuôn mẫu quen dùng là mượn chính cơ chế lượng giá mặc định một lần của tham số:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">make_adders_fixed</span>():
+    <span class="kw">return</span> [<span class="kw">lambda</span> v, i=i: v + i <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">3</span>)]
+
+<span class="fn">print</span>([<span class="fn">f</span>(<span class="num">10</span>) <span class="kw">for</span> f <span class="kw">in</span> <span class="fn">make_adders_fixed</span>()])
+<span class="cmt"># [10, 11, 12]</span></code></pre></div>
+  <p>Đối chiếu với chương: Python dùng tầm vực tĩnh, nên môi trường của một hàm luôn là môi trường nơi nó được định nghĩa — câu hỏi liên kết sâu hay nông không đặt ra — nhưng ví dụ trên nhắc rằng "môi trường" nghĩa là các biến còn sống, chứ không phải bản chụp giá trị của chúng.</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 8 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 8 / 8</div>
+<h1 class="lesson-title" id="tong-ket">Tổng kết phụ lục</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Chương trình con trong Python</div>
+<div class="article-section">
+  <p>Phụ lục này đã đi trọn vòng các cơ chế chương trình con của chương bằng Python. Về định nghĩa và tham số, Python ghép đối số theo vị trí lẫn theo tên, lượng giá giá trị mặc định một lần duy nhất — nguồn gốc cái bẫy mặc định khả biến — và truyền mọi đối số theo chia sẻ đối tượng, nơi ranh giới giữa biến đổi nội dung và gán lại tên quyết định điều người gọi quan sát được. Về ngoại lệ, khung <code>try/except/else/finally</code> hiện thực ngữ nghĩa kết thúc; <code>finally</code> được thực hiện trước mọi đường rời cấu trúc <code>try</code> do Python quản lý, và vì thế có thể lấn át một <code>return</code> đang chờ — một khuôn mẫu cần tránh, được Python 3.14 cảnh báo bằng <code>SyntaxWarning</code>.</p>
+  <p>Generator minh họa một dạng đồng thường trình bất đối xứng thực dụng: <code>yield</code> hoãn thực thi và bảo tồn trạng thái, <code>next</code> và <code>send</code> tiếp tục đúng chỗ dừng, và tính lười biến nó thành công cụ chuẩn để xử lý dòng dữ liệu lớn. Module <code>schedule</code> minh họa việc tách đăng ký lời gọi khỏi thời điểm chạy; <code>threading</code> và <code>multiprocessing</code> cung cấp tác vụ song hành, nơi ta tái hiện được tranh đoạt bằng số liệu thật và chữa nó bằng khóa quanh vùng găng. Cuối cùng, bao đóng với <code>nonlocal</code> xác nhận rằng giá trị hàm trong Python gói cả mã lẫn môi trường, và môi trường ấy bắt giữ biến chứ không bắt giữ giá trị.</p>
+  <p>Bảng sau đối chiếu từng câu hỏi thiết kế của chương với lựa chọn cụ thể của Python:</p>
+  <table>
+    <thead><tr><th>Câu hỏi thiết kế</th><th>Lựa chọn của Python</th></tr></thead>
+    <tbody>
+      <tr><td>Kiểu tham số có bắt buộc không?</td><td>Không; có chú giải kiểu tùy chọn</td></tr>
+      <tr><td>Đối số ghép với tham số thế nào?</td><td>Theo vị trí, theo từ khóa, kèm các loại tham số chỉ-vị-trí, chỉ-từ-khóa và biến thiên</td></tr>
+      <tr><td>Dữ liệu truyền theo cơ chế nào?</td><td>Chia sẻ đối tượng: tham chiếu được gán cho tên cục bộ</td></tr>
+      <tr><td>Ngoại lệ là gì?</td><td>Đối tượng thuộc lớp kế thừa <code>BaseException</code>; ngoại lệ ứng dụng kế thừa <code>Exception</code></td></tr>
+      <tr><td>Ngữ nghĩa xử lý ngoại lệ?</td><td>Kết thúc, kèm tháo ngăn xếp</td></tr>
+      <tr><td>Tạm hoãn chương trình con?</td><td>Generator (<code>yield</code>, <code>next</code>, <code>send</code>) — đồng thường trình bất đối xứng</td></tr>
+      <tr><td>Hàm có là giá trị không?</td><td>Có, hạng nhất: truyền, trả về, gán đều được</td></tr>
+      <tr><td>Môi trường của biến tự do?</td><td>Tầm vực từ vựng; bao đóng bắt giữ biến, hỗ trợ <code>nonlocal</code></td></tr>
+      <tr><td>Thực thi đồng thời?</td><td><code>threading</code>, <code>multiprocessing</code> trong thư viện chuẩn (ngoài ra còn <code>asyncio</code>, ngoài phạm vi phụ lục)</td></tr>
+    </tbody>
+  </table>
+  <p>Nhìn lại, mỗi lựa chọn của Python đều là một phương án cụ thể cho một câu hỏi thiết kế đã nêu ở chương nguyên lý; đọc song song hai tài liệu, ta vừa biết cách viết vừa hiểu vì sao ngôn ngữ được thiết kế như vậy — và đó chính là tinh thần của môn học này.</p>
+</div>
+
+<div class="nav-footer">
+  <a class="nav-btn secondary" href="../CO3005.html">← Về trang chủ</a>
+  <span>Tài liệu 8 / 8 · Phụ lục hoàn thành</span>
+</div>
+
+</main>
+</div>
+
+<script>
+  const tocLinks = document.querySelectorAll('.toc-item');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        tocLinks.forEach(l => l.classList.remove('active'));
+        const m = document.querySelector('.toc-item[href="#' + e.target.id + '"]');
+        if (m) m.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-10% 0px -80% 0px' });
+  document.querySelectorAll('[id]').forEach(el => {
+    if ([...tocLinks].some(l => l.getAttribute('href') === '#' + el.id)) obs.observe(el);
+  });
+</script>
+</body>
+</html>

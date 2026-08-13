@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phụ lục – Câu lệnh trong Python</title>
+<meta name="description" content="Phụ lục CO3005: Câu lệnh trong Python – gán, chọn lựa, lặp và chuyển điều khiển">
+<link rel="icon" type="image/png" href="../favicon_hcmut.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+  :root{--bg:#f7f6f2;--surface:#ffffff;--surface2:#f0ede6;--border:#ddd9d0;--text:#1a1916;--muted:#6b6760;--accent:#1a56a0;--accent-light:#e8f0fb;--code-bg:#1e1e1e;--code-text:#d4d4d4;--kw:#569cd6;--str:#ce9178;--cmt:#6a9955;--num:#b5cea8;--fn:#dcdcaa;--type:#4ec9b0;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.75;}
+  .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;max-width:1280px;margin:0 auto;}
+  .sidebar{background:var(--surface);border-right:1px solid var(--border);padding:28px 0;position:sticky;top:0;height:100vh;overflow-y:auto;}
+  .sidebar-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:0 20px 12px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+  .toc-item{display:block;padding:8px 20px;font-size:13px;color:var(--muted);text-decoration:none;border-left:3px solid transparent;transition:all .15s;line-height:1.4;}
+  .toc-item:hover,.toc-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-light);}
+  .toc-item.sub{padding-left:32px;font-size:12px;}
+  .main{padding:48px 56px 80px;max-width:820px;}
+  .lesson-badge{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:4px;margin-bottom:16px;}
+  .lesson-title{font-family:'IBM Plex Serif',serif;font-size:30px;font-weight:600;line-height:1.25;color:var(--text);margin-bottom:8px;}
+  .lesson-meta{font-size:13px;color:var(--muted);margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid var(--border);}
+  .article-section{margin-bottom:52px;scroll-margin-top:24px;}
+  .section-heading{font-family:'IBM Plex Serif',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--border);position:relative;}
+  .section-heading::before{content:'';position:absolute;bottom:-2px;left:0;width:40px;height:2px;background:var(--accent);}
+  p{margin-bottom:14px;}
+  ul,ol{margin:0 0 14px 24px;line-height:2;}
+  .code-block{background:var(--code-bg);border-radius:8px;margin:20px 0;overflow:hidden;font-size:13.5px;}
+  .code-label{background:#2d2d2d;padding:6px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;letter-spacing:.06em;border-bottom:1px solid #333;}
+  pre{padding:18px 20px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;line-height:1.6;color:var(--code-text);}
+  code{font-family:'IBM Plex Mono',monospace;background:#e8e5de;color:#b5451b;padding:1px 6px;border-radius:3px;font-size:.88em;}
+  pre code{background:none;color:inherit;padding:0;border-radius:0;font-size:inherit;}
+  .kw{color:var(--kw);} .str{color:var(--str);} .cmt{color:var(--cmt);font-style:italic;} .num{color:var(--num);} .fn{color:var(--fn);} .type{color:var(--type);}
+  .callout{background:var(--accent-light);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  .callout-warn{background:#fff8e6;border-left:4px solid #d97706;border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  .callout-green{background:#f0fdf4;border-left:4px solid #16a34a;border-radius:0 6px 6px 0;padding:14px 18px;margin:20px 0;font-size:15px;}
+  hr.divider{border:none;border-top:2px dashed var(--border);margin:48px 0;}
+  .nav-footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0 0;border-top:1px solid var(--border);margin-top:48px;font-size:14px;color:var(--muted);}
+  .nav-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--accent);color:#fff;border-radius:6px;font-size:13px;font-weight:500;text-decoration:none;}
+  .nav-btn.secondary{background:var(--surface);color:var(--accent);border:1px solid var(--accent);}
+  @media(max-width:900px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.main{padding:32px 24px 60px;}}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-title">Phụ lục · Câu lệnh trong Python</div>
+  <a class="toc-item active" href="#mo-dau">Tài liệu 1 · Mở đầu</a>
+  <a class="toc-item" href="#gan-ten">Tài liệu 2 · Gán với đích là tên</a>
+  <a class="toc-item sub" href="#rang-buoc-lai">Ràng buộc lại vs. sửa tại chỗ</a>
+  <a class="toc-item" href="#gan-dong-thoi">Tài liệu 3 · Gán đồng thời, gán chuỗi</a>
+  <a class="toc-item sub" href="#gan-dong-thoi-hoani-vi">Hoán vị & vế phải đánh giá trước</a>
+  <a class="toc-item sub" href="#gan-chuoi">Gán chuỗi và bẫy đối tượng chung</a>
+  <a class="toc-item sub" href="#bieu-thuc-gan">Biểu thức gán :=</a>
+  <a class="toc-item" href="#plusequal">Tài liệu 4 · Khi += không phải x = x + y</a>
+  <a class="toc-item" href="#dieu-kien">Tài liệu 5 · Điều kiện: thật–giả</a>
+  <a class="toc-item sub" href="#giao-thuc-bool">Giao thức __bool__ và __len__</a>
+  <a class="toc-item" href="#chon-lua">Tài liệu 6 · Chọn lựa: thụt lề & match</a>
+  <a class="toc-item sub" href="#else-lo-lung">Else lơ lửng và thụt lề Python</a>
+  <a class="toc-item sub" href="#match">match không xuyên nhánh</a>
+  <a class="toc-item sub" href="#pattern-matching">Đối sánh mẫu có cấu trúc</a>
+  <a class="toc-item" href="#lap">Tài liệu 7 · Lặp: while, do–while, cận</a>
+  <a class="toc-item sub" href="#kiem-tra-truoc">Kiểm tra trước và mô phỏng kiểm tra sau</a>
+  <a class="toc-item sub" href="#can-vong-lap">Câu hỏi về cận vòng lặp</a>
+  <a class="toc-item sub" href="#bien-vong-lap">Biến vòng lặp sống sót & else của vòng</a>
+  <a class="toc-item" href="#for-iterator">Tài liệu 8 · for là bộ lặp & chuyện dừng</a>
+  <a class="toc-item sub" href="#iter-next">iter / next / StopIteration</a>
+  <a class="toc-item sub" href="#break-continue-return">break, continue, return</a>
+  <a class="toc-item sub" href="#su-dung">Sự dừng của vòng lặp</a>
+  <a class="toc-item" href="#tong-ket">Tài liệu 9 · Tổng kết phụ lục</a>
+</nav>
+
+<!-- MAIN -->
+<main class="main" id="mainContent">
+
+<!-- TÀI LIỆU 1 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 1 / 9</div>
+<h1 class="lesson-title" id="mo-dau">Mở đầu</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Câu lệnh trong Python · Trần Ngọc Bảo Duy</div>
+<div class="article-section">
+  <p>Câu lệnh thay đổi trạng thái, chọn nhánh, lặp lại công việc và chuyển điều khiển. Mỗi việc ấy đều ẩn những quyết định ngữ nghĩa mà cú pháp không nói ra: <code>x = x + 1</code> thật ra làm gì với ô nhớ? <code>x += y</code> có luôn bằng <code>x = x + y</code> không? cận của vòng lặp được chốt lúc nào? Phụ lục này lấy Python làm phòng thí nghiệm để trả lời những câu hỏi ấy bằng thứ quan sát được, thay vì bằng lời khẳng định.</p>
+  <p>Python đặc biệt hợp vai này vì nó có sẵn toán tử <code>is</code> và hàm <code>id()</code> để so sánh danh tính đối tượng, và vì một vài lựa chọn thiết kế của nó khác hẳn C hay Java, khiến các đánh đổi lộ ra rõ. Các đoạn mã dưới đây minh họa những hành vi có thể quan sát được khi thực thi bằng Python; với những quan sát về danh tính, điều quan trọng là quan hệ bằng nhau hay khác nhau giữa các định danh, không phải bản thân các con số mà <code>id()</code> in ra.</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 2 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 2 / 9</div>
+<h1 class="lesson-title" id="gan-ten">Khi đích là một tên, phép gán tạo hoặc cập nhật ràng buộc</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Câu lệnh trong Python</div>
+<div class="article-section" id="rang-buoc-lai">
+  <p>Hình dung quen thuộc về phép gán là "ô nhớ của x chứa giá trị mới". Với một phép gán đơn giản có đích là tên, chẳng hạn <code>x = value</code>, Python làm khác, và đây là chỗ đáng nhìn kỹ nhất: một cái tên không phải là ô chứa giá trị, mà là nhãn dán vào một đối tượng. Phép gán cho một tên không tự sửa đối tượng mà tên ấy từng tham chiếu — nó tạo hoặc cập nhật ràng buộc giữa tên và một đối tượng. Cần giới hạn nhận xét này ở đích là tên: các đích như <code>arr[i]</code> hoặc <code>obj.attr</code> có ngữ nghĩa khác, vì chúng cập nhật phần tử hoặc thuộc tính bên trong một đối tượng chứa. Toán tử <code>is</code> so sánh danh tính đối tượng, nên ta quan sát trực tiếp được sự khác biệt:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="num">1</span>
+old_x = x
+x = x + <span class="num">1</span>
+<span class="fn">print</span>(<span class="str">"x còn là đối tượng cũ?"</span>, x <span class="kw">is</span> old_x, <span class="str">"| giá trị:"</span>, x)
+
+xs = [<span class="num">1</span>, <span class="num">2</span>]
+old_xs = xs
+xs.append(<span class="num">3</span>)
+<span class="fn">print</span>(<span class="str">"xs còn là đối tượng cũ?"</span>, xs <span class="kw">is</span> old_xs, <span class="str">"| giá trị:"</span>, xs)
+<span class="cmt"># x còn là đối tượng cũ? False | giá trị: 2</span>
+<span class="cmt"># xs còn là đối tượng cũ? True | giá trị: [1, 2, 3]</span></code></pre></div>
+  <p>Hai hành vi hoàn toàn khác nhau. Với <code>x = x + 1</code>, danh tính đổi: Python đánh giá <code>x + 1</code> để nhận một đối tượng số nguyên biểu diễn giá trị mới, rồi ràng buộc lại tên <code>x</code> với đối tượng kết quả; đối tượng số nguyên trước đó không hề bị sửa đổi — đây là <strong>ràng buộc lại</strong> (rebinding). Với <code>xs.append(3)</code>, danh tính giữ nguyên: vẫn đúng đối tượng ấy, chỉ nội dung bên trong bị sửa — đây là <strong>sửa tại chỗ</strong> (mutation). Nếu muốn dùng <code>id()</code>, cách đúng là lưu định danh rồi so sánh (<code>before = id(xs) … id(xs) == before</code>), vì bản thân các con số trả về không mang ý nghĩa và có thể khác giữa các lần chạy.</p>
+  <p>Phân biệt này không phải chi tiết vụn vặt. Nó quyết định điều gì xảy ra khi hai cái tên cùng trỏ vào một đối tượng: ràng buộc lại chỉ ảnh hưởng đúng một tên, còn sửa tại chỗ thì mọi tên cùng trỏ tới đối tượng ấy đều nhìn thấy thay đổi. Toàn bộ hai mục tiếp theo xoay quanh hệ quả này.</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 3 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 3 / 9</div>
+<h1 class="lesson-title" id="gan-dong-thoi">Gán đồng thời, gán chuỗi và biểu thức gán</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Câu lệnh trong Python</div>
+<div class="article-section" id="gan-dong-thoi-hoani-vi">
+  <h2 class="section-heading">Hoán vị và nguyên lý vế phải đánh giá trước</h2>
+  <p>Phép hoán vị hai biến trong Python viết gọn một dòng, và nó chạy đúng nhờ một nguyên lý cụ thể: đánh giá xong toàn bộ vế phải, rồi mới thực hiện việc ràng buộc.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>a, b = <span class="num">1</span>, <span class="num">2</span>
+a, b = b, a
+<span class="fn">print</span>(<span class="str">"sau a, b = b, a -&gt;"</span>, a, b)
+<span class="cmt"># sau a, b = b, a -> 2 1</span></code></pre></div>
+  <p>Nếu Python gán tuần tự từng cặp, <code>a = b</code> sẽ làm mất giá trị cũ của a; sau đó <code>b = a</code> chỉ chép giá trị vừa ghi vào a trở lại b, nên cả hai cùng mang giá trị cũ của b — kết quả sẽ là <code>2 2</code>. Việc nhận <code>2 1</code> chứng minh vế phải đã được tính trọn vẹn thành một bộ đôi trước khi bất kỳ tên nào bị đụng tới.</p>
+  <p>Nhưng nguyên lý ấy mới nói một nửa. Nửa còn lại: sau khi vế phải đã tính xong, các đích được gán lần lượt từ trái sang phải. Ví dụ nâng cao sau đây quan sát được điều đó, nhưng đòi hỏi ghép cùng lúc cả hai quy tắc — có thể đọc lại sau khi đã nắm chắc ví dụ hoán vị ở trên:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>i = <span class="num">0</span>
+arr = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>]
+i, arr[i] = <span class="num">1</span>, <span class="num">99</span>
+<span class="fn">print</span>(<span class="str">"i ="</span>, i, <span class="str">"| arr ="</span>, arr)
+<span class="cmt"># i = 1 | arr = [10, 99, 30]</span></code></pre></div>
+  <p>Vế phải cho ra <code>(1, 99)</code>. Đích thứ nhất <code>i</code> được gán trước, thành <code>1</code>. Đến lượt đích thứ hai, <code>arr[i]</code> mới được tính địa chỉ — và lúc này <code>i</code> đã là <code>1</code>, nên <code>99</code> rơi vào <code>arr[1]</code>, không phải <code>arr[0]</code>. Một dòng duy nhất, hai quy tắc khác nhau đan vào nhau.</p>
+</div>
+<div class="article-section" id="gan-chuoi">
+  <h2 class="section-heading">Gán chuỗi và bẫy đối tượng chung</h2>
+  <p>Gán chuỗi thì để lộ đúng cái bẫy mà mục trước báo trước. Nó không tạo ra hai đối tượng, mà làm hai tên trỏ vào cùng một đối tượng:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>p = q = []
+p.append(<span class="num">1</span>)
+<span class="fn">print</span>(<span class="str">"p ="</span>, p, <span class="str">"| q ="</span>, q, <span class="str">"| p is q:"</span>, p <span class="kw">is</span> q)
+<span class="cmt"># p = [1] | q = [1] | p is q: True</span></code></pre></div>
+  <p>Ta chỉ đụng tới <code>p</code>, nhưng <code>q</code> cũng đổi theo — vì <code>append</code> là sửa tại chỗ trên đối tượng mà cả hai tên cùng trỏ tới. Với số nguyên, việc <code>x = y = 0</code> làm hai tên dùng chung một đối tượng không gây ra hiện tượng sửa chung, vì số nguyên là bất biến; khi cần một giá trị số mới, câu lệnh gán sẽ ràng buộc tên với một kết quả khác. Với đối tượng thay đổi được, <code>p = q = []</code> thường gây lỗi nếu người viết dự định tạo hai đối tượng độc lập — còn khi chủ ý là chia sẻ cùng một danh sách, đây vẫn là cách viết hợp lệ.</p>
+</div>
+<div class="article-section" id="bieu-thuc-gan">
+  <h2 class="section-heading">Biểu thức gán <code>:=</code></h2>
+  <p>Cuối cùng, Python có biểu thức gán (assignment expression) với ký hiệu riêng <code>:=</code>, cho phép gán mà vẫn trả về giá trị:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>data = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>]
+<span class="kw">if</span> (n := <span class="fn">len</span>(data)) &gt; <span class="num">3</span>:
+    <span class="fn">print</span>(f<span class="str">"độ dài {n} &gt; 3 — n được gán ngay trong điều kiện"</span>)
+<span class="cmt"># độ dài 5 > 3 — n được gán ngay trong điều kiện</span></code></pre></div>
+  <div class="callout">Đáng chú ý là ký hiệu: Python cố tình không dùng <code>=</code> cho việc này. Nhờ vậy, lỗi kinh điển viết nhầm phép gán vào chỗ đáng lẽ là phép so sánh không thể xảy ra một cách âm thầm — muốn gán trong biểu thức, người viết phải nói rõ ý bằng một ký hiệu khác.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 4 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 4 / 9</div>
+<h1 class="lesson-title" id="plusequal">Khi <code>+=</code> không phải là <code>x = x + y</code></h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Câu lệnh trong Python</div>
+<div class="article-section">
+  <p>Đây là ví dụ đắt giá nhất của phụ lục, vì nó bác bỏ trực tiếp một giả định mà hầu như ai cũng mang trong đầu: rằng <code>+=</code> chỉ là lối viết tắt.</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>u = [<span class="num">1</span>, <span class="num">2</span>]
+v = u
+u += [<span class="num">3</span>]
+<span class="fn">print</span>(<span class="str">"u += [3]    -&gt; u:"</span>, u, <span class="str">"| v:"</span>, v, <span class="str">"| u is v:"</span>, u <span class="kw">is</span> v)
+
+u2 = [<span class="num">1</span>, <span class="num">2</span>]
+v2 = u2
+u2 = u2 + [<span class="num">3</span>]
+<span class="fn">print</span>(<span class="str">"u2 = u2+[3] -&gt; u2:"</span>, u2, <span class="str">"| v2:"</span>, v2, <span class="str">"| u2 is v2:"</span>, u2 <span class="kw">is</span> v2)
+<span class="cmt"># u += [3]    -> u: [1, 2, 3] | v: [1, 2, 3] | u is v: True</span>
+<span class="cmt"># u2 = u2+[3] -> u2: [1, 2, 3] | v2: [1, 2] | u2 is v2: False</span></code></pre></div>
+  <p>Hai dòng lệnh cho <code>u</code> và <code>u2</code> cùng giá trị cuối <code>[1, 2, 3]</code>. Nhưng số phận của <code>v</code> và <code>v2</code> thì khác hẳn. Với <code>u += [3]</code>, danh sách bị sửa tại chỗ, nên <code>v</code> — vốn trỏ cùng đối tượng — cũng thấy phần tử mới; <code>u is v</code> vẫn đúng. Với <code>u2 = u2 + [3]</code>, một danh sách mới được tạo ra và tên <code>u2</code> bị trỏ sang đó, còn <code>v2</code> vẫn ở lại với danh sách cũ.</p>
+  <div class="callout-warn"><strong>Nguyên nhân:</strong> với phép gán phức hợp, Python thử phép toán tại chỗ tương ứng trước — với <code>+=</code> là phương thức <code>__iadd__</code>, và danh sách có phương thức này nên bị sửa tại chỗ. Nhưng cơ chế còn một tầng dự phòng: nếu đối tượng không hỗ trợ phép toán tại chỗ, phép cộng thông thường được dùng và kết quả sau đó được gán lại cho đích. Vì vậy, <code>+=</code> có thể sửa đối tượng tại chỗ, nhưng không được bảo đảm luôn làm như vậy — quyết định thuộc về kiểu của toán hạng. Nói cách khác, gán phức hợp là một quyết định ngữ nghĩa, không phải một phép thay thế văn bản — đúng như lý thuyết cảnh báo khi nói <code>x += y</code> có thể khác <code>x = x + y</code> về toán tử nạp chồng và về hiệu ứng phụ.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 5 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 5 / 9</div>
+<h1 class="lesson-title" id="dieu-kien">Điều kiện: giá trị luận lý hay tính thật–giả</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Câu lệnh trong Python</div>
+<div class="article-section">
+  <p>Python không đòi điều kiện phải mang kiểu luận lý; nó áp dụng tính thật–giả cho mọi giá trị. Các trường hợp "giả" được xác định theo một số nhóm quy tắc: <code>False</code> và <code>None</code>, các giá trị số bằng không, các chuỗi và tập hợp rỗng, cùng những đối tượng tự định nghĩa mà giao thức kiểm tra (bàn ngay dưới đây) kết luận là giả:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">for</span> val <span class="kw">in</span> [<span class="num">0</span>, <span class="num">0.0</span>, <span class="str">""</span>, [], {}, <span class="kw">None</span>, <span class="num">1</span>, <span class="str">"a"</span>, [<span class="num">0</span>]]:
+    <span class="fn">print</span>(f<span class="str">"  bool({val!r:&gt;6}) = {bool(val)}"</span>)
+<span class="cmt">#   bool(     0) = False</span>
+<span class="cmt">#   bool(   0.0) = False</span>
+<span class="cmt">#   bool(    '') = False</span>
+<span class="cmt">#   bool(    []) = False</span>
+<span class="cmt">#   bool(    {}) = False</span>
+<span class="cmt">#   bool(  None) = False</span>
+<span class="cmt">#   bool(     1) = True</span>
+<span class="cmt">#   bool(   'a') = True</span>
+<span class="cmt">#   bool(   [0]) = True</span></code></pre></div>
+  <div class="callout">Chú ý dòng cuối: <code>[0]</code> là thật, dù phần tử duy nhất của nó là <code>0</code> — cái quyết định là danh sách không rỗng, chứ không phải nội dung bên trong. Chính những chỗ như vậy khiến tính thật–giả tiện thì có tiện, nhưng phải nhớ đúng quy ước.</div>
+</div>
+<div class="article-section" id="giao-thuc-bool">
+  <h2 class="section-heading">Giao thức <code>__bool__</code> và <code>__len__</code></h2>
+  <p>Quy ước ấy còn mở rộng được: một lớp tự định nghĩa có thể tự quyết định mình "thật" hay "giả" bằng <code>__bool__</code>, hoặc gián tiếp qua <code>__len__</code>:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">class</span> <span class="type">Box</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, items):
+        self.items = items
+    <span class="kw">def</span> <span class="fn">__len__</span>(self):
+        <span class="kw">return</span> <span class="fn">len</span>(self.items)
+
+<span class="fn">print</span>(<span class="str">"Box([])  là thật?"</span>, <span class="fn">bool</span>(<span class="fn">Box</span>([])))
+<span class="fn">print</span>(<span class="str">"Box([1]) là thật?"</span>, <span class="fn">bool</span>(<span class="fn">Box</span>([<span class="num">1</span>])))
+<span class="cmt"># Box([])  là thật? False</span>
+<span class="cmt"># Box([1]) là thật? True</span></code></pre></div>
+  <p>Vậy khi <code>obj</code> được dùng trong điều kiện, Python áp dụng một giao thức kiểm tra thật–giả: với đối tượng tự định nghĩa, giao thức này tham khảo <code>__bool__</code>, hoặc <code>__len__</code> nếu <code>__bool__</code> không được cung cấp. Điều kiện của câu lệnh chọn lựa, hóa ra, cũng là một điểm mở rộng của ngôn ngữ.</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 6 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 6 / 9</div>
+<h1 class="lesson-title" id="chon-lua">Chọn lựa: thụt lề khử nhập nhằng, và <code>match</code> không xuyên nhánh</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Câu lệnh trong Python</div>
+<div class="article-section" id="else-lo-lung">
+  <h2 class="section-heading">Else lơ lửng và cách Python khử nhập nhằng bằng thụt lề</h2>
+  <p>Vấn đề else lơ lửng sinh ra từ chỗ văn phạm không nói rõ <code>else</code> thuộc <code>if</code> nào. Python khử nó bằng chính cấu trúc khối: mức thụt lề quyết định, không còn gì để đoán. Cùng một bộ câu lệnh, chỉ đổi thụt lề của <code>else</code>, ta được hai chương trình khác nhau:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">f_inner</span>(c1, c2):
+    <span class="kw">if</span> c1:
+        <span class="kw">if</span> c2: <span class="kw">return</span> <span class="str">"S1"</span>
+        <span class="kw">else</span>:  <span class="kw">return</span> <span class="str">"S2 (else thuộc if TRONG)"</span>
+    <span class="kw">return</span> <span class="str">"không nhánh nào"</span>
+
+<span class="kw">def</span> <span class="fn">f_outer</span>(c1, c2):
+    <span class="kw">if</span> c1:
+        <span class="kw">if</span> c2: <span class="kw">return</span> <span class="str">"S1"</span>
+    <span class="kw">else</span>:      <span class="kw">return</span> <span class="str">"S2 (else thuộc if NGOÀI)"</span>
+    <span class="kw">return</span> <span class="str">"không nhánh nào"</span>
+
+<span class="fn">print</span>(<span class="str">"c1=True,  c2=False -&gt;"</span>, <span class="fn">f_inner</span>(<span class="kw">True</span>, <span class="kw">False</span>), <span class="str">"|"</span>, <span class="fn">f_outer</span>(<span class="kw">True</span>, <span class="kw">False</span>))
+<span class="fn">print</span>(<span class="str">"c1=False, c2=False -&gt;"</span>, <span class="fn">f_inner</span>(<span class="kw">False</span>, <span class="kw">False</span>), <span class="str">"|"</span>, <span class="fn">f_outer</span>(<span class="kw">False</span>, <span class="kw">False</span>))
+<span class="cmt"># c1=True,  c2=False -> S2 (else thuộc if TRONG) | không nhánh nào</span>
+<span class="cmt"># c1=False, c2=False -> không nhánh nào | S2 (else thuộc if NGOÀI)</span></code></pre></div>
+  <p>Hai hàm cho kết quả ngược nhau ở cả hai trường hợp thử, dù chuỗi từ khóa hoàn toàn như nhau. Đây chính là hai cách hiểu mà ngôn ngữ dùng dấu ngoặc phải chọn một bằng luật "gắn với if gần nhất chưa khớp" — còn Python thì không cần luật ấy, vì thụt lề đã nói hết.</p>
+</div>
+<div class="article-section" id="match">
+  <h2 class="section-heading"><code>match</code> không xuyên nhánh</h2>
+  <p>Với chọn lựa nhiều nhánh, Python dùng <code>match</code>, và nó không xuyên nhánh:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">m</span>(x):
+    out = []
+    <span class="kw">match</span> x:
+        <span class="kw">case</span> <span class="num">1</span>: out.append(<span class="str">"một"</span>)
+        <span class="kw">case</span> <span class="num">2</span>: out.append(<span class="str">"hai"</span>)
+        <span class="kw">case</span> _: out.append(<span class="str">"khác"</span>)
+    <span class="kw">return</span> out
+
+<span class="fn">print</span>(<span class="str">"m(1) ="</span>, <span class="fn">m</span>(<span class="num">1</span>))
+<span class="cmt"># m(1) = ['một']</span></code></pre></div>
+  <p>Các <code>case</code> được xét từ trên xuống; <code>case</code> đầu tiên có mẫu (và điều kiện bảo vệ, nếu có) phù hợp sẽ được thực thi — nhiều mẫu có thể cùng khớp một giá trị, nhưng chỉ nhánh đứng trước thắng. Sau khi thân của <code>case</code> đó kết thúc, việc thực thi tiếp tục sau toàn bộ câu lệnh <code>match</code>: không cần <code>break</code>, không thể quên <code>break</code>, và không có cơ chế xuyên nhánh. Đây là lựa chọn thiết kế ngược hẳn với <code>switch</code> kiểu C, và nó cho thấy xuyên nhánh đúng là một quyết định, chứ không phải bản chất của chọn lựa nhiều nhánh.</p>
+</div>
+<div class="article-section" id="pattern-matching">
+  <h2 class="section-heading">Đối sánh mẫu có cấu trúc</h2>
+  <p>Nhưng sẽ thiếu sót nếu xem <code>match</code> chỉ là một <code>switch</code> viết bằng cú pháp mới. Nó là đối sánh mẫu có cấu trúc (structural pattern matching): nhánh có thể mô tả hình dạng của dữ liệu và đồng thời rút các thành phần ra thành tên:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">classify</span>(point):
+    <span class="kw">match</span> point:
+        <span class="kw">case</span> (<span class="num">0</span>, <span class="num">0</span>):
+            <span class="kw">return</span> <span class="str">"gốc tọa độ"</span>
+        <span class="kw">case</span> (x, <span class="num">0</span>):
+            <span class="kw">return</span> f<span class="str">"trên trục hoành tại x={x}"</span>
+        <span class="kw">case</span> (x, y):
+            <span class="kw">return</span> f<span class="str">"điểm ({x}, {y})"</span>
+
+<span class="fn">print</span>(<span class="fn">classify</span>((<span class="num">0</span>, <span class="num">0</span>)))
+<span class="fn">print</span>(<span class="fn">classify</span>((<span class="num">3</span>, <span class="num">0</span>)))
+<span class="fn">print</span>(<span class="fn">classify</span>((<span class="num">3</span>, <span class="num">4</span>)))
+<span class="cmt"># gốc tọa độ</span>
+<span class="cmt"># trên trục hoành tại x=3</span>
+<span class="cmt"># điểm (3, 4)</span></code></pre></div>
+  <div class="callout">Chú ý <code>(3, 0)</code>: nó khớp cả mẫu <code>(x, 0)</code> lẫn mẫu <code>(x, y)</code>, và chính luật "nhánh đầu tiên khớp" quyết định câu trả lời. Đây là bước tiến hóa mà chương chính đã báo trước — từ so sánh với hằng số lên so khớp với cấu trúc.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 7 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 7 / 9</div>
+<h1 class="lesson-title" id="lap">Lặp: kiểm tra trước, mô phỏng kiểm tra sau, và câu chuyện về cận</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Câu lệnh trong Python</div>
+<div class="article-section" id="kiem-tra-truoc">
+  <h2 class="section-heading">Kiểm tra trước và mô phỏng kiểm tra sau</h2>
+  <p>Trong nhóm vòng lặp điều khiển bằng điều kiện, Python cung cấp <code>while</code> theo cơ chế kiểm tra trước, và không có cú pháp dựng sẵn tương đương <code>do–while</code> hay <code>repeat–until</code> (vòng <code>for</code> thuộc nhóm khác — lặp điều khiển bằng bộ lặp — và sẽ được bàn ở mục sau). Hệ quả quen thuộc của kiểm tra trước là thân vòng có thể không chạy lần nào:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="num">0</span>
+<span class="kw">while</span> x &gt; <span class="num">0</span>:
+    <span class="fn">print</span>(<span class="str">"không bao giờ in"</span>)
+    x -= <span class="num">1</span>
+<span class="fn">print</span>(<span class="str">"pretest với x = 0: thân chạy 0 lần"</span>)</code></pre></div>
+  <p>Không có <code>do–while</code>, nên vòng kiểm tra sau phải dựng lại bằng tay — và cách dựng cho thấy rõ bản chất của nó là "chạy thân trước, thử điều kiện sau":</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>x = <span class="num">0</span>
+runs = <span class="num">0</span>
+<span class="kw">while</span> <span class="kw">True</span>:
+    runs += <span class="num">1</span>
+    <span class="kw">if not</span> (x &gt; <span class="num">0</span>):
+        <span class="kw">break</span>
+<span class="fn">print</span>(<span class="str">"posttest mô phỏng với x = 0: thân chạy"</span>, runs, <span class="str">"lần"</span>)
+<span class="cmt"># posttest mô phỏng với x = 0: thân chạy 1 lần</span></code></pre></div>
+  <p>Đúng như lý thuyết: kiểm tra trước cho tối thiểu 0 lần, kiểm tra sau cho tối thiểu 1 lần.</p>
+</div>
+<div class="article-section" id="can-vong-lap">
+  <h2 class="section-heading">Câu hỏi thiết kế then chốt về cận vòng lặp</h2>
+  <p>Bây giờ tới câu hỏi thiết kế then chốt về vòng lặp theo bộ đếm: cận được đánh giá một lần hay mỗi vòng? Python trả lời khác nhau cho hai loại vòng lặp, và ta thử được cả hai:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>n = <span class="num">3</span>
+count = <span class="num">0</span>
+<span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(n):
+    n = <span class="num">10</span>                 <span class="cmt"># change n mid-loop</span>
+    count += <span class="num">1</span>
+<span class="fn">print</span>(<span class="str">"for range(n), thân đặt n = 10 -&gt; chạy"</span>, count, <span class="str">"lần"</span>)
+
+n = <span class="num">3</span>; i = <span class="num">0</span>; count = <span class="num">0</span>
+<span class="kw">while</span> i &lt; n:
+    i += <span class="num">1</span>
+    count += <span class="num">1</span>
+    <span class="kw">if</span> count == <span class="num">1</span>:
+        n = <span class="num">5</span>              <span class="cmt"># change n mid-loop</span>
+<span class="fn">print</span>(<span class="str">"while i &lt; n, thân đặt n = 5  -&gt; chạy"</span>, count, <span class="str">"lần"</span>)
+<span class="cmt"># for range(n), thân đặt n = 10 -> chạy 3 lần</span>
+<span class="cmt"># while i &lt; n, thân đặt n = 5  -> chạy 5 lần</span></code></pre></div>
+  <p>Vòng <code>for</code> chạy đúng 3 lần: điều được đánh giá một lần trước khi duyệt là biểu thức iterable sau từ khóa <code>in</code> — ở đây là <code>range(n)</code> — và đối tượng range thu được đã tự chứa thông tin kết thúc, nên những lần gán lại tên <code>n</code> về sau chẳng còn ý nghĩa gì. Vòng <code>while</code> chạy 5 lần: điều kiện <code>i &lt; n</code> được đánh giá lại mỗi vòng, nên đổi <code>n</code> giữa chừng thay đổi ngay số lần lặp. Cùng một ý "lặp cho tới n", hai cơ chế, hai kết quả.</p>
+  <div class="callout-warn">Chớ khái quát thành "mọi vòng <code>for</code> đều chốt cận": đó là tính chất của ví dụ <code>range(n)</code>. Khi duyệt một cấu trúc thay đổi được, việc sửa chính cấu trúc đó trong thân vòng vẫn có thể tác động đến quá trình duyệt, vì bộ lặp làm việc trực tiếp trên đối tượng ấy.</div>
+</div>
+<div class="article-section" id="bien-vong-lap">
+  <h2 class="section-heading">Biến vòng lặp sống sót & <code>else</code> của vòng lặp</h2>
+  <p>Còn một câu hỏi thiết kế nữa: biến vòng lặp có sống sót sau vòng lặp không? Trong C++ hay Java, biến khai báo trong <code>for</code> chết cùng vòng lặp. Python thì không:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">for</span> k <span class="kw">in</span> <span class="fn">range</span>(<span class="num">3</span>):
+    <span class="kw">pass</span>
+<span class="fn">print</span>(<span class="str">"sau vòng lặp, k ="</span>, k)
+<span class="cmt"># sau vòng lặp, k = 2</span></code></pre></div>
+  <p>Vòng <code>for</code> không tạo một tầm vực khối riêng, nên nếu vòng lặp thực hiện ít nhất một lần, tên đích vẫn còn sau vòng lặp và mang giá trị được gán ở lần lặp cuối — tiện khi ta cần biết vòng lặp dừng ở đâu, nhưng cũng là một nguồn lỗi âm thầm khi cái tên ấy vô tình đè lên một biến khác cùng tên. Còn nếu iterable rỗng và vòng lặp không chạy lần nào, câu lệnh <code>for</code> không gán gì cho tên đích: đọc <code>k</code> khi nó chưa từng được ràng buộc trước đó sẽ gây lỗi.</p>
+  <p>Python còn một nét riêng ít ngôn ngữ có: mệnh đề <code>else</code> gắn với vòng lặp, chạy khi vòng lặp kết thúc mà không bị <code>break</code>:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">3</span>):
+    <span class="kw">if</span> i == <span class="num">99</span>:
+        <span class="kw">break</span>
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"else CHẠY vì vòng lặp không hề bị break"</span>)
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">3</span>):
+    <span class="kw">if</span> i == <span class="num">1</span>:
+        <span class="kw">break</span>
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"dòng này không in"</span>)
+<span class="fn">print</span>(<span class="str">"else BỊ BỎ QUA vì đã break"</span>)
+<span class="cmt"># else CHẠY vì vòng lặp không hề bị break</span>
+<span class="cmt"># else BỊ BỎ QUA vì đã break</span></code></pre></div>
+  <div class="callout-warn">Mệnh đề <code>else</code> gọn cho mẫu hình "tìm kiếm: nếu duyệt hết mà không thấy thì làm gì đó" — nhưng cái tên <code>else</code> gây hiểu nhầm đến mức nhiều người đọc phải tra lại tài liệu, một minh chứng nhỏ rằng lựa chọn từ khóa cũng là một quyết định thiết kế có giá của nó.</div>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 8 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 8 / 9</div>
+<h1 class="lesson-title" id="for-iterator">Vòng <code>for</code> chính là một bộ lặp, và chuyện dừng</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Câu lệnh trong Python</div>
+<div class="article-section" id="iter-next">
+  <h2 class="section-heading"><code>iter</code> / <code>next</code> / <code>StopIteration</code></h2>
+  <p>Câu lệnh <code>for</code> của Python trông như lặp trên tập hợp, nhưng thực chất nó là lặp trên một bộ lặp — một đối tượng mang trạng thái duyệt. Ta có thể tháo tung nó ra bằng tay:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code>it = <span class="fn">iter</span>([<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>])
+<span class="fn">print</span>(<span class="str">"next:"</span>, <span class="fn">next</span>(it), <span class="fn">next</span>(it), <span class="fn">next</span>(it))
+<span class="kw">try</span>:
+    <span class="fn">next</span>(it)
+<span class="kw">except</span> <span class="type">StopIteration</span>:
+    <span class="fn">print</span>(<span class="str">"StopIteration -&gt; đây chính là tín hiệu kết thúc mà for bắt"</span>)
+<span class="cmt"># next: 10 20 30</span>
+<span class="cmt"># StopIteration -> đây chính là tín hiệu kết thúc mà for bắt</span></code></pre></div>
+  <p>Vậy <code>for item in coll:</code> chỉ là cách viết gọn của: xin một bộ lặp từ <code>coll</code>, gọi <code>next</code> liên tục, và dừng khi nhận <code>StopIteration</code>. Bộ lặp nhớ "đang ở đâu" — đó chính là trạng thái duyệt. Nhờ tách trạng thái ấy ra khỏi tập hợp, cùng một câu lệnh <code>for</code> dùng được cho danh sách, tệp, hay một dãy sinh ra lười và dài vô hạn.</p>
+</div>
+<div class="article-section" id="break-continue-return">
+  <h2 class="section-heading"><code>break</code>, <code>continue</code>, <code>return</code></h2>
+  <p>Ba câu lệnh chuyển điều khiển quen thuộc đều hiện diện, và một ví dụ nhỏ đủ để tách bạch chúng:</p>
+  <div class="code-block"><div class="code-label">Python</div><pre><code><span class="kw">def</span> <span class="fn">find</span>(xs, target):
+    <span class="kw">for</span> x <span class="kw">in</span> xs:
+        <span class="kw">if</span> x == target:
+            <span class="kw">return</span> <span class="kw">True</span>      <span class="cmt"># leaves the function as soon as the answer is known</span>
+    <span class="kw">return</span> <span class="kw">False</span>
+
+kept = []
+<span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>):
+    <span class="kw">if</span> x &gt; <span class="num">5</span>:
+        <span class="kw">break</span>                <span class="cmt"># terminates the whole loop (runs when x == 6)</span>
+    <span class="kw">if</span> x % <span class="num">2</span>:
+        <span class="kw">continue</span>             <span class="cmt"># skips the rest of the current iteration</span>
+    kept.append(x)
+
+<span class="fn">print</span>(<span class="str">"find([1,2,3], 2) ="</span>, <span class="fn">find</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>], <span class="num">2</span>))
+<span class="fn">print</span>(<span class="str">"kept ="</span>, kept)
+<span class="cmt"># find([1,2,3], 2) = True</span>
+<span class="cmt"># kept = [0, 2, 4]</span></code></pre></div>
+  <p><code>continue</code> thực sự bỏ qua các số lẻ; <code>break</code> thực sự chấm dứt vòng lặp khi <code>x == 6</code>, nên các số chẵn từ 6 trở đi không được giữ lại; <code>return</code> thoát khỏi cả hàm ngay khi tìm thấy, khỏi phải dựng thêm biến cờ rồi đi hết danh sách. Cả ba đều rời khỏi luồng thông thường, nhưng đích đến của chúng bị ràng buộc bởi cấu trúc bao quanh — nên vẫn đọc được. Python cố tình không có <code>goto</code>, tức đã chọn dứt khoát: chỉ chấp nhận những bước nhảy có kiểm soát.</p>
+</div>
+<div class="article-section" id="su-dung">
+  <h2 class="section-heading">Sự dừng của vòng lặp</h2>
+  <p>Điểm cuối, về sự dừng. Không có gì trong cú pháp bảo đảm một vòng lặp sẽ kết thúc; điều đó phụ thuộc việc thân vòng có làm trạng thái tiến về điều kiện dừng hay không:</p>
+  <div class="code-block"><div class="code-label">Python – vòng lặp không dừng (đã chú thích)</div><pre><code><span class="cmt"># x = 3</span>
+<span class="cmt"># while x &gt; 0:</span>
+<span class="cmt">#     print(x)        # x never changes -&gt; the loop never terminates</span></code></pre></div>
+  <p>Đoạn trên được đặt trong chú thích vì nếu thực thi, vòng lặp sẽ không tự kết thúc — tiến trình cứ chạy tiếp cho tới khi bị ngắt. Chỉ cần thêm <code>x -= 1</code> là có một đại lượng giảm dần về 0, và vòng lặp dừng. Đó là cách suy nghĩ đáng mang theo: mỗi vòng lặp nên có một đại lượng mà ta chỉ ra được là đang tiến về đích.</p>
+</div>
+
+<hr class="divider">
+
+<!-- TÀI LIỆU 9 -->
+<div class="lesson-badge">Phụ lục · Tài liệu 9 / 9</div>
+<h1 class="lesson-title" id="tong-ket">Tổng kết phụ lục</h1>
+<div class="lesson-meta">CO3005 · Phụ lục: Câu lệnh trong Python</div>
+<div class="article-section">
+  <p>Phụ lục này biến các khái niệm về câu lệnh thành thứ quan sát được. Phép so sánh danh tính bằng <code>is</code> cho thấy điều căn bản nhất: trong Python, phép gán đơn giản có đích là một tên không ghi đè một ô nhớ mà tạo hoặc cập nhật ràng buộc của tên ấy tới một đối tượng — trong khi gán cho phần tử hay thuộc tính lại cập nhật đối tượng chứa — nên phải phân biệt ràng buộc lại với sửa tại chỗ. Từ phân biệt ấy, hai hệ quả rơi ra tự nhiên — gán chuỗi <code>p = q = []</code> khiến hai tên chia nhau một đối tượng, và <code>u += [3]</code> sửa tại chỗ trong khi <code>u2 = u2 + [3]</code> tạo đối tượng mới, chứng minh gán phức hợp là một quyết định ngữ nghĩa chứ không phải lối viết tắt. Gán đồng thời thì để lộ hai quy tắc đan nhau: vế phải tính trọn trước, còn các đích được gán lần lượt từ trái sang phải.</p>
+  <p>Về chọn lựa, <code>bool()</code> cho thấy điều kiện trong Python là tính thật–giả chứ không phải kiểu luận lý chặt, và với đối tượng tự định nghĩa, giao thức kiểm tra thật–giả có thể tham khảo <code>__bool__</code> hay <code>__len__</code>. Thụt lề khử sạch nhập nhằng else lơ lửng — hai hàm chỉ khác mức thụt lề đã cho kết quả ngược nhau — còn <code>match</code> chạy đúng nhánh đầu tiên khớp rồi thoát, cho thấy xuyên nhánh chỉ là một lựa chọn thiết kế mà Python đã từ chối; hơn thế, mẫu của <code>match</code> mô tả được cả cấu trúc dữ liệu, chứ không chỉ so với hằng.</p>
+  <p>Về lặp, trong nhóm điều khiển bằng điều kiện, Python chỉ cung cấp <code>while</code> kiểm tra trước; việc phải dựng vòng kiểm tra sau bằng <code>while True + break</code> làm bật rõ khác biệt 0 lần so với 1 lần chạy tối thiểu. Hai phép thử đổi cận giữa chừng trả lời dứt khoát câu hỏi thiết kế then chốt: trong vòng <code>for</code>, biểu thức iterable như <code>range(n)</code> được đánh giá một lần trước khi duyệt, còn <code>while i &lt; n</code> đánh giá lại điều kiện mỗi vòng. Biến vòng lặp sống sót sau vòng lặp khi vòng chạy ít nhất một lần, khác với nhiều ngôn ngữ khác. Cuối cùng, tháo <code>for</code> ra thành <code>iter</code>/<code>next</code>/<code>StopIteration</code> cho thấy bộ lặp đúng là trạng thái duyệt; <code>break</code>, <code>continue</code>, <code>return</code> là những bước nhảy có kiểm soát; và không cú pháp nào bảo đảm sự dừng — chỉ một đại lượng thật sự tiến về đích mới làm được điều đó.</p>
+</div>
+
+<div class="nav-footer">
+  <a class="nav-btn secondary" href="../CO3005.html">← Về trang chủ</a>
+  <span>Tài liệu 9 / 9 · Phụ lục hoàn thành</span>
+</div>
+
+</main>
+</div>
+
+<script>
+  const tocLinks = document.querySelectorAll('.toc-item');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        tocLinks.forEach(l => l.classList.remove('active'));
+        const m = document.querySelector('.toc-item[href="#' + e.target.id + '"]');
+        if (m) m.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-10% 0px -80% 0px' });
+  document.querySelectorAll('[id]').forEach(el => {
+    if ([...tocLinks].some(l => l.getAttribute('href') === '#' + el.id)) obs.observe(el);
+  });
+</script>
+</body>
+</html>
